@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML to Figma Converter</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      font-size: 20px;
+      margin: 0 0 20px 0;
+      color: #333;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #666;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      resize: vertical;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #5551ff;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .primary {
+      background-color: #5551ff;
+      color: white;
+      border: none;
+    }
+    
+    .primary:hover {
+      background-color: #4441cc;
+    }
+    
+    .primary:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .secondary {
+      background-color: white;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+    
+    .secondary:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>HTML to Figma Converter</h1>
+    
+    <div class="input-group">
+      <label for="html-input">HTMLコードを入力してください:</label>
+      <textarea 
+        id="html-input" 
+        placeholder="<div>&#10;  <h1>Hello World</h1>&#10;  <p>This is a paragraph</p>&#10;</div>"
+      ></textarea>
+    </div>
+    
+    <div class="button-group">
+      <button class="secondary" onclick="cancel()">キャンセル</button>
+      <button class="primary" onclick="convertHTML()">変換</button>
+    </div>
+    
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    function convertHTML() {
+      const htmlInput = document.getElementById('html-input');
+      const html = htmlInput.value.trim();
+      
+      if (!html) {
+        showMessage('HTMLコードを入力してください', 'error');
+        return;
+      }
+      
+      parent.postMessage({
+        pluginMessage: {
+          type: 'convert-html',
+          html: html
+        }
+      }, '*');
+    }
+    
+    function cancel() {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'cancel'
+        }
+      }, '*');
+    }
+    
+    function showMessage(text, type) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.display = 'block';
+      
+      setTimeout(() => {
+        messageEl.style.display = 'none';
+      }, 3000);
+    }
+    
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      
+      if (msg.type === 'conversion-complete') {
+        showMessage(msg.message, 'success');
+        document.getElementById('html-input').value = '';
+      } else if (msg.type === 'conversion-error') {
+        showMessage(msg.message, 'error');
+      }
+    };
+  </script>
+</body>
+</html>

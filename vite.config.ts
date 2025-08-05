@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { readFileSync } from 'fs';
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
@@ -11,7 +12,7 @@ export default defineConfig(({ mode }) => {
           code: resolve(__dirname, 'src/code.ts'),
         },
         formats: ['es'],
-        fileName: (format, entryName) => `${entryName}.js`,
+        fileName: (_format, entryName) => `${entryName}.js`,
       },
       rollupOptions: {
         external: [],
@@ -19,6 +20,19 @@ export default defineConfig(({ mode }) => {
           dir: 'dist',
           format: 'es',
         },
+        plugins: [
+          {
+            name: 'copy-ui-html',
+            generateBundle() {
+              const htmlContent = readFileSync(resolve(__dirname, 'src/ui.html'), 'utf-8');
+              this.emitFile({
+                type: 'asset',
+                fileName: 'ui.html',
+                source: htmlContent,
+              });
+            },
+          },
+        ],
       },
       target: 'es2017',
       minify: isProduction,

@@ -15,8 +15,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["@figma/plugin-typings"],
-    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma/plugin-typings"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]

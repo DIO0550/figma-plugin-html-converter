@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite build --mode development --watch",
     "build": "vite build",
-    "test": "vitest",
+    "test": "vitest --no-watch",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts",

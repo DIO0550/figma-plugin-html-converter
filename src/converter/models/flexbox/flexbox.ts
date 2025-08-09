@@ -1,0 +1,128 @@
+import { Styles } from "../styles";
+import type { 
+  FlexDirection, 
+  PrimaryAxisAlignItems, 
+  CounterAxisAlignItems 
+} from "../auto-layout";
+import {
+  CSS_DISPLAY,
+  CSS_FLEX_DIRECTION,
+  CSS_JUSTIFY_CONTENT,
+  CSS_ALIGN_ITEMS,
+  CSS_DEFAULTS,
+  CSS_SHORTHAND,
+  CSS_BOX_MODEL_INDEX
+} from "../../constants";
+
+// Flexbox変換ユーティリティのコンパニオンオブジェクト
+export const Flexbox = {
+  // Flexコンテナかどうかを判定
+  isFlexContainer(styles: Styles): boolean {
+    const display = Styles.get(styles, "display");
+    return display === CSS_DISPLAY.FLEX || 
+           display === CSS_DISPLAY.INLINE_FLEX;
+  },
+
+  // flex-directionを取得
+  getFlexDirection(styles: Styles): FlexDirection {
+    const flexDirection = Styles.get(styles, "flex-direction") || CSS_DEFAULTS.FLEX_DIRECTION;
+
+    switch (flexDirection) {
+      case CSS_FLEX_DIRECTION.COLUMN:
+      case CSS_FLEX_DIRECTION.COLUMN_REVERSE:
+        return "VERTICAL";
+      case CSS_FLEX_DIRECTION.ROW:
+      case CSS_FLEX_DIRECTION.ROW_REVERSE:
+      default:
+        return "HORIZONTAL";
+    }
+  },
+
+  // justify-contentを取得
+  getJustifyContent(styles: Styles): PrimaryAxisAlignItems {
+    const justifyContent = Styles.get(styles, "justify-content") || CSS_DEFAULTS.JUSTIFY_CONTENT;
+
+    switch (justifyContent) {
+      case CSS_JUSTIFY_CONTENT.FLEX_START:
+        return "MIN";
+      case CSS_JUSTIFY_CONTENT.FLEX_END:
+        return "MAX";
+      case CSS_JUSTIFY_CONTENT.CENTER:
+        return "CENTER";
+      case CSS_JUSTIFY_CONTENT.SPACE_BETWEEN:
+      case CSS_JUSTIFY_CONTENT.SPACE_AROUND:
+      case CSS_JUSTIFY_CONTENT.SPACE_EVENLY:
+        return "SPACE_BETWEEN";
+      default:
+        return "MIN";
+    }
+  },
+
+  // align-itemsを取得
+  getAlignItems(styles: Styles): CounterAxisAlignItems {
+    const alignItems = Styles.get(styles, "align-items") || CSS_DEFAULTS.ALIGN_ITEMS;
+
+    switch (alignItems) {
+      case CSS_ALIGN_ITEMS.FLEX_START:
+        return "MIN";
+      case CSS_ALIGN_ITEMS.FLEX_END:
+        return "MAX";
+      case CSS_ALIGN_ITEMS.CENTER:
+        return "CENTER";
+      case CSS_ALIGN_ITEMS.BASELINE:
+        return "CENTER";  // baselineはCENTERにマッピング
+      case CSS_ALIGN_ITEMS.STRETCH:
+      default:
+        return "MIN";  // stretchはMINにマッピング（Figmaのデフォルト）
+    }
+  },
+
+  // スペーシング値をパース
+  parseSpacing(value: string | undefined): number {
+    if (!value) return CSS_DEFAULTS.SPACING;
+
+    const num = parseFloat(value);
+    return isNaN(num) ? CSS_DEFAULTS.SPACING : num;
+  },
+
+  // padding値をパース
+  parsePadding(styles: Styles): {
+    paddingLeft: number;
+    paddingRight: number;
+    paddingTop: number;
+    paddingBottom: number;
+  } {
+    const padding = Styles.get(styles, "padding");
+    let paddingLeft = Flexbox.parseSpacing(Styles.get(styles, "padding-left"));
+    let paddingRight = Flexbox.parseSpacing(Styles.get(styles, "padding-right"));
+    let paddingTop = Flexbox.parseSpacing(Styles.get(styles, "padding-top"));
+    let paddingBottom = Flexbox.parseSpacing(Styles.get(styles, "padding-bottom"));
+
+    if (padding) {
+      const parts = padding.split(" ").map((p) => Flexbox.parseSpacing(p));
+
+      if (parts.length === CSS_SHORTHAND.SINGLE_VALUE) {
+        paddingLeft = paddingRight = paddingTop = paddingBottom = parts[CSS_BOX_MODEL_INDEX.TOP];
+      } else if (parts.length === CSS_SHORTHAND.TWO_VALUES) {
+        paddingTop = paddingBottom = parts[CSS_BOX_MODEL_INDEX.TOP];
+        paddingLeft = paddingRight = parts[CSS_BOX_MODEL_INDEX.RIGHT];
+      } else if (parts.length === CSS_SHORTHAND.THREE_VALUES) {
+        paddingTop = parts[CSS_BOX_MODEL_INDEX.TOP];
+        paddingLeft = paddingRight = parts[CSS_BOX_MODEL_INDEX.RIGHT];
+        paddingBottom = parts[CSS_BOX_MODEL_INDEX.BOTTOM];
+      } else if (parts.length === CSS_SHORTHAND.FOUR_VALUES) {
+        paddingTop = parts[CSS_BOX_MODEL_INDEX.TOP];
+        paddingRight = parts[CSS_BOX_MODEL_INDEX.RIGHT];
+        paddingBottom = parts[CSS_BOX_MODEL_INDEX.BOTTOM];
+        paddingLeft = parts[CSS_BOX_MODEL_INDEX.LEFT];
+      }
+    }
+
+    return {
+      paddingLeft: paddingLeft || CSS_DEFAULTS.SPACING,
+      paddingRight: paddingRight || CSS_DEFAULTS.SPACING,
+      paddingTop: paddingTop || CSS_DEFAULTS.SPACING,
+      paddingBottom: paddingBottom || CSS_DEFAULTS.SPACING,
+    };
+  }
+};

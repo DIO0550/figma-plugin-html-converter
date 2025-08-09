@@ -79,4 +79,41 @@ describe('mapHTMLNodeToFigma', () => {
       expect(result.name).toBe(tagName);
     });
   });
+
+  test('Flexboxレイアウトを適用できる', () => {
+    const htmlNode: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px;'
+      },
+      children: []
+    };
+
+    const result = mapHTMLNodeToFigma(htmlNode);
+
+    expect(result.layoutMode).toBe('VERTICAL');
+    expect(result.primaryAxisAlignItems).toBe('CENTER');
+    expect(result.counterAxisAlignItems).toBe('CENTER');
+    expect(result.itemSpacing).toBe(16);
+  });
+
+  test('Flexbox with padding', () => {
+    const htmlNode: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; padding: 10px 20px;'
+      },
+      children: []
+    };
+
+    const result = mapHTMLNodeToFigma(htmlNode);
+
+    expect(result.layoutMode).toBe('HORIZONTAL');
+    expect(result.paddingTop).toBe(10);
+    expect(result.paddingBottom).toBe(10);
+    expect(result.paddingLeft).toBe(20);
+    expect(result.paddingRight).toBe(20);
+  });
 });

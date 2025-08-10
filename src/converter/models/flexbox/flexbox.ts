@@ -85,6 +85,92 @@ export const Flexbox = {
     return isNaN(num) ? CSS_DEFAULTS.SPACING : num;
   },
 
+  // gap値をパース（row-gap, column-gapも対応）
+  parseGap(styles: Styles): { rowGap: number; columnGap: number } {
+    const gap = Styles.get(styles, "gap");
+    const rowGap = Styles.get(styles, "row-gap");
+    const columnGap = Styles.get(styles, "column-gap");
+
+    // 個別のgap値が指定されている場合
+    if (rowGap || columnGap) {
+      return {
+        rowGap: Flexbox.parseSpacing(rowGap),
+        columnGap: Flexbox.parseSpacing(columnGap)
+      };
+    }
+
+    // gapショートハンドが指定されている場合
+    if (gap) {
+      const parts = gap.split(" ").map((p) => Flexbox.parseSpacing(p));
+      
+      if (parts.length === 1) {
+        // 単一値の場合、行と列の両方に適用
+        return {
+          rowGap: parts[0],
+          columnGap: parts[0]
+        };
+      } else if (parts.length === 2) {
+        // 2つの値の場合、1つ目が行、2つ目が列
+        return {
+          rowGap: parts[0],
+          columnGap: parts[1]
+        };
+      }
+    }
+
+    return {
+      rowGap: CSS_DEFAULTS.SPACING,
+      columnGap: CSS_DEFAULTS.SPACING
+    };
+  },
+
+  // margin値をパース
+  parseMargin(styles: Styles): {
+    marginLeft: number;
+    marginRight: number;
+    marginTop: number;
+    marginBottom: number;
+  } {
+    const margin = Styles.get(styles, "margin");
+    let marginLeft = Flexbox.parseSpacing(Styles.get(styles, "margin-left"));
+    let marginRight = Flexbox.parseSpacing(Styles.get(styles, "margin-right"));
+    let marginTop = Flexbox.parseSpacing(Styles.get(styles, "margin-top"));
+    let marginBottom = Flexbox.parseSpacing(Styles.get(styles, "margin-bottom"));
+
+    if (margin) {
+      const parts = margin.split(" ").map((p) => Flexbox.parseSpacing(p));
+
+      if (parts.length === CSS_SHORTHAND.SINGLE_VALUE) {
+        marginLeft = marginRight = marginTop = marginBottom = parts[CSS_BOX_MODEL_INDEX.TOP];
+      } else if (parts.length === CSS_SHORTHAND.TWO_VALUES) {
+        marginTop = marginBottom = parts[CSS_BOX_MODEL_INDEX.TOP];
+        marginLeft = marginRight = parts[CSS_BOX_MODEL_INDEX.RIGHT];
+      } else if (parts.length === CSS_SHORTHAND.THREE_VALUES) {
+        marginTop = parts[CSS_BOX_MODEL_INDEX.TOP];
+        marginLeft = marginRight = parts[CSS_BOX_MODEL_INDEX.RIGHT];
+        marginBottom = parts[CSS_BOX_MODEL_INDEX.BOTTOM];
+      } else if (parts.length === CSS_SHORTHAND.FOUR_VALUES) {
+        marginTop = parts[CSS_BOX_MODEL_INDEX.TOP];
+        marginRight = parts[CSS_BOX_MODEL_INDEX.RIGHT];
+        marginBottom = parts[CSS_BOX_MODEL_INDEX.BOTTOM];
+        marginLeft = parts[CSS_BOX_MODEL_INDEX.LEFT];
+      }
+    }
+
+    return {
+      marginLeft: marginLeft || 0,
+      marginRight: marginRight || 0,
+      marginTop: marginTop || 0,
+      marginBottom: marginBottom || 0,
+    };
+  },
+
+  // flex-wrapを取得
+  getFlexWrap(styles: Styles): boolean {
+    const flexWrap = Styles.get(styles, "flex-wrap");
+    return flexWrap === "wrap" || flexWrap === "wrap-reverse";
+  },
+
   // padding値をパース
   parsePadding(styles: Styles): {
     paddingLeft: number;

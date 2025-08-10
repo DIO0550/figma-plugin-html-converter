@@ -198,4 +198,186 @@ describe('Flexbox', () => {
       });
     });
   });
+
+  describe('Flexbox.parseGap', () => {
+    it('should parse single gap value', () => {
+      const styles = Styles.from({
+        gap: '10px'
+      });
+      
+      const gap = Flexbox.parseGap(styles);
+      expect(gap).toEqual({
+        rowGap: 10,
+        columnGap: 10
+      });
+    });
+
+    it('should parse two gap values', () => {
+      const styles = Styles.from({
+        gap: '10px 20px'
+      });
+      
+      const gap = Flexbox.parseGap(styles);
+      expect(gap).toEqual({
+        rowGap: 10,
+        columnGap: 20
+      });
+    });
+
+    it('should parse individual row-gap and column-gap', () => {
+      const styles = Styles.from({
+        'row-gap': '15px',
+        'column-gap': '25px'
+      });
+      
+      const gap = Flexbox.parseGap(styles);
+      expect(gap).toEqual({
+        rowGap: 15,
+        columnGap: 25
+      });
+    });
+
+    it('should prioritize individual gap values over shorthand', () => {
+      const styles = Styles.from({
+        gap: '10px',
+        'row-gap': '30px',
+        'column-gap': '40px'
+      });
+      
+      const gap = Flexbox.parseGap(styles);
+      expect(gap).toEqual({
+        rowGap: 30,
+        columnGap: 40
+      });
+    });
+
+    it('should return default values when no gap is specified', () => {
+      const styles = Styles.from({});
+      
+      const gap = Flexbox.parseGap(styles);
+      expect(gap).toEqual({
+        rowGap: 0,
+        columnGap: 0
+      });
+    });
+  });
+
+  describe('Flexbox.parseMargin', () => {
+    it('should parse individual margin values', () => {
+      const styles = Styles.from({
+        'margin-top': '10px',
+        'margin-right': '20px',
+        'margin-bottom': '30px',
+        'margin-left': '40px'
+      });
+      
+      const margin = Flexbox.parseMargin(styles);
+      expect(margin).toEqual({
+        marginTop: 10,
+        marginRight: 20,
+        marginBottom: 30,
+        marginLeft: 40
+      });
+    });
+
+    it('should parse shorthand margin with four values', () => {
+      const styles = Styles.from({
+        margin: '10px 20px 30px 40px'
+      });
+      
+      const margin = Flexbox.parseMargin(styles);
+      expect(margin).toEqual({
+        marginTop: 10,
+        marginRight: 20,
+        marginBottom: 30,
+        marginLeft: 40
+      });
+    });
+
+    it('should handle two-value margin shorthand', () => {
+      const styles = Styles.from({
+        margin: '10px 20px'
+      });
+      
+      const margin = Flexbox.parseMargin(styles);
+      expect(margin).toEqual({
+        marginTop: 10,
+        marginRight: 20,
+        marginBottom: 10,
+        marginLeft: 20
+      });
+    });
+
+    it('should handle single-value margin shorthand', () => {
+      const styles = Styles.from({
+        margin: '15px'
+      });
+      
+      const margin = Flexbox.parseMargin(styles);
+      expect(margin).toEqual({
+        marginTop: 15,
+        marginRight: 15,
+        marginBottom: 15,
+        marginLeft: 15
+      });
+    });
+
+    it('should handle three-value margin shorthand', () => {
+      const styles = Styles.from({
+        margin: '10px 20px 30px'
+      });
+      
+      const margin = Flexbox.parseMargin(styles);
+      expect(margin).toEqual({
+        marginTop: 10,
+        marginRight: 20,
+        marginBottom: 30,
+        marginLeft: 20
+      });
+    });
+
+    it('should return 0 for unspecified margins', () => {
+      const styles = Styles.from({});
+      
+      const margin = Flexbox.parseMargin(styles);
+      expect(margin).toEqual({
+        marginTop: 0,
+        marginRight: 0,
+        marginBottom: 0,
+        marginLeft: 0
+      });
+    });
+  });
+
+  describe('Flexbox.getFlexWrap', () => {
+    it('should return true for flex-wrap: wrap', () => {
+      const styles = Styles.from({
+        'flex-wrap': 'wrap'
+      });
+      
+      expect(Flexbox.getFlexWrap(styles)).toBe(true);
+    });
+
+    it('should return true for flex-wrap: wrap-reverse', () => {
+      const styles = Styles.from({
+        'flex-wrap': 'wrap-reverse'
+      });
+      
+      expect(Flexbox.getFlexWrap(styles)).toBe(true);
+    });
+
+    it('should return false for flex-wrap: nowrap', () => {
+      const styles = Styles.from({
+        'flex-wrap': 'nowrap'
+      });
+      
+      expect(Flexbox.getFlexWrap(styles)).toBe(false);
+    });
+
+    it('should return false when flex-wrap is not specified', () => {
+      const styles = Styles.from({});
+      
+      expect(Flexbox.getFlexWrap(styles)).toBe(false);
+    });
+  });
 });

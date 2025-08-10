@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 日本語で必ず応答して下さい。
+必ず最初に、`prompt-mcp-server`を利用して、実装のルールを確認して下さい
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 

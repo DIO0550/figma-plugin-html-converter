@@ -93,6 +93,50 @@ describe('AutoLayoutProperties', () => {
       expect(autoLayout?.itemSpacing).toBe(16);
     });
 
+    it('should use column-gap for horizontal layout', () => {
+      const styles = Styles.from({
+        display: 'flex',
+        'flex-direction': 'row',
+        'column-gap': '20px',
+        'row-gap': '10px'
+      });
+      const autoLayout = AutoLayoutProperties.fromStyles(styles);
+      
+      expect(autoLayout?.itemSpacing).toBe(20);
+    });
+
+    it('should use row-gap for vertical layout', () => {
+      const styles = Styles.from({
+        display: 'flex',
+        'flex-direction': 'column',
+        'column-gap': '20px',
+        'row-gap': '10px'
+      });
+      const autoLayout = AutoLayoutProperties.fromStyles(styles);
+      
+      expect(autoLayout?.itemSpacing).toBe(10);
+    });
+
+    it('should handle gap shorthand with two values correctly', () => {
+      const stylesHorizontal = Styles.from({
+        display: 'flex',
+        'flex-direction': 'row',
+        gap: '10px 20px'
+      });
+      const autoLayoutHorizontal = AutoLayoutProperties.fromStyles(stylesHorizontal);
+      
+      expect(autoLayoutHorizontal?.itemSpacing).toBe(20); // column-gap
+
+      const stylesVertical = Styles.from({
+        display: 'flex',
+        'flex-direction': 'column',
+        gap: '10px 20px'
+      });
+      const autoLayoutVertical = AutoLayoutProperties.fromStyles(stylesVertical);
+      
+      expect(autoLayoutVertical?.itemSpacing).toBe(10); // row-gap
+    });
+
     it('should convert padding properties', () => {
       const styles = Styles.from({
         display: 'flex',

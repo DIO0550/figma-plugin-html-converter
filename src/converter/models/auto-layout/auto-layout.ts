@@ -71,7 +71,11 @@ export const AutoLayoutProperties = {
     const layoutMode = Flexbox.getFlexDirection(styles);
     const primaryAxisAlignItems = Flexbox.getJustifyContent(styles);
     const counterAxisAlignItems = Flexbox.getAlignItems(styles);
-    const itemSpacing = Flexbox.parseSpacing(Styles.get(styles, "gap"));
+    
+    // gap処理の改善：direction に応じて適切なgapを使用
+    const gap = Flexbox.parseGap(styles);
+    const itemSpacing = layoutMode === "HORIZONTAL" ? gap.columnGap : gap.rowGap;
+    
     const padding = Flexbox.parsePadding(styles);
 
     return AutoLayoutProperties.from({

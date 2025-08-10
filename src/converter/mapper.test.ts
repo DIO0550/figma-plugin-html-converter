@@ -116,4 +116,84 @@ describe('mapHTMLNodeToFigma', () => {
     expect(result.paddingLeft).toBe(20);
     expect(result.paddingRight).toBe(20);
   });
+
+  test('Flexbox with row-gap and column-gap for horizontal layout', () => {
+    const htmlNode: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; flex-direction: row; row-gap: 10px; column-gap: 20px;'
+      },
+      children: []
+    };
+
+    const result = mapHTMLNodeToFigma(htmlNode);
+
+    expect(result.layoutMode).toBe('HORIZONTAL');
+    expect(result.itemSpacing).toBe(20); // column-gap for horizontal
+  });
+
+  test('Flexbox with row-gap and column-gap for vertical layout', () => {
+    const htmlNode: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; flex-direction: column; row-gap: 10px; column-gap: 20px;'
+      },
+      children: []
+    };
+
+    const result = mapHTMLNodeToFigma(htmlNode);
+
+    expect(result.layoutMode).toBe('VERTICAL');
+    expect(result.itemSpacing).toBe(10); // row-gap for vertical
+  });
+
+  test('Flexbox with gap shorthand (two values)', () => {
+    const htmlNodeHorizontal: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; gap: 15px 25px;'
+      },
+      children: []
+    };
+
+    const resultHorizontal = mapHTMLNodeToFigma(htmlNodeHorizontal);
+    expect(resultHorizontal.layoutMode).toBe('HORIZONTAL');
+    expect(resultHorizontal.itemSpacing).toBe(25); // column-gap
+
+    const htmlNodeVertical: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; flex-direction: column; gap: 15px 25px;'
+      },
+      children: []
+    };
+
+    const resultVertical = mapHTMLNodeToFigma(htmlNodeVertical);
+    expect(resultVertical.layoutMode).toBe('VERTICAL');
+    expect(resultVertical.itemSpacing).toBe(15); // row-gap
+  });
+
+  test('Flexbox space-between with padding', () => {
+    const htmlNode: HTMLNode = {
+      type: 'element',
+      tagName: 'div',
+      attributes: {
+        style: 'display: flex; justify-content: space-between; padding: 10px;'
+      },
+      children: []
+    };
+
+    const result = mapHTMLNodeToFigma(htmlNode);
+
+    expect(result.layoutMode).toBe('HORIZONTAL');
+    expect(result.primaryAxisAlignItems).toBe('SPACE_BETWEEN');
+    expect(result.paddingTop).toBe(10);
+    expect(result.paddingBottom).toBe(10);
+    expect(result.paddingLeft).toBe(10);
+    expect(result.paddingRight).toBe(10);
+  });
 });

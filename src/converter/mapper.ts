@@ -95,6 +95,107 @@ export function mapHTMLNodeToFigma(
         nodeConfig.itemSpacing = autoLayout.itemSpacing;
       }
 
+      // Padding処理（個別のpadding値も含む）
+      if (!nodeConfig.layoutMode || nodeConfig.layoutMode === 'NONE') {
+        // Auto Layoutが設定されていない場合、またはFlexboxからのpaddingが設定されていない場合
+        const paddingTop = Styles.getPaddingTop(styles);
+        const paddingRight = Styles.getPaddingRight(styles);
+        const paddingBottom = Styles.getPaddingBottom(styles);
+        const paddingLeft = Styles.getPaddingLeft(styles);
+
+        if (typeof paddingTop === 'number') nodeConfig.paddingTop = paddingTop;
+        if (typeof paddingRight === 'number') nodeConfig.paddingRight = paddingRight;
+        if (typeof paddingBottom === 'number') nodeConfig.paddingBottom = paddingBottom;
+        if (typeof paddingLeft === 'number') nodeConfig.paddingLeft = paddingLeft;
+
+        // paddingショートハンドが設定されている場合
+        const padding = Styles.getPadding(styles);
+        if (padding && !nodeConfig.paddingTop && !nodeConfig.paddingBottom && !nodeConfig.paddingLeft && !nodeConfig.paddingRight) {
+          nodeConfig.paddingTop = padding.top;
+          nodeConfig.paddingBottom = padding.bottom;
+          nodeConfig.paddingLeft = padding.left;
+          nodeConfig.paddingRight = padding.right;
+        }
+      }
+
+      // Position処理
+      const position = Styles.getPosition(styles);
+      if (position && position !== 'static') {
+        const top = Styles.getTop(styles);
+        const right = Styles.getRight(styles);
+        const bottom = Styles.getBottom(styles);
+        const left = Styles.getLeft(styles);
+
+        // x, y座標の設定
+        if (typeof left === 'number') {
+          nodeConfig.x = left;
+        }
+        if (typeof top === 'number') {
+          nodeConfig.y = top;
+        }
+
+        // Constraints設定
+        if (position === 'absolute' || position === 'fixed') {
+          // デフォルトのconstraints
+          let horizontalConstraint: 'MIN' | 'MAX' | 'STRETCH' = 'MIN';
+          let verticalConstraint: 'MIN' | 'MAX' | 'STRETCH' = 'MIN';
+
+          // rightが設定されている場合
+          if (typeof right === 'number') {
+            if (typeof left === 'number') {
+              // leftとrightの両方が設定されている場合はSTRETCH
+              horizontalConstraint = 'STRETCH';
+            } else {
+              // rightのみの場合はMAX
+              horizontalConstraint = 'MAX';
+            }
+          }
+
+          // bottomが設定されている場合
+          if (typeof bottom === 'number') {
+            if (typeof top === 'number') {
+              // topとbottomの両方が設定されている場合はSTRETCH
+              verticalConstraint = 'STRETCH';
+            } else {
+              // bottomのみの場合はMAX
+              verticalConstraint = 'MAX';
+            }
+          }
+
+          // fixedの場合、rightが0でleftも0の場合はSTRETCH
+          if (position === 'fixed') {
+            if (left === 0 && right === 0) {
+              horizontalConstraint = 'STRETCH';
+            }
+          }
+
+          nodeConfig.constraints = {
+            horizontal: horizontalConstraint,
+            vertical: verticalConstraint
+          };
+        }
+
+        // relativeの場合、オフセットとして処理
+        if (position === 'relative') {
+          if (typeof left === 'number') nodeConfig.x = left;
+          if (typeof top === 'number') nodeConfig.y = top;
+        }
+
+        // z-indexの処理
+        const zIndex = Styles.getZIndex(styles);
+        if (zIndex !== null) {
+          nodeConfig.zIndex = zIndex;
+        }
+      }
+
+      // Margin処理（Auto Layoutの子要素として処理される場合に影響）
+      const margin = Styles.getMargin(styles);
+      if (margin) {
+        // marginは親要素のAuto Layoutのitemspacingや要素の配置に影響を与える
+        // ここではメタデータとして保存（実際のFigma APIでは異なる処理が必要）
+        (nodeConfig as any).margin = margin;
+      }
+
       // サイズの適用
       const width = Styles.getWidth(styles);
       if (typeof width === "number") {

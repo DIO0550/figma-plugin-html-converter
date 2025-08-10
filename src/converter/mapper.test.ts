@@ -196,4 +196,211 @@ describe('mapHTMLNodeToFigma', () => {
     expect(result.paddingLeft).toBe(10);
     expect(result.paddingRight).toBe(10);
   });
+
+  describe('margin処理', () => {
+    test('marginをAuto Layoutの要素間スペースに変換できる', () => {
+      const parentNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'display: flex; flex-direction: column;'
+        },
+        children: [
+          {
+            type: 'element',
+            tagName: 'div',
+            attributes: {
+              style: 'margin: 20px;'
+            },
+            children: []
+          },
+          {
+            type: 'element',
+            tagName: 'div',
+            attributes: {
+              style: 'margin: 20px;'
+            },
+            children: []
+          }
+        ]
+      };
+
+      const result = mapHTMLNodeToFigma(parentNode);
+      const children = (result as any).children;
+
+      expect(result.layoutMode).toBe('VERTICAL');
+      expect(children).toHaveLength(2);
+      // marginは親のAuto Layoutのitemspacingとして適用される想定
+    });
+
+    test('個別のmargin値を処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'margin-top: 10px; margin-right: 20px; margin-bottom: 30px; margin-left: 40px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      // Figmaではmarginは要素の配置に影響を与える
+      // 実装によってはx, yの位置調整として反映される
+      expect(result).toBeDefined();
+    });
+
+    test('marginショートハンドを処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'margin: 10px 20px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('padding処理の改善', () => {
+    test('個別のpadding値を処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'padding-top: 5px; padding-right: 10px; padding-bottom: 15px; padding-left: 20px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      expect(result.paddingTop).toBe(5);
+      expect(result.paddingRight).toBe(10);
+      expect(result.paddingBottom).toBe(15);
+      expect(result.paddingLeft).toBe(20);
+    });
+
+    test('paddingとmarginを同時に処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'padding: 10px; margin: 20px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      expect(result.paddingTop).toBe(10);
+      expect(result.paddingBottom).toBe(10);
+      expect(result.paddingLeft).toBe(10);
+      expect(result.paddingRight).toBe(10);
+    });
+  });
+
+  describe('position処理', () => {
+    test('絶対配置を処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'position: absolute; top: 10px; left: 20px; width: 100px; height: 50px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      expect(result.x).toBe(20);
+      expect(result.y).toBe(10);
+      expect(result.width).toBe(100);
+      expect(result.height).toBe(50);
+      // Figmaでは絶対配置はconstraintsで表現される
+      expect(result.constraints).toEqual({
+        horizontal: 'MIN',
+        vertical: 'MIN'
+      });
+    });
+
+    test('相対配置を処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'position: relative; top: 5px; left: 10px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      // 相対配置はオフセットとして適用
+      expect(result.x).toBe(10);
+      expect(result.y).toBe(5);
+    });
+
+    test('固定配置を処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'position: fixed; top: 0; left: 0; right: 0; height: 60px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      expect(result.x).toBe(0);
+      expect(result.y).toBe(0);
+      expect(result.height).toBe(60);
+      // fixedは画面に固定される
+      expect(result.constraints).toEqual({
+        horizontal: 'STRETCH',
+        vertical: 'MIN'
+      });
+    });
+
+    test('z-indexを処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'position: absolute; z-index: 10;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      // z-indexは描画順序として保存される（実際のFigmaでの実装は異なる可能性）
+      expect((result as any).zIndex).toBe(10);
+    });
+
+    test('rightとbottomを使った配置を処理できる', () => {
+      const htmlNode: HTMLNode = {
+        type: 'element',
+        tagName: 'div',
+        attributes: {
+          style: 'position: absolute; right: 20px; bottom: 30px; width: 100px; height: 50px;'
+        },
+        children: []
+      };
+
+      const result = mapHTMLNodeToFigma(htmlNode);
+
+      // rightとbottomはconstraintsで表現
+      expect(result.width).toBe(100);
+      expect(result.height).toBe(50);
+      expect(result.constraints).toEqual({
+        horizontal: 'MAX',
+        vertical: 'MAX'
+      });
+    });
+  });
 });

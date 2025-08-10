@@ -3,6 +3,12 @@ import type { Paint } from '../paint';
 // Figmaノードタイプ
 export type NodeType = 'FRAME' | 'TEXT' | 'RECTANGLE' | 'GROUP';
 
+// Constraints設定
+export interface Constraints {
+  horizontal: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE';
+  vertical: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH' | 'SCALE';
+}
+
 // Figmaノード設定の型定義
 export interface FigmaNodeConfig {
   type: NodeType;
@@ -24,6 +30,9 @@ export interface FigmaNodeConfig {
   paddingTop?: number;
   paddingBottom?: number;
   itemSpacing?: number;
+  // Positioning
+  constraints?: Constraints;
+  zIndex?: number;
 }
 
 // Auto Layout設定

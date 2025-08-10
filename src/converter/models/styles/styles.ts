@@ -239,6 +239,83 @@ export const Styles = {
     
     const value = parseFloat(opacity);
     return isNaN(value) ? null : Math.max(0, Math.min(1, value));
+  },
+
+  // position プロパティを取得
+  getPosition(styles: Styles): string | undefined {
+    return styles.position;
+  },
+
+  // top, right, bottom, left プロパティを取得してパース
+  getTop(styles: Styles): number | SizeValue | null {
+    const top = styles.top;
+    return top ? Styles.parseSize(top) : null;
+  },
+
+  getRight(styles: Styles): number | SizeValue | null {
+    const right = styles.right;
+    return right ? Styles.parseSize(right) : null;
+  },
+
+  getBottom(styles: Styles): number | SizeValue | null {
+    const bottom = styles.bottom;
+    return bottom ? Styles.parseSize(bottom) : null;
+  },
+
+  getLeft(styles: Styles): number | SizeValue | null {
+    const left = styles.left;
+    return left ? Styles.parseSize(left) : null;
+  },
+
+  // z-index を取得してパース
+  getZIndex(styles: Styles): number | null {
+    const zIndex = styles['z-index'] || styles.zIndex;
+    if (!zIndex) return null;
+    
+    const value = parseInt(zIndex, 10);
+    return isNaN(value) ? null : value;
+  },
+
+  // 個別のmargin値を取得
+  getMarginTop(styles: Styles): number | SizeValue | null {
+    const marginTop = styles['margin-top'] || styles.marginTop;
+    return marginTop ? Styles.parseSize(marginTop) : null;
+  },
+
+  getMarginRight(styles: Styles): number | SizeValue | null {
+    const marginRight = styles['margin-right'] || styles.marginRight;
+    return marginRight ? Styles.parseSize(marginRight) : null;
+  },
+
+  getMarginBottom(styles: Styles): number | SizeValue | null {
+    const marginBottom = styles['margin-bottom'] || styles.marginBottom;
+    return marginBottom ? Styles.parseSize(marginBottom) : null;
+  },
+
+  getMarginLeft(styles: Styles): number | SizeValue | null {
+    const marginLeft = styles['margin-left'] || styles.marginLeft;
+    return marginLeft ? Styles.parseSize(marginLeft) : null;
+  },
+
+  // 個別のpadding値を取得
+  getPaddingTop(styles: Styles): number | SizeValue | null {
+    const paddingTop = styles['padding-top'] || styles.paddingTop;
+    return paddingTop ? Styles.parseSize(paddingTop) : null;
+  },
+
+  getPaddingRight(styles: Styles): number | SizeValue | null {
+    const paddingRight = styles['padding-right'] || styles.paddingRight;
+    return paddingRight ? Styles.parseSize(paddingRight) : null;
+  },
+
+  getPaddingBottom(styles: Styles): number | SizeValue | null {
+    const paddingBottom = styles['padding-bottom'] || styles.paddingBottom;
+    return paddingBottom ? Styles.parseSize(paddingBottom) : null;
+  },
+
+  getPaddingLeft(styles: Styles): number | SizeValue | null {
+    const paddingLeft = styles['padding-left'] || styles.paddingLeft;
+    return paddingLeft ? Styles.parseSize(paddingLeft) : null;
   }
 };
 

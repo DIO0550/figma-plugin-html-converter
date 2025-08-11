@@ -1,6 +1,7 @@
 import type { Brand } from '../../../types';
 import type { RGB } from '../colors';
 import { Colors } from '../colors';
+import { CSSValueAdapter } from '../css-values/adapter';
 
 // Stylesのブランド型
 export type Styles = Brand<Record<string, string>, 'Styles'>;
@@ -90,114 +91,24 @@ export const Styles = {
 
   // サイズ値をパース
   parseSize(sizeString: string | undefined): number | SizeValue | null {
-    if (!sizeString) return null;
-
-    const trimmed = sizeString.trim();
-    
-    // 特殊な値
-    if (trimmed === 'auto' || trimmed === 'inherit') {
-      return null;
-    }
-
-    // 数値と単位を分離
-    const match = trimmed.match(/^([\d.]+)(px|%|em|rem|vh|vw)?$/);
-    if (!match) return null;
-
-    const value = parseFloat(match[1]);
-    const unit = match[2] as SizeValue['unit'] | undefined;
-
-    // ピクセルまたは単位なしの場合は数値を返す
-    if (!unit || unit === 'px') {
-      return value;
-    }
-    
-    // viewport units
-    if (unit === 'vw') {
-      // 1920pxをデフォルトビューポート幅として使用
-      return value * 19.2;
-    }
-    if (unit === 'vh') {
-      // 1080pxをデフォルトビューポート高さとして使用
-      return value * 10.8;
-    }
-    
-    // rem/em単位はピクセルに変換
-    if (unit === 'rem' || unit === 'em') {
-      return value * 16; // デフォルトフォントサイズ16pxとして計算
-    }
-
-    // その他の単位は単位付きで返す
-    return { value, unit };
+    return CSSValueAdapter.parseSize(sizeString);
   },
 
   // width プロパティを取得してパース
   getWidth(styles: Styles): number | SizeValue | null {
     const width = styles.width;
-    if (!width) return null;
-    
-    // calc()のサポート
-    if (width.includes('calc')) {
-      return Styles.parseCalc(width);
-    }
-    
-    return Styles.parseSize(width);
+    return width ? CSSValueAdapter.parseSize(width) : null;
   },
 
   // height プロパティを取得してパース
   getHeight(styles: Styles): number | SizeValue | null {
     const height = styles.height;
-    if (!height) return null;
-    
-    // calc()のサポート
-    if (height.includes('calc')) {
-      return Styles.parseCalc(height);
-    }
-    
-    return Styles.parseSize(height);
+    return height ? CSSValueAdapter.parseSize(height) : null;
   },
   
-  // calc()関数をパース（簡略版）
+  // calc()関数をパース（後方互換性のため残す）
   parseCalc(calcStr: string): number | SizeValue | null {
-    // calc(50vh + 100px) のような簡単なケースを処理
-    const match = calcStr.match(/calc\(([^)]+)\)/);
-    if (!match) return null;
-    
-    const expr = match[1];
-    
-    // 簡単な加算・減算のみサポート
-    const addMatch = expr.match(/(\d+(?:\.\d+)?)(vw|vh|px|%|rem|em)?\s*\+\s*(\d+(?:\.\d+)?)(px|%|rem|em)?/);
-    if (addMatch) {
-      const val1 = parseFloat(addMatch[1]);
-      const unit1 = addMatch[2] || 'px';
-      const val2 = parseFloat(addMatch[3]);
-      const unit2 = addMatch[4] || 'px';
-      
-      // 異なる単位の場合、ピクセルに変換
-      let result = 0;
-      if (unit1 === 'vh') result += val1 * 10.8; // 1080 / 100
-      else if (unit1 === 'vw') result += val1 * 19.2; // 1920 / 100
-      else if (unit1 === 'rem' || unit1 === 'em') result += val1 * 16;
-      else result += val1;
-      
-      if (unit2 === 'rem' || unit2 === 'em') result += val2 * 16;
-      else result += val2;
-      
-      return result;
-    }
-    
-    const subMatch = expr.match(/(\d+(?:\.\d+)?)(vw|vh|px|%|rem|em)?\s*-\s*(\d+(?:\.\d+)?)(px|%|rem|em)?/);
-    if (subMatch) {
-      const val1 = parseFloat(subMatch[1]);
-      const unit1 = subMatch[2] || 'px';
-      
-      // パーセンテージと固定値の計算
-      if (unit1 === '%' && val1 === 100) {
-        // 100% - 40px のようなケース
-        return { value: val1, unit: '%' } as SizeValue;
-      }
-    }
-    
-    return null;
+    return CSSValueAdapter.parseSize(calcStr);
   },
 
   // カラー値をパース
@@ -263,34 +174,7 @@ export const Styles = {
 
   // padding値をパース（ショートハンド対応）
   parsePadding(paddingString: string): { top: number; right: number; bottom: number; left: number } | null {
-    const parts = paddingString.trim().split(/\s+/).map(p => {
-      // calc()のサポート
-      if (p.includes('calc')) {
-        const calcResult = Styles.parseCalc(p);
-        return typeof calcResult === 'number' ? calcResult : 0;
-      }
-      const size = Styles.parseSize(p);
-      return typeof size === 'number' ? size : 0;
-    });
-
-    if (parts.length === 0) return null;
-
-    // CSS padding ショートハンド規則
-    if (parts.length === 1) {
-      const value = parts[0];
-      return { top: value, right: value, bottom: value, left: value };
-    }
-    if (parts.length === 2) {
-      return { top: parts[0], right: parts[1], bottom: parts[0], left: parts[1] };
-    }
-    if (parts.length === 3) {
-      return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[1] };
-    }
-    if (parts.length >= 4) {
-      return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[3] };
-    }
-
-    return null;
+    return CSSValueAdapter.parsePadding(paddingString);
   },
 
   // padding を取得してパース
@@ -378,42 +262,22 @@ export const Styles = {
   // 個別のpadding値を取得
   getPaddingTop(styles: Styles): number | SizeValue | null {
     const paddingTop = styles['padding-top'] || styles.paddingTop;
-    if (!paddingTop) return null;
-    // calc()のサポート
-    if (paddingTop.includes('calc')) {
-      return Styles.parseCalc(paddingTop);
-    }
-    return Styles.parseSize(paddingTop);
+    return paddingTop ? CSSValueAdapter.parseSize(paddingTop) : null;
   },
 
   getPaddingRight(styles: Styles): number | SizeValue | null {
     const paddingRight = styles['padding-right'] || styles.paddingRight;
-    if (!paddingRight) return null;
-    // calc()のサポート
-    if (paddingRight.includes('calc')) {
-      return Styles.parseCalc(paddingRight);
-    }
-    return Styles.parseSize(paddingRight);
+    return paddingRight ? CSSValueAdapter.parseSize(paddingRight) : null;
   },
 
   getPaddingBottom(styles: Styles): number | SizeValue | null {
     const paddingBottom = styles['padding-bottom'] || styles.paddingBottom;
-    if (!paddingBottom) return null;
-    // calc()のサポート
-    if (paddingBottom.includes('calc')) {
-      return Styles.parseCalc(paddingBottom);
-    }
-    return Styles.parseSize(paddingBottom);
+    return paddingBottom ? CSSValueAdapter.parseSize(paddingBottom) : null;
   },
 
   getPaddingLeft(styles: Styles): number | SizeValue | null {
     const paddingLeft = styles['padding-left'] || styles.paddingLeft;
-    if (!paddingLeft) return null;
-    // calc()のサポート
-    if (paddingLeft.includes('calc')) {
-      return Styles.parseCalc(paddingLeft);
-    }
-    return Styles.parseSize(paddingLeft);
+    return paddingLeft ? CSSValueAdapter.parseSize(paddingLeft) : null;
   },
 
   // flex-wrap

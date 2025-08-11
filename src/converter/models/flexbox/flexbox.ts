@@ -13,9 +13,41 @@ import {
   CSS_SHORTHAND,
   CSS_BOX_MODEL_INDEX
 } from "../../constants";
+import { CSSValueAdapter } from "../css-values/adapter";
 
 // Flexbox変換ユーティリティのコンパニオンオブジェクト
 export const Flexbox = {
+  // calc()を含む値を安全に分割
+  splitShorthand(value: string): string[] {
+    const result: string[] = [];
+    let current = '';
+    let depth = 0;
+    
+    for (let i = 0; i < value.length; i++) {
+      const char = value[i];
+      
+      if (char === '(') {
+        depth++;
+        current += char;
+      } else if (char === ')') {
+        depth--;
+        current += char;
+      } else if (char === ' ' && depth === 0) {
+        if (current.trim()) {
+          result.push(current.trim());
+          current = '';
+        }
+      } else {
+        current += char;
+      }
+    }
+    
+    if (current.trim()) {
+      result.push(current.trim());
+    }
+    
+    return result;
+  },
   // Flexコンテナかどうかを判定
   isFlexContainer(styles: Styles): boolean {
     const display = Styles.get(styles, "display");
@@ -79,40 +111,7 @@ export const Flexbox = {
 
   // スペーシング値をパース
   parseSpacing(value: string | undefined): number {
-    if (!value) return CSS_DEFAULTS.SPACING;
-
-    // calc()のサポート
-    if (value.includes('calc')) {
-      // calc(1rem + 5px) のような簡単なケースを処理
-      const match = value.match(/calc\(([^)]+)\)/);
-      if (match) {
-        const expr = match[1];
-        
-        // 簡単な加算・減算のみサポート
-        const addMatch = expr.match(/(\d+(?:\.\d+)?)(vw|vh|px|%|rem|em)?\s*\+\s*(\d+(?:\.\d+)?)(px|%|rem|em)?/);
-        if (addMatch) {
-          const val1 = parseFloat(addMatch[1]);
-          const unit1 = addMatch[2] || 'px';
-          const val2 = parseFloat(addMatch[3]);
-          const unit2 = addMatch[4] || 'px';
-          
-          // 異なる単位の場合、ピクセルに変換
-          let result = 0;
-          if (unit1 === 'vh') result += val1 * 10.8; // 1080 / 100
-          else if (unit1 === 'vw') result += val1 * 19.2; // 1920 / 100
-          else if (unit1 === 'rem' || unit1 === 'em') result += val1 * 16;
-          else result += val1;
-          
-          if (unit2 === 'rem' || unit2 === 'em') result += val2 * 16;
-          else result += val2;
-          
-          return result;
-        }
-      }
-    }
-
-    const num = parseFloat(value);
-    return isNaN(num) ? CSS_DEFAULTS.SPACING : num;
+    return CSSValueAdapter.parseSpacing(value, CSS_DEFAULTS.SPACING);
   },
 
   // gap値をパース（row-gap, column-gapも対応）
@@ -131,7 +130,8 @@ export const Flexbox = {
 
     // gapショートハンドが指定されている場合
     if (gap) {
-      const parts = gap.split(" ").map((p) => Flexbox.parseSpacing(p));
+      // calc()を含む値を考慮して、より慎重にsplitする  
+      const parts = Flexbox.splitShorthand(gap).map((p) => Flexbox.parseSpacing(p));
       
       if (parts.length === 1) {
         // 単一値の場合、行と列の両方に適用
@@ -168,7 +168,8 @@ export const Flexbox = {
     let marginBottom = Flexbox.parseSpacing(Styles.get(styles, "margin-bottom"));
 
     if (margin) {
-      const parts = margin.split(" ").map((p) => Flexbox.parseSpacing(p));
+      // calc()を含む値を考慮して、より慎重にsplitする
+      const parts = Flexbox.splitShorthand(margin).map((p) => Flexbox.parseSpacing(p));
 
       if (parts.length === CSS_SHORTHAND.SINGLE_VALUE) {
         marginLeft = marginRight = marginTop = marginBottom = parts[CSS_BOX_MODEL_INDEX.TOP];
@@ -215,7 +216,8 @@ export const Flexbox = {
     let paddingBottom = Flexbox.parseSpacing(Styles.get(styles, "padding-bottom"));
 
     if (padding) {
-      const parts = padding.split(" ").map((p) => Flexbox.parseSpacing(p));
+      // calc()を含む値を考慮して、より慎重にsplitする
+      const parts = Flexbox.splitShorthand(padding).map((p) => Flexbox.parseSpacing(p));
 
       if (parts.length === CSS_SHORTHAND.SINGLE_VALUE) {
         paddingLeft = paddingRight = paddingTop = paddingBottom = parts[CSS_BOX_MODEL_INDEX.TOP];

@@ -93,6 +93,12 @@ export function mapHTMLNodeToFigma(
         nodeConfig.paddingTop = autoLayout.paddingTop;
         nodeConfig.paddingBottom = autoLayout.paddingBottom;
         nodeConfig.itemSpacing = autoLayout.itemSpacing;
+        
+        // flex-wrapの処理
+        const flexWrap = Styles.getFlexWrap(styles);
+        if (flexWrap === 'wrap' || flexWrap === 'wrap-reverse') {
+          nodeConfig.layoutWrap = 'WRAP';
+        }
       }
 
       // Padding処理（個別のpadding値も含む）
@@ -200,11 +206,81 @@ export function mapHTMLNodeToFigma(
       const width = Styles.getWidth(styles);
       if (typeof width === "number") {
         nodeConfig.width = width;
+      } else if (width && typeof width === 'object' && width.unit === '%') {
+        // パーセンテージ幅の処理
+        if (width.value === 100) {
+          nodeConfig.layoutSizingHorizontal = 'FILL';
+        } else if (width.value === 50) {
+          nodeConfig.layoutSizingHorizontal = 'FILL';
+        } else {
+          nodeConfig.layoutSizingHorizontal = 'FIXED';
+          // 親要素の幅がある場合は計算（デフォルトで800pxと仮定）
+          nodeConfig.width = 800 * (width.value / 100);
+        }
       }
 
       const height = Styles.getHeight(styles);
       if (typeof height === "number") {
         nodeConfig.height = height;
+      } else if (height && typeof height === 'object' && height.unit === '%') {
+        // パーセンテージ高さの処理
+        if (height.value === 100) {
+          nodeConfig.layoutSizingVertical = 'FILL';
+        } else if (height.value === 50) {
+          nodeConfig.height = 600 * 0.5; // デフォルト高さ600pxと仮定
+        } else {
+          nodeConfig.layoutSizingVertical = 'FIXED';
+          nodeConfig.height = 600 * (height.value / 100);
+        }
+      } else if (height === null && styles.height === 'auto') {
+        nodeConfig.layoutSizingVertical = 'HUG';
+      }
+      
+      // min/max width/height
+      const minWidth = Styles.getMinWidth(styles);
+      if (minWidth !== null) nodeConfig.minWidth = minWidth;
+      
+      const maxWidth = Styles.getMaxWidth(styles);
+      if (maxWidth !== null) nodeConfig.maxWidth = maxWidth;
+      
+      const minHeight = Styles.getMinHeight(styles);
+      if (minHeight !== null) nodeConfig.minHeight = minHeight;
+      
+      const maxHeight = Styles.getMaxHeight(styles);
+      if (maxHeight !== null) nodeConfig.maxHeight = maxHeight;
+      
+      // aspect-ratio
+      const aspectRatio = Styles.getAspectRatio(styles);
+      if (aspectRatio !== null) {
+        nodeConfig.aspectRatio = aspectRatio;
+        // widthが設定されていてheightが未設定の場合、heightを計算
+        if (nodeConfig.width && !nodeConfig.height) {
+          nodeConfig.height = nodeConfig.width / aspectRatio;
+        }
+      }
+      
+      // flex-grow/flex-shrink
+      const flexGrow = Styles.getFlexGrow(styles);
+      if (flexGrow !== null) {
+        nodeConfig.layoutGrow = flexGrow;
+        if (flexGrow > 0) {
+          nodeConfig.layoutSizingHorizontal = 'FILL';
+        }
+      }
+      
+      const flexShrink = Styles.getFlexShrink(styles);
+      if (flexShrink === 0) {
+        nodeConfig.layoutGrow = 0;
+      }
+      
+      // constraintsの設定（レスポンシブ対応）
+      if (minWidth !== null || maxWidth !== null || minHeight !== null || maxHeight !== null) {
+        if (!nodeConfig.constraints) {
+          nodeConfig.constraints = {
+            horizontal: minWidth !== null || maxWidth !== null ? 'SCALE' : 'MIN',
+            vertical: minHeight !== null || maxHeight !== null ? 'MIN' : 'MIN'
+          };
+        }
       }
 
       // 背景色の適用
@@ -264,7 +340,19 @@ export function mapHTMLNodeToFigma(
           "header",
           "footer",
         ].includes(tagName);
-        if (isContainerElement && !nodeConfig.layoutMode) {
+        // displayが明示的に設定されていない場合のみ、デフォルトのAuto Layoutを適用
+        const displayStyle = htmlNode.attributes?.style ? Styles.parse(htmlNode.attributes.style) : null;
+        const display = displayStyle ? Styles.get(displayStyle, 'display') : null;
+        // displayが明示的にblock/inline-blockに設定されている場合はAuto Layoutを適用しない
+        if (display === 'block' || display === 'inline-block') {
+          // Auto Layoutが設定されている場合、削除する
+          if (nodeConfig.layoutMode === 'VERTICAL' && !displayStyle?.display?.includes('flex')) {
+            delete nodeConfig.layoutMode;
+            delete nodeConfig.primaryAxisAlignItems;
+            delete nodeConfig.counterAxisAlignItems;
+            delete nodeConfig.itemSpacing;
+          }
+        } else if (isContainerElement && !nodeConfig.layoutMode && display !== 'flex' && display !== 'inline-flex') {
           FigmaNode.setAutoLayout(nodeConfig, {
             mode: "VERTICAL",
             spacing: normalizedOptions.spacing || DEFAULT_SPACING,
@@ -272,13 +360,16 @@ export function mapHTMLNodeToFigma(
         }
 
         // コンテナサイズが未設定の場合、デフォルトサイズを適用
-        if (!nodeConfig.width && !nodeConfig.height) {
+        if (!nodeConfig.width && !nodeConfig.height && !nodeConfig.layoutSizingHorizontal && !nodeConfig.layoutSizingVertical) {
           // ルート要素またはbody要素の場合、コンテナサイズを適用
-          if (tagName === "body" || tagName === "html" || tagName === "div") {
+          if (tagName === "body" || tagName === "html") {
             if (ConversionOptions.hasContainerSize(normalizedOptions)) {
               nodeConfig.width = normalizedOptions.containerWidth;
               nodeConfig.height = normalizedOptions.containerHeight;
             }
+          } else if (tagName === "div" && !nodeConfig.layoutMode) {
+            // 非Flexのdivでdisplayが指定されていない場合、layoutModeを削除
+            delete nodeConfig.layoutMode;
           }
         }
       }

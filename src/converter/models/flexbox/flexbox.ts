@@ -81,6 +81,36 @@ export const Flexbox = {
   parseSpacing(value: string | undefined): number {
     if (!value) return CSS_DEFAULTS.SPACING;
 
+    // calc()のサポート
+    if (value.includes('calc')) {
+      // calc(1rem + 5px) のような簡単なケースを処理
+      const match = value.match(/calc\(([^)]+)\)/);
+      if (match) {
+        const expr = match[1];
+        
+        // 簡単な加算・減算のみサポート
+        const addMatch = expr.match(/(\d+(?:\.\d+)?)(vw|vh|px|%|rem|em)?\s*\+\s*(\d+(?:\.\d+)?)(px|%|rem|em)?/);
+        if (addMatch) {
+          const val1 = parseFloat(addMatch[1]);
+          const unit1 = addMatch[2] || 'px';
+          const val2 = parseFloat(addMatch[3]);
+          const unit2 = addMatch[4] || 'px';
+          
+          // 異なる単位の場合、ピクセルに変換
+          let result = 0;
+          if (unit1 === 'vh') result += val1 * 10.8; // 1080 / 100
+          else if (unit1 === 'vw') result += val1 * 19.2; // 1920 / 100
+          else if (unit1 === 'rem' || unit1 === 'em') result += val1 * 16;
+          else result += val1;
+          
+          if (unit2 === 'rem' || unit2 === 'em') result += val2 * 16;
+          else result += val2;
+          
+          return result;
+        }
+      }
+    }
+
     const num = parseFloat(value);
     return isNaN(num) ? CSS_DEFAULTS.SPACING : num;
   },

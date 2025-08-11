@@ -110,6 +110,21 @@ export const Styles = {
     if (!unit || unit === 'px') {
       return value;
     }
+    
+    // viewport units
+    if (unit === 'vw') {
+      // 1920pxをデフォルトビューポート幅として使用
+      return value * 19.2;
+    }
+    if (unit === 'vh') {
+      // 1080pxをデフォルトビューポート高さとして使用
+      return value * 10.8;
+    }
+    
+    // rem/em単位はピクセルに変換
+    if (unit === 'rem' || unit === 'em') {
+      return value * 16; // デフォルトフォントサイズ16pxとして計算
+    }
 
     // その他の単位は単位付きで返す
     return { value, unit };
@@ -118,13 +133,71 @@ export const Styles = {
   // width プロパティを取得してパース
   getWidth(styles: Styles): number | SizeValue | null {
     const width = styles.width;
-    return width ? Styles.parseSize(width) : null;
+    if (!width) return null;
+    
+    // calc()のサポート
+    if (width.includes('calc')) {
+      return Styles.parseCalc(width);
+    }
+    
+    return Styles.parseSize(width);
   },
 
   // height プロパティを取得してパース
   getHeight(styles: Styles): number | SizeValue | null {
     const height = styles.height;
-    return height ? Styles.parseSize(height) : null;
+    if (!height) return null;
+    
+    // calc()のサポート
+    if (height.includes('calc')) {
+      return Styles.parseCalc(height);
+    }
+    
+    return Styles.parseSize(height);
+  },
+  
+  // calc()関数をパース（簡略版）
+  parseCalc(calcStr: string): number | SizeValue | null {
+    // calc(50vh + 100px) のような簡単なケースを処理
+    const match = calcStr.match(/calc\(([^)]+)\)/);
+    if (!match) return null;
+    
+    const expr = match[1];
+    
+    // 簡単な加算・減算のみサポート
+    const addMatch = expr.match(/(\d+(?:\.\d+)?)(vw|vh|px|%|rem|em)?\s*\+\s*(\d+(?:\.\d+)?)(px|%|rem|em)?/);
+    if (addMatch) {
+      const val1 = parseFloat(addMatch[1]);
+      const unit1 = addMatch[2] || 'px';
+      const val2 = parseFloat(addMatch[3]);
+      const unit2 = addMatch[4] || 'px';
+      
+      // 異なる単位の場合、ピクセルに変換
+      let result = 0;
+      if (unit1 === 'vh') result += val1 * 10.8; // 1080 / 100
+      else if (unit1 === 'vw') result += val1 * 19.2; // 1920 / 100
+      else if (unit1 === 'rem' || unit1 === 'em') result += val1 * 16;
+      else result += val1;
+      
+      if (unit2 === 'rem' || unit2 === 'em') result += val2 * 16;
+      else result += val2;
+      
+      return result;
+    }
+    
+    const subMatch = expr.match(/(\d+(?:\.\d+)?)(vw|vh|px|%|rem|em)?\s*-\s*(\d+(?:\.\d+)?)(px|%|rem|em)?/);
+    if (subMatch) {
+      const val1 = parseFloat(subMatch[1]);
+      const unit1 = subMatch[2] || 'px';
+      
+      // パーセンテージと固定値の計算
+      if (unit1 === '%' && val1 === 100) {
+        // 100% - 40px のようなケース
+        return { value: val1, unit: '%' } as SizeValue;
+      }
+    }
+    
+    return null;
   },
 
   // カラー値をパース
@@ -191,6 +264,11 @@ export const Styles = {
   // padding値をパース（ショートハンド対応）
   parsePadding(paddingString: string): { top: number; right: number; bottom: number; left: number } | null {
     const parts = paddingString.trim().split(/\s+/).map(p => {
+      // calc()のサポート
+      if (p.includes('calc')) {
+        const calcResult = Styles.parseCalc(p);
+        return typeof calcResult === 'number' ? calcResult : 0;
+      }
       const size = Styles.parseSize(p);
       return typeof size === 'number' ? size : 0;
     });
@@ -300,22 +378,133 @@ export const Styles = {
   // 個別のpadding値を取得
   getPaddingTop(styles: Styles): number | SizeValue | null {
     const paddingTop = styles['padding-top'] || styles.paddingTop;
-    return paddingTop ? Styles.parseSize(paddingTop) : null;
+    if (!paddingTop) return null;
+    // calc()のサポート
+    if (paddingTop.includes('calc')) {
+      return Styles.parseCalc(paddingTop);
+    }
+    return Styles.parseSize(paddingTop);
   },
 
   getPaddingRight(styles: Styles): number | SizeValue | null {
     const paddingRight = styles['padding-right'] || styles.paddingRight;
-    return paddingRight ? Styles.parseSize(paddingRight) : null;
+    if (!paddingRight) return null;
+    // calc()のサポート
+    if (paddingRight.includes('calc')) {
+      return Styles.parseCalc(paddingRight);
+    }
+    return Styles.parseSize(paddingRight);
   },
 
   getPaddingBottom(styles: Styles): number | SizeValue | null {
     const paddingBottom = styles['padding-bottom'] || styles.paddingBottom;
-    return paddingBottom ? Styles.parseSize(paddingBottom) : null;
+    if (!paddingBottom) return null;
+    // calc()のサポート
+    if (paddingBottom.includes('calc')) {
+      return Styles.parseCalc(paddingBottom);
+    }
+    return Styles.parseSize(paddingBottom);
   },
 
   getPaddingLeft(styles: Styles): number | SizeValue | null {
     const paddingLeft = styles['padding-left'] || styles.paddingLeft;
-    return paddingLeft ? Styles.parseSize(paddingLeft) : null;
+    if (!paddingLeft) return null;
+    // calc()のサポート
+    if (paddingLeft.includes('calc')) {
+      return Styles.parseCalc(paddingLeft);
+    }
+    return Styles.parseSize(paddingLeft);
+  },
+
+  // flex-wrap
+  getFlexWrap(styles: Styles): string | null {
+    return styles['flex-wrap'] || null;
+  },
+
+  // flex-grow
+  getFlexGrow(styles: Styles): number | null {
+    const flexGrow = styles['flex-grow'];
+    if (flexGrow) {
+      const value = parseFloat(flexGrow);
+      return isNaN(value) ? null : value;
+    }
+    
+    // flexショートハンドから取得
+    const flex = styles.flex;
+    if (flex) {
+      const parts = flex.split(' ');
+      const growValue = parseFloat(parts[0]);
+      return isNaN(growValue) ? null : growValue;
+    }
+    
+    return null;
+  },
+
+  // flex-shrink
+  getFlexShrink(styles: Styles): number | null {
+    const flexShrink = styles['flex-shrink'];
+    if (flexShrink) {
+      const value = parseFloat(flexShrink);
+      return isNaN(value) ? null : value;
+    }
+    
+    // flexショートハンドから取得
+    const flex = styles.flex;
+    if (flex) {
+      const parts = flex.split(' ');
+      if (parts.length >= 2) {
+        const shrinkValue = parseFloat(parts[1]);
+        return isNaN(shrinkValue) ? null : shrinkValue;
+      }
+    }
+    
+    return null;
+  },
+
+  // min-width
+  getMinWidth(styles: Styles): number | null {
+    const minWidth = styles['min-width'];
+    const size = Styles.parseSize(minWidth);
+    return typeof size === 'number' ? size : null;
+  },
+
+  // max-width
+  getMaxWidth(styles: Styles): number | null {
+    const maxWidth = styles['max-width'];
+    const size = Styles.parseSize(maxWidth);
+    return typeof size === 'number' ? size : null;
+  },
+
+  // min-height
+  getMinHeight(styles: Styles): number | null {
+    const minHeight = styles['min-height'];
+    const size = Styles.parseSize(minHeight);
+    return typeof size === 'number' ? size : null;
+  },
+
+  // max-height
+  getMaxHeight(styles: Styles): number | null {
+    const maxHeight = styles['max-height'];
+    const size = Styles.parseSize(maxHeight);
+    return typeof size === 'number' ? size : null;
+  },
+
+  // aspect-ratio
+  getAspectRatio(styles: Styles): number | null {
+    const aspectRatio = styles['aspect-ratio'];
+    if (!aspectRatio) return null;
+    
+    // "16/9" や "16 / 9" 形式をパース
+    const match = aspectRatio.match(/(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+    if (match) {
+      const width = parseFloat(match[1]);
+      const height = parseFloat(match[2]);
+      return width / height;
+    }
+    
+    // 単一の数値
+    const value = parseFloat(aspectRatio);
+    return isNaN(value) ? null : value;
   }
 };
 

@@ -98,8 +98,12 @@ describe('Styles', () => {
 
     test('他の単位をパースできる', () => {
       expect(Styles.parseSize('100%')).toEqual({ value: 100, unit: '%' });
-      expect(Styles.parseSize('2em')).toEqual({ value: 2, unit: 'em' });
-      expect(Styles.parseSize('1.5rem')).toEqual({ value: 1.5, unit: 'rem' });
+      // rem/emはピクセルに変換される（デフォルト16px）
+      expect(Styles.parseSize('2em')).toEqual(32); // 2 * 16
+      expect(Styles.parseSize('1.5rem')).toEqual(24); // 1.5 * 16
+      // vh/vwもピクセルに変換される
+      expect(Styles.parseSize('50vw')).toEqual(960); // 50 * 19.2
+      expect(Styles.parseSize('50vh')).toEqual(540); // 50 * 10.8
     });
 
     test('特殊な値を処理できる', () => {

@@ -30,9 +30,21 @@ export interface FigmaNodeConfig {
   paddingTop?: number;
   paddingBottom?: number;
   itemSpacing?: number;
+  layoutWrap?: 'NO_WRAP' | 'WRAP';
   // Positioning
   constraints?: Constraints;
   zIndex?: number;
+  // 子要素
+  children?: FigmaNodeConfig[];
+  // レスポンシブプロパティ
+  layoutGrow?: number;
+  layoutSizingHorizontal?: 'FIXED' | 'HUG' | 'FILL';
+  layoutSizingVertical?: 'FIXED' | 'HUG' | 'FILL';
+  minWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  maxHeight?: number;
+  aspectRatio?: number;
 }
 
 // Auto Layout設定

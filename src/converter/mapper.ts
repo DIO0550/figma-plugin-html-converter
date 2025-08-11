@@ -352,11 +352,6 @@ export function mapHTMLNodeToFigma(
             delete nodeConfig.counterAxisAlignItems;
             delete nodeConfig.itemSpacing;
           }
-        } else if (isContainerElement && !nodeConfig.layoutMode && display !== 'flex' && display !== 'inline-flex') {
-          FigmaNode.setAutoLayout(nodeConfig, {
-            mode: "VERTICAL",
-            spacing: normalizedOptions.spacing || DEFAULT_SPACING,
-          });
         }
 
         // コンテナサイズが未設定の場合、デフォルトサイズを適用

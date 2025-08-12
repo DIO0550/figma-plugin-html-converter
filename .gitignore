@@ -22,3 +22,6 @@ Thumbs.db
 
 # MCP configuration
 .mcp.json
+
+# Claude
+.claude/

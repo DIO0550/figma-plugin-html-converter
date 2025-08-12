@@ -6,6 +6,7 @@ import { Paint } from "./models/paint";
 import { ConversionOptions } from "./models/conversion-options";
 import type { ConversionOptions as ConversionOptionsType } from "./models/conversion-options";
 import { AutoLayoutProperties } from "./models/auto-layout";
+import { ImgElement } from "./elements/image";
 
 // デフォルトのスペーシング値
 const DEFAULT_SPACING = 8;
@@ -52,7 +53,16 @@ export function mapHTMLNodeToFigma(
 
   let nodeConfig: FigmaNodeConfig;
 
-  if (isTextElement) {
+  // img要素の場合は専用の処理
+  if (ImgElement.isImgElement(htmlNode)) {
+    const imageConfig = ImgElement.mapToFigma(htmlNode);
+    if (imageConfig) {
+      nodeConfig = imageConfig;
+    } else {
+      // フォールバック（通常は発生しない）
+      nodeConfig = FigmaNode.createFrame(tagName);
+    }
+  } else if (isTextElement) {
     const textContent = HTMLNode.getTextContent(htmlNode);
     nodeConfig = FigmaNode.createText(textContent || tagName);
     nodeConfig.name = tagName; // タグ名を名前として設定
@@ -304,6 +314,8 @@ export function mapHTMLNodeToFigma(
       if (typeof borderRadius === "number") {
         FigmaNode.setCornerRadius(nodeConfig, borderRadius);
       }
+      
+      // 注: img要素のobject-fit等の処理はImageConverterで既に完了している
     }
   }
 
@@ -329,17 +341,6 @@ export function mapHTMLNodeToFigma(
         // ここでは仮の実装として children プロパティを追加
         (nodeConfig as any).children = children;
 
-        // 親要素がdiv、section、articleなどのコンテナ要素の場合はAuto Layoutを適用
-        const isContainerElement = [
-          "div",
-          "section",
-          "article",
-          "main",
-          "aside",
-          "nav",
-          "header",
-          "footer",
-        ].includes(tagName);
         // displayが明示的に設定されていない場合のみ、デフォルトのAuto Layoutを適用
         const displayStyle = htmlNode.attributes?.style ? Styles.parse(htmlNode.attributes.style) : null;
         const display = displayStyle ? Styles.get(displayStyle, 'display') : null;

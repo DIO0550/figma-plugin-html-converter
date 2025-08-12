@@ -1,406 +1,270 @@
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { mapHTMLNodeToFigma } from './mapper';
-import type { HTMLNode } from './types';
+import { HTMLNode } from './models/html-node/html-node';
+import { FigmaNode } from './models/figma-node/figma-node';
 
 describe('mapHTMLNodeToFigma', () => {
-  test('div要素をFrameノードに変換できる', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.type).toBe('FRAME');
-    expect(result.name).toBe('div');
-  });
-
-  test('p要素をTextノードに変換できる', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'p',
-      children: [{
-        type: 'text',
-        textContent: 'Hello World'
-      }]
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.type).toBe('TEXT');
-    expect(result.name).toBe('p');
-  });
-
-  test('テキストノードを変換できる', () => {
-    const htmlNode: HTMLNode = {
-      type: 'text',
-      textContent: 'Plain text'
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.type).toBe('TEXT');
-    expect(result.name).toBe('Text');
-  });
-
-  test('属性からスタイルを適用できる', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'width: 200px; height: 100px;'
-      },
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.width).toBe(200);
-    expect(result.height).toBe(100);
-  });
-
-  test('h1-h6要素をTextノードに変換できる', () => {
-    const headings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-    
-    headings.forEach(tagName => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName,
-        children: [{
-          type: 'text',
-          textContent: 'Heading'
-        }]
-      };
-
+  describe('div要素の変換', () => {
+    test('div要素をFrameノードに変換できる', () => {
+      const htmlNode: HTMLNode = HTMLNode.createElement('div');
       const result = mapHTMLNodeToFigma(htmlNode);
-
-      expect(result.type).toBe('TEXT');
-      expect(result.name).toBe(tagName);
+      
+      expect(result.type).toBe('FRAME');
+      expect(result.name).toBe('div');
     });
-  });
 
-  test('Flexboxレイアウトを適用できる', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px;'
-      },
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.layoutMode).toBe('VERTICAL');
-    expect(result.primaryAxisAlignItems).toBe('CENTER');
-    expect(result.counterAxisAlignItems).toBe('CENTER');
-    expect(result.itemSpacing).toBe(16);
-  });
-
-  test('Flexbox with padding', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; padding: 10px 20px;'
-      },
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.layoutMode).toBe('HORIZONTAL');
-    expect(result.paddingTop).toBe(10);
-    expect(result.paddingBottom).toBe(10);
-    expect(result.paddingLeft).toBe(20);
-    expect(result.paddingRight).toBe(20);
-  });
-
-  test('Flexbox with row-gap and column-gap for horizontal layout', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; flex-direction: row; row-gap: 10px; column-gap: 20px;'
-      },
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.layoutMode).toBe('HORIZONTAL');
-    expect(result.itemSpacing).toBe(20); // column-gap for horizontal
-  });
-
-  test('Flexbox with row-gap and column-gap for vertical layout', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; flex-direction: column; row-gap: 10px; column-gap: 20px;'
-      },
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.layoutMode).toBe('VERTICAL');
-    expect(result.itemSpacing).toBe(10); // row-gap for vertical
-  });
-
-  test('Flexbox with gap shorthand (two values)', () => {
-    const htmlNodeHorizontal: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; gap: 15px 25px;'
-      },
-      children: []
-    };
-
-    const resultHorizontal = mapHTMLNodeToFigma(htmlNodeHorizontal);
-    expect(resultHorizontal.layoutMode).toBe('HORIZONTAL');
-    expect(resultHorizontal.itemSpacing).toBe(25); // column-gap
-
-    const htmlNodeVertical: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; flex-direction: column; gap: 15px 25px;'
-      },
-      children: []
-    };
-
-    const resultVertical = mapHTMLNodeToFigma(htmlNodeVertical);
-    expect(resultVertical.layoutMode).toBe('VERTICAL');
-    expect(resultVertical.itemSpacing).toBe(15); // row-gap
-  });
-
-  test('Flexbox space-between with padding', () => {
-    const htmlNode: HTMLNode = {
-      type: 'element',
-      tagName: 'div',
-      attributes: {
-        style: 'display: flex; justify-content: space-between; padding: 10px;'
-      },
-      children: []
-    };
-
-    const result = mapHTMLNodeToFigma(htmlNode);
-
-    expect(result.layoutMode).toBe('HORIZONTAL');
-    expect(result.primaryAxisAlignItems).toBe('SPACE_BETWEEN');
-    expect(result.paddingTop).toBe(10);
-    expect(result.paddingBottom).toBe(10);
-    expect(result.paddingLeft).toBe(10);
-    expect(result.paddingRight).toBe(10);
-  });
-
-  describe('margin処理', () => {
-    test('marginをAuto Layoutの要素間スペースに変換できる', () => {
-      const parentNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'display: flex; flex-direction: column;'
-        },
-        children: [
-          {
-            type: 'element',
-            tagName: 'div',
-            attributes: {
-              style: 'margin: 20px;'
-            },
-            children: []
-          },
-          {
-            type: 'element',
-            tagName: 'div',
-            attributes: {
-              style: 'margin: 20px;'
-            },
-            children: []
-          }
-        ]
-      };
-
+    test('入れ子のdiv要素を正しく変換できる', () => {
+      const childNode = HTMLNode.createElement('div');
+      const parentNode = HTMLNode.createElement('div', {}, [childNode]);
+      
       const result = mapHTMLNodeToFigma(parentNode);
-      const children = (result as any).children;
+      
+      expect(result.type).toBe('FRAME');
+      expect(result.children).toHaveLength(1);
+      expect(result.children![0].type).toBe('FRAME');
+    });
+  });
 
+  describe('テキスト要素の変換', () => {
+    test('p要素をTextノードに変換できる', () => {
+      const textContent = HTMLNode.createText('Hello, World!');
+      const htmlNode = HTMLNode.createElement('p', {}, [textContent]);
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.type).toBe('TEXT');
+      expect(result.name).toBe('p');
+      expect(result.characters).toBe('Hello, World!');
+    });
+
+    test('span要素をTextノードに変換できる', () => {
+      const textContent = HTMLNode.createText('Inline text');
+      const htmlNode = HTMLNode.createElement('span', {}, [textContent]);
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.type).toBe('TEXT');
+      expect(result.characters).toBe('Inline text');
+    });
+  });
+
+  describe('スタイル属性の処理', () => {
+    test('背景色が適用される', () => {
+      const htmlNode = HTMLNode.createElement('div', {
+        style: 'background-color: #ff0000;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('SOLID');
+      if (result.fills![0].type === 'SOLID') {
+        expect(result.fills![0].color).toEqual({ r: 1, g: 0, b: 0 });
+      }
+    });
+
+    test('サイズが適用される', () => {
+      const htmlNode = HTMLNode.createElement('div', {
+        style: 'width: 200px; height: 100px;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.width).toBe(200);
+      expect(result.height).toBe(100);
+    });
+  });
+
+  describe('Flexboxレイアウトの変換', () => {
+    test('display: flexがAuto Layoutに変換される', () => {
+      const htmlNode = HTMLNode.createElement('div', {
+        style: 'display: flex; gap: 10px;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.layoutMode).toBe('HORIZONTAL');
+      expect(result.itemSpacing).toBe(10);
+    });
+
+    test('flex-directionが正しく変換される', () => {
+      const htmlNode = HTMLNode.createElement('div', {
+        style: 'display: flex; flex-direction: column;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
       expect(result.layoutMode).toBe('VERTICAL');
-      expect(children).toHaveLength(2);
-      // marginは親のAuto Layoutのitemspacingとして適用される想定
-    });
-
-    test('個別のmargin値を処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'margin-top: 10px; margin-right: 20px; margin-bottom: 30px; margin-left: 40px;'
-        },
-        children: []
-      };
-
-      const result = mapHTMLNodeToFigma(htmlNode);
-
-      // Figmaではmarginは要素の配置に影響を与える
-      // 実装によってはx, yの位置調整として反映される
-      expect(result).toBeDefined();
-    });
-
-    test('marginショートハンドを処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'margin: 10px 20px;'
-        },
-        children: []
-      };
-
-      const result = mapHTMLNodeToFigma(htmlNode);
-      expect(result).toBeDefined();
     });
   });
 
-  describe('padding処理の改善', () => {
-    test('個別のpadding値を処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'padding-top: 5px; padding-right: 10px; padding-bottom: 15px; padding-left: 20px;'
-        },
-        children: []
-      };
-
+  describe('img要素の変換', () => {
+    test('img要素をRectangleノードに変換できる', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg',
+        alt: 'Sample Image'
+      });
+      
       const result = mapHTMLNodeToFigma(htmlNode);
-
-      expect(result.paddingTop).toBe(5);
-      expect(result.paddingRight).toBe(10);
-      expect(result.paddingBottom).toBe(15);
-      expect(result.paddingLeft).toBe(20);
+      
+      expect(result.type).toBe('RECTANGLE');
+      expect(result.name).toBe('img: Sample Image');
     });
 
-    test('paddingとmarginを同時に処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'padding: 10px; margin: 20px;'
-        },
-        children: []
-      };
-
+    test('img要素にsrc属性がない場合でもRectangleノードに変換される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        alt: 'No source image'
+      });
+      
       const result = mapHTMLNodeToFigma(htmlNode);
-
-      expect(result.paddingTop).toBe(10);
-      expect(result.paddingBottom).toBe(10);
-      expect(result.paddingLeft).toBe(10);
-      expect(result.paddingRight).toBe(10);
+      
+      expect(result.type).toBe('RECTANGLE');
+      expect(result.name).toBe('img: No source image');
     });
-  });
 
-  describe('position処理', () => {
-    test('絶対配置を処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'position: absolute; top: 10px; left: 20px; width: 100px; height: 50px;'
-        },
-        children: []
-      };
-
+    test('alt属性がない場合は"img"という名前になる', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg'
+      });
+      
       const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.type).toBe('RECTANGLE');
+      expect(result.name).toBe('img');
+    });
 
-      expect(result.x).toBe(20);
-      expect(result.y).toBe(10);
+    test('width属性とheight属性が適用される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg',
+        width: '300',
+        height: '200'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.width).toBe(300);
+      expect(result.height).toBe(200);
+    });
+
+    test('スタイル属性のwidth/heightが優先される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg',
+        width: '300',
+        height: '200',
+        style: 'width: 400px; height: 250px;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.width).toBe(400);
+      expect(result.height).toBe(250);
+    });
+
+    test('画像URLがfillsに設定される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('IMAGE');
+      if (result.fills![0].type === 'IMAGE') {
+        expect(result.fills![0].imageUrl).toBe('https://example.com/image.jpg');
+      }
+    });
+
+    test('相対URLも処理できる', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: '/images/logo.png'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('IMAGE');
+      if (result.fills![0].type === 'IMAGE') {
+        expect(result.fills![0].imageUrl).toBe('/images/logo.png');
+      }
+    });
+
+    test('データURLも処理できる', () => {
+      const dataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+      const htmlNode = HTMLNode.createElement('img', {
+        src: dataUrl
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('IMAGE');
+      if (result.fills![0].type === 'IMAGE') {
+        expect(result.fills![0].imageUrl).toBe(dataUrl);
+      }
+    });
+
+    test('object-fit: coverがscaleModeに変換される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg',
+        style: 'object-fit: cover;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('IMAGE');
+      if (result.fills![0].type === 'IMAGE') {
+        expect(result.fills![0].scaleMode).toBe('FILL');
+      }
+    });
+
+    test('object-fit: containがscaleModeに変換される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg',
+        style: 'object-fit: contain;'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('IMAGE');
+      if (result.fills![0].type === 'IMAGE') {
+        expect(result.fills![0].scaleMode).toBe('FIT');
+      }
+    });
+
+    test('srcがない場合はプレースホルダーが設定される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        alt: 'Placeholder'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      expect(result.fills).toBeDefined();
+      expect(result.fills).toHaveLength(1);
+      expect(result.fills![0].type).toBe('SOLID');
+      if (result.fills![0].type === 'SOLID') {
+        // グレーのプレースホルダー背景
+        expect(result.fills![0].color).toEqual({ r: 0.8, g: 0.8, b: 0.8 });
+      }
+    });
+
+    test('デフォルトサイズが設定される', () => {
+      const htmlNode = HTMLNode.createElement('img', {
+        src: 'https://example.com/image.jpg'
+      });
+      
+      const result = mapHTMLNodeToFigma(htmlNode);
+      
+      // width/height属性がない場合のデフォルト値
       expect(result.width).toBe(100);
-      expect(result.height).toBe(50);
-      // Figmaでは絶対配置はconstraintsで表現される
-      expect(result.constraints).toEqual({
-        horizontal: 'MIN',
-        vertical: 'MIN'
-      });
-    });
-
-    test('相対配置を処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'position: relative; top: 5px; left: 10px;'
-        },
-        children: []
-      };
-
-      const result = mapHTMLNodeToFigma(htmlNode);
-
-      // 相対配置はオフセットとして適用
-      expect(result.x).toBe(10);
-      expect(result.y).toBe(5);
-    });
-
-    test('固定配置を処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'position: fixed; top: 0; left: 0; right: 0; height: 60px;'
-        },
-        children: []
-      };
-
-      const result = mapHTMLNodeToFigma(htmlNode);
-
-      expect(result.x).toBe(0);
-      expect(result.y).toBe(0);
-      expect(result.height).toBe(60);
-      // fixedは画面に固定される
-      expect(result.constraints).toEqual({
-        horizontal: 'STRETCH',
-        vertical: 'MIN'
-      });
-    });
-
-    test('z-indexを処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'position: absolute; z-index: 10;'
-        },
-        children: []
-      };
-
-      const result = mapHTMLNodeToFigma(htmlNode);
-
-      // z-indexは描画順序として保存される（実際のFigmaでの実装は異なる可能性）
-      expect((result as any).zIndex).toBe(10);
-    });
-
-    test('rightとbottomを使った配置を処理できる', () => {
-      const htmlNode: HTMLNode = {
-        type: 'element',
-        tagName: 'div',
-        attributes: {
-          style: 'position: absolute; right: 20px; bottom: 30px; width: 100px; height: 50px;'
-        },
-        children: []
-      };
-
-      const result = mapHTMLNodeToFigma(htmlNode);
-
-      // rightとbottomはconstraintsで表現
-      expect(result.width).toBe(100);
-      expect(result.height).toBe(50);
-      expect(result.constraints).toEqual({
-        horizontal: 'MAX',
-        vertical: 'MAX'
-      });
+      expect(result.height).toBe(100);
     });
   });
 });

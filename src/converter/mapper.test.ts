@@ -172,7 +172,7 @@ describe('mapHTMLNodeToFigma', () => {
       expect(result.fills).toHaveLength(1);
       expect(result.fills![0].type).toBe('IMAGE');
       if (result.fills![0].type === 'IMAGE') {
-        expect(result.fills![0].imageHash).toBe('https://example.com/image.jpg');
+        expect(result.fills![0].imageUrl).toBe('https://example.com/image.jpg');
       }
     });
 
@@ -187,7 +187,7 @@ describe('mapHTMLNodeToFigma', () => {
       expect(result.fills).toHaveLength(1);
       expect(result.fills![0].type).toBe('IMAGE');
       if (result.fills![0].type === 'IMAGE') {
-        expect(result.fills![0].imageHash).toBe('/images/logo.png');
+        expect(result.fills![0].imageUrl).toBe('/images/logo.png');
       }
     });
 
@@ -203,7 +203,7 @@ describe('mapHTMLNodeToFigma', () => {
       expect(result.fills).toHaveLength(1);
       expect(result.fills![0].type).toBe('IMAGE');
       if (result.fills![0].type === 'IMAGE') {
-        expect(result.fills![0].imageHash).toBe(dataUrl);
+        expect(result.fills![0].imageUrl).toBe(dataUrl);
       }
     });
 

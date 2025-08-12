@@ -107,6 +107,7 @@ export interface ImagePaint extends BasePaint {
   type: typeof PAINT_TYPE.IMAGE;
   scaleMode: ScaleMode;
   imageHash?: string;
+  imageUrl?: string;  // URLも追加
   imageTransform?: Transform;
   scalingFactor?: number;
   rotation?: number; // degrees
@@ -165,10 +166,16 @@ export const Paint = {
     };
   },
 
-  image(imageHash: string, scaleMode: ScaleMode = SCALE_MODE.FILL): ImagePaint {
+  image(imageUrlOrHash: string, scaleMode: ScaleMode = SCALE_MODE.FILL): ImagePaint {
+    // URLかハッシュかを判別
+    const isUrl = imageUrlOrHash.startsWith('http') || 
+                  imageUrlOrHash.startsWith('data:') || 
+                  imageUrlOrHash.startsWith('/') ||
+                  imageUrlOrHash.includes('.');
+    
     return {
       type: PAINT_TYPE.IMAGE,
-      imageHash,
+      ...(isUrl ? { imageUrl: imageUrlOrHash } : { imageHash: imageUrlOrHash }),
       scaleMode,
       visible: true
     };

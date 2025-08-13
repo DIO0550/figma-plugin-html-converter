@@ -1,7 +1,7 @@
 /**
- * RGB色空間の定数
+ * RGB色空間の範囲
  */
-export const RGB_CONSTANTS = {
+export const RGB_RANGE = {
   /** RGB各チャンネルの最大値 */
   MAX_VALUE: 255,
   /** RGB各チャンネルの最小値 */
@@ -9,9 +9,9 @@ export const RGB_CONSTANTS = {
 } as const;
 
 /**
- * HSL色空間の定数
+ * HSL色空間の制限値
  */
-export const HSL_CONSTANTS = {
+export const HSL_LIMITS = {
   /** 色相の最大値（度） */
   HUE_MAX_DEGREES: 360,
   /** 彩度の最大値（パーセント） */
@@ -21,9 +21,9 @@ export const HSL_CONSTANTS = {
 } as const;
 
 /**
- * 16進数カラーコードの定数
+ * 16進数カラーコードのフォーマット
  */
-export const HEX_COLOR_CONSTANTS = {
+export const HEX_FORMAT = {
   /** 短縮形の長さ（例：#FFF） */
   SHORT_LENGTH: 3,
   /** 標準形の長さ（例：#FFFFFF） */
@@ -33,31 +33,17 @@ export const HEX_COLOR_CONSTANTS = {
 } as const;
 
 /**
- * 輝度計算の係数（ITU-R BT.709標準）
+ * 輝度計算の重み（ITU-R BT.709標準）
  */
-export const LUMINANCE_COEFFICIENTS = {
-  /** 赤成分の係数 */
+export const LUMINANCE_WEIGHTS = {
+  /** 赤成分の重み */
   RED: 0.299,
-  /** 緑成分の係数 */
+  /** 緑成分の重み */
   GREEN: 0.587,
-  /** 青成分の係数 */
+  /** 青成分の重み */
   BLUE: 0.114
 } as const;
 
-// 後方互換性のため、COLOR_CONVERSIONもエクスポート（非推奨）
-/** @deprecated 個別の定数（RGB_CONSTANTS, HSL_CONSTANTS等）を使用してください */
-export const COLOR_CONVERSION = {
-  RGB_MAX: RGB_CONSTANTS.MAX_VALUE,
-  HUE_MAX_DEGREES: HSL_CONSTANTS.HUE_MAX_DEGREES,
-  SATURATION_MAX_PERCENT: HSL_CONSTANTS.SATURATION_MAX,
-  LIGHTNESS_MAX_PERCENT: HSL_CONSTANTS.LIGHTNESS_MAX,
-  HEX_SHORT_LENGTH: HEX_COLOR_CONSTANTS.SHORT_LENGTH,
-  HEX_FULL_LENGTH: HEX_COLOR_CONSTANTS.FULL_LENGTH,
-  HEX_RADIX: HEX_COLOR_CONSTANTS.RADIX,
-  LUMINANCE_RED: LUMINANCE_COEFFICIENTS.RED,
-  LUMINANCE_GREEN: LUMINANCE_COEFFICIENTS.GREEN,
-  LUMINANCE_BLUE: LUMINANCE_COEFFICIENTS.BLUE
-} as const;
 
 /**
  * 数値比較の定数

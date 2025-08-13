@@ -3,6 +3,7 @@
  */
 
 import type { Brand } from '../../../types';
+import { NUMERIC_COMPARISON } from '../../constants';
 
 // CSSパーセンテージ値のブランド型
 export type CSSPercentage = Brand<number, 'CSSPercentage'>;
@@ -40,14 +41,14 @@ export const CSSPercentage = {
    * ピクセルに変換（親要素のサイズが必要）
    */
   toPixels(percentage: CSSPercentage, parentSize: number): number {
-    return (percentage as number) * parentSize / 100;
+    return (percentage as number) * parentSize / NUMERIC_COMPARISON.PERCENTAGE_DIVISOR;
   },
 
   /**
    * 0-1の範囲の比率に変換
    */
   toRatio(percentage: CSSPercentage): number {
-    return (percentage as number) / 100;
+    return (percentage as number) / NUMERIC_COMPARISON.PERCENTAGE_DIVISOR;
   },
 
   /**
@@ -61,14 +62,14 @@ export const CSSPercentage = {
    * 100%かどうかを判定
    */
   isFull(percentage: CSSPercentage): boolean {
-    return (percentage as number) === 100;
+    return (percentage as number) === NUMERIC_COMPARISON.FULL_PERCENTAGE;
   },
 
   /**
    * 50%かどうかを判定
    */
   isHalf(percentage: CSSPercentage): boolean {
-    return (percentage as number) === 50;
+    return (percentage as number) === NUMERIC_COMPARISON.HALF_PERCENTAGE;
   },
 
   /**
@@ -82,7 +83,7 @@ export const CSSPercentage = {
    * パーセンテージを小数に変換（0-1）
    */
   toDecimal(percentage: CSSPercentage): number {
-    return (percentage as number) / 100;
+    return (percentage as number) / NUMERIC_COMPARISON.PERCENTAGE_DIVISOR;
   },
 
   /**

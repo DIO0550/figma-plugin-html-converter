@@ -3,6 +3,7 @@
  */
 
 import type { Brand } from '../../../types';
+import { DEFAULT_VIEWPORT, NUMERIC_COMPARISON } from '../../constants';
 
 // CSS長さ値のブランド型
 export type CSSLength = Brand<{ value: number; unit: LengthUnit }, 'CSSLength'>;
@@ -46,9 +47,9 @@ export const CSSLength = {
   toPixels(length: CSSLength, context?: { viewportWidth?: number; viewportHeight?: number; fontSize?: number }): number {
     const { value, unit } = length as { value: number; unit: LengthUnit };
     const ctx = {
-      viewportWidth: context?.viewportWidth ?? 1920,
-      viewportHeight: context?.viewportHeight ?? 1080,
-      fontSize: context?.fontSize ?? 16
+      viewportWidth: context?.viewportWidth ?? DEFAULT_VIEWPORT.WIDTH,
+      viewportHeight: context?.viewportHeight ?? DEFAULT_VIEWPORT.HEIGHT,
+      fontSize: context?.fontSize ?? DEFAULT_VIEWPORT.FONT_SIZE
     };
 
     switch (unit) {
@@ -59,9 +60,9 @@ export const CSSLength = {
         // remもemも現在のコンテキストのfontSizeを使用（テスト互換性のため）
         return value * ctx.fontSize;
       case 'vh':
-        return value * (ctx.viewportHeight / 100);
+        return value * (ctx.viewportHeight / NUMERIC_COMPARISON.PERCENTAGE_DIVISOR);
       case 'vw':
-        return value * (ctx.viewportWidth / 100);
+        return value * (ctx.viewportWidth / NUMERIC_COMPARISON.PERCENTAGE_DIVISOR);
       default:
         return value;
     }

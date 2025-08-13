@@ -8,7 +8,14 @@ import type { ConversionOptions as ConversionOptionsType } from "./models/conver
 import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
 
-const DEFAULT_SPACING = 8;
+// レイアウト関連の定数
+const LAYOUT_CONFIG = {
+  DEFAULT_SPACING: 8,
+  DEFAULT_CONTAINER_WIDTH: 800,
+  DEFAULT_CONTAINER_HEIGHT: 600,
+  FULL_PERCENTAGE: 100,
+  HALF_PERCENTAGE: 50
+} as const;
 
 export function mapHTMLNodeToFigma(
   htmlNode: HTMLNode,
@@ -69,7 +76,7 @@ export function mapHTMLNodeToFigma(
     if (isListElement) {
       FigmaNode.setAutoLayout(nodeConfig, {
         mode: tagName === "li" ? "HORIZONTAL" : "VERTICAL",
-        spacing: normalizedOptions.spacing || DEFAULT_SPACING,
+        spacing: normalizedOptions.spacing || LAYOUT_CONFIG.DEFAULT_SPACING,
       });
     }
   }
@@ -185,14 +192,13 @@ export function mapHTMLNodeToFigma(
       if (typeof width === "number") {
         nodeConfig.width = width;
       } else if (width && typeof width === 'object' && width.unit === '%') {
-        if (width.value === 100) {
+        if (width.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
           nodeConfig.layoutSizingHorizontal = 'FILL';
-        } else if (width.value === 50) {
+        } else if (width.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
           nodeConfig.layoutSizingHorizontal = 'FILL';
         } else {
           nodeConfig.layoutSizingHorizontal = 'FIXED';
-          // デフォルト幅800pxと仮定して計算
-          nodeConfig.width = 800 * (width.value / 100);
+          nodeConfig.width = LAYOUT_CONFIG.DEFAULT_CONTAINER_WIDTH * (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
         }
       }
 
@@ -200,14 +206,13 @@ export function mapHTMLNodeToFigma(
       if (typeof height === "number") {
         nodeConfig.height = height;
       } else if (height && typeof height === 'object' && height.unit === '%') {
-        if (height.value === 100) {
+        if (height.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
           nodeConfig.layoutSizingVertical = 'FILL';
-        } else if (height.value === 50) {
-          // デフォルト高さ600pxと仮定
-          nodeConfig.height = 600 * 0.5;
+        } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
+          nodeConfig.height = LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT * (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);
         } else {
           nodeConfig.layoutSizingVertical = 'FIXED';
-          nodeConfig.height = 600 * (height.value / 100);
+          nodeConfig.height = LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT * (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
         }
       } else if (height === null && styles.height === 'auto') {
         nodeConfig.layoutSizingVertical = 'HUG';

@@ -1,5 +1,30 @@
 import type { Brand } from '../../../types';
 
+// 色変換定数
+const COLOR_CONSTANTS = {
+  RGB_MAX_VALUE: 255,
+  HUE_MAX_DEGREES: 360,
+  SATURATION_MAX_PERCENT: 100,
+  LIGHTNESS_MAX_PERCENT: 100,
+  HEX_SHORT_LENGTH: 3,
+  HEX_FULL_LENGTH: 6,
+  HEX_RADIX: 16,
+  // 輝度計算の標準係数（ITU-R BT.709）
+  LUMINANCE_RED_COEFFICIENT: 0.299,
+  LUMINANCE_GREEN_COEFFICIENT: 0.587,
+  LUMINANCE_BLUE_COEFFICIENT: 0.114,
+  // 比較許容誤差
+  DEFAULT_TOLERANCE: 0.001,
+  // HSL変換定数
+  HUE_SEGMENT: 1/6,
+  HUE_HALF: 1/2,
+  HUE_TWO_THIRDS: 2/3,
+  HUE_THIRD: 1/3,
+  HUE_DIVISION: 6,
+  LIGHTNESS_HALF: 0.5,
+  MIX_DEFAULT_WEIGHT: 0.5
+} as const;
+
 // RGB色の型定義（0-1の範囲）
 export interface RGB {
   r: number; // 0-1
@@ -55,9 +80,9 @@ export const Colors = {
   // RGB値を作成（0-255の値から0-1に変換）
   rgb(r: number, g: number, b: number): RGB {
     return {
-      r: clamp(r / 255, 0, 1),
-      g: clamp(g / 255, 0, 1),
-      b: clamp(b / 255, 0, 1)
+      r: clamp(r / COLOR_CONSTANTS.RGB_MAX_VALUE, 0, 1),
+      g: clamp(g / COLOR_CONSTANTS.RGB_MAX_VALUE, 0, 1),
+      b: clamp(b / COLOR_CONSTANTS.RGB_MAX_VALUE, 0, 1)
     };
   },
 
@@ -74,15 +99,15 @@ export const Colors = {
     let cleanHex = hex.replace('#', '');
 
     // 3桁の場合は6桁に展開
-    if (cleanHex.length === 3) {
+    if (cleanHex.length === COLOR_CONSTANTS.HEX_SHORT_LENGTH) {
       cleanHex = cleanHex.split('').map(c => c + c).join('');
     }
 
-    if (cleanHex.length !== 6) return null;
+    if (cleanHex.length !== COLOR_CONSTANTS.HEX_FULL_LENGTH) return null;
 
-    const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
-    const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
-    const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+    const r = parseInt(cleanHex.substring(0, 2), COLOR_CONSTANTS.HEX_RADIX) / COLOR_CONSTANTS.RGB_MAX_VALUE;
+    const g = parseInt(cleanHex.substring(2, 4), COLOR_CONSTANTS.HEX_RADIX) / COLOR_CONSTANTS.RGB_MAX_VALUE;
+    const b = parseInt(cleanHex.substring(4, 6), COLOR_CONSTANTS.HEX_RADIX) / COLOR_CONSTANTS.RGB_MAX_VALUE;
 
     return { r, g, b };
   },
@@ -90,7 +115,7 @@ export const Colors = {
   // RGBから16進数カラーに変換
   toHex(color: RGB): HexColor {
     const toHexPart = (value: number) => {
-      const hex = Math.round(value * 255).toString(16);
+      const hex = Math.round(value * COLOR_CONSTANTS.RGB_MAX_VALUE).toString(COLOR_CONSTANTS.HEX_RADIX);
       return hex.length === 1 ? '0' + hex : hex;
     };
 
@@ -172,17 +197,17 @@ export const Colors = {
     }
 
     return {
-      h: Math.round(h * 360),
-      s: Math.round(s * 100),
-      l: Math.round(l * 100)
+      h: Math.round(h * COLOR_CONSTANTS.HUE_MAX_DEGREES),
+      s: Math.round(s * COLOR_CONSTANTS.SATURATION_MAX_PERCENT),
+      l: Math.round(l * COLOR_CONSTANTS.LIGHTNESS_MAX_PERCENT)
     };
   },
 
   // HSLからRGBに変換
   fromHsl(hsl: HSL): RGB {
-    const h = hsl.h / 360;
-    const s = hsl.s / 100;
-    const l = hsl.l / 100;
+    const h = hsl.h / COLOR_CONSTANTS.HUE_MAX_DEGREES;
+    const s = hsl.s / COLOR_CONSTANTS.SATURATION_MAX_PERCENT;
+    const l = hsl.l / COLOR_CONSTANTS.LIGHTNESS_MAX_PERCENT;
 
     let r, g, b;
 
@@ -192,18 +217,18 @@ export const Colors = {
       const hue2rgb = (p: number, q: number, t: number) => {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
-        if (t < 1/6) return p + (q - p) * 6 * t;
-        if (t < 1/2) return q;
-        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        if (t < COLOR_CONSTANTS.HUE_SEGMENT) return p + (q - p) * COLOR_CONSTANTS.HUE_DIVISION * t;
+        if (t < COLOR_CONSTANTS.HUE_HALF) return q;
+        if (t < COLOR_CONSTANTS.HUE_TWO_THIRDS) return p + (q - p) * (COLOR_CONSTANTS.HUE_TWO_THIRDS - t) * COLOR_CONSTANTS.HUE_DIVISION;
         return p;
       };
 
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const q = l < COLOR_CONSTANTS.LIGHTNESS_HALF ? l * (1 + s) : l + s - l * s;
       const p = 2 * l - q;
 
-      r = hue2rgb(p, q, h + 1/3);
+      r = hue2rgb(p, q, h + COLOR_CONSTANTS.HUE_THIRD);
       g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1/3);
+      b = hue2rgb(p, q, h - COLOR_CONSTANTS.HUE_THIRD);
     }
 
     return { r, g, b };
@@ -212,7 +237,7 @@ export const Colors = {
   // 色の明度を調整
   lighten(color: RGB, amount: number): RGB {
     const hsl = Colors.toHsl(color);
-    hsl.l = Math.min(100, hsl.l + amount);
+    hsl.l = Math.min(COLOR_CONSTANTS.LIGHTNESS_MAX_PERCENT, hsl.l + amount);
     return Colors.fromHsl(hsl);
   },
 
@@ -226,7 +251,7 @@ export const Colors = {
   // 色の彩度を調整
   saturate(color: RGB, amount: number): RGB {
     const hsl = Colors.toHsl(color);
-    hsl.s = Math.min(100, hsl.s + amount);
+    hsl.s = Math.min(COLOR_CONSTANTS.SATURATION_MAX_PERCENT, hsl.s + amount);
     return Colors.fromHsl(hsl);
   },
 
@@ -239,7 +264,9 @@ export const Colors = {
 
   // グレースケールに変換
   grayscale(color: RGB): RGB {
-    const gray = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
+    const gray = color.r * COLOR_CONSTANTS.LUMINANCE_RED_COEFFICIENT + 
+                  color.g * COLOR_CONSTANTS.LUMINANCE_GREEN_COEFFICIENT + 
+                  color.b * COLOR_CONSTANTS.LUMINANCE_BLUE_COEFFICIENT;
     return { r: gray, g: gray, b: gray };
   },
 
@@ -253,7 +280,7 @@ export const Colors = {
   },
 
   // 2色を混合
-  mix(color1: RGB, color2: RGB, weight: number = 0.5): RGB {
+  mix(color1: RGB, color2: RGB, weight: number = COLOR_CONSTANTS.MIX_DEFAULT_WEIGHT): RGB {
     const w = clamp(weight, 0, 1);
     return {
       r: color1.r * (1 - w) + color2.r * w,
@@ -263,7 +290,7 @@ export const Colors = {
   },
 
   // 色が等しいか判定
-  equals(color1: RGB, color2: RGB, tolerance: number = 0.001): boolean {
+  equals(color1: RGB, color2: RGB, tolerance: number = COLOR_CONSTANTS.DEFAULT_TOLERANCE): boolean {
     return Math.abs(color1.r - color2.r) < tolerance &&
            Math.abs(color1.g - color2.g) < tolerance &&
            Math.abs(color1.b - color2.b) < tolerance;

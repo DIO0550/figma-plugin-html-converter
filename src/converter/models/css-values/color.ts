@@ -5,7 +5,8 @@
 import type { Brand } from '../../../types';
 import type { RGB } from '../colors';
 import { Colors } from '../colors';
-import { COLOR_CONVERSION, NUMERIC_COMPARISON } from '../../constants';
+import { RGB_CONSTANTS, HEX_COLOR_CONSTANTS } from '../../constants/color-constants';
+import { NUMERIC_COMPARISON } from '../../constants';
 
 // CSS色値のブランド型
 export type CSSColor = Brand<RGB, 'CSSColor'>;
@@ -27,9 +28,9 @@ export const CSSColor = {
   fromRGB(rgb: { r: number; g: number; b: number }): CSSColor {
     // RGB値を0-255の範囲から0-1に変換
     const normalized = {
-      r: Math.max(0, Math.min(COLOR_CONVERSION.RGB_MAX, rgb.r)) / COLOR_CONVERSION.RGB_MAX,
-      g: Math.max(0, Math.min(COLOR_CONVERSION.RGB_MAX, rgb.g)) / COLOR_CONVERSION.RGB_MAX,
-      b: Math.max(0, Math.min(COLOR_CONVERSION.RGB_MAX, rgb.b)) / COLOR_CONVERSION.RGB_MAX
+      r: Math.max(0, Math.min(RGB_CONSTANTS.MAX_VALUE, rgb.r)) / RGB_CONSTANTS.MAX_VALUE,
+      g: Math.max(0, Math.min(RGB_CONSTANTS.MAX_VALUE, rgb.g)) / RGB_CONSTANTS.MAX_VALUE,
+      b: Math.max(0, Math.min(RGB_CONSTANTS.MAX_VALUE, rgb.b)) / RGB_CONSTANTS.MAX_VALUE
     };
     return CSSColor.from(normalized);
   },
@@ -48,7 +49,7 @@ export const CSSColor = {
         const g = parseInt(match[2]);
         const b = parseInt(match[3]);
         // 範囲外の値はnullを返す
-        if (r < 0 || r > COLOR_CONVERSION.RGB_MAX || g < 0 || g > COLOR_CONVERSION.RGB_MAX || b < 0 || b > COLOR_CONVERSION.RGB_MAX) {
+        if (r < 0 || r > RGB_CONSTANTS.MAX_VALUE || g < 0 || g > RGB_CONSTANTS.MAX_VALUE || b < 0 || b > RGB_CONSTANTS.MAX_VALUE) {
           return null;
         }
       }
@@ -77,9 +78,9 @@ export const CSSColor = {
   toRGB(color: CSSColor): { r: number; g: number; b: number } {
     const rgb = color as RGB;
     return {
-      r: Math.round(rgb.r * COLOR_CONVERSION.RGB_MAX),
-      g: Math.round(rgb.g * COLOR_CONVERSION.RGB_MAX),
-      b: Math.round(rgb.b * COLOR_CONVERSION.RGB_MAX)
+      r: Math.round(rgb.r * RGB_CONSTANTS.MAX_VALUE),
+      g: Math.round(rgb.g * RGB_CONSTANTS.MAX_VALUE),
+      b: Math.round(rgb.b * RGB_CONSTANTS.MAX_VALUE)
     };
   },
 
@@ -94,21 +95,21 @@ export const CSSColor = {
    * 赤成分を取得（0-255）
    */
   getRed(color: CSSColor): number {
-    return Math.round((color as RGB).r * COLOR_CONVERSION.RGB_MAX);
+    return Math.round((color as RGB).r * RGB_CONSTANTS.MAX_VALUE);
   },
 
   /**
    * 緑成分を取得（0-255）
    */
   getGreen(color: CSSColor): number {
-    return Math.round((color as RGB).g * COLOR_CONVERSION.RGB_MAX);
+    return Math.round((color as RGB).g * RGB_CONSTANTS.MAX_VALUE);
   },
 
   /**
    * 青成分を取得（0-255）
    */
   getBlue(color: CSSColor): number {
-    return Math.round((color as RGB).b * COLOR_CONVERSION.RGB_MAX);
+    return Math.round((color as RGB).b * RGB_CONSTANTS.MAX_VALUE);
   },
 
   /**
@@ -116,9 +117,9 @@ export const CSSColor = {
    */
   toHex(color: CSSColor): string {
     const rgb = color as RGB;
-    const r = Math.round(rgb.r * COLOR_CONVERSION.RGB_MAX).toString(COLOR_CONVERSION.HEX_RADIX).padStart(2, '0');
-    const g = Math.round(rgb.g * COLOR_CONVERSION.RGB_MAX).toString(COLOR_CONVERSION.HEX_RADIX).padStart(2, '0');
-    const b = Math.round(rgb.b * COLOR_CONVERSION.RGB_MAX).toString(COLOR_CONVERSION.HEX_RADIX).padStart(2, '0');
+    const r = Math.round(rgb.r * RGB_CONSTANTS.MAX_VALUE).toString(HEX_COLOR_CONSTANTS.RADIX).padStart(2, '0');
+    const g = Math.round(rgb.g * RGB_CONSTANTS.MAX_VALUE).toString(HEX_COLOR_CONSTANTS.RADIX).padStart(2, '0');
+    const b = Math.round(rgb.b * RGB_CONSTANTS.MAX_VALUE).toString(HEX_COLOR_CONSTANTS.RADIX).padStart(2, '0');
     return `#${r}${g}${b}`;
   },
 
@@ -127,9 +128,9 @@ export const CSSColor = {
    */
   toRGBString(color: CSSColor): string {
     const rgb = color as RGB;
-    const r = Math.round(rgb.r * COLOR_CONVERSION.RGB_MAX);
-    const g = Math.round(rgb.g * COLOR_CONVERSION.RGB_MAX);
-    const b = Math.round(rgb.b * COLOR_CONVERSION.RGB_MAX);
+    const r = Math.round(rgb.r * RGB_CONSTANTS.MAX_VALUE);
+    const g = Math.round(rgb.g * RGB_CONSTANTS.MAX_VALUE);
+    const b = Math.round(rgb.b * RGB_CONSTANTS.MAX_VALUE);
     return `rgb(${r}, ${g}, ${b})`;
   },
 

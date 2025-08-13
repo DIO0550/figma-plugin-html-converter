@@ -5,6 +5,7 @@
 import type { Brand } from '../../../types';
 import type { RGB } from '../colors';
 import { Colors } from '../colors';
+import { COLOR_CONVERSION, NUMERIC_COMPARISON } from '../../constants';
 
 // CSS色値のブランド型
 export type CSSColor = Brand<RGB, 'CSSColor'>;
@@ -26,9 +27,9 @@ export const CSSColor = {
   fromRGB(rgb: { r: number; g: number; b: number }): CSSColor {
     // RGB値を0-255の範囲から0-1に変換
     const normalized = {
-      r: Math.max(0, Math.min(255, rgb.r)) / 255,
-      g: Math.max(0, Math.min(255, rgb.g)) / 255,
-      b: Math.max(0, Math.min(255, rgb.b)) / 255
+      r: Math.max(0, Math.min(COLOR_CONVERSION.RGB_MAX, rgb.r)) / COLOR_CONVERSION.RGB_MAX,
+      g: Math.max(0, Math.min(COLOR_CONVERSION.RGB_MAX, rgb.g)) / COLOR_CONVERSION.RGB_MAX,
+      b: Math.max(0, Math.min(COLOR_CONVERSION.RGB_MAX, rgb.b)) / COLOR_CONVERSION.RGB_MAX
     };
     return CSSColor.from(normalized);
   },
@@ -47,7 +48,7 @@ export const CSSColor = {
         const g = parseInt(match[2]);
         const b = parseInt(match[3]);
         // 範囲外の値はnullを返す
-        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+        if (r < 0 || r > COLOR_CONVERSION.RGB_MAX || g < 0 || g > COLOR_CONVERSION.RGB_MAX || b < 0 || b > COLOR_CONVERSION.RGB_MAX) {
           return null;
         }
       }
@@ -76,9 +77,9 @@ export const CSSColor = {
   toRGB(color: CSSColor): { r: number; g: number; b: number } {
     const rgb = color as RGB;
     return {
-      r: Math.round(rgb.r * 255),
-      g: Math.round(rgb.g * 255),
-      b: Math.round(rgb.b * 255)
+      r: Math.round(rgb.r * COLOR_CONVERSION.RGB_MAX),
+      g: Math.round(rgb.g * COLOR_CONVERSION.RGB_MAX),
+      b: Math.round(rgb.b * COLOR_CONVERSION.RGB_MAX)
     };
   },
 
@@ -93,21 +94,21 @@ export const CSSColor = {
    * 赤成分を取得（0-255）
    */
   getRed(color: CSSColor): number {
-    return Math.round((color as RGB).r * 255);
+    return Math.round((color as RGB).r * COLOR_CONVERSION.RGB_MAX);
   },
 
   /**
    * 緑成分を取得（0-255）
    */
   getGreen(color: CSSColor): number {
-    return Math.round((color as RGB).g * 255);
+    return Math.round((color as RGB).g * COLOR_CONVERSION.RGB_MAX);
   },
 
   /**
    * 青成分を取得（0-255）
    */
   getBlue(color: CSSColor): number {
-    return Math.round((color as RGB).b * 255);
+    return Math.round((color as RGB).b * COLOR_CONVERSION.RGB_MAX);
   },
 
   /**
@@ -115,9 +116,9 @@ export const CSSColor = {
    */
   toHex(color: CSSColor): string {
     const rgb = color as RGB;
-    const r = Math.round(rgb.r * 255).toString(16).padStart(2, '0');
-    const g = Math.round(rgb.g * 255).toString(16).padStart(2, '0');
-    const b = Math.round(rgb.b * 255).toString(16).padStart(2, '0');
+    const r = Math.round(rgb.r * COLOR_CONVERSION.RGB_MAX).toString(COLOR_CONVERSION.HEX_RADIX).padStart(2, '0');
+    const g = Math.round(rgb.g * COLOR_CONVERSION.RGB_MAX).toString(COLOR_CONVERSION.HEX_RADIX).padStart(2, '0');
+    const b = Math.round(rgb.b * COLOR_CONVERSION.RGB_MAX).toString(COLOR_CONVERSION.HEX_RADIX).padStart(2, '0');
     return `#${r}${g}${b}`;
   },
 
@@ -126,9 +127,9 @@ export const CSSColor = {
    */
   toRGBString(color: CSSColor): string {
     const rgb = color as RGB;
-    const r = Math.round(rgb.r * 255);
-    const g = Math.round(rgb.g * 255);
-    const b = Math.round(rgb.b * 255);
+    const r = Math.round(rgb.r * COLOR_CONVERSION.RGB_MAX);
+    const g = Math.round(rgb.g * COLOR_CONVERSION.RGB_MAX);
+    const b = Math.round(rgb.b * COLOR_CONVERSION.RGB_MAX);
     return `rgb(${r}, ${g}, ${b})`;
   },
 
@@ -139,10 +140,9 @@ export const CSSColor = {
     const aRGB = a as RGB;
     const bRGB = b as RGB;
     // 浮動小数点の誤差を考慮
-    const epsilon = 0.001;
-    return Math.abs(aRGB.r - bRGB.r) < epsilon &&
-           Math.abs(aRGB.g - bRGB.g) < epsilon &&
-           Math.abs(aRGB.b - bRGB.b) < epsilon;
+    return Math.abs(aRGB.r - bRGB.r) < NUMERIC_COMPARISON.EPSILON &&
+           Math.abs(aRGB.g - bRGB.g) < NUMERIC_COMPARISON.EPSILON &&
+           Math.abs(aRGB.b - bRGB.b) < NUMERIC_COMPARISON.EPSILON;
   },
 
   /**
@@ -150,8 +150,9 @@ export const CSSColor = {
    */
   isBlack(color: CSSColor): boolean {
     const rgb = color as RGB;
-    const epsilon = 0.001;
-    return rgb.r < epsilon && rgb.g < epsilon && rgb.b < epsilon;
+    return rgb.r < NUMERIC_COMPARISON.EPSILON && 
+           rgb.g < NUMERIC_COMPARISON.EPSILON && 
+           rgb.b < NUMERIC_COMPARISON.EPSILON;
   },
 
   /**
@@ -159,8 +160,9 @@ export const CSSColor = {
    */
   isWhite(color: CSSColor): boolean {
     const rgb = color as RGB;
-    const epsilon = 0.001;
-    return Math.abs(rgb.r - 1) < epsilon && Math.abs(rgb.g - 1) < epsilon && Math.abs(rgb.b - 1) < epsilon;
+    return Math.abs(rgb.r - 1) < NUMERIC_COMPARISON.EPSILON && 
+           Math.abs(rgb.g - 1) < NUMERIC_COMPARISON.EPSILON && 
+           Math.abs(rgb.b - 1) < NUMERIC_COMPARISON.EPSILON;
   },
 
   /**

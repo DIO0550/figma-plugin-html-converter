@@ -108,7 +108,6 @@ export const ImgElement = {
       return [Paint.image(src!)];
     }
     
-    // プレースホルダー
     return [Paint.solid(DEFAULT_PLACEHOLDER_COLOR)];
   },
 

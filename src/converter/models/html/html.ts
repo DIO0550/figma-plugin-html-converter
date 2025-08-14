@@ -28,6 +28,16 @@ export const HTML = {
     return value as HTML;
   },
 
+  // HTML文字列が空かどうかをチェック
+  isEmpty(html: HTML | string): boolean {
+    return !html || !html.trim();
+  },
+
+  // HTML文字列を正規化（トリミング）
+  normalize(html: HTML | string): string {
+    return html.trim();
+  },
+
   // 基本的なバリデーション
   isValid(value: string): boolean {
     if (!value.trim()) return true; // 空文字列は有効
@@ -77,10 +87,10 @@ export const HTML = {
 
 // 内部パース関数
 function parseHTMLString(html: string): HTMLNode {
-  const trimmed = html.trim();
+  const trimmed = HTML.normalize(html);
   
   // 空のHTMLの場合
-  if (!trimmed) {
+  if (HTML.isEmpty(trimmed)) {
     return {
       type: NODE_TYPE.ELEMENT,
       tagName: NODE_TYPE.ROOT,

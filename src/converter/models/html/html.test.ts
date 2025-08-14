@@ -15,6 +15,39 @@ describe('HTML', () => {
     });
   });
 
+  describe('isEmpty', () => {
+    test('空文字列を判定できる', () => {
+      expect(HTML.isEmpty('')).toBe(true);
+      expect(HTML.isEmpty('   ')).toBe(true);
+      expect(HTML.isEmpty('\t\n')).toBe(true);
+    });
+
+    test('内容がある文字列を判定できる', () => {
+      expect(HTML.isEmpty('<div>Hello</div>')).toBe(false);
+      expect(HTML.isEmpty('Hello')).toBe(false);
+      expect(HTML.isEmpty('  <p>Text</p>  ')).toBe(false);
+    });
+
+    test('HTML型でも動作する', () => {
+      const emptyHtml = HTML.from('');
+      const contentHtml = HTML.from('<div>Content</div>');
+      expect(HTML.isEmpty(emptyHtml)).toBe(true);
+      expect(HTML.isEmpty(contentHtml)).toBe(false);
+    });
+  });
+
+  describe('normalize', () => {
+    test('前後の空白を削除する', () => {
+      expect(HTML.normalize('  <div>Hello</div>  ')).toBe('<div>Hello</div>');
+      expect(HTML.normalize('\n\t<p>Text</p>\n\t')).toBe('<p>Text</p>');
+    });
+
+    test('HTML型でも動作する', () => {
+      const html = HTML.from('  <div>Hello</div>  ');
+      expect(HTML.normalize(html)).toBe('<div>Hello</div>');
+    });
+  });
+
   describe('isValid', () => {
     test('有効なHTMLを判定できる', () => {
       expect(HTML.isValid('<div>Hello</div>')).toBe(true);

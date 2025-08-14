@@ -12,7 +12,7 @@ export async function convertHTMLToFigma(
   const normalizedOptions = ConversionOptions.from(options);
   
   // 空のHTMLの場合はデフォルトのフレームを返す
-  if (!html || !html.trim()) {
+  if (HTML.isEmpty(html)) {
     return {
       type: 'FRAME',
       name: 'Root',

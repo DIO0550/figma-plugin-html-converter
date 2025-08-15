@@ -100,6 +100,9 @@ export const Colors = {
     }
 
     if (cleanHex.length !== HEX_FORMAT.FULL_LENGTH) return null;
+    
+    // 16進数として有効な文字のみ含まれているかチェック
+    if (!/^[0-9A-Fa-f]+$/.test(cleanHex)) return null;
 
     const r = parseInt(cleanHex.substring(0, 2), HEX_FORMAT.RADIX) / RGB_RANGE.MAX_VALUE;
     const g = parseInt(cleanHex.substring(2, 4), HEX_FORMAT.RADIX) / RGB_RANGE.MAX_VALUE;
@@ -121,7 +124,7 @@ export const Colors = {
 
   // rgb()またはrgba()関数文字列からRGBに変換
   fromRgbString(rgbString: string): RGB | null {
-    const match = rgbString.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*[\d.]+)?\s*\)/);
+    const match = rgbString.match(/rgba?\s*\(\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*(?:,\s*[\d.]+)?\s*\)/);
     if (!match) return null;
 
     return Colors.rgb(
@@ -287,9 +290,9 @@ export const Colors = {
 
   // 色が等しいか判定
   equals(color1: RGB, color2: RGB, tolerance: number = DEFAULT_TOLERANCE): boolean {
-    return Math.abs(color1.r - color2.r) < tolerance &&
-           Math.abs(color1.g - color2.g) < tolerance &&
-           Math.abs(color1.b - color2.b) < tolerance;
+    return Math.abs(color1.r - color2.r) <= tolerance &&
+           Math.abs(color1.g - color2.g) <= tolerance &&
+           Math.abs(color1.b - color2.b) <= tolerance;
   }
 };
 

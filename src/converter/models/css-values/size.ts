@@ -5,7 +5,7 @@
 import type { Brand } from '../../../types';
 import { CSSLength } from './length';
 import { CSSPercentage } from './percentage';
-import { CalcExpression, Calc } from './calc';
+import { Calc } from './calc';
 
 // サイズ値の種類（数値も含む - ピクセル値として扱う）
 export type CSSSizeValue = CSSLength | CSSPercentage | number | 'auto' | 'inherit' | 'initial';
@@ -22,8 +22,8 @@ function isCSSLength(value: unknown): value is CSSLength {
          value !== null && 
          'value' in value && 
          'unit' in value &&
-         typeof (value as any).value === 'number' &&
-         typeof (value as any).unit === 'string';
+         typeof (value as { value: unknown; unit: unknown }).value === 'number' &&
+         typeof (value as { value: unknown; unit: unknown }).unit === 'string';
 }
 
 function isCSSPercentage(value: unknown): value is CSSPercentage {

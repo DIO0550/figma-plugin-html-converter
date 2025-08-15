@@ -2,10 +2,7 @@
  * 既存のコードとの互換性のためのアダプター
  */
 
-import { CSSSize } from './size';
 import { CSSSpacing } from './spacing';
-import { CSSLength } from './length';
-import { CSSPercentage } from './percentage';
 import { CSSColor } from './color';
 import { Calc } from './calc';
 import type { SizeValue } from '../styles';

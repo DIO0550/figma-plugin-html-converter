@@ -4,7 +4,7 @@
 
 import type { Brand } from '../../../../types';
 import { CSSLength } from '../length';
-import { CalcExpression, Calc } from '../calc';
+import { Calc } from '../calc';
 
 // ピクセル単位で統一することで、異なる単位間の計算を簡略化し、
 // Figmaへの変換時の精度を保証する

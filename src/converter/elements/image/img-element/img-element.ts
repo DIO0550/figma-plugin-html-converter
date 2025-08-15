@@ -161,7 +161,7 @@ export const ImgElement = {
   },
 
   // 汎用的なHTMLNodeからの変換（後方互換性のため）
-  fromHTMLNode(node: any): ImgElement | null {
+  fromHTMLNode(node: unknown): ImgElement | null {
     if (!this.isImgElement(node)) {
       // HTMLNodeのような構造から変換を試みる
       if (
@@ -177,7 +177,7 @@ export const ImgElement = {
   },
 
   // マッピング関数（mapperから呼ばれる）
-  mapToFigma(node: any): FigmaNodeConfig | null {
+  mapToFigma(node: unknown): FigmaNodeConfig | null {
     const imgElement = this.fromHTMLNode(node);
     if (!imgElement) return null;
     

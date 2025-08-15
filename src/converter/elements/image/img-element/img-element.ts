@@ -165,11 +165,17 @@ export const ImgElement = {
     if (!this.isImgElement(node)) {
       // HTMLNodeのような構造から変換を試みる
       if (
-        node?.type === 'element' &&
-        node?.tagName === 'img' &&
-        node?.attributes
+        node !== null &&
+        typeof node === 'object' &&
+        'type' in node &&
+        'tagName' in node &&
+        'attributes' in node &&
+        node.type === 'element' &&
+        node.tagName === 'img' &&
+        typeof node.attributes === 'object' &&
+        node.attributes !== null
       ) {
-        return this.create(node.attributes);
+        return this.create(node.attributes as Record<string, string>);
       }
       return null;
     }

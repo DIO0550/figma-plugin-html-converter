@@ -47,9 +47,6 @@ describe('HTMLNode.from (パーサー統合テスト)', () => {
     expect(result.tagName).toBe('div');
     expect(result.attributes?.class).toBe('outer');
     
-    // デバッグ情報を出力
-    console.log('Result:', JSON.stringify(result, null, 2));
-    
     expect(result.children).toBeDefined();
     expect(result.children).toHaveLength(1);
     

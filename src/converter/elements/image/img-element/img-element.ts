@@ -161,15 +161,21 @@ export const ImgElement = {
   },
 
   // 汎用的なHTMLNodeからの変換（後方互換性のため）
-  fromHTMLNode(node: any): ImgElement | null {
+  fromHTMLNode(node: unknown): ImgElement | null {
     if (!this.isImgElement(node)) {
       // HTMLNodeのような構造から変換を試みる
       if (
-        node?.type === 'element' &&
-        node?.tagName === 'img' &&
-        node?.attributes
+        node !== null &&
+        typeof node === 'object' &&
+        'type' in node &&
+        'tagName' in node &&
+        'attributes' in node &&
+        node.type === 'element' &&
+        node.tagName === 'img' &&
+        typeof node.attributes === 'object' &&
+        node.attributes !== null
       ) {
-        return this.create(node.attributes);
+        return this.create(node.attributes as Record<string, string>);
       }
       return null;
     }
@@ -177,7 +183,7 @@ export const ImgElement = {
   },
 
   // マッピング関数（mapperから呼ばれる）
-  mapToFigma(node: any): FigmaNodeConfig | null {
+  mapToFigma(node: unknown): FigmaNodeConfig | null {
     const imgElement = this.fromHTMLNode(node);
     if (!imgElement) return null;
     

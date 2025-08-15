@@ -94,7 +94,7 @@ describe('ConversionOptions', () => {
 
     test('無効なcolorModeがfalseを返す', () => {
       const options: ConversionOptionsType = {
-        colorMode: 'invalid' as any
+        colorMode: 'invalid' as ConversionOptionsType['colorMode']
       };
       expect(ConversionOptions.validate(options)).toBe(false);
     });

@@ -185,7 +185,7 @@ export function mapHTMLNodeToFigma(
       const margin = Styles.getMargin(styles);
       if (margin) {
         // TODO: marginを親要素のAuto Layoutとして処理する実装を追加
-        (nodeConfig as any).margin = margin;
+        (nodeConfig as unknown as { margin: typeof margin }).margin = margin;
       }
 
       const width = Styles.getWidth(styles);
@@ -295,7 +295,7 @@ export function mapHTMLNodeToFigma(
     if (children.length > 0) {
       if (FigmaNode.isFrame(nodeConfig)) {
         // TODO: Figma APIでの子要素配置実装を追加
-        (nodeConfig as any).children = children;
+        (nodeConfig as unknown as { children: typeof children }).children = children;
 
         const displayStyle = htmlNode.attributes?.style ? Styles.parse(htmlNode.attributes.style) : null;
         const display = displayStyle ? Styles.get(displayStyle, 'display') : null;

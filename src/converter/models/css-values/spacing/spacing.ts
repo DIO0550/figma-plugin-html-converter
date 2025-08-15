@@ -2,14 +2,14 @@
  * CSSスペーシング値（margin, padding, gap）のモデル
  */
 
-import type { Brand } from '../../../types';
-import { CSSLength } from './length';
-import { CalcExpression, Calc } from './calc';
+import type { Brand } from '../../../../types';
+import { CSSLength } from '../length';
+import { Calc } from '../calc';
 
-// スペーシング値のブランド型（常にピクセルで保持）
+// ピクセル単位で統一することで、異なる単位間の計算を簡略化し、
+// Figmaへの変換時の精度を保証する
 export type CSSSpacing = Brand<number, 'CSSSpacing'>;
 
-// スペーシングのボックスモデル
 export interface SpacingBox {
   top: CSSSpacing;
   right: CSSSpacing;
@@ -22,7 +22,8 @@ export interface SpacingBox {
  */
 export const CSSSpacing = {
   /**
-   * calc()を含む値を安全に分割
+   * calc()内のスペースを保持しつつ、トップレベルのスペースで分割
+   * 例: "10px calc(100% - 20px)" → ["10px", "calc(100% - 20px)"]
    */
   splitValues(value: string): string[] {
     const result: string[] = [];
@@ -58,7 +59,9 @@ export const CSSSpacing = {
    * 数値（ピクセル）からCSSSpacing型を作成
    */
   from(pixels: number): CSSSpacing {
-    return Math.max(0, pixels) as CSSSpacing; // 負の値は0にクランプ
+    // CSS仕様では負のmargin以外のスペーシング値は無効となるため、
+    // Figmaでの表現上も0以上の値に正規化する
+    return Math.max(0, pixels) as CSSSpacing;
   },
 
   /**
@@ -67,7 +70,6 @@ export const CSSSpacing = {
   parse(str: string, context?: { viewportWidth?: number; viewportHeight?: number; fontSize?: number }): CSSSpacing | null {
     const trimmed = str.trim();
     
-    // calc()式の場合
     if (Calc.isValid(trimmed)) {
       const calc = Calc.from(trimmed);
       if (calc) {
@@ -76,14 +78,12 @@ export const CSSSpacing = {
       }
     }
     
-    // 通常の長さ値の場合
     const length = CSSLength.parse(trimmed);
     if (length) {
       const pixels = CSSLength.toPixels(length, context);
       return CSSSpacing.from(pixels);
     }
     
-    // 単位なしの数値の場合
     const num = parseFloat(trimmed);
     if (!isNaN(num)) {
       return CSSSpacing.from(num);
@@ -96,27 +96,24 @@ export const CSSSpacing = {
    * ショートハンド記法をパース（padding/margin用）
    */
   parseShorthand(str: string, context?: { viewportWidth?: number; viewportHeight?: number; fontSize?: number }): SpacingBox | null {
-    // calc()を含む値を安全に分割
     const parts = CSSSpacing.splitValues(str);
     const values = parts.map(p => {
       const trimmed = p.trim();
-      // 無効な値の場合はnullを返す
       if (trimmed === 'auto' || trimmed === 'inherit' || trimmed === 'initial') {
         return null;
       }
       return CSSSpacing.parse(p, context);
     });
     
-    // nullが含まれる場合はnullを返す
     if (values.some(v => v === null)) return null;
     
     const validValues = values as CSSSpacing[];
     if (validValues.length === 0) return null;
     
-    // CSS shorthand規則
+    // CSS shorthand構文に従って値を展開
+    // 1値: すべて同じ、2値: 上下/左右、3値: 上/左右/下、4値: 上/右/下/左
     switch (validValues.length) {
       case 1:
-        // すべて同じ値
         return {
           top: validValues[0],
           right: validValues[0],
@@ -124,7 +121,6 @@ export const CSSSpacing = {
           left: validValues[0]
         };
       case 2:
-        // 上下、左右
         return {
           top: validValues[0],
           right: validValues[1],
@@ -132,7 +128,6 @@ export const CSSSpacing = {
           left: validValues[1]
         };
       case 3:
-        // 上、左右、下
         return {
           top: validValues[0],
           right: validValues[1],
@@ -140,7 +135,6 @@ export const CSSSpacing = {
           left: validValues[1]
         };
       case 4:
-        // 上、右、下、左
         return {
           top: validValues[0],
           right: validValues[1],

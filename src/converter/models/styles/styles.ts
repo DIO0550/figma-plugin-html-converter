@@ -68,7 +68,6 @@ export const Styles = {
 
   // 特定のスタイルプロパティを削除
   remove(styles: Styles, property: string): Styles {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [property]: _, ...rest } = styles;
     return Styles.from(rest);
   },

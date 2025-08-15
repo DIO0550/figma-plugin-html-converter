@@ -45,7 +45,6 @@ export const Attributes = {
 
   // 特定の属性を削除
   remove(attributes: Attributes, key: string): Attributes {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [key]: _, ...rest } = attributes;
     return Attributes.from(rest);
   },

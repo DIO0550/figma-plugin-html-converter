@@ -3,7 +3,7 @@
  */
 
 import type { Brand } from '../../../types';
-import { DEFAULT_VIEWPORT, NUMERIC_COMPARISON } from '../../constants';
+import { DEFAULT_VIEWPORT, NUMERIC_COMPARISON } from '../../../constants';
 
 // CSS長さ値のブランド型
 export type CSSLength = Brand<{ value: number; unit: LengthUnit }, 'CSSLength'>;

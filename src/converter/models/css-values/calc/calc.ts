@@ -3,7 +3,7 @@
  */
 
 import type { Brand } from '../../../types';
-import { CSSLength } from './length';
+import { CSSLength } from '../length';
 
 // calc()式のブランド型
 export type CalcExpression = Brand<string, 'CalcExpression'>;

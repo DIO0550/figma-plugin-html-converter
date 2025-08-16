@@ -3,10 +3,10 @@
  */
 
 import type { Brand } from '../../../types';
-import type { RGB } from '../colors';
-import { Colors } from '../colors';
-import { RGB_RANGE, HEX_FORMAT } from '../../constants/color-constants';
-import { NUMERIC_COMPARISON } from '../../constants';
+import type { RGB } from '../../colors';
+import { Colors } from '../../colors';
+import { RGB_RANGE, HEX_FORMAT } from '../../../constants/color-constants';
+import { NUMERIC_COMPARISON } from '../../../constants';
 
 // CSS色値のブランド型
 export type CSSColor = Brand<RGB, 'CSSColor'>;

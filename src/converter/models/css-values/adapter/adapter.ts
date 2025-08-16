@@ -2,11 +2,11 @@
  * 既存のコードとの互換性のためのアダプター
  */
 
-import { CSSSpacing } from './spacing';
-import { CSSColor } from './color';
-import { Calc } from './calc';
-import type { SizeValue } from '../styles';
-import type { RGB } from '../colors';
+import { CSSSpacing } from '../spacing';
+import { CSSColor } from '../color';
+import { Calc } from '../calc';
+import type { SizeValue } from '../../styles';
+import type { RGB } from '../../colors';
 
 // デフォルトのコンテキスト
 const DEFAULT_CONTEXT = {

@@ -2,8 +2,8 @@
  * CSSパーセンテージ値のモデル
  */
 
-import type { Brand } from '../../../types';
-import { NUMERIC_COMPARISON } from '../../constants';
+import type { Brand } from '../../../../types';
+import { NUMERIC_COMPARISON } from '../../../constants';
 
 // CSSパーセンテージ値のブランド型
 export type CSSPercentage = Brand<number, 'CSSPercentage'>;

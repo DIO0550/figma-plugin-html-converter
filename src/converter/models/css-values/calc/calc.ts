@@ -2,7 +2,7 @@
  * CSS calc()式のモデルとパーサー
  */
 
-import type { Brand } from '../../../types';
+import type { Brand } from '../../../../types';
 import { CSSLength } from '../length';
 
 // calc()式のブランド型

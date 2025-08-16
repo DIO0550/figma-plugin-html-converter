@@ -2,7 +2,7 @@
  * CSS色値のモデル
  */
 
-import type { Brand } from '../../../types';
+import type { Brand } from '../../../../types';
 import type { RGB } from '../../colors';
 import { Colors } from '../../colors';
 import { RGB_RANGE, HEX_FORMAT } from '../../../constants/color-constants';

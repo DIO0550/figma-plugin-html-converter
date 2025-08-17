@@ -16,7 +16,8 @@ test('Flexbox.parsePadding: 個別のpadding値をパースできる', () => {
       paddingRight: 20,
       paddingBottom: 30,
       paddingLeft: 40
-  });
+    });
+});
 
 test('Flexbox.parsePadding: shorthand paddingを4値でパースできる', () => {
     const styles = Styles.from({
@@ -58,5 +59,4 @@ test('Flexbox.parsePadding: 単一値のshorthandを処理できる', () => {
       paddingBottom: 15,
       paddingLeft: 15
     });
-  });
 });

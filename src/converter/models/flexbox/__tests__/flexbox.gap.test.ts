@@ -11,7 +11,8 @@ test('Flexbox.parseGap: 単一のgap値をパースできる', () => {
     expect(gap).toEqual({
       rowGap: 10,
       columnGap: 10
-  });
+    });
+});
 
 test('Flexbox.parseGap: 2つのgap値をパースできる', () => {
     const styles = Styles.from({
@@ -60,5 +61,4 @@ test('Flexbox.parseGap: gapが指定されていない場合デフォルト値�
       rowGap: 0,
       columnGap: 0
     });
-  });
 });

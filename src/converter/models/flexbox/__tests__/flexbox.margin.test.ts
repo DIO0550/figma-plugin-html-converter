@@ -16,7 +16,8 @@ test('Flexbox.parseMargin: 個別のmargin値をパースできる', () => {
       marginRight: 20,
       marginBottom: 30,
       marginLeft: 40
-  });
+    });
+});
 
 test('Flexbox.parseMargin: 4値のshorthand marginをパースできる', () => {
     const styles = Styles.from({
@@ -84,5 +85,4 @@ test('Flexbox.parseMargin: 指定されていないmarginに対して0を返す'
       marginBottom: 0,
       marginLeft: 0
     });
-  });
 });

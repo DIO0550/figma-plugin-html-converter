@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { FigmaNode } from './figma-node';
+import { FigmaNode } from '../figma-node';
 
 test('setSize でサイズを設定できる', () => {
   const node = FigmaNode.createFrame('Frame');

@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { FigmaNode } from './figma-node';
+import { FigmaNode } from '../figma-node';
 
 test('isFrame がFrameノードを正しく判定する', () => {
   const frame = FigmaNode.createFrame('Container');

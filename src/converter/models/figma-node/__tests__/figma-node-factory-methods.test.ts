@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { FigmaNode } from './figma-node';
+import { FigmaNode } from '../figma-node';
 
 test('createFrame でFrameノードを作成できる', () => {
   const node = FigmaNode.createFrame('MyFrame', {

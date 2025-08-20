@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { test, expect } from 'vitest';
 import { DivElement } from '../div-element';
 
 // 型ガードのテスト（フラット構造）

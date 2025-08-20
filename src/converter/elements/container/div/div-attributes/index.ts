@@ -1,0 +1,1 @@
+export type { DivAttributes } from './div-attributes';

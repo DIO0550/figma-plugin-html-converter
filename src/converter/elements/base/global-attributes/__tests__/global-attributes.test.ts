@@ -76,6 +76,16 @@ describe('GlobalAttributes', () => {
     expect(attributes.accesskey).toBe('b');
   });
 
+  it('should support accessibility attributes with number type', () => {
+    const attributes: GlobalAttributes = {
+      tabindex: -1,
+      role: 'navigation'
+    };
+
+    expect(attributes.tabindex).toBe(-1);
+    expect(attributes.role).toBe('navigation');
+  });
+
   it('should support metadata attributes', () => {
     const attributes: GlobalAttributes = {
       hidden: 'true',
@@ -88,5 +98,29 @@ describe('GlobalAttributes', () => {
     expect(attributes.draggable).toBe('true');
     expect(attributes.contenteditable).toBe('true');
     expect(attributes.spellcheck).toBe('false');
+  });
+
+  it('should support metadata attributes with boolean type', () => {
+    const attributes: GlobalAttributes = {
+      hidden: true,
+      draggable: false,
+      contenteditable: 'inherit',
+      spellcheck: true
+    };
+
+    expect(attributes.hidden).toBe(true);
+    expect(attributes.draggable).toBe(false);
+    expect(attributes.contenteditable).toBe('inherit');
+    expect(attributes.spellcheck).toBe(true);
+  });
+
+  it('should support dir attribute with strict types', () => {
+    const ltrAttributes: GlobalAttributes = { dir: 'ltr' };
+    const rtlAttributes: GlobalAttributes = { dir: 'rtl' };
+    const autoAttributes: GlobalAttributes = { dir: 'auto' };
+
+    expect(ltrAttributes.dir).toBe('ltr');
+    expect(rtlAttributes.dir).toBe('rtl');
+    expect(autoAttributes.dir).toBe('auto');
   });
 });

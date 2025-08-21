@@ -12,20 +12,20 @@ export interface GlobalAttributes {
   
   // 言語・国際化
   lang?: string;
-  dir?: 'ltr' | 'rtl' | 'auto' | string;
+  dir?: 'ltr' | 'rtl' | 'auto';
   
   // アクセシビリティ
-  tabindex?: string;
+  tabindex?: string | number;
   role?: string;
   accesskey?: string;
   
   // コンテンツ編集
-  contenteditable?: string;
-  spellcheck?: string;
+  contenteditable?: boolean | 'true' | 'false' | 'inherit';
+  spellcheck?: boolean | 'true' | 'false';
   
   // 表示・動作
-  hidden?: string;
-  draggable?: string;
+  hidden?: boolean | '';
+  draggable?: boolean | 'true' | 'false' | 'auto';
   
   // データ属性（data-*）
   [key: `data-${string}`]: string | undefined;

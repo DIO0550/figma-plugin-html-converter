@@ -1,0 +1,1 @@
+export type { GlobalAttributes } from './global-attributes';

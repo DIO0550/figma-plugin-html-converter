@@ -1,0 +1,1 @@
+export type { BaseElement } from './base-element';

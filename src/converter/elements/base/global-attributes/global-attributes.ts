@@ -1,12 +1,12 @@
 /**
- * HTML要素の共通属性（グローバル属性）
- * 全てのHTML要素で使用可能な属性
- * @see https://developer.mozilla.org/ja/docs/Web/HTML/Global_attributes
+ * 基本的なグローバル属性の型定義
+ * 明示的に定義された属性のみを含む
  */
-export interface GlobalAttributes {
+export interface GlobalAttributesBase {
   // 基本属性
   id?: string;
   className?: string;
+  class?: string;  // classNameの代替
   style?: string;
   title?: string;
   
@@ -27,12 +27,6 @@ export interface GlobalAttributes {
   hidden?: boolean | '';
   draggable?: boolean | 'true' | 'false' | 'auto';
   
-  // データ属性（data-*）
-  [key: `data-${string}`]: string | undefined;
-  
-  // ARIA属性（aria-*）
-  [key: `aria-${string}`]: string | undefined;
-  
   // イベントハンドラ（on*）
   onclick?: string;
   onmouseover?: string;
@@ -49,7 +43,37 @@ export interface GlobalAttributes {
   onsubmit?: string;
   onload?: string;
   onerror?: string;
-  
-  // その他の属性も許可（any型で全ての値を受け入れる）
-  [key: string]: any;
 }
+
+/**
+ * データ属性の型定義
+ */
+export interface DataAttributes {
+  [key: `data-${string}`]: string | undefined;
+}
+
+/**
+ * ARIA属性の型定義
+ */
+export interface AriaAttributes {
+  [key: `aria-${string}`]: string | undefined;
+}
+
+/**
+ * カスタム属性の型定義
+ * 標準外の属性を許可するための型
+ */
+export interface CustomAttributes {
+  [key: string]: string | number | boolean | undefined | null;
+}
+
+/**
+ * HTML要素の共通属性（グローバル属性）
+ * 全てのHTML要素で使用可能な属性
+ * @see https://developer.mozilla.org/ja/docs/Web/HTML/Global_attributes
+ */
+export type GlobalAttributes = 
+  & GlobalAttributesBase
+  & DataAttributes
+  & AriaAttributes
+  & CustomAttributes;

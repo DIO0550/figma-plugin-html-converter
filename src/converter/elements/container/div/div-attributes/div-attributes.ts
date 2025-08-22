@@ -1,22 +1,10 @@
+import type { GlobalAttributes } from "../../../base/global-attributes";
+
 /**
  * div要素の属性定義
  * HTML Living Standard準拠
+ *
+ * div要素は固有の属性を持たず、グローバル属性のみを受け入れる
+ * 将来的な拡張性と型の明確性のため、型エイリアスとして定義
  */
-export interface DivAttributes {
-  // グローバル属性
-  id?: string;
-  class?: string;
-  style?: string;
-  title?: string;
-  lang?: string;
-  dir?: 'ltr' | 'rtl' | 'auto';
-  hidden?: boolean;
-  tabindex?: string;
-  
-  // データ属性
-  [key: `data-${string}`]: string | undefined;
-  
-  // ARIAアクセシビリティ属性
-  role?: string;
-  [key: `aria-${string}`]: string | undefined;
-}
+export type DivAttributes = GlobalAttributes;

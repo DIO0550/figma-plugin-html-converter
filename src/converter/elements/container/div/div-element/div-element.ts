@@ -3,14 +3,13 @@ import { FigmaNode } from '../../../../models/figma-node';
 import { Styles } from '../../../../models/styles';
 import { Paint } from '../../../../models/paint';
 import type { DivAttributes } from '../div-attributes';
+import type { BaseElement } from '../../../base/base-element';
 
 /**
  * div要素の型定義
- * HTMLNodeから独立した専用の型
+ * BaseElementを継承した専用の型
  */
-export interface DivElement {
-  type: 'element';
-  tagName: 'div';
+export interface DivElement extends BaseElement<'div'> {
   attributes: DivAttributes;
   children: DivElement[] | [];
 }

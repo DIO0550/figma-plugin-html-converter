@@ -50,6 +50,6 @@ export interface GlobalAttributes {
   onload?: string;
   onerror?: string;
   
-  // その他の属性も許可
-  [key: string]: string | undefined;
+  // その他の属性も許可（any型で全ての値を受け入れる）
+  [key: string]: any;
 }

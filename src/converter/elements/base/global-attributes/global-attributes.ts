@@ -5,8 +5,8 @@
 export interface GlobalAttributesBase {
   // 基本属性
   id?: string;
-  className?: string;
-  class?: string;  // classNameの代替
+  className?: string;  // React/JSX用のプロパティ名
+  class?: string;  // HTML標準のclass属性（HTMLパース時に使用）
   style?: string;
   title?: string;
   

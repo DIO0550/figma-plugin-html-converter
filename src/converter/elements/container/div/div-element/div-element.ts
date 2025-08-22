@@ -7,7 +7,7 @@ import type { BaseElement } from '../../../base/base-element';
 
 /**
  * div要素の型定義
- * BaseElementを拡張した専用の型
+ * BaseElementを継承した専用の型
  */
 export interface DivElement extends BaseElement<'div'> {
   attributes: DivAttributes;

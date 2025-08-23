@@ -82,6 +82,126 @@ jobs:
           path: dist/
           retention-days: 7
 
+  coverage-comment:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run coverage
+
+      - name: Create Coverage Report
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read coverage summary
+            const summaryPath = path.join(process.cwd(), 'coverage', 'coverage-summary.json');
+            const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+            
+            // Function to get color based on coverage percentage
+            function getColor(percentage) {
+              if (percentage >= 80) return '🟢';
+              if (percentage >= 60) return '🟡';
+              return '🔴';
+            }
+            
+            // Function to get badge color
+            function getBadgeColor(percentage) {
+              if (percentage >= 80) return 'brightgreen';
+              if (percentage >= 60) return 'yellow';
+              return 'red';
+            }
+            
+            // Calculate total coverage
+            const total = summary.total;
+            const totalCoverage = Math.round(total.statements.pct);
+            
+            // Create summary table
+            let reportBody = `## 📊 Coverage Report\n\n`;
+            reportBody += `![Coverage](https://img.shields.io/badge/Coverage-${totalCoverage}%25-${getBadgeColor(totalCoverage)}.svg)\n\n`;
+            reportBody += `### Summary\n\n`;
+            reportBody += `| Metric | Coverage | Details |\n`;
+            reportBody += `|--------|----------|---------|\n`;
+            reportBody += `| ${getColor(total.statements.pct)} **Statements** | ${total.statements.pct.toFixed(2)}% | ${total.statements.covered}/${total.statements.total} |\n`;
+            reportBody += `| ${getColor(total.branches.pct)} **Branches** | ${total.branches.pct.toFixed(2)}% | ${total.branches.covered}/${total.branches.total} |\n`;
+            reportBody += `| ${getColor(total.functions.pct)} **Functions** | ${total.functions.pct.toFixed(2)}% | ${total.functions.covered}/${total.functions.total} |\n`;
+            reportBody += `| ${getColor(total.lines.pct)} **Lines** | ${total.lines.pct.toFixed(2)}% | ${total.lines.covered}/${total.lines.total} |\n`;
+            
+            // Create detailed report by directory
+            reportBody += `\n<details>\n`;
+            reportBody += `<summary>📁 Coverage by Directory</summary>\n\n`;
+            reportBody += `| File | Statements | Branches | Functions | Lines |\n`;
+            reportBody += `|------|------------|----------|-----------|-------|\n`;
+            
+            // Sort files by path
+            const files = Object.keys(summary)
+              .filter(key => key !== 'total')
+              .sort();
+            
+            for (const file of files) {
+              const data = summary[file];
+              const fileName = file.replace(process.cwd() + '/', '');
+              
+              reportBody += `| \`${fileName}\` | `;
+              reportBody += `${getColor(data.statements.pct)} ${data.statements.pct.toFixed(1)}% | `;
+              reportBody += `${getColor(data.branches.pct)} ${data.branches.pct.toFixed(1)}% | `;
+              reportBody += `${getColor(data.functions.pct)} ${data.functions.pct.toFixed(1)}% | `;
+              reportBody += `${getColor(data.lines.pct)} ${data.lines.pct.toFixed(1)}% |\n`;
+            }
+            
+            reportBody += `\n</details>\n`;
+            
+            // Check if this is a PR
+            if (context.issue.number) {
+              // Find existing coverage comment
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+              
+              const botComment = comments.find(comment => {
+                return comment.user.type === 'Bot' && comment.body.includes('## 📊 Coverage Report');
+              });
+              
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: reportBody
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: reportBody
+                });
+              }
+            }
+
   pr-comment:
     name: PR Test Results
     runs-on: ubuntu-latest
@@ -117,6 +237,7 @@ jobs:
             |-------|--------|
             | **Tests** | ${testStatus === 'success' ? '✅ Passed' : testStatus === 'failure' ? '❌ Failed' : '⏭️ Skipped'} |
             | **Build** | ${buildStatus === 'success' ? '✅ Passed' : buildStatus === 'failure' ? '❌ Failed' : '⏭️ Skipped'} |
+            | **Coverage** | See coverage report comment above |
             | **Node Version** | 20 |
             
             ### ${statusText}
@@ -132,7 +253,7 @@ jobs:
             });
             
             const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes('## ✅ CI Results') || comment.body.includes('## ❌ CI Results');
+              return comment.user.type === 'Bot' && comment.body.includes('## ✅ CI Results') || comment.body.includes('## ❌ CI Results') || comment.body.includes('## ⏭️ CI Results');
             });
             
             if (botComment) {

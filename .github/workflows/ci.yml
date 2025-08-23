@@ -107,13 +107,15 @@ jobs:
       - name: Run tests with coverage
         run: npm run coverage
 
-      - name: Coverage Report Comment
-        uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@main
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          skip-step: all
-          coverage-file: ./coverage/coverage-final.json
-          annotations: failed-tests
+          coverage-summary-path: ./coverage/coverage-summary.json
+          title: Coverage Report
+          badge-title: Coverage
+          hide-comment: false
+          create-new-comment: false
+          hide-summary: false
 
   pr-comment:
     name: PR Test Results

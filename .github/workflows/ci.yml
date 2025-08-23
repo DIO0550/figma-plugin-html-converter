@@ -111,11 +111,17 @@ jobs:
         uses: MishaKav/jest-coverage-comment@main
         with:
           coverage-summary-path: ./coverage/coverage-summary.json
-          title: Coverage Report
+          title: "📊 Coverage Report"
           badge-title: Coverage
           hide-comment: false
           create-new-comment: false
           hide-summary: false
+          coverage-file: ./coverage/coverage-final.json
+          multiple-files: |
+            Converter, src/converter/**/*.ts
+            Models, src/converter/models/**/*.ts
+            Elements, src/converter/elements/**/*.ts
+            Types, src/types/**/*.ts
 
   pr-comment:
     name: PR Test Results

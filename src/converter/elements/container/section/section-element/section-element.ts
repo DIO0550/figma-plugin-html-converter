@@ -135,11 +135,11 @@ export const SectionElement = {
         // Align items
         const alignItems = Styles.get(styles, 'align-items');
         if (alignItems) {
-          const alignMap: Record<string, 'MIN' | 'CENTER' | 'MAX'> = {
+          const alignMap: Record<string, 'MIN' | 'CENTER' | 'MAX' | 'STRETCH'> = {
             'flex-start': 'MIN',
             'center': 'CENTER',
             'flex-end': 'MAX',
-            'stretch': 'MIN' // FigmaのcounterAxisAlignItemsではSTRETCHは未サポートのため、MINにマップ
+            'stretch': 'STRETCH' // FigmaのcounterAxisAlignItemsでSTRETCHをサポート
           };
           config.counterAxisAlignItems = alignMap[alignItems] || 'MIN';
         }

@@ -20,17 +20,24 @@ export interface SectionElement extends BaseElement<'section'> {
  */
 export const SectionElement = {
   /**
-   * 型ガード: オブジェクトがSectionElementかを判定
+   * 内部ヘルパー: section要素のような構造を持つオブジェクトかを判定
    */
-  isSectionElement(node: unknown): node is SectionElement {
+  _isSectionElementLike(node: unknown): boolean {
     return (
       typeof node === 'object' &&
       node !== null &&
       'type' in node &&
       'tagName' in node &&
-      node.type === 'element' &&
-      node.tagName === 'section'
+      (node as any).type === 'element' &&
+      (node as any).tagName === 'section'
     );
+  },
+
+  /**
+   * 型ガード: オブジェクトがSectionElementかを判定
+   */
+  isSectionElement(node: unknown): node is SectionElement {
+    return this._isSectionElementLike(node);
   },
 
   /**
@@ -132,7 +139,7 @@ export const SectionElement = {
             'flex-start': 'MIN',
             'center': 'CENTER',
             'flex-end': 'MAX',
-            'stretch': 'MIN' // FigmaではSTRETCHはサポートされていないため、MINにマップ
+            'stretch': 'MIN' // FigmaのcounterAxisAlignItemsではSTRETCHは未サポートのため、MINにマップ
           };
           config.counterAxisAlignItems = alignMap[alignItems] || 'MIN';
         }
@@ -186,16 +193,9 @@ export const SectionElement = {
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     if (!this.isSectionElement(node)) {
       // 互換性のためのHTMLNodeからの変換
-      if (
-        node !== null &&
-        typeof node === 'object' &&
-        'type' in node &&
-        'tagName' in node &&
-        node.type === 'element' &&
-        node.tagName === 'section'
-      ) {
-        const attributes = 'attributes' in node && typeof node.attributes === 'object' 
-          ? node.attributes as Partial<SectionAttributes>
+      if (this._isSectionElementLike(node)) {
+        const attributes = 'attributes' in node && typeof (node as any).attributes === 'object' 
+          ? (node as any).attributes as Partial<SectionAttributes>
           : {};
         const element = this.create(attributes);
         return this.toFigmaNode(element);

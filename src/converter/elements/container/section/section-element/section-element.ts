@@ -20,24 +20,17 @@ export interface SectionElement extends BaseElement<'section'> {
  */
 export const SectionElement = {
   /**
-   * 内部ヘルパー: section要素のような構造を持つオブジェクトかを判定
+   * 型ガード: オブジェクトがSectionElementかを判定
    */
-  _isSectionElementLike(node: unknown): boolean {
+  isSectionElement(node: unknown): node is SectionElement {
     return (
       typeof node === 'object' &&
       node !== null &&
       'type' in node &&
       'tagName' in node &&
-      (node as any).type === 'element' &&
-      (node as any).tagName === 'section'
+      (node as { type: unknown; tagName: unknown }).type === 'element' &&
+      (node as { type: unknown; tagName: unknown }).tagName === 'section'
     );
-  },
-
-  /**
-   * 型ガード: オブジェクトがSectionElementかを判定
-   */
-  isSectionElement(node: unknown): node is SectionElement {
-    return this._isSectionElementLike(node);
   },
 
   /**
@@ -193,8 +186,15 @@ export const SectionElement = {
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     if (!this.isSectionElement(node)) {
       // 互換性のためのHTMLNodeからの変換
-      if (this._isSectionElementLike(node)) {
-        const nodeWithType = node as any;
+      if (
+        typeof node === 'object' &&
+        node !== null &&
+        'type' in node &&
+        'tagName' in node &&
+        (node as { type: unknown; tagName: unknown }).type === 'element' &&
+        (node as { type: unknown; tagName: unknown }).tagName === 'section'
+      ) {
+        const nodeWithType = node as { attributes?: unknown };
         const attributes = 'attributes' in nodeWithType && typeof nodeWithType.attributes === 'object' 
           ? nodeWithType.attributes as Partial<SectionAttributes>
           : {};

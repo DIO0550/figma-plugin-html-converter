@@ -24,7 +24,7 @@ export interface FigmaNodeConfig {
   // Auto Layoutプロパティ
   layoutMode?: 'NONE' | 'HORIZONTAL' | 'VERTICAL';
   primaryAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX' | 'SPACE_BETWEEN';
-  counterAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX';
+  counterAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH';
   paddingLeft?: number;
   paddingRight?: number;
   paddingTop?: number;
@@ -58,7 +58,7 @@ export interface AutoLayoutConfig {
     left?: number;
   };
   primaryAxisAlign?: 'MIN' | 'CENTER' | 'MAX' | 'SPACE_BETWEEN';
-  counterAxisAlign?: 'MIN' | 'CENTER' | 'MAX';
+  counterAxisAlign?: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH';
 }
 
 // FigmaNodeのコンパニオンオブジェクト

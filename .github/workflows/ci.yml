@@ -105,65 +105,101 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: |
-          npm run coverage
-          # Generate text report for details
-          npm run coverage -- --coverage.reporter=text > coverage-details.txt || true
+        run: npm run coverage
 
-      - name: Jest Coverage Comment
-        id: coverage
-        uses: MishaKav/jest-coverage-comment@main
-        with:
-          coverage-summary-path: ./coverage/coverage-summary.json
-          title: "📊 Coverage Report"
-          badge-title: Coverage
-          hide-comment: false
-          create-new-comment: false
-          hide-summary: false
-
-      - name: Add Coverage Details
-        if: always()
+      - name: Create Coverage Report
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            let coverageDetails = '';
+            const path = require('path');
             
-            // Read coverage details if exists
-            if (fs.existsSync('coverage-details.txt')) {
-              const details = fs.readFileSync('coverage-details.txt', 'utf8');
-              coverageDetails = `
-              
-              <details>
-              <summary>📋 Detailed Coverage Report</summary>
-              
-              \`\`\`
-              ${details}
-              \`\`\`
-              
-              </details>`;
+            // Read coverage summary
+            const summaryPath = path.join(process.cwd(), 'coverage', 'coverage-summary.json');
+            const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+            
+            // Function to get color based on coverage percentage
+            function getColor(percentage) {
+              if (percentage >= 80) return '🟢';
+              if (percentage >= 60) return '🟡';
+              return '🔴';
             }
             
-            // Find the coverage comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
+            // Function to get badge color
+            function getBadgeColor(percentage) {
+              if (percentage >= 80) return 'brightgreen';
+              if (percentage >= 60) return 'yellow';
+              return 'red';
+            }
             
-            const coverageComment = comments.find(comment => {
-              return comment.body.includes('📊 Coverage Report');
-            });
+            // Calculate total coverage
+            const total = summary.total;
+            const totalCoverage = Math.round(total.statements.pct);
             
-            if (coverageComment && coverageDetails) {
-              // Update the comment with details
-              await github.rest.issues.updateComment({
+            // Create summary table
+            let reportBody = `## 📊 Coverage Report\n\n`;
+            reportBody += `![Coverage](https://img.shields.io/badge/Coverage-${totalCoverage}%25-${getBadgeColor(totalCoverage)}.svg)\n\n`;
+            reportBody += `### Summary\n\n`;
+            reportBody += `| Metric | Coverage | Details |\n`;
+            reportBody += `|--------|-----------------|\n`;
+            reportBody += `| ${getColor(total.statements.pct)} **Statements** | ${total.statements.pct.toFixed(2)}% | ${total.statements.covered}/${total.statements.total} |\n`;
+            reportBody += `| ${getColor(total.branches.pct)} **Branches** | ${total.branches.pct.toFixed(2)}% | ${total.branches.covered}/${total.branches.total} |\n`;
+            reportBody += `| ${getColor(total.functions.pct)} **Functions** | ${total.functions.pct.toFixed(2)}% | ${total.functions.covered}/${total.functions.total} |\n`;
+            reportBody += `| ${getColor(total.lines.pct)} **Lines** | ${total.lines.pct.toFixed(2)}% | ${total.lines.covered}/${total.lines.total} |\n`;
+            
+            // Create detailed report by directory
+            reportBody += `\n<details>\n`;
+            reportBody += `<summary>📁 Coverage by Directory</summary>\n\n`;
+            reportBody += `| File | Statements | Branches | Functions | Lines |\n`;
+            reportBody += `|------|------------|----------|-----------|-------|\n`;
+            
+            // Sort files by path
+            const files = Object.keys(summary)
+              .filter(key => key !== 'total')
+              .sort();
+            
+            for (const file of files) {
+              const data = summary[file];
+              const fileName = file.replace(process.cwd() + '/', '');
+              
+              reportBody += `| \`${fileName}\` | `;
+              reportBody += `${getColor(data.statements.pct)} ${data.statements.pct.toFixed(1)}% | `;
+              reportBody += `${getColor(data.branches.pct)} ${data.branches.pct.toFixed(1)}% | `;
+              reportBody += `${getColor(data.functions.pct)} ${data.functions.pct.toFixed(1)}% | `;
+              reportBody += `${getColor(data.lines.pct)} ${data.lines.pct.toFixed(1)}% |\n`;
+            }
+            
+            reportBody += `\n</details>\n`;
+            
+            // Check if this is a PR
+            if (context.issue.number) {
+              // Find existing coverage comment
+              const { data: comments } = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id: coverageComment.id,
-                body: coverageComment.body + coverageDetails
+                issue_number: context.issue.number,
               });
+              
+              const botComment = comments.find(comment => {
+                return comment.user.type === 'Bot' && comment.body.includes('## 📊 Coverage Report');
+              });
+              
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: reportBody
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: reportBody
+                });
+              }
             }
 
   pr-comment:

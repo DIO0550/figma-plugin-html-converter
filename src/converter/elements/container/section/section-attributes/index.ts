@@ -1,0 +1,1 @@
+export type { SectionAttributes } from './section-attributes';

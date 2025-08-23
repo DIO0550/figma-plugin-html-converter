@@ -142,7 +142,7 @@ jobs:
             reportBody += `![Coverage](https://img.shields.io/badge/Coverage-${totalCoverage}%25-${getBadgeColor(totalCoverage)}.svg)\n\n`;
             reportBody += `### Summary\n\n`;
             reportBody += `| Metric | Coverage | Details |\n`;
-            reportBody += `|--------|-----------------|\n`;
+            reportBody += `|--------|----------|---------|\n`;
             reportBody += `| ${getColor(total.statements.pct)} **Statements** | ${total.statements.pct.toFixed(2)}% | ${total.statements.covered}/${total.statements.total} |\n`;
             reportBody += `| ${getColor(total.branches.pct)} **Branches** | ${total.branches.pct.toFixed(2)}% | ${total.branches.covered}/${total.branches.total} |\n`;
             reportBody += `| ${getColor(total.functions.pct)} **Functions** | ${total.functions.pct.toFixed(2)}% | ${total.functions.covered}/${total.functions.total} |\n`;

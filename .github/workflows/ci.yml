@@ -105,9 +105,13 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: npm run coverage
+        run: |
+          npm run coverage
+          # Generate text report for details
+          npm run coverage -- --coverage.reporter=text > coverage-details.txt || true
 
       - name: Jest Coverage Comment
+        id: coverage
         uses: MishaKav/jest-coverage-comment@main
         with:
           coverage-summary-path: ./coverage/coverage-summary.json
@@ -116,12 +120,51 @@ jobs:
           hide-comment: false
           create-new-comment: false
           hide-summary: false
-          coverage-file: ./coverage/coverage-final.json
-          multiple-files: |
-            Converter, src/converter/**/*.ts
-            Models, src/converter/models/**/*.ts
-            Elements, src/converter/elements/**/*.ts
-            Types, src/types/**/*.ts
+
+      - name: Add Coverage Details
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let coverageDetails = '';
+            
+            // Read coverage details if exists
+            if (fs.existsSync('coverage-details.txt')) {
+              const details = fs.readFileSync('coverage-details.txt', 'utf8');
+              coverageDetails = `
+              
+              <details>
+              <summary>📋 Detailed Coverage Report</summary>
+              
+              \`\`\`
+              ${details}
+              \`\`\`
+              
+              </details>`;
+            }
+            
+            // Find the coverage comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const coverageComment = comments.find(comment => {
+              return comment.body.includes('📊 Coverage Report');
+            });
+            
+            if (coverageComment && coverageDetails) {
+              // Update the comment with details
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: coverageComment.id,
+                body: coverageComment.body + coverageDetails
+              });
+            }
 
   pr-comment:
     name: PR Test Results

@@ -194,8 +194,9 @@ export const SectionElement = {
     if (!this.isSectionElement(node)) {
       // 互換性のためのHTMLNodeからの変換
       if (this._isSectionElementLike(node)) {
-        const attributes = 'attributes' in node && typeof (node as any).attributes === 'object' 
-          ? (node as any).attributes as Partial<SectionAttributes>
+        const nodeWithType = node as any;
+        const attributes = 'attributes' in nodeWithType && typeof nodeWithType.attributes === 'object' 
+          ? nodeWithType.attributes as Partial<SectionAttributes>
           : {};
         const element = this.create(attributes);
         return this.toFigmaNode(element);

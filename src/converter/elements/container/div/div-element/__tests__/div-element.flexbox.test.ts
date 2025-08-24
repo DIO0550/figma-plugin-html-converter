@@ -35,7 +35,7 @@ test.each([
   ['center', 'CENTER'],
   ['flex-end', 'MAX'],
   ['stretch', 'STRETCH']
-])('align-items:%sがcounterAxisAlignItems:%sに変換される', (cssValue, figmaValue: any) => {
+])('align-items:%sがcounterAxisAlignItems:%sに変換される', (cssValue, figmaValue: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH') => {
   const element = DivElement.create({ 
     style: `display: flex; align-items: ${cssValue};`
   });

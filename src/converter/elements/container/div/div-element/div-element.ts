@@ -1,5 +1,4 @@
-import { FigmaNodeConfig } from '../../../../models/figma-node';
-import { FigmaNode } from '../../../../models/figma-node';
+import { FigmaNodeConfig, FigmaNode } from '../../../../models/figma-node';
 import { Styles } from '../../../../models/styles';
 import type { DivAttributes } from '../div-attributes';
 import type { BaseElement } from '../../../base/base-element';

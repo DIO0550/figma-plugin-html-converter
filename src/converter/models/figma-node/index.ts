@@ -1,2 +1,2 @@
-export { FigmaNode } from './figma-node';
-export type { FigmaNodeConfig, NodeType, AutoLayoutConfig } from './figma-node';
+export type { NodeType, Constraints } from './figma-node';
+export { FigmaNodeConfig, AutoLayoutConfig, FigmaNode } from './figma-node';

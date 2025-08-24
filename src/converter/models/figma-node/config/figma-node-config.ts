@@ -52,6 +52,9 @@ export interface AutoLayoutConfig {
   counterAxisAlign?: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH';
 }
 
+// ヘルパー関数
+const isDivTag = (tagName: string): boolean => tagName === 'div';
+
 export const FigmaNodeConfig = {
   // 型ガード
   isFrame(node: FigmaNodeConfig): boolean {
@@ -164,7 +167,7 @@ export const FigmaNodeConfig = {
     const newConfig = { ...config };
     
     // div要素の場合はデフォルトでNONEレイアウト
-    if (tagName === 'div') {
+    if (isDivTag(tagName)) {
       newConfig.layoutMode = 'NONE';
     } else {
       // その他のブロック要素はverticalレイアウト
@@ -175,11 +178,11 @@ export const FigmaNodeConfig = {
     
     // IDやクラスをノード名に反映（div要素の場合はtagNameを含めない）
     if (attributes?.id) {
-      newConfig.name = tagName === 'div' ? `#${attributes.id}` : `${tagName}#${attributes.id}`;
+      newConfig.name = isDivTag(tagName) ? `#${attributes.id}` : `${tagName}#${attributes.id}`;
     } else if (attributes?.class) {
       const className = typeof attributes.class === 'string' ? attributes.class : '';
       const firstClass = className.split(' ')[0];
-      newConfig.name = tagName === 'div' ? `.${firstClass}` : `${tagName}.${firstClass}`;
+      newConfig.name = isDivTag(tagName) ? `.${firstClass}` : `${tagName}.${firstClass}`;
     }
     
     return newConfig;

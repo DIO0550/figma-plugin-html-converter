@@ -369,6 +369,56 @@ export const Styles = {
     // 単一の数値
     const value = parseFloat(aspectRatio);
     return isNaN(value) ? null : value;
+  },
+
+  /**
+   * FlexboxスタイルをFigmaNodeConfig用のオプションに変換
+   */
+  extractFlexboxOptions(styles: Styles): {
+    display?: string;
+    flexDirection?: string;
+    gap?: number;
+    alignItems?: string;
+    justifyContent?: string;
+  } {
+    const gap = Styles.get(styles, 'gap');
+    return {
+      display: Styles.get(styles, 'display'),
+      flexDirection: Styles.get(styles, 'flex-direction'),
+      gap: gap ? Styles.parseSize(gap) as number | undefined : undefined,
+      alignItems: Styles.get(styles, 'align-items'),
+      justifyContent: Styles.get(styles, 'justify-content')
+    };
+  },
+
+  /**
+   * ボーダースタイルをFigmaNodeConfig用のオプションに変換
+   */
+  extractBorderOptions(styles: Styles): {
+    border?: { color: { r: number; g: number; b: number }; width: number };
+    borderRadius?: number;
+  } {
+    const border = Styles.getBorder(styles);
+    const borderRadius = Styles.getBorderRadius(styles);
+    return {
+      border: border || undefined,
+      borderRadius: typeof borderRadius === 'number' ? borderRadius : undefined
+    };
+  },
+
+  /**
+   * サイズスタイルをFigmaNodeConfig用のオプションに変換
+   */
+  extractSizeOptions(styles: Styles): {
+    width?: number;
+    height?: number;
+  } {
+    const width = Styles.getWidth(styles);
+    const height = Styles.getHeight(styles);
+    return {
+      width: typeof width === 'number' ? width : undefined,
+      height: typeof height === 'number' ? height : undefined
+    };
   }
 };
 

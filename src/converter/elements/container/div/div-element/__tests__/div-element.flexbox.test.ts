@@ -34,8 +34,8 @@ test.each([
   ['flex-start', 'MIN'],
   ['center', 'CENTER'],
   ['flex-end', 'MAX'],
-  ['stretch', 'MIN'] // FigmaではSTRETCHサポートなし
-])('align-items:%sがcounterAxisAlignItems:%sに変換される', (cssValue, figmaValue) => {
+  ['stretch', 'STRETCH']
+])('align-items:%sがcounterAxisAlignItems:%sに変換される', (cssValue, figmaValue: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH') => {
   const element = DivElement.create({ 
     style: `display: flex; align-items: ${cssValue};`
   });

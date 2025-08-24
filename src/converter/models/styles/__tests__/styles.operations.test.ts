@@ -33,8 +33,8 @@ test('Styles.set: 既存のプロパティを上書きできる', () => {
 
 test('Styles.set: nullやundefinedの値を設定できる', () => {
   const styles = Styles.empty();
-  const updated1 = Styles.set(styles, 'color', null as any);
-  const updated2 = Styles.set(styles, 'background', undefined as any);
+  const updated1 = Styles.set(styles, 'color', null as string | null);
+  const updated2 = Styles.set(styles, 'background', undefined as string | undefined);
   expect(updated1.color).toBeNull();
   expect(updated2.background).toBeUndefined();
 });

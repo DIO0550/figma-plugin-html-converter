@@ -3,7 +3,7 @@ import type { FigmaNodeConfig } from '../figma-node-config';
 import { FigmaNodeConfig as FigmaNode } from '../figma-node-config';
 import { Paint } from '../../../paint';
 
-test('applyHtmlElementDefaults: デフォルト設定を適用する', () => {
+test('applyHtmlElementDefaults: divタグのデフォルト設定を適用する', () => {
   const config: FigmaNodeConfig = {
     type: 'FRAME',
     name: 'test'
@@ -14,9 +14,25 @@ test('applyHtmlElementDefaults: デフォルト設定を適用する', () => {
     class: 'wrapper main'
   });
   
+  expect(result.layoutMode).toBe('NONE');
+  expect(result.layoutSizingHorizontal).toBeUndefined(); // divの場合は設定されない
+  expect(result.name).toBe('#container'); // divの場合はtagNameを含めない
+});
+
+test('applyHtmlElementDefaults: section等のブロック要素のデフォルト設定を適用する', () => {
+  const config: FigmaNodeConfig = {
+    type: 'FRAME',
+    name: 'test'
+  };
+  
+  const result = FigmaNode.applyHtmlElementDefaults(config, 'section', {
+    id: 'container',
+    class: 'wrapper main'
+  });
+  
   expect(result.layoutMode).toBe('VERTICAL');
   expect(result.layoutSizingHorizontal).toBe('FILL');
-  expect(result.name).toBe('div#container');
+  expect(result.name).toBe('section#container');
 });
 
 test('applyHtmlElementDefaults: クラスのみの場合', () => {

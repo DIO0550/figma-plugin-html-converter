@@ -7,69 +7,151 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Figma plugin project that converts HTML into Figma designs. The plugin will also integrate with an MCP (Model Context Protocol) server to receive HTML from AI and convert it to Figma designs.
+HTML を Figma デザインに変換する Figma プラグインプロジェクトです。HTML 要素を解析し、対応する Figma ノードに変換する機能を提供します。
 
 ## Key Features
 
-1. **HTML to Figma Conversion**: Accepts HTML input and converts it into Figma design elements
-2. **MCP Server Integration**: Plans to implement a local MCP server that allows AI to send HTML through the plugin for design conversion
+1. **HTML to Figma Conversion**: HTML 入力を受け付け、Figma デザイン要素に変換
+2. **要素別コンバーター実装**: 各 HTML 要素ごとに専用のコンバーターを実装
+3. **スタイル属性のサポート**: CSS スタイルを Figma のスタイル属性にマッピング
+4. **テスト駆動開発**: 全ての機能に対して包括的なテストを実装
+
+## Project Structure
+
+```
+src/
+├── code.ts                   # メインのプラグインロジック
+├── ui.html                   # プラグイン UI
+└── converter/               # コンバーターのコア実装
+    ├── elements/            # HTML 要素別のコンバーター
+    │   ├── base/           # 基底要素クラス
+    │   ├── container/      # コンテナ要素（div, section）
+    │   └── image/          # 画像要素（img）
+    ├── models/             # データモデル
+    │   ├── attributes/     # 属性管理
+    │   ├── auto-layout/    # Figma オートレイアウト
+    │   ├── colors/         # カラー処理
+    │   ├── css-values/     # CSS 値のパーサー
+    │   ├── figma-node/     # Figma ノード設定
+    │   ├── flexbox/        # Flexbox レイアウト
+    │   ├── html-node/      # HTML ノード処理
+    │   ├── paint/          # ペイント設定
+    │   └── styles/         # スタイル処理
+    ├── constants/          # 定数定義
+    ├── mapper.ts           # HTML から Figma へのマッピング
+    └── types.ts            # 型定義
+```
 
 ## Development Setup
 
-### Figma Plugin Structure
+### Prerequisites
 
-- `manifest.json`: Figma plugin configuration
-- `code.ts` or `code.js`: Main plugin logic
-- `ui.html`: Plugin UI interface
+- Node.js >= 18.0.0
+- TypeScript
+- Figma Desktop App（プラグイン実行用）
 
 ### Common Commands
 
 ```bash
-# Install dependencies
+# 依存関係のインストール
 npm install
 
-# Build the plugin
+# 開発モード（ファイル監視）
+npm run dev
+
+# プロダクションビルド
 npm run build
 
-# Watch for changes during development
-npm run watch
+# テスト実行
+npm test
 
-# Run linting
+# テスト UI モード
+npm run test:ui
+
+# カバレッジレポート
+npm run coverage
+
+# リンティング
 npm run lint
 
-# Run tests
-npm test
+# 型チェック
+npm run type-check
 ```
 
 ## Architecture Notes
 
 ### Plugin Architecture
 
-- **UI Layer**: HTML interface for user interaction
-- **Plugin Code**: Runs in Figma's sandbox environment
-- **HTML Parser**: Converts HTML to Figma nodes
-- **MCP Server**: Local server for AI communication (planned)
+- **UI Layer**: `ui.html` - ユーザーインターフェース
+- **Plugin Code**: `code.ts` - Figma サンドボックス環境で実行
+- **Converter System**: モジュラーなコンバーターアーキテクチャ
+  - 各 HTML 要素に対応するコンバータークラス
+  - ファクトリーパターンによる要素生成
+  - スタイル属性の一元管理
+
+### 実装済み要素
+
+- **Container Elements**:
+  - `<div>`: Flexbox レイアウト対応、スタイル属性サポート
+  - `<section>`: セマンティック要素、div と同様の機能
+
+- **Image Elements**:
+  - `<img>`: 画像サイズ、アスペクト比、代替テキスト対応
 
 ### Key Considerations
 
-- Figma plugins run in a sandboxed environment with limited access
-- Communication between UI and plugin code happens via postMessage
-- HTML parsing should handle various HTML structures and convert them to appropriate Figma elements (frames, text, shapes, etc.)
-- MCP server will need to handle authentication and message routing between AI and the plugin
+- Figma プラグインはサンドボックス環境で実行（制限されたアクセス）
+- UI とプラグインコード間の通信は postMessage を使用
+- HTML パーシングは様々な HTML 構造に対応
+- TDD（テスト駆動開発）による高い信頼性とカバレッジ
 
-### Development Flow
+### Testing Strategy
 
-1. Set up the basic Figma plugin structure
-2. Implement HTML parsing and Figma node creation
-3. Create UI for HTML input
-4. Integrate MCP server for AI communication
-5. Test with various HTML inputs
+- **Unit Tests**: 各コンバーター、モデル、ユーティリティ関数
+- **Integration Tests**: 要素間の連携、マッピング処理
+- **Coverage Target**: 高いコードカバレッジを維持
+- **Test Framework**: Vitest
 
-## Important Files to Create
+## Development Workflow
 
-- `manifest.json`: Plugin manifest
-- `code.ts`: Main plugin logic
-- `ui.html`: User interface
-- `package.json`: Node.js dependencies
-- `tsconfig.json`: TypeScript configuration
-- `webpack.config.js` or similar: Build configuration
+### 新機能実装時
+
+1. **TDD アプローチ**:
+   - テストファイルの作成
+   - 失敗するテストの記述
+   - 実装
+   - リファクタリング
+
+2. **ブランチ戦略**:
+   - `feature/機能名`: 新機能追加
+   - `fix/修正内容`: バグ修正
+   - `refactor/対象`: リファクタリング
+
+3. **コミット規則**:
+   - 絵文字プレフィックス使用
+   - 日本語でのコミットメッセージ
+   - 変更内容の明確な記述
+
+### Code Quality
+
+- TypeScript の strict モード有効
+- ESLint による静的解析
+- 型安全性の確保
+- 適切なエラーハンドリング
+
+## Future Enhancements
+
+- [ ] テキスト要素のサポート（h1-h6, p, span）
+- [ ] フォーム要素のサポート
+- [ ] リスト要素のサポート（ul, ol, li）
+- [ ] テーブル要素のサポート
+- [ ] SVG 要素のサポート
+- [ ] MCP サーバー統合（AI 連携）
+
+## Important Notes
+
+- 実装前に必ず `prompt-mcp-server` で実装ルールを確認
+- TDD の原則に従って開発
+- 既存のコードスタイルとパターンに準拠
+- 不要なファイルの作成を避ける
+- テストなしでのコード追加は禁止

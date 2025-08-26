@@ -1,5 +1,5 @@
 {
-  "name": "Figma MCP Development",
+  "name": "Figma Plugin Html Converter Development",
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
@@ -38,9 +38,6 @@
     },
     "ghcr.io/devcontainers/features/github-cli:1": {
       "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
     }
   }
 }

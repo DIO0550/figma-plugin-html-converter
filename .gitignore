@@ -28,3 +28,6 @@ Thumbs.db
 
 # Claude
 .claude/
+
+# lsmcp cache
+.lsmcp/cache

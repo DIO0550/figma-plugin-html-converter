@@ -37,8 +37,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22.x
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh \
+    && bash nodesource_setup.sh \
     && apt-get install -y nodejs \
+    && rm nodesource_setup.sh \
     && rm -rf /var/lib/apt/lists/*
 
 # Create node user with sudo privileges (for development)

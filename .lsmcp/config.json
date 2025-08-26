@@ -1,39 +1,8 @@
 {
-  "$schema": "../lsmcp.schema.json",
-
+  "$schema": "../node_modules/@mizchi/lsmcp/lsmcp.schema.json",
   "preset": "tsgo",
-
-  "files": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-
   "settings": {
-    "autoIndex": false,
-    "indexConcurrency": 5,
-    "autoIndexDelay": 500,
-    "enableWatchers": true,
-    "memoryLimit": 1024
-  },
-
-  "ignorePatterns": [
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/.git/**",
-    "**/coverage/**"
-  ],
-
-  "symbolFilter": {
-    "excludeKinds": [
-      "Variable",
-      "Constant",
-      "String",
-      "Number",
-      "Boolean",
-      "Array",
-      "Object",
-      "Key",
-      "Null"
-    ],
-    "excludePatterns": ["callback", "temp", "tmp", "_", "^[a-z]$"],
-    "includeOnlyTopLevel": false
+    "autoIndex": true,
+    "indexConcurrency": 10
   }
 }

@@ -41,10 +41,17 @@ export const NavElement = {
     attributes: Partial<NavAttributes> = {},
     children: HTMLNode[] = [],
   ): NavElement {
+    // Partial<NavAttributes>から完全なNavAttributesオブジェクトを構築
+    // GlobalAttributesのすべてのプロパティはオプショナルなので、
+    // 空オブジェクトでもNavAttributesの要件を満たす
+    const navAttributes: NavAttributes = {
+      ...attributes,
+    };
+
     return {
       type: "element",
       tagName: "nav",
-      attributes: attributes as NavAttributes,
+      attributes: navAttributes,
       children,
     };
   },
@@ -87,7 +94,10 @@ export const NavElement = {
   toFigmaNode(element: NavElement): FigmaNodeConfig {
     let config = FigmaNode.createFrame("nav");
 
-    // applyHtmlElementDefaultsはclassプロパティを期待するため変換が必要
+    // ReactやJSXではclassName属性を使用するが、HTML標準ではclass属性を使用する。
+    // applyHtmlElementDefaultsメソッドはHTML標準のclass属性を期待するため、
+    // className属性が存在する場合はそれをclass属性として渡す必要がある。
+    // classNameとclassの両方が存在する場合は、classNameを優先する。
     const attributesForDefaults = {
       ...element.attributes,
       class: element.attributes.className || element.attributes.class,

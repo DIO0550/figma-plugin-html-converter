@@ -1,3 +1,8 @@
+/**
+ * aside要素のコンバーター実装
+ * HTML5のaside要素をFigmaのフレームノードに変換する機能を提供
+ */
+
 import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import type { AsideAttributes } from "../aside-attributes";
@@ -22,6 +27,8 @@ export interface AsideElement {
 export const AsideElement = {
   /**
    * aside要素かどうかを判定する型ガード
+   * @param node - 判定対象のノード
+   * @returns aside要素の場合true
    */
   isAsideElement(node: unknown): node is AsideElement {
     return (
@@ -36,6 +43,9 @@ export const AsideElement = {
 
   /**
    * aside要素を作成するファクトリー関数
+   * @param attributes - 要素の属性（オプション）
+   * @param children - 子要素の配列（オプション）
+   * @returns 新しいAsideElement
    */
   create(
     attributes: Partial<AsideAttributes> = {},
@@ -51,6 +61,8 @@ export const AsideElement = {
 
   /**
    * ID属性を取得
+   * @param element - aside要素
+   * @returns ID属性の値、存在しない場合はundefined
    */
   getId(element: AsideElement): string | undefined {
     return element.attributes.id;
@@ -58,6 +70,8 @@ export const AsideElement = {
 
   /**
    * className属性を取得
+   * @param element - aside要素
+   * @returns className属性の値、存在しない場合はundefined
    */
   getClassName(element: AsideElement): string | undefined {
     return element.attributes.className;
@@ -65,6 +79,8 @@ export const AsideElement = {
 
   /**
    * style属性を取得
+   * @param element - aside要素
+   * @returns style属性の値、存在しない場合はundefined
    */
   getStyle(element: AsideElement): string | undefined {
     return element.attributes.style;
@@ -72,6 +88,9 @@ export const AsideElement = {
 
   /**
    * 任意の属性を取得
+   * @param element - aside要素
+   * @param name - 属性名
+   * @returns 属性の値、存在しない場合はundefined
    */
   getAttribute(element: AsideElement, name: string): unknown {
     return element.attributes[name as keyof AsideAttributes];
@@ -79,6 +98,8 @@ export const AsideElement = {
 
   /**
    * 子要素を取得
+   * @param element - aside要素
+   * @returns 子要素の配列、存在しない場合はundefined
    */
   getChildren(element: AsideElement): HTMLNode[] | undefined {
     return element.children;
@@ -86,6 +107,9 @@ export const AsideElement = {
 
   /**
    * 属性の存在確認
+   * @param element - aside要素
+   * @param name - 属性名
+   * @returns 属性が存在する場合true
    */
   hasAttribute(element: AsideElement, name: string): boolean {
     return name in element.attributes;
@@ -93,6 +117,8 @@ export const AsideElement = {
 
   /**
    * aside要素をFigmaノードに変換
+   * @param element - 変換対象のaside要素
+   * @returns Figmaノード設定オブジェクト
    */
   toFigmaNode(element: AsideElement): FigmaNodeConfig {
     let config = FigmaNode.createFrame("aside");
@@ -217,6 +243,8 @@ export const AsideElement = {
 
   /**
    * HTMLノードをFigmaノードにマッピング
+   * @param node - マッピング対象のノード
+   * @returns Figmaノード設定オブジェクト、変換できない場合はnull
    */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     if (!AsideElement.isAsideElement(node)) {

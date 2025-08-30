@@ -1,185 +1,169 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { PConverter } from "../p-converter";
+import { test, expect } from "vitest";
+import { mapToFigma } from "../p-converter";
 
-describe("PConverter.mapToFigma", () => {
-  let converter: PConverter;
+test("mapToFigma - p要素ノードをFigmaノード設定にマッピングできる", () => {
+  const node = {
+    type: "element",
+    tagName: "p",
+    attributes: {},
+    children: [],
+  };
 
-  beforeEach(() => {
-    converter = new PConverter();
-  });
+  const result = mapToFigma(node);
 
-  describe("p要素の判定", () => {
-    it("p要素ノードをFigmaノード設定にマッピングできる", () => {
-      const node = {
-        type: "element",
-        tagName: "p",
-        attributes: {},
-        children: [],
-      };
+  expect(result).toBeDefined();
+  expect(result?.type).toBe("FRAME");
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - 属性とchildrenを持つp要素を正しくマッピングできる", () => {
+  const node = {
+    type: "element",
+    tagName: "p",
+    attributes: {
+      id: "test-paragraph",
+      style: "color: blue;",
+    },
+    children: [{ type: "text", content: "Test content" }],
+  };
 
-      expect(result).toBeDefined();
-      expect(result?.type).toBe("FRAME");
-    });
+  const result = mapToFigma(node);
 
-    it("属性とchildrenを持つp要素を正しくマッピングできる", () => {
-      const node = {
-        type: "element",
-        tagName: "p",
-        attributes: {
-          id: "test-paragraph",
-          style: "color: blue;",
-        },
-        children: [{ type: "text", content: "Test content" }],
-      };
+  expect(result).toBeDefined();
+  expect(result?.type).toBe("FRAME");
+  expect(result?.name).toContain("test-paragraph");
+  expect(result?.children).toHaveLength(1);
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - p以外の要素に対してはnullを返す", () => {
+  const node = {
+    type: "element",
+    tagName: "div",
+    attributes: {},
+    children: [],
+  };
 
-      expect(result).toBeDefined();
-      expect(result?.type).toBe("FRAME");
-      expect(result?.name).toContain("test-paragraph");
-      expect(result?.children).toHaveLength(1);
-    });
-  });
+  const result = mapToFigma(node);
 
-  describe("非p要素の処理", () => {
-    it("p以外の要素に対してはnullを返す", () => {
-      const node = {
-        type: "element",
-        tagName: "div",
-        attributes: {},
-        children: [],
-      };
+  expect(result).toBeNull();
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - spanタグに対してnullを返す", () => {
+  const node = {
+    type: "element",
+    tagName: "span",
+    attributes: {},
+    children: [],
+  };
 
-      expect(result).toBeNull();
-    });
+  const result = mapToFigma(node);
 
-    it("spanタグに対してnullを返す", () => {
-      const node = {
-        type: "element",
-        tagName: "span",
-        attributes: {},
-        children: [],
-      };
+  expect(result).toBeNull();
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - h1タグに対してnullを返す", () => {
+  const node = {
+    type: "element",
+    tagName: "h1",
+    attributes: {},
+    children: [],
+  };
 
-      expect(result).toBeNull();
-    });
+  const result = mapToFigma(node);
 
-    it("h1タグに対してnullを返す", () => {
-      const node = {
-        type: "element",
-        tagName: "h1",
-        attributes: {},
-        children: [],
-      };
+  expect(result).toBeNull();
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - テキストノードに対してnullを返す", () => {
+  const node = {
+    type: "text",
+    content: "text",
+  };
 
-      expect(result).toBeNull();
-    });
-  });
+  const result = mapToFigma(node);
 
-  describe("無効なノードの処理", () => {
-    it("テキストノードに対してnullを返す", () => {
-      const node = {
-        type: "text",
-        content: "text",
-      };
+  expect(result).toBeNull();
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - コメントノードに対してnullを返す", () => {
+  const node = {
+    type: "comment",
+    content: "<!-- comment -->",
+  };
 
-      expect(result).toBeNull();
-    });
+  const result = mapToFigma(node);
 
-    it("コメントノードに対してnullを返す", () => {
-      const node = {
-        type: "comment",
-        content: "<!-- comment -->",
-      };
+  expect(result).toBeNull();
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - nullに対してnullを返す", () => {
+  const result = mapToFigma(null);
+  expect(result).toBeNull();
+});
 
-      expect(result).toBeNull();
-    });
+test("mapToFigma - undefinedに対してnullを返す", () => {
+  const result = mapToFigma(undefined);
+  expect(result).toBeNull();
+});
 
-    it("nullに対してnullを返す", () => {
-      const result = converter.mapToFigma(null);
-      expect(result).toBeNull();
-    });
+test("mapToFigma - 空のオブジェクトに対してnullを返す", () => {
+  const result = mapToFigma({});
+  expect(result).toBeNull();
+});
 
-    it("undefinedに対してnullを返す", () => {
-      const result = converter.mapToFigma(undefined);
-      expect(result).toBeNull();
-    });
+test("mapToFigma - typeプロパティがない要素に対してnullを返す", () => {
+  const node = {
+    tagName: "p",
+    attributes: {},
+  };
 
-    it("空のオブジェクトに対してnullを返す", () => {
-      const result = converter.mapToFigma({});
-      expect(result).toBeNull();
-    });
+  const result = mapToFigma(node);
+  expect(result).toBeNull();
+});
 
-    it("typeプロパティがない要素に対してnullを返す", () => {
-      const node = {
-        tagName: "p",
-        attributes: {},
-      };
+test("mapToFigma - tagNameプロパティがない要素に対してnullを返す", () => {
+  const node = {
+    type: "element",
+    attributes: {},
+  };
 
-      const result = converter.mapToFigma(node);
-      expect(result).toBeNull();
-    });
+  const result = mapToFigma(node);
+  expect(result).toBeNull();
+});
 
-    it("tagNameプロパティがない要素に対してnullを返す", () => {
-      const node = {
-        type: "element",
-        attributes: {},
-      };
+test("mapToFigma - attributesプロパティがない要素も処理できる", () => {
+  const node = {
+    type: "element",
+    tagName: "p",
+    children: [],
+  };
 
-      const result = converter.mapToFigma(node);
-      expect(result).toBeNull();
-    });
-  });
+  const result = mapToFigma(node);
 
-  describe("部分的な要素構造の処理", () => {
-    it("attributesプロパティがない要素も処理できる", () => {
-      const node = {
-        type: "element",
-        tagName: "p",
-        children: [],
-      };
+  expect(result).toBeDefined();
+  expect(result?.type).toBe("FRAME");
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - childrenプロパティがない要素も処理できる", () => {
+  const node = {
+    type: "element",
+    tagName: "p",
+    attributes: {},
+  };
 
-      expect(result).toBeDefined();
-      expect(result?.type).toBe("FRAME");
-    });
+  const result = mapToFigma(node);
 
-    it("childrenプロパティがない要素も処理できる", () => {
-      const node = {
-        type: "element",
-        tagName: "p",
-        attributes: {},
-      };
+  expect(result).toBeDefined();
+  expect(result?.type).toBe("FRAME");
+});
 
-      const result = converter.mapToFigma(node);
+test("mapToFigma - 最小限の構造でも処理できる", () => {
+  const node = {
+    type: "element",
+    tagName: "p",
+  };
 
-      expect(result).toBeDefined();
-      expect(result?.type).toBe("FRAME");
-    });
+  const result = mapToFigma(node);
 
-    it("最小限の構造でも処理できる", () => {
-      const node = {
-        type: "element",
-        tagName: "p",
-      };
-
-      const result = converter.mapToFigma(node);
-
-      expect(result).toBeDefined();
-      expect(result?.type).toBe("FRAME");
-    });
-  });
+  expect(result).toBeDefined();
+  expect(result?.type).toBe("FRAME");
 });

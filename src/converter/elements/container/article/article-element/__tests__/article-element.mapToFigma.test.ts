@@ -76,7 +76,13 @@ test("基本的なarticle要素をマッピングする", () => {
 
 test("子要素を持つarticle要素をマッピングする", () => {
   const mockTextNode = { type: "TEXT", name: "Text" };
-  const mockPNode = { type: "TEXT", name: "p" };
+  const mockPNode = {
+    type: "FRAME",
+    name: "p",
+    layoutMode: "VERTICAL",
+    layoutSizingHorizontal: "FILL",
+    children: [],
+  };
   mockMapNode.mockReturnValueOnce(mockTextNode).mockReturnValueOnce(mockPNode);
 
   const node = {

@@ -7,6 +7,7 @@ import { ConversionOptions } from "./models/conversion-options";
 import type { ConversionOptions as ConversionOptionsType } from "./models/conversion-options";
 import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
+import { PConverter } from "./elements/text/p";
 
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
@@ -53,6 +54,15 @@ export function mapHTMLNodeToFigma(
   const isListElement = ["ul", "ol", "li"].includes(tagName);
 
   let nodeConfig: FigmaNodeConfig;
+
+  // p要素の処理を追加
+  if (tagName === "p") {
+    const pConverter = new PConverter();
+    const pConfig = pConverter.mapToFigma(htmlNode);
+    if (pConfig) {
+      return pConfig;
+    }
+  }
 
   if (ImgElement.isImgElement(htmlNode)) {
     const imageConfig = ImgElement.mapToFigma(htmlNode);

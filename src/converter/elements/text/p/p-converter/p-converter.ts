@@ -1,4 +1,8 @@
-import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
+import {
+  FigmaNodeConfig,
+  FigmaNode,
+  TextNodeConfig,
+} from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import type { PElement } from "../p-element";
 import type { HTMLNode } from "../../../../models/html-node/html-node";
@@ -55,7 +59,7 @@ export class PConverter {
       config.children = this.processChildren(
         element.children,
         element.attributes?.style,
-      );
+      ) as FigmaNodeConfig[];
     } else {
       config.children = [];
     }
@@ -69,8 +73,8 @@ export class PConverter {
   private processChildren(
     children: HTMLNode[],
     parentStyle?: string,
-  ): FigmaNodeConfig[] {
-    const result: FigmaNodeConfig[] = [];
+  ): (FigmaNodeConfig | TextNodeConfig)[] {
+    const result: (FigmaNodeConfig | TextNodeConfig)[] = [];
     const parentStyles = parentStyle ? Styles.parse(parentStyle) : {};
 
     for (const child of children) {
@@ -120,53 +124,8 @@ export class PConverter {
   private createTextNode(
     node: { type: string; content: string },
     parentStyles: Record<string, string>,
-  ): FigmaNodeConfig {
-    interface TextNodeConfig extends FigmaNodeConfig {
-      type: "TEXT";
-      content: string;
-      style: {
-        fontFamily: string;
-        fontSize: number;
-        fontWeight: number;
-        fontStyle?: string;
-        lineHeight: {
-          unit: string;
-          value: number;
-        };
-        letterSpacing: number;
-        textAlign: string;
-        verticalAlign: string;
-        fills?: Array<{
-          type: string;
-          color: {
-            r: number;
-            g: number;
-            b: number;
-            a: number;
-          };
-        }>;
-      };
-    }
-
-    const textConfig: TextNodeConfig = {
-      type: "TEXT",
-      content: node.content,
-      name: "text",
-      layoutMode: "NONE",
-      layoutSizingHorizontal: "FIXED",
-      style: {
-        fontFamily: "Inter",
-        fontSize: 16,
-        fontWeight: 400,
-        lineHeight: {
-          unit: "PIXELS",
-          value: 24,
-        },
-        letterSpacing: 0,
-        textAlign: "LEFT",
-        verticalAlign: "TOP",
-      },
-    };
+  ): TextNodeConfig {
+    const textConfig = TextNodeConfig.create(node.content);
 
     // フォントサイズの処理
     if (parentStyles["font-size"]) {
@@ -223,7 +182,7 @@ export class PConverter {
       }
     }
 
-    return textConfig as FigmaNodeConfig;
+    return textConfig;
   }
 
   /**
@@ -232,21 +191,13 @@ export class PConverter {
   private createBoldTextNode(
     element: HTMLNode,
     parentStyles: Record<string, string>,
-  ): FigmaNodeConfig {
+  ): TextNodeConfig {
     const textContent = this.extractTextContent(element);
     const textNode = this.createTextNode(
       { type: "text", content: textContent },
       parentStyles,
     );
-    // TypeScriptの型安全性のため、styleプロパティの存在を確認
-    if (
-      "style" in textNode &&
-      textNode.style &&
-      typeof textNode.style === "object"
-    ) {
-      (textNode.style as { fontWeight?: number }).fontWeight = 700;
-    }
-    return textNode;
+    return TextNodeConfig.setFontWeight(textNode, 700);
   }
 
   /**
@@ -255,21 +206,13 @@ export class PConverter {
   private createItalicTextNode(
     element: HTMLNode,
     parentStyles: Record<string, string>,
-  ): FigmaNodeConfig {
+  ): TextNodeConfig {
     const textContent = this.extractTextContent(element);
     const textNode = this.createTextNode(
       { type: "text", content: textContent },
       parentStyles,
     );
-    // TypeScriptの型安全性のため、styleプロパティの存在を確認
-    if (
-      "style" in textNode &&
-      textNode.style &&
-      typeof textNode.style === "object"
-    ) {
-      (textNode.style as { fontStyle?: string }).fontStyle = "ITALIC";
-    }
-    return textNode;
+    return TextNodeConfig.setFontStyle(textNode, "ITALIC");
   }
 
   /**

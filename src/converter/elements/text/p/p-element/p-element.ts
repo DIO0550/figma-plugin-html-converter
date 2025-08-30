@@ -37,10 +37,15 @@ export const PElement = {
     attributes: Partial<PAttributes> = {},
     children: HTMLNode[] = [],
   ): PElement {
+    // デフォルト値と提供された属性をマージ
+    const fullAttributes: PAttributes = {
+      ...attributes,
+    };
+
     return {
       type: "element",
       tagName: "p",
-      attributes: attributes as PAttributes,
+      attributes: fullAttributes,
       children,
     };
   },

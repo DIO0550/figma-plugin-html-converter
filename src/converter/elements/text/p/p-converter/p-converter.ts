@@ -5,7 +5,8 @@ import {
 } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import type { PElement } from "../p-element";
-import type { HTMLNode } from "../../../../models/html-node/html-node";
+import { HTMLNode } from "../../../../models/html-node/html-node";
+import { createBaseTextNode } from "../../common/text-node-creator";
 
 /**
  * p要素をFigmaノードに変換
@@ -73,11 +74,11 @@ function processChildren(
   const parentStyles = parentStyle ? Styles.parse(parentStyle) : {};
 
   for (const child of children) {
-    if (isTextNode(child)) {
+    if (HTMLNode.isTextNode(child)) {
       // テキストノードの処理
       const textConfig = createTextNode(child, parentStyles);
       result.push(textConfig);
-    } else if (isElementNode(child)) {
+    } else if (HTMLNode.isElementNode(child)) {
       // インライン要素の処理
       const childElement = child as HTMLNode & { tagName: string };
       if (childElement.tagName === "strong" || childElement.tagName === "b") {
@@ -94,7 +95,7 @@ function processChildren(
         result.push(italicTextConfig);
       } else {
         // その他の要素はテキストとして処理
-        const textContent = extractTextContent(child as HTMLNode);
+        const textContent = HTMLNode.extractTextContent(child as HTMLNode);
         if (textContent) {
           result.push(
             createTextNode(
@@ -117,64 +118,11 @@ function createTextNode(
   node: { type: string; content: string },
   parentStyles: Record<string, string>,
 ): TextNodeConfig {
-  const textConfig = TextNodeConfig.create(node.content);
-
-  // フォントサイズの処理
-  if (parentStyles["font-size"]) {
-    const sizeValue = Styles.parseSize(parentStyles["font-size"]);
-    if (typeof sizeValue === "number") {
-      textConfig.style.fontSize = sizeValue;
-      // line-heightが指定されていない場合は、フォントサイズに基づいて調整
-      if (!parentStyles["line-height"]) {
-        textConfig.style.lineHeight.value = sizeValue * 1.5;
-      }
-    }
-  }
-
-  // 行の高さの処理
-  if (parentStyles["line-height"]) {
-    const lineHeightValue = parentStyles["line-height"];
-    // 数値のみの場合は倍率として扱う
-    const numericValue = parseFloat(lineHeightValue);
-    if (!isNaN(numericValue)) {
-      textConfig.style.lineHeight.value =
-        textConfig.style.fontSize * numericValue;
-    } else {
-      // px値などの単位付きの場合
-      const sizeValue = Styles.parseSize(lineHeightValue);
-      if (typeof sizeValue === "number") {
-        textConfig.style.lineHeight.value = sizeValue;
-      }
-    }
-  }
-
-  // テキスト配置の処理
-  if (parentStyles["text-align"]) {
-    const textAlign = parentStyles["text-align"].toUpperCase();
-    if (["LEFT", "CENTER", "RIGHT", "JUSTIFY"].includes(textAlign)) {
-      textConfig.style.textAlign = textAlign;
-    }
-  }
-
-  // カラーの処理
-  if (parentStyles["color"]) {
-    const color = Styles.parseColor(parentStyles["color"]);
-    if (color) {
-      textConfig.style.fills = [
-        {
-          type: "SOLID",
-          color: {
-            r: color.r,
-            g: color.g,
-            b: color.b,
-            a: 1,
-          },
-        },
-      ];
-    }
-  }
-
-  return textConfig;
+  return createBaseTextNode(node, parentStyles, {
+    defaultFontSize: 16,
+    defaultFontWeight: 400,
+    defaultLineHeightMultiplier: 1.5,
+  });
 }
 
 /**
@@ -184,7 +132,7 @@ function createBoldTextNode(
   element: HTMLNode,
   parentStyles: Record<string, string>,
 ): TextNodeConfig {
-  const textContent = extractTextContent(element);
+  const textContent = HTMLNode.extractTextContent(element);
   const textNode = createTextNode(
     { type: "text", content: textContent },
     parentStyles,
@@ -199,59 +147,12 @@ function createItalicTextNode(
   element: HTMLNode,
   parentStyles: Record<string, string>,
 ): TextNodeConfig {
-  const textContent = extractTextContent(element);
+  const textContent = HTMLNode.extractTextContent(element);
   const textNode = createTextNode(
     { type: "text", content: textContent },
     parentStyles,
   );
   return TextNodeConfig.setFontStyle(textNode, "ITALIC");
-}
-
-/**
- * 要素からテキストコンテンツを抽出
- */
-function extractTextContent(element: HTMLNode): string {
-  if (!element.children || element.children.length === 0) {
-    return "";
-  }
-
-  let text = "";
-  for (const child of element.children) {
-    if (isTextNode(child)) {
-      text += child.content;
-    } else if (isElementNode(child)) {
-      text += extractTextContent(child);
-    }
-  }
-  return text;
-}
-
-/**
- * テキストノードかどうかを判定
- */
-function isTextNode(node: unknown): node is { type: string; content: string } {
-  return (
-    node !== null &&
-    typeof node === "object" &&
-    "type" in node &&
-    node.type === "text" &&
-    "content" in node &&
-    typeof node.content === "string"
-  );
-}
-
-/**
- * 要素ノードかどうかを判定
- */
-function isElementNode(node: unknown): boolean {
-  return (
-    node !== null &&
-    typeof node === "object" &&
-    "type" in node &&
-    node.type === "element" &&
-    "tagName" in node &&
-    typeof (node as { tagName: unknown }).tagName === "string"
-  );
 }
 
 /**

@@ -2,10 +2,7 @@ import { test, expect } from "vitest";
 import { toFigmaNode } from "../p-converter";
 import type { PElement } from "../../p-element";
 
-type TextNode = {
-  type: "text";
-  content: string;
-};
+import type { TextNode } from "../../common/types";
 
 test("p要素スタイル - 背景色とパディングのカスタムスタイルを適用できる", () => {
   const element: PElement = {

@@ -4,20 +4,48 @@ import {
   TextNodeConfig,
 } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
-import type { PElement } from "../p-element";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { createBaseTextNode } from "../../common/text-node-creator";
+import type { H1Element } from "../h1/h1-element";
+import type { H2Element } from "../h2/h2-element";
+import type { H3Element } from "../h3/h3-element";
+import type { H4Element } from "../h4/h4-element";
+import type { H5Element } from "../h5/h5-element";
+import type { H6Element } from "../h6/h6-element";
+
+type HeadingElement =
+  | H1Element
+  | H2Element
+  | H3Element
+  | H4Element
+  | H5Element
+  | H6Element;
+
+type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 /**
- * p要素をFigmaノードに変換
+ * 見出しレベルに応じたデフォルトフォントサイズ
  */
-export function toFigmaNode(element: PElement): FigmaNodeConfig {
-  let config = FigmaNode.createFrame("p");
+const HEADING_FONT_SIZES: Record<HeadingLevel, number> = {
+  h1: 32,
+  h2: 24,
+  h3: 20,
+  h4: 18,
+  h5: 16,
+  h6: 14,
+};
+
+/**
+ * 見出し要素をFigmaノードに変換
+ */
+export function toFigmaNode(element: HeadingElement): FigmaNodeConfig {
+  const level = element.tagName;
+  let config = FigmaNode.createFrame(level);
 
   // HTML要素のデフォルト設定を適用
   config = FigmaNodeConfig.applyHtmlElementDefaults(
     config,
-    "p",
+    level,
     element.attributes,
   );
 
@@ -55,6 +83,7 @@ export function toFigmaNode(element: PElement): FigmaNodeConfig {
     config.children = processChildren(
       element.children,
       element.attributes?.style,
+      level,
     ) as FigmaNodeConfig[];
   } else {
     config.children = [];
@@ -69,6 +98,7 @@ export function toFigmaNode(element: PElement): FigmaNodeConfig {
 function processChildren(
   children: HTMLNode[],
   parentStyle?: string,
+  headingLevel?: HeadingLevel,
 ): (FigmaNodeConfig | TextNodeConfig)[] {
   const result: (FigmaNodeConfig | TextNodeConfig)[] = [];
   const parentStyles = parentStyle ? Styles.parse(parentStyle) : {};
@@ -76,13 +106,21 @@ function processChildren(
   for (const child of children) {
     if (HTMLNode.isTextNode(child)) {
       // テキストノードの処理
-      const textConfig = createTextNode(child, parentStyles);
+      const textConfig = createHeadingTextNode(
+        child,
+        parentStyles,
+        headingLevel,
+      );
       result.push(textConfig);
     } else if (HTMLNode.isElementNode(child)) {
       // インライン要素の処理
       const childElement = child as HTMLNode & { tagName: string };
       if (childElement.tagName === "strong" || childElement.tagName === "b") {
-        const boldTextConfig = createBoldTextNode(childElement, parentStyles);
+        const boldTextConfig = createBoldTextNode(
+          childElement,
+          parentStyles,
+          headingLevel,
+        );
         result.push(boldTextConfig);
       } else if (
         childElement.tagName === "em" ||
@@ -91,6 +129,7 @@ function processChildren(
         const italicTextConfig = createItalicTextNode(
           childElement,
           parentStyles,
+          headingLevel,
         );
         result.push(italicTextConfig);
       } else {
@@ -98,9 +137,10 @@ function processChildren(
         const textContent = HTMLNode.extractTextContent(child as HTMLNode);
         if (textContent) {
           result.push(
-            createTextNode(
+            createHeadingTextNode(
               { type: "text", content: textContent },
               parentStyles,
+              headingLevel,
             ),
           );
         }
@@ -112,16 +152,19 @@ function processChildren(
 }
 
 /**
- * テキストノードを作成
+ * 見出し用テキストノードを作成
  */
-function createTextNode(
+function createHeadingTextNode(
   node: { type: string; content: string },
   parentStyles: Record<string, string>,
+  headingLevel?: HeadingLevel,
 ): TextNodeConfig {
+  const defaultFontSize = headingLevel ? HEADING_FONT_SIZES[headingLevel] : 16;
+
   return createBaseTextNode(node, parentStyles, {
-    defaultFontSize: 16,
-    defaultFontWeight: 400,
-    defaultLineHeightMultiplier: 1.5,
+    defaultFontSize,
+    defaultFontWeight: 700, // 見出しはデフォルトで太字
+    defaultLineHeightMultiplier: 1.2, // 見出しは行の高さを少し狭く
   });
 }
 
@@ -131,13 +174,16 @@ function createTextNode(
 function createBoldTextNode(
   element: HTMLNode,
   parentStyles: Record<string, string>,
+  headingLevel?: HeadingLevel,
 ): TextNodeConfig {
   const textContent = HTMLNode.extractTextContent(element);
-  const textNode = createTextNode(
+  const textNode = createHeadingTextNode(
     { type: "text", content: textContent },
     parentStyles,
+    headingLevel,
   );
-  return TextNodeConfig.setFontWeight(textNode, 700);
+  // 見出しは既に太字なので、そのまま返す
+  return textNode;
 }
 
 /**
@@ -146,39 +192,43 @@ function createBoldTextNode(
 function createItalicTextNode(
   element: HTMLNode,
   parentStyles: Record<string, string>,
+  headingLevel?: HeadingLevel,
 ): TextNodeConfig {
   const textContent = HTMLNode.extractTextContent(element);
-  const textNode = createTextNode(
+  const textNode = createHeadingTextNode(
     { type: "text", content: textContent },
     parentStyles,
+    headingLevel,
   );
   return TextNodeConfig.setFontStyle(textNode, "ITALIC");
+}
+
+/**
+ * 見出し要素かどうかを判定
+ */
+function isHeadingElement(node: unknown): node is HeadingElement {
+  if (!HTMLNode.isElementNode(node)) {
+    return false;
+  }
+  const tagName = (node as { tagName: unknown }).tagName;
+  return ["h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName as string);
 }
 
 /**
  * ノードをFigmaノードにマッピング
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  // p要素かどうかをチェック
-  if (
-    node !== null &&
-    typeof node === "object" &&
-    "type" in node &&
-    "tagName" in node &&
-    node.type === "element" &&
-    node.tagName === "p"
-  ) {
-    const element = node as PElement;
-    return toFigmaNode(element);
+  if (isHeadingElement(node)) {
+    return toFigmaNode(node);
   }
   return null;
 }
 
 /**
- * p要素のコンバーター
+ * 見出し要素のコンバーター
  * 後方互換性のためのエクスポート
  */
-export const PConverter = {
+export const HeadingConverter = {
   toFigmaNode,
   mapToFigma,
 };

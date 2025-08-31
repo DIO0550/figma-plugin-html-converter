@@ -3,10 +3,7 @@ import { PElement } from "../p-element";
 import type { PAttributes } from "../../p-attributes/p-attributes";
 import type { HTMLNode } from "../../../../../models/html-node/html-node";
 
-type TextNode = {
-  type: "text";
-  content: string;
-};
+import type { TextNode } from "../../common/types";
 
 test("PElement.create - デフォルト値でPElementを作成できる", () => {
   const element = PElement.create();

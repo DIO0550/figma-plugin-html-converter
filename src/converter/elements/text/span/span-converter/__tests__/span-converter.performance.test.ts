@@ -38,7 +38,7 @@ test("10万文字のテキストをSpanConverterは100ms以内に処理する", 
 test("1000個の子要素をSpanConverterは50ms以内に処理する", () => {
   const manyChildren = Array.from({ length: 1000 }, (_, i) => ({
     type: "text" as const,
-    content: `text${i}`,
+    textContent: `text${i}`,
   }));
 
   const element: SpanElement = {

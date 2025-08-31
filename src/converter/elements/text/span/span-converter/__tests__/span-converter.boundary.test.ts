@@ -186,7 +186,7 @@ test("負のfont-size値（-20px）をSpanConverterはデフォルト値16にフ
 test("1000個の子要素を持つspan要素をSpanConverterは処理できる", () => {
   const manyChildren = Array.from({ length: 1000 }, (_, i) => ({
     type: "text" as const,
-    content: `text${i}`,
+    textContent: `text${i}`,
   }));
 
   const element: SpanElement = {

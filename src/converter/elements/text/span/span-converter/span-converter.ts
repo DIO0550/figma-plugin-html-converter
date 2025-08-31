@@ -135,7 +135,7 @@ function extractTextFromNode(
   visited.add(node);
 
   if (isTextNode(node)) {
-    return node.content || "";
+    return node.textContent || "";
   }
 
   if (isElementNode(node) && node.children) {
@@ -151,8 +151,10 @@ function extractTextFromNode(
 /**
  * テキストノードかどうかを判定
  */
-function isTextNode(node: HTMLNode): node is HTMLNode & { content: string } {
-  return node.type === "text" && "content" in node;
+function isTextNode(
+  node: HTMLNode,
+): node is HTMLNode & { textContent: string } {
+  return node.type === "text" && "textContent" in node;
 }
 
 /**

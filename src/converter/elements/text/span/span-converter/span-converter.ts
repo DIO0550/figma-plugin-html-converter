@@ -5,8 +5,9 @@ import {
 } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import type { SpanElement } from "../span-element";
-import type { HTMLNode } from "../../../../models/html-node/html-node";
 import { SpanElement as SpanElementHelper } from "../span-element";
+import { buildNodeName } from "../../../../utils/node-name-builder";
+import { HTMLNode } from "../../../../models/html-node/html-node";
 
 /**
  * SpanConverterクラス
@@ -41,7 +42,7 @@ export const SpanConverter = {
     const config: TextNodeConfig = {
       type: "TEXT",
       name: buildNodeName(element),
-      content: extractAllText(element),
+      content: HTMLNode.extractTextFromNodes(element.children || []),
       style: textStyle,
     };
 
@@ -60,111 +61,6 @@ export const SpanConverter = {
     return this.toFigmaNode(node);
   },
 };
-
-/**
- * ノード名を構築
- */
-function buildNodeName(element: SpanElement): string {
-  let name = "span";
-
-  if (element.attributes?.id) {
-    name += `#${element.attributes.id}`;
-  }
-
-  if (element.attributes?.class) {
-    const classes = element.attributes.class.split(" ").filter(Boolean);
-    if (classes.length > 0) {
-      name += `.${classes.join(".")}`;
-    }
-  }
-
-  return name;
-}
-
-/**
- * 要素から全てのテキストを抽出
- */
-function extractAllText(element: SpanElement): string {
-  if (!element.children || element.children.length === 0) {
-    return "";
-  }
-
-  const visited = new WeakSet<object>();
-  return extractAllTextRecursive(element, visited);
-}
-
-/**
- * 再帰的にテキストを抽出（循環参照対策付き）
- */
-function extractAllTextRecursive(
-  element: SpanElement,
-  visited: WeakSet<object>,
-): string {
-  // 循環参照のチェック
-  if (visited.has(element)) {
-    return "";
-  }
-  visited.add(element);
-
-  if (!element.children || element.children.length === 0) {
-    return "";
-  }
-
-  return element.children
-    .filter((child) => child != null) // null/undefinedを除外
-    .map((child) => extractTextFromNode(child, visited))
-    .join("");
-}
-
-/**
- * ノードからテキストを再帰的に抽出
- */
-function extractTextFromNode(
-  node: HTMLNode,
-  visited: WeakSet<object> = new WeakSet(),
-): string {
-  // null/undefinedチェック
-  if (!node) {
-    return "";
-  }
-
-  // 循環参照のチェック
-  if (visited.has(node)) {
-    return "";
-  }
-  visited.add(node);
-
-  if (isTextNode(node)) {
-    return node.textContent || "";
-  }
-
-  if (isElementNode(node) && node.children) {
-    return node.children
-      .filter((child) => child != null) // null/undefinedを除外
-      .map((child) => extractTextFromNode(child, visited))
-      .join("");
-  }
-
-  return "";
-}
-
-/**
- * テキストノードかどうかを判定
- */
-function isTextNode(
-  node: HTMLNode,
-): node is HTMLNode & { textContent: string } {
-  return node.type === "text" && "textContent" in node;
-}
-
-/**
- * 要素ノードかどうかを判定
- */
-function isElementNode(
-  node: HTMLNode,
-): node is HTMLNode & { tagName: string; children?: HTMLNode[] } {
-  return node.type === "element" && "tagName" in node;
-}
 
 /**
  * テキストスタイルを適用

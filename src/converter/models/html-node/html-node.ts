@@ -39,9 +39,7 @@ export const HTMLNode = {
     return node.type === NODE_TYPE.TEXT;
   },
 
-  isComment(
-    node: HTMLNode,
-  ): node is HTMLNode & {
+  isComment(node: HTMLNode): node is HTMLNode & {
     type: typeof NODE_TYPE.COMMENT;
     textContent: string;
   } {
@@ -126,20 +124,64 @@ export const HTMLNode = {
     );
   },
 
-  // 要素からテキストコンテンツを抽出（converterで使用）
-  extractTextContent(element: HTMLNode): string {
-    if (!element.children || element.children.length === 0) {
+  /**
+   * HTMLノードからテキストを再帰的に抽出します（循環参照対策付き）
+   *
+   * @param node - テキストを抽出するHTMLノード
+   * @returns 抽出されたテキスト文字列
+   */
+  extractText(node: HTMLNode | null | undefined): string {
+    if (!node) {
       return "";
     }
 
-    let text = "";
-    for (const child of element.children) {
-      if (HTMLNode.isTextNode(child)) {
-        text += child.content;
-      } else if (HTMLNode.isElementNode(child)) {
-        text += HTMLNode.extractTextContent(child);
-      }
+    const visited = new WeakSet<object>();
+    return this.extractTextRecursive(node, visited);
+  },
+
+  /**
+   * 複数のHTMLノードからテキストを抽出して結合します
+   *
+   * @param nodes - テキストを抽出するHTMLノードの配列
+   * @returns 抽出されたテキスト文字列
+   */
+  extractTextFromNodes(
+    nodes: readonly (HTMLNode | null | undefined)[],
+  ): string {
+    return nodes
+      .filter((node): node is HTMLNode => node != null)
+      .map((node) => this.extractText(node))
+      .join("");
+  },
+
+  /**
+   * 再帰的にテキストを抽出（内部用）
+   */
+  extractTextRecursive(node: HTMLNode, visited: WeakSet<object>): string {
+    // 循環参照のチェック
+    if (visited.has(node)) {
+      return "";
     }
-    return text;
+    visited.add(node);
+
+    // テキストノードの場合
+    if (this.isText(node)) {
+      return node.textContent || "";
+    }
+
+    // 要素ノードの場合
+    if (this.isElement(node) && node.children) {
+      return node.children
+        .filter((child): child is HTMLNode => child != null)
+        .map((child) => this.extractTextRecursive(child, visited))
+        .join("");
+    }
+
+    return "";
+  },
+
+  // 要素からテキストコンテンツを抽出（後方互換性のため残す）
+  extractTextContent(element: HTMLNode): string {
+    return this.extractText(element);
   },
 };

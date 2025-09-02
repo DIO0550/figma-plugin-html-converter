@@ -1,13 +1,12 @@
 import type { HTMLNode } from "../../../../models/html-node/html-node";
+import type { BaseElement } from "../../../base";
 import type { SpanAttributes } from "../span-attributes";
 
 /**
  * span要素の型定義
  * HTMLのspan（インライン）要素を表現します
  */
-export interface SpanElement {
-  type: "element";
-  tagName: "span";
+export interface SpanElement extends BaseElement<"span", SpanAttributes> {
   attributes: SpanAttributes;
   children?: HTMLNode[];
 }

@@ -8,7 +8,8 @@ import type { BaseElement } from "../../../base/base-element";
  * BaseElementを継承した専用の型
  * HTML5のセマンティック要素として文書のセクションを表す
  */
-export interface SectionElement extends BaseElement<"section"> {
+export interface SectionElement
+  extends BaseElement<"section", SectionAttributes> {
   attributes: SectionAttributes;
   children: SectionElement[] | [];
 }
@@ -74,7 +75,7 @@ export const SectionElement = {
     config = FigmaNodeConfig.applyHtmlElementDefaults(
       config,
       "section",
-      element.attributes
+      element.attributes,
     );
 
     // スタイルがない場合は早期リターン
@@ -99,19 +100,19 @@ export const SectionElement = {
     // Flexboxスタイルを適用（常に実行、内部で判定）
     config = FigmaNodeConfig.applyFlexboxStyles(
       config,
-      Styles.extractFlexboxOptions(styles)
+      Styles.extractFlexboxOptions(styles),
     );
 
     // ボーダースタイルを適用（常に実行、内部で判定）
     config = FigmaNodeConfig.applyBorderStyles(
       config,
-      Styles.extractBorderOptions(styles)
+      Styles.extractBorderOptions(styles),
     );
 
     // サイズスタイルを適用（常に実行、内部で判定）
     config = FigmaNodeConfig.applySizeStyles(
       config,
-      Styles.extractSizeOptions(styles)
+      Styles.extractSizeOptions(styles),
     );
 
     return config;

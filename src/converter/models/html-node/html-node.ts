@@ -181,7 +181,26 @@ export const HTMLNode = {
   },
 
   // 要素からテキストコンテンツを抽出（後方互換性のため残す）
-  extractTextContent(element: HTMLNode): string {
-    return this.extractText(element);
+  extractTextContent(element: unknown): string {
+    // 旧形式のノード（contentプロパティを持つ）の場合
+    if (element && typeof element === "object") {
+      const obj = element as Record<string, unknown>;
+      // 直接contentプロパティを持つ場合
+      if ("content" in obj && typeof obj.content === "string") {
+        return obj.content;
+      }
+      // テキストノードで、textContentプロパティを持つ場合
+      if (obj.type === "text" && typeof obj.textContent === "string") {
+        return obj.textContent;
+      }
+      // 子要素を持つ場合、再帰的に処理
+      if (obj.children && Array.isArray(obj.children)) {
+        return obj.children
+          .map((child: unknown) => this.extractTextContent(child))
+          .join("");
+      }
+    }
+    // 標準のextractTextにフォールバック
+    return this.extractText(element as HTMLNode);
   },
 };

@@ -292,7 +292,7 @@ test("buildNodeName - 空白のみのclass属性を持つ要素を渡すと、�
 
 test("buildNodeName - IDがnullの場合、IDを無視してタグ名のみを返す", () => {
   // Arrange
-  const node = createElementNode("div", { id: null as any });
+  const node = createElementNode("div", { id: null as unknown as string });
 
   // Act
   const result = buildNodeName(node);
@@ -303,7 +303,7 @@ test("buildNodeName - IDがnullの場合、IDを無視してタグ名のみを�
 
 test("buildNodeName - IDがundefinedの場合、IDを無視してタグ名のみを返す", () => {
   // Arrange
-  const node = createElementNode("div", { id: undefined as any });
+  const node = createElementNode("div", { id: undefined as unknown as string });
 
   // Act
   const result = buildNodeName(node);
@@ -314,7 +314,7 @@ test("buildNodeName - IDがundefinedの場合、IDを無視してタグ名のみ
 
 test("buildNodeName - クラスがnullの場合、クラスを無視してタグ名のみを返す", () => {
   // Arrange
-  const node = createElementNode("span", { class: null as any });
+  const node = createElementNode("span", { class: null as unknown as string });
 
   // Act
   const result = buildNodeName(node);
@@ -325,7 +325,9 @@ test("buildNodeName - クラスがnullの場合、クラスを無視してタグ
 
 test("buildNodeName - クラスがundefinedの場合、クラスを無視してタグ名のみを返す", () => {
   // Arrange
-  const node = createElementNode("span", { class: undefined as any });
+  const node = createElementNode("span", {
+    class: undefined as unknown as string,
+  });
 
   // Act
   const result = buildNodeName(node);

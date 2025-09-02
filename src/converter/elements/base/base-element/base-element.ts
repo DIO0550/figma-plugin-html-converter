@@ -1,11 +1,13 @@
+import type { GlobalAttributes } from "../global-attributes/global-attributes";
+
 /**
  * HTML要素の基底インターフェース
  * 全てのHTML要素型はこのインターフェースを拡張する
  *
  * @template T - HTML要素のタグ名
- * @template A - 属性の型（デフォルトはRecord<string, unknown>）
+ * @template A - 属性の型（デフォルトはGlobalAttributes）
  */
-export interface BaseElement<T extends string, A = Record<string, unknown>> {
+export interface BaseElement<T extends string, A = GlobalAttributes> {
   /**
    * ノードタイプ（常に'element'）
    */

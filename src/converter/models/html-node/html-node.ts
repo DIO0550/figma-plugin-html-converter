@@ -184,23 +184,54 @@ export const HTMLNode = {
   extractTextContent(element: unknown): string {
     // 旧形式のノード（contentプロパティを持つ）の場合
     if (element && typeof element === "object") {
-      const obj = element as Record<string, unknown>;
-      // 直接contentプロパティを持つ場合
-      if ("content" in obj && typeof obj.content === "string") {
-        return obj.content;
+      // 型ガードを使用して安全にプロパティアクセス
+      if (this.hasContentProperty(element)) {
+        return element.content;
       }
       // テキストノードで、textContentプロパティを持つ場合
-      if (obj.type === "text" && typeof obj.textContent === "string") {
-        return obj.textContent;
+      if (this.hasTextContentProperty(element) && element.type === "text") {
+        return element.textContent;
       }
       // 子要素を持つ場合、再帰的に処理
-      if (obj.children && Array.isArray(obj.children)) {
-        return obj.children
+      if (this.hasChildrenProperty(element)) {
+        return element.children
           .map((child: unknown) => this.extractTextContent(child))
           .join("");
       }
     }
     // 標準のextractTextにフォールバック
     return this.extractText(element as HTMLNode);
+  },
+
+  // 型ガード：contentプロパティを持つかチェック
+  hasContentProperty(
+    obj: object,
+  ): obj is { content: string } & Record<string, unknown> {
+    return (
+      "content" in obj &&
+      typeof (obj as { content: unknown }).content === "string"
+    );
+  },
+
+  // 型ガード：textContentプロパティを持つかチェック
+  hasTextContentProperty(
+    obj: object,
+  ): obj is { textContent: string; type: string } & Record<string, unknown> {
+    return (
+      "textContent" in obj &&
+      typeof (obj as { textContent: unknown }).textContent === "string" &&
+      "type" in obj &&
+      typeof (obj as { type: unknown }).type === "string"
+    );
+  },
+
+  // 型ガード：childrenプロパティを持つかチェック
+  hasChildrenProperty(
+    obj: object,
+  ): obj is { children: unknown[] } & Record<string, unknown> {
+    return (
+      "children" in obj &&
+      Array.isArray((obj as { children: unknown }).children)
+    );
   },
 };

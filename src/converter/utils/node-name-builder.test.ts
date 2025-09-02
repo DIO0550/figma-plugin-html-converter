@@ -1,15 +1,16 @@
 import { test, expect } from "vitest";
 import { buildNodeName } from "./node-name-builder";
-import type { HTMLNode } from "../models/html-node/html-node";
+import type { BaseElement } from "../elements/base";
+import type { GlobalAttributes } from "../elements/base/global-attributes/global-attributes";
 
 // ========================================
 // テストヘルパー関数
 // ========================================
 
-function createElementNode(
-  tagName: string,
-  attributes?: Record<string, string>,
-): HTMLNode {
+function createElementNode<T extends string>(
+  tagName: T,
+  attributes?: GlobalAttributes,
+): BaseElement<T, GlobalAttributes> {
   return {
     type: "element",
     tagName,
@@ -240,7 +241,7 @@ test('buildNodeName - ID"content"と複数クラス"main-section active visible"
 
 test("buildNodeName - attributesがundefinedの要素を渡すと、タグ名のみを返す", () => {
   // Arrange
-  const node: HTMLNode = {
+  const node: BaseElement<"article", GlobalAttributes> = {
     type: "element",
     tagName: "article",
     attributes: undefined,

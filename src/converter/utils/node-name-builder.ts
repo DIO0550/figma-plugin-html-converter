@@ -1,11 +1,5 @@
 import type { BaseElement } from "../elements/base";
-
-// 属性の型制約を定義
-type NodeNameAttributes = {
-  id?: string | unknown;
-  class?: string | unknown;
-  [key: string]: unknown;
-};
+import type { GlobalAttributes } from "../elements/base/global-attributes/global-attributes";
 
 /**
  * BaseElement から Figma のノード名を生成します
@@ -21,26 +15,26 @@ type NodeNameAttributes = {
  */
 export function buildNodeName<
   T extends string,
-  A extends NodeNameAttributes = NodeNameAttributes,
+  A extends GlobalAttributes = GlobalAttributes,
 >(element: BaseElement<T, A>): string {
+  if (!element.attributes) {
+    return element.tagName;
+  }
+
   let name: string = element.tagName;
+  const attrs = element.attributes;
 
-  // attributes が存在する場合のみ処理
-  if (element.attributes) {
-    // 型制約により安全にアクセス可能
-    const attrs = element.attributes;
+  if (attrs.id) {
+    name += `#${attrs.id}`;
+  }
 
-    // ID属性を追加（型安全にチェック）
-    if (attrs.id && typeof attrs.id === "string") {
-      name += `#${attrs.id}`;
-    }
-
-    // クラス属性を追加（型安全にチェック）
-    if (attrs.class && typeof attrs.class === "string") {
-      const classes = attrs.class.split(" ").filter(Boolean);
-      if (classes.length > 0) {
-        name += `.${classes.join(".")}`;
-      }
+  if (attrs.class) {
+    // 連続する空白がある場合にドット記法が壊れるのを防ぐ
+    const classes = attrs.class
+      .split(" ")
+      .filter((className) => className !== "");
+    if (classes.length > 0) {
+      name += `.${classes.join(".")}`;
     }
   }
 

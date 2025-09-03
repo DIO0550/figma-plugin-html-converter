@@ -1,9 +1,9 @@
 import { test, expect } from "vitest";
 import { SpanElement } from "../span-element";
-import type { SpanElement as SpanElementType } from "../span-element";
+import type { SpanElement } from "../span-element";
 
 test("SpanElement.getIdはID属性を正しく取得する", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -16,7 +16,7 @@ test("SpanElement.getIdはID属性を正しく取得する", () => {
 });
 
 test("SpanElement.getIdはID属性がない場合undefinedを返す", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {},
@@ -27,7 +27,7 @@ test("SpanElement.getIdはID属性がない場合undefinedを返す", () => {
 });
 
 test("SpanElement.getClassはclass属性を正しく取得する", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -40,7 +40,7 @@ test("SpanElement.getClassはclass属性を正しく取得する", () => {
 });
 
 test("SpanElement.getClassはclass属性がない場合undefinedを返す", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {},
@@ -51,7 +51,7 @@ test("SpanElement.getClassはclass属性がない場合undefinedを返す", () =
 });
 
 test("SpanElement.getStyleはstyle属性を正しく取得する", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -64,7 +64,7 @@ test("SpanElement.getStyleはstyle属性を正しく取得する", () => {
 });
 
 test("SpanElement.getStyleはstyle属性がない場合undefinedを返す", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {},
@@ -75,7 +75,7 @@ test("SpanElement.getStyleはstyle属性がない場合undefinedを返す", () =
 });
 
 test("SpanElementのアクセサーは複数の属性を同時に取得できる", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {

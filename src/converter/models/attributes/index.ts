@@ -1,2 +1,1 @@
-export { Attributes } from './attributes';
-export type { Attributes as AttributesType } from './attributes';
+export { Attributes } from "./attributes";

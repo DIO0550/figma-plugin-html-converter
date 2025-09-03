@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 import { SpanConverter } from "../span-converter";
 import { SpanElement } from "../span-element";
-import type { SpanElement as SpanElementType } from "../span-element";
+import type { SpanElement } from "../span-element";
 import type { TextNodeConfig } from "../../../../models/figma-node/text-node-config";
 import type { HTMLNode } from "../../../../models/html-node";
 
@@ -20,14 +20,14 @@ test("div要素内のspan要素がインライン要素として正しく振る�
 });
 
 test("ネストされたspan要素をSpanConverterは正しく処理してテキストを結合する", () => {
-  const innerSpan: SpanElementType = {
+  const innerSpan: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: { style: "font-weight: bold;" },
     children: [{ type: "text", textContent: "強調" }],
   };
 
-  const outerSpan: SpanElementType = {
+  const outerSpan: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: { style: "color: red;" },
@@ -44,7 +44,7 @@ test("ネストされたspan要素をSpanConverterは正しく処理してテキ
 });
 
 test("他のインライン要素（strong, em）との混在をSpanConverterは処理して全テキストを抽出する", () => {
-  const complexSpan: SpanElementType = {
+  const complexSpan: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: { id: "complex" },
@@ -121,7 +121,7 @@ test("mapToFigmaが有効なspan要素を正しく型チェックして変換す
 });
 
 test("実際のHTMLパターン：ツールチップspan要素をSpanConverterは正しく処理する", () => {
-  const tooltipSpan: SpanElementType = {
+  const tooltipSpan: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -138,7 +138,7 @@ test("実際のHTMLパターン：ツールチップspan要素をSpanConverter�
 });
 
 test("実際のHTMLパターン：バッジspan要素をSpanConverterは正しく処理する", () => {
-  const badgeSpan: SpanElementType = {
+  const badgeSpan: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -155,7 +155,7 @@ test("実際のHTMLパターン：バッジspan要素をSpanConverterは正し�
 });
 
 test("実際のHTMLパターン：インラインコードspan要素をSpanConverterは正しく処理する", () => {
-  const codeSpan: SpanElementType = {
+  const codeSpan: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -213,7 +213,7 @@ test("すべての属性を持つspan要素の完全なフローでSpanElement�
 });
 
 test("同じspan要素入力に対してSpanConverterは常に同じ出力を返す", () => {
-  const element: SpanElementType = {
+  const element: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -232,7 +232,7 @@ test("同じspan要素入力に対してSpanConverterは常に同じ出力を返
 });
 
 test("属性の順序が異なってもSpanConverterは同じ結果を生成する", () => {
-  const element1: SpanElementType = {
+  const element1: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {
@@ -243,7 +243,7 @@ test("属性の順序が異なってもSpanConverterは同じ結果を生成す�
     children: [],
   };
 
-  const element2: SpanElementType = {
+  const element2: SpanElement = {
     type: "element",
     tagName: "span",
     attributes: {

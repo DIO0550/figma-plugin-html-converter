@@ -1,43 +1,43 @@
-import { test, expect } from 'vitest';
-import { ConversionOptions } from '../conversion-options';
-import type { ConversionOptions as ConversionOptionsType } from '../conversion-options';
+import { test, expect } from "vitest";
+import { ConversionOptions } from "../conversion-options";
+import type { ConversionOptions } from "../conversion-options";
 
-test('有効なオプションがtrueを返す', () => {
+test("有効なオプションがtrueを返す", () => {
   const options = ConversionOptions.getDefault();
   expect(ConversionOptions.validate(options)).toBe(true);
 });
 
-test('負のcontainerWidthがfalseを返す', () => {
-  const options: ConversionOptionsType = {
-    containerWidth: -100
+test("負のcontainerWidthがfalseを返す", () => {
+  const options: ConversionOptions = {
+    containerWidth: -100,
   };
   expect(ConversionOptions.validate(options)).toBe(false);
 });
 
-test('負のcontainerHeightがfalseを返す', () => {
-  const options: ConversionOptionsType = {
-    containerHeight: -100
+test("負のcontainerHeightがfalseを返す", () => {
+  const options: ConversionOptions = {
+    containerHeight: -100,
   };
   expect(ConversionOptions.validate(options)).toBe(false);
 });
 
-test('負のspacingがfalseを返す', () => {
-  const options: ConversionOptionsType = {
-    spacing: -5
+test("負のspacingがfalseを返す", () => {
+  const options: ConversionOptions = {
+    spacing: -5,
   };
   expect(ConversionOptions.validate(options)).toBe(false);
 });
 
-test('無効なcolorModeがfalseを返す', () => {
-  const options: ConversionOptionsType = {
-    colorMode: 'invalid' as ConversionOptionsType['colorMode']
+test("無効なcolorModeがfalseを返す", () => {
+  const options: ConversionOptions = {
+    colorMode: "invalid" as ConversionOptions["colorMode"],
   };
   expect(ConversionOptions.validate(options)).toBe(false);
 });
 
-test('ゼロのcontainerWidthがfalseを返す', () => {
-  const options: ConversionOptionsType = {
-    containerWidth: 0
+test("ゼロのcontainerWidthがfalseを返す", () => {
+  const options: ConversionOptions = {
+    containerWidth: 0,
   };
   expect(ConversionOptions.validate(options)).toBe(false);
 });

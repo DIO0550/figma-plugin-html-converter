@@ -4,7 +4,6 @@ import { Styles } from "./models/styles";
 import { Attributes } from "./models/attributes";
 import { Paint } from "./models/paint";
 import { ConversionOptions } from "./models/conversion-options";
-import type { ConversionOptions as ConversionOptionsType } from "./models/conversion-options";
 import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
 import { mapToFigma as mapPToFigma } from "./elements/text/p";
@@ -20,7 +19,7 @@ const LAYOUT_CONFIG = {
 
 export function mapHTMLNodeToFigma(
   htmlNode: HTMLNode,
-  options: ConversionOptionsType = {},
+  options: ConversionOptions = {},
 ): FigmaNodeConfig {
   const normalizedOptions = ConversionOptions.from(options);
   if (HTMLNode.isText(htmlNode)) {

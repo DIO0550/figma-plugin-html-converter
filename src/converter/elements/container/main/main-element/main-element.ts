@@ -1,16 +1,16 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { MainAttributes } from "../main-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 
 /**
  * main要素の型定義
  * HTML5のmain要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface MainElement {
-  type: "element";
-  tagName: "main";
+export interface MainElement extends BaseElement<"main", MainAttributes> {
   attributes: MainAttributes;
   children?: HTMLNode[];
 }

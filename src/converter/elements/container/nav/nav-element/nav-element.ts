@@ -1,5 +1,6 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { NavAttributes } from "../nav-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
@@ -7,10 +8,9 @@ import { HTMLToFigmaMapper } from "../../../../mapper";
 /**
  * nav要素の型定義
  * HTML5のnav要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface NavElement {
-  type: "element";
-  tagName: "nav";
+export interface NavElement extends BaseElement<"nav", NavAttributes> {
   attributes: NavAttributes;
   children?: HTMLNode[];
 }

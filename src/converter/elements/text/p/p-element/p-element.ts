@@ -1,13 +1,13 @@
 import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { PAttributes } from "../p-attributes";
+import type { BaseElement } from "../../../base/base-element";
 
 /**
  * p要素の型定義
  * HTMLのp（段落）要素を表現します
+ * BaseElementを継承した専用の型
  */
-export interface PElement {
-  type: "element";
-  tagName: "p";
+export interface PElement extends BaseElement<"p", PAttributes> {
   attributes: PAttributes;
   children?: HTMLNode[];
 }

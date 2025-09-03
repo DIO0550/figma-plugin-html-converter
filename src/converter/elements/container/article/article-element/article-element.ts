@@ -1,16 +1,17 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { ArticleAttributes } from "../article-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 
 /**
  * article要素の型定義
  * HTML5のarticle要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface ArticleElement {
-  type: "element";
-  tagName: "article";
+export interface ArticleElement
+  extends BaseElement<"article", ArticleAttributes> {
   attributes: ArticleAttributes;
   children?: HTMLNode[];
 }

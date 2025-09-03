@@ -6,16 +6,16 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import type { AsideAttributes } from "../aside-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 
 /**
  * aside要素の型定義
  * HTML5のaside要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface AsideElement {
-  type: "element";
-  tagName: "aside";
+export interface AsideElement extends BaseElement<"aside", AsideAttributes> {
   attributes: AsideAttributes;
   children?: HTMLNode[];
 }

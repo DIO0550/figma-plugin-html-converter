@@ -1,5 +1,6 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { FooterAttributes } from "../footer-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
@@ -7,10 +8,9 @@ import { HTMLToFigmaMapper } from "../../../../mapper";
 /**
  * footer要素の型定義
  * HTML5のfooter要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface FooterElement {
-  type: "element";
-  tagName: "footer";
+export interface FooterElement extends BaseElement<"footer", FooterAttributes> {
   attributes: FooterAttributes;
   children?: HTMLNode[];
 }

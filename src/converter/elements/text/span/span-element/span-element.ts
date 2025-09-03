@@ -1,13 +1,13 @@
 import type { HTMLNode } from "../../../../models/html-node/html-node";
-import type { BaseElement } from "../../../base";
+import type { BaseElement } from "../../../base/base-element/base-element";
 import type { SpanAttributes } from "../span-attributes";
 
 /**
  * span要素の型定義
  * HTMLのspan（インライン）要素を表現します
+ * BaseElementを継承した専用の型
  */
 export interface SpanElement extends BaseElement<"span", SpanAttributes> {
-  attributes: SpanAttributes;
   children?: HTMLNode[];
 }
 
@@ -53,20 +53,20 @@ export const SpanElement = {
    * ID属性の取得
    */
   getId(element: SpanElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * クラス属性の取得
    */
   getClass(element: SpanElement): string | undefined {
-    return element.attributes.class;
+    return element.attributes?.class;
   },
 
   /**
    * スタイル属性の取得
    */
   getStyle(element: SpanElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 };

@@ -1,13 +1,13 @@
 import type { HTMLNode } from "../../../../../models/html-node/html-node";
 import type { HeadingAttributes } from "../../heading-attributes";
+import type { BaseElement } from "../../../../base/base-element";
 
 /**
  * h2要素の型定義
  * HTMLのh2（第2レベル見出し）要素を表現します
+ * BaseElementを継承した専用の型
  */
-export interface H2Element {
-  type: "element";
-  tagName: "h2";
+export interface H2Element extends BaseElement<"h2", HeadingAttributes> {
   attributes: HeadingAttributes;
   children?: HTMLNode[];
 }

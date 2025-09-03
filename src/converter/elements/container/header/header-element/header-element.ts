@@ -1,16 +1,16 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { HeaderAttributes } from "../header-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 
 /**
  * header要素の型定義
  * HTML5のheader要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface HeaderElement {
-  type: "element";
-  tagName: "header";
+export interface HeaderElement extends BaseElement<"header", HeaderAttributes> {
   attributes: HeaderAttributes;
   children?: HTMLNode[];
 }

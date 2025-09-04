@@ -54,28 +54,28 @@ export const ArticleElement = {
    * ID属性を取得
    */
   getId(element: ArticleElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * className属性を取得
    */
   getClassName(element: ArticleElement): string | undefined {
-    return element.attributes.className;
+    return element.attributes?.className;
   },
 
   /**
    * style属性を取得
    */
   getStyle(element: ArticleElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 
   /**
    * 任意の属性を取得
    */
   getAttribute(element: ArticleElement, name: string): unknown {
-    return element.attributes[name as keyof ArticleAttributes];
+    return element.attributes?.[name as keyof ArticleAttributes];
   },
 
   /**

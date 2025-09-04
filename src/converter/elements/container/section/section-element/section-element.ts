@@ -83,7 +83,7 @@ export const SectionElement = {
       return config;
     }
 
-    const styles = Styles.parse(element.attributes.style);
+    const styles = Styles.parse(element.attributes?.style);
 
     // 背景色を適用
     const backgroundColor = Styles.getBackgroundColor(styles);

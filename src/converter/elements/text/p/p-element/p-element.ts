@@ -8,7 +8,6 @@ import type { BaseElement } from "../../../base/base-element";
  * BaseElementを継承した専用の型
  */
 export interface PElement extends BaseElement<"p", PAttributes> {
-  attributes: PAttributes;
   children?: HTMLNode[];
 }
 
@@ -54,20 +53,20 @@ export const PElement = {
    * ID属性の取得
    */
   getId(element: PElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * クラス属性の取得
    */
   getClass(element: PElement): string | undefined {
-    return element.attributes.class;
+    return element.attributes?.class;
   },
 
   /**
    * スタイル属性の取得
    */
   getStyle(element: PElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 };

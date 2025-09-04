@@ -11,7 +11,6 @@ import { HTMLToFigmaMapper } from "../../../../mapper";
  * BaseElementを継承した専用の型
  */
 export interface MainElement extends BaseElement<"main", MainAttributes> {
-  attributes: MainAttributes;
   children?: HTMLNode[];
 }
 
@@ -53,28 +52,28 @@ export const MainElement = {
    * ID属性を取得
    */
   getId(element: MainElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * className属性を取得
    */
   getClassName(element: MainElement): string | undefined {
-    return element.attributes.className;
+    return element.attributes?.className;
   },
 
   /**
    * style属性を取得
    */
   getStyle(element: MainElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 
   /**
    * 任意の属性を取得
    */
   getAttribute(element: MainElement, name: string): unknown {
-    return element.attributes[name as keyof MainAttributes];
+    return element.attributes?.[name as keyof MainAttributes];
   },
 
   /**
@@ -88,14 +87,16 @@ export const MainElement = {
    * 属性の存在確認
    */
   hasAttribute(element: MainElement, name: string): boolean {
-    return name in element.attributes;
+    return element.attributes ? name in element.attributes : false;
   },
 
   /**
    * main要素をFigmaノードに変換
    */
   toFigmaNode(element: MainElement): FigmaNodeConfig {
-    const { id, className, style } = element.attributes;
+    const id = element.attributes?.id;
+    const className = element.attributes?.className;
+    const style = element.attributes?.style;
     const styles = Styles.parse(style || "");
 
     // ノード名の生成

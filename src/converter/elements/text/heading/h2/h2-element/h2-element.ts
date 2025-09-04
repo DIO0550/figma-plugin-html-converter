@@ -8,7 +8,6 @@ import type { BaseElement } from "../../../../base/base-element";
  * BaseElementを継承した専用の型
  */
 export interface H2Element extends BaseElement<"h2", HeadingAttributes> {
-  attributes: HeadingAttributes;
   children?: HTMLNode[];
 }
 
@@ -54,20 +53,20 @@ export const H2Element = {
    * ID属性の取得
    */
   getId(element: H2Element): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * クラス属性の取得
    */
   getClass(element: H2Element): string | undefined {
-    return element.attributes.class;
+    return element.attributes?.class;
   },
 
   /**
    * スタイル属性の取得
    */
   getStyle(element: H2Element): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 };

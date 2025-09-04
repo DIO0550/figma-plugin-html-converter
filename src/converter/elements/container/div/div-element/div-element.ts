@@ -8,7 +8,6 @@ import type { BaseElement } from "../../../base/base-element";
  * BaseElementを継承した専用の型
  */
 export interface DivElement extends BaseElement<"div", DivAttributes> {
-  attributes: DivAttributes;
   children: DivElement[] | [];
 }
 

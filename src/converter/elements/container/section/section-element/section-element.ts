@@ -10,7 +10,6 @@ import type { BaseElement } from "../../../base/base-element";
  */
 export interface SectionElement
   extends BaseElement<"section", SectionAttributes> {
-  attributes: SectionAttributes;
   children: SectionElement[] | [];
 }
 

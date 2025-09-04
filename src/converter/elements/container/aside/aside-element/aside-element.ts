@@ -137,7 +137,7 @@ export const AsideElement = {
       name += `[role=${element.attributes?.role}]`;
     }
     if (element.attributes?.["aria-label"]) {
-      name += `[aria-label=${element.attributes["aria-label"]}]`;
+      name += `[aria-label=${element.attributes?.["aria-label"]}]`;
     }
     config.name = name;
 

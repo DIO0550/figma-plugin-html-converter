@@ -12,7 +12,6 @@ import { HTMLToFigmaMapper } from "../../../../mapper";
  */
 export interface ArticleElement
   extends BaseElement<"article", ArticleAttributes> {
-  attributes: ArticleAttributes;
   children?: HTMLNode[];
 }
 
@@ -89,14 +88,16 @@ export const ArticleElement = {
    * 属性の存在確認
    */
   hasAttribute(element: ArticleElement, name: string): boolean {
-    return name in element.attributes;
+    return element.attributes ? name in element.attributes : false;
   },
 
   /**
    * article要素をFigmaノードに変換
    */
   toFigmaNode(element: ArticleElement): FigmaNodeConfig {
-    const { id, className, style } = element.attributes;
+    const id = element.attributes?.id;
+    const className = element.attributes?.className;
+    const style = element.attributes?.style;
     const styles = Styles.parse(style || "");
 
     // ノード名の生成

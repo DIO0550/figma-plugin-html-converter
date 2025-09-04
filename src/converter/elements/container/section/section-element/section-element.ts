@@ -10,7 +10,6 @@ import type { BaseElement } from "../../../base/base-element";
  */
 export interface SectionElement
   extends BaseElement<"section", SectionAttributes> {
-  attributes: SectionAttributes;
   children: SectionElement[] | [];
 }
 
@@ -83,7 +82,7 @@ export const SectionElement = {
       return config;
     }
 
-    const styles = Styles.parse(element.attributes.style);
+    const styles = Styles.parse(element.attributes?.style);
 
     // 背景色を適用
     const backgroundColor = Styles.getBackgroundColor(styles);

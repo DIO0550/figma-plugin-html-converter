@@ -1,5 +1,6 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { FooterAttributes } from "../footer-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
@@ -7,11 +8,9 @@ import { HTMLToFigmaMapper } from "../../../../mapper";
 /**
  * footer要素の型定義
  * HTML5のfooter要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface FooterElement {
-  type: "element";
-  tagName: "footer";
-  attributes: FooterAttributes;
+export interface FooterElement extends BaseElement<"footer", FooterAttributes> {
   children?: HTMLNode[];
 }
 
@@ -50,19 +49,19 @@ export const FooterElement = {
   },
 
   getId(element: FooterElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   getClassName(element: FooterElement): string | undefined {
-    return element.attributes.className;
+    return element.attributes?.className;
   },
 
   getStyle(element: FooterElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 
   getAttribute(element: FooterElement, name: string): unknown {
-    return element.attributes[name as keyof FooterAttributes];
+    return element.attributes?.[name as keyof FooterAttributes];
   },
 
   getChildren(element: FooterElement): HTMLNode[] | undefined {
@@ -70,7 +69,7 @@ export const FooterElement = {
   },
 
   hasAttribute(element: FooterElement, name: string): boolean {
-    return name in element.attributes;
+    return element.attributes ? name in element.attributes : false;
   },
 
   /**
@@ -82,7 +81,7 @@ export const FooterElement = {
     // applyHtmlElementDefaultsはclassプロパティを期待するため変換が必要
     const attributesForDefaults = {
       ...element.attributes,
-      class: element.attributes.className || element.attributes.class,
+      class: element.attributes?.className || element.attributes?.class,
     };
     config = FigmaNodeConfig.applyHtmlElementDefaults(
       config,
@@ -94,7 +93,7 @@ export const FooterElement = {
       return config;
     }
 
-    const styles = Styles.parse(element.attributes.style);
+    const styles = Styles.parse(element.attributes?.style);
 
     const backgroundColor = Styles.getBackgroundColor(styles);
     if (backgroundColor) {

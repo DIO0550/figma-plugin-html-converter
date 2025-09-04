@@ -1,17 +1,16 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { HeaderAttributes } from "../header-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 
 /**
  * header要素の型定義
  * HTML5のheader要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface HeaderElement {
-  type: "element";
-  tagName: "header";
-  attributes: HeaderAttributes;
+export interface HeaderElement extends BaseElement<"header", HeaderAttributes> {
   children?: HTMLNode[];
 }
 
@@ -53,28 +52,28 @@ export const HeaderElement = {
    * ID属性を取得
    */
   getId(element: HeaderElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * className属性を取得
    */
   getClassName(element: HeaderElement): string | undefined {
-    return element.attributes.className;
+    return element.attributes?.className;
   },
 
   /**
    * style属性を取得
    */
   getStyle(element: HeaderElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 
   /**
    * 任意の属性を取得
    */
   getAttribute(element: HeaderElement, name: string): unknown {
-    return element.attributes[name as keyof HeaderAttributes];
+    return element.attributes?.[name as keyof HeaderAttributes];
   },
 
   /**
@@ -88,14 +87,16 @@ export const HeaderElement = {
    * 属性の存在確認
    */
   hasAttribute(element: HeaderElement, name: string): boolean {
-    return name in element.attributes;
+    return element.attributes ? name in element.attributes : false;
   },
 
   /**
    * header要素をFigmaノードに変換
    */
   toFigmaNode(element: HeaderElement): FigmaNodeConfig {
-    const { id, className, style } = element.attributes;
+    const id = element.attributes?.id;
+    const className = element.attributes?.className;
+    const style = element.attributes?.style;
     const styles = Styles.parse(style || "");
 
     // ノード名の生成

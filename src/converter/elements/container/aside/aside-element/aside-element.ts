@@ -6,17 +6,16 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import type { AsideAttributes } from "../aside-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 
 /**
  * aside要素の型定義
  * HTML5のaside要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface AsideElement {
-  type: "element";
-  tagName: "aside";
-  attributes: AsideAttributes;
+export interface AsideElement extends BaseElement<"aside", AsideAttributes> {
   children?: HTMLNode[];
 }
 
@@ -65,7 +64,7 @@ export const AsideElement = {
    * @returns ID属性の値、存在しない場合はundefined
    */
   getId(element: AsideElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
@@ -74,7 +73,7 @@ export const AsideElement = {
    * @returns className属性の値、存在しない場合はundefined
    */
   getClassName(element: AsideElement): string | undefined {
-    return element.attributes.className;
+    return element.attributes?.className;
   },
 
   /**
@@ -83,7 +82,7 @@ export const AsideElement = {
    * @returns style属性の値、存在しない場合はundefined
    */
   getStyle(element: AsideElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 
   /**
@@ -93,7 +92,7 @@ export const AsideElement = {
    * @returns 属性の値、存在しない場合はundefined
    */
   getAttribute(element: AsideElement, name: string): unknown {
-    return element.attributes[name as keyof AsideAttributes];
+    return element.attributes?.[name as keyof AsideAttributes];
   },
 
   /**
@@ -112,7 +111,7 @@ export const AsideElement = {
    * @returns 属性が存在する場合true
    */
   hasAttribute(element: AsideElement, name: string): boolean {
-    return name in element.attributes;
+    return element.attributes ? name in element.attributes : false;
   },
 
   /**
@@ -125,20 +124,20 @@ export const AsideElement = {
 
     // ノード名の生成
     let name = "aside";
-    if (element.attributes.id) {
-      name += `#${element.attributes.id}`;
+    if (element.attributes?.id) {
+      name += `#${element.attributes?.id}`;
     }
-    if (element.attributes.className) {
-      const classes = element.attributes.className.split(" ").filter(Boolean);
+    if (element.attributes?.className) {
+      const classes = element.attributes?.className.split(" ").filter(Boolean);
       if (classes.length > 0) {
         name += `.${classes.join(".")}`;
       }
     }
-    if (element.attributes.role) {
-      name += `[role=${element.attributes.role}]`;
+    if (element.attributes?.role) {
+      name += `[role=${element.attributes?.role}]`;
     }
-    if (element.attributes["aria-label"]) {
-      name += `[aria-label=${element.attributes["aria-label"]}]`;
+    if (element.attributes?.["aria-label"]) {
+      name += `[aria-label=${element.attributes?.["aria-label"]}]`;
     }
     config.name = name;
 
@@ -152,7 +151,7 @@ export const AsideElement = {
       return config;
     }
 
-    const styles = Styles.parse(element.attributes.style);
+    const styles = Styles.parse(element.attributes?.style);
 
     // 背景色を適用
     const backgroundColor = Styles.getBackgroundColor(styles);

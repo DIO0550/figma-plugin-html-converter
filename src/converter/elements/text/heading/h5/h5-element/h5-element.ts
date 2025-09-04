@@ -1,14 +1,13 @@
 import type { HTMLNode } from "../../../../../models/html-node/html-node";
 import type { HeadingAttributes } from "../../heading-attributes";
+import type { BaseElement } from "../../../../base/base-element/base-element";
 
 /**
  * h5要素の型定義
  * HTMLのh5（第5レベル見出し）要素を表現します
+ * BaseElementを継承した専用の型
  */
-export interface H5Element {
-  type: "element";
-  tagName: "h5";
-  attributes: HeadingAttributes;
+export interface H5Element extends BaseElement<"h5", HeadingAttributes> {
   children?: HTMLNode[];
 }
 
@@ -54,20 +53,20 @@ export const H5Element = {
    * ID属性の取得
    */
   getId(element: H5Element): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * クラス属性の取得
    */
   getClass(element: H5Element): string | undefined {
-    return element.attributes.class;
+    return element.attributes?.class;
   },
 
   /**
    * スタイル属性の取得
    */
   getStyle(element: H5Element): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 };

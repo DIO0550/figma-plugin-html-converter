@@ -1,14 +1,13 @@
 import type { HTMLNode } from "../../../../../models/html-node/html-node";
 import type { HeadingAttributes } from "../../heading-attributes";
+import type { BaseElement } from "../../../../base/base-element";
 
 /**
  * h2要素の型定義
  * HTMLのh2（第2レベル見出し）要素を表現します
+ * BaseElementを継承した専用の型
  */
-export interface H2Element {
-  type: "element";
-  tagName: "h2";
-  attributes: HeadingAttributes;
+export interface H2Element extends BaseElement<"h2", HeadingAttributes> {
   children?: HTMLNode[];
 }
 
@@ -54,20 +53,20 @@ export const H2Element = {
    * ID属性の取得
    */
   getId(element: H2Element): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * クラス属性の取得
    */
   getClass(element: H2Element): string | undefined {
-    return element.attributes.class;
+    return element.attributes?.class;
   },
 
   /**
    * スタイル属性の取得
    */
   getStyle(element: H2Element): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 };

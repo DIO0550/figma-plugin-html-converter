@@ -1,5 +1,6 @@
 import type { HTMLNode } from "../../../../models/html-node";
 import type { NavAttributes } from "../nav-attributes";
+import type { BaseElement } from "../../../base/base-element";
 import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
@@ -7,11 +8,9 @@ import { HTMLToFigmaMapper } from "../../../../mapper";
 /**
  * nav要素の型定義
  * HTML5のnav要素を表現し、Figmaのフレームノードに変換される
+ * BaseElementを継承した専用の型
  */
-export interface NavElement {
-  type: "element";
-  tagName: "nav";
-  attributes: NavAttributes;
+export interface NavElement extends BaseElement<"nav", NavAttributes> {
   children?: HTMLNode[];
 }
 
@@ -57,27 +56,27 @@ export const NavElement = {
   },
 
   getId(element: NavElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   getClassName(element: NavElement): string | undefined {
-    return element.attributes.className;
+    return element.attributes?.className;
   },
 
   getStyle(element: NavElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 
   getAriaLabel(element: NavElement): string | undefined {
-    return element.attributes["aria-label"];
+    return element.attributes?.["aria-label"];
   },
 
   getRole(element: NavElement): string | undefined {
-    return element.attributes.role;
+    return element.attributes?.role;
   },
 
   getAttribute(element: NavElement, name: string): unknown {
-    return element.attributes[name as keyof NavAttributes];
+    return element.attributes?.[name as keyof NavAttributes];
   },
 
   getChildren(element: NavElement): HTMLNode[] | undefined {
@@ -85,7 +84,7 @@ export const NavElement = {
   },
 
   hasAttribute(element: NavElement, name: string): boolean {
-    return name in element.attributes;
+    return element.attributes ? name in element.attributes : false;
   },
 
   /**
@@ -100,7 +99,7 @@ export const NavElement = {
     // classNameとclassの両方が存在する場合は、classNameを優先する。
     const attributesForDefaults = {
       ...element.attributes,
-      class: element.attributes.className || element.attributes.class,
+      class: element.attributes?.className || element.attributes?.class,
     };
     config = FigmaNodeConfig.applyHtmlElementDefaults(
       config,
@@ -112,7 +111,7 @@ export const NavElement = {
       return config;
     }
 
-    const styles = Styles.parse(element.attributes.style);
+    const styles = Styles.parse(element.attributes?.style);
 
     const backgroundColor = Styles.getBackgroundColor(styles);
     if (backgroundColor) {

@@ -1,14 +1,13 @@
 import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { PAttributes } from "../p-attributes";
+import type { BaseElement } from "../../../base/base-element";
 
 /**
  * p要素の型定義
  * HTMLのp（段落）要素を表現します
+ * BaseElementを継承した専用の型
  */
-export interface PElement {
-  type: "element";
-  tagName: "p";
-  attributes: PAttributes;
+export interface PElement extends BaseElement<"p", PAttributes> {
   children?: HTMLNode[];
 }
 
@@ -54,20 +53,20 @@ export const PElement = {
    * ID属性の取得
    */
   getId(element: PElement): string | undefined {
-    return element.attributes.id;
+    return element.attributes?.id;
   },
 
   /**
    * クラス属性の取得
    */
   getClass(element: PElement): string | undefined {
-    return element.attributes.class;
+    return element.attributes?.class;
   },
 
   /**
    * スタイル属性の取得
    */
   getStyle(element: PElement): string | undefined {
-    return element.attributes.style;
+    return element.attributes?.style;
   },
 };

@@ -25,6 +25,7 @@ export interface TextStyle {
   letterSpacing: number;
   textAlign: string;
   verticalAlign: string;
+  textDecoration?: "UNDERLINE" | "STRIKETHROUGH";
   fills?: Array<{
     type: string;
     color: {

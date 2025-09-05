@@ -7,6 +7,7 @@ import { ConversionOptions } from "./models/conversion-options";
 import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
 import { mapToFigma as mapPToFigma } from "./elements/text/p";
+import { AConverter } from "./elements/text/a";
 
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
@@ -59,6 +60,14 @@ export function mapHTMLNodeToFigma(
     const pConfig = mapPToFigma(htmlNode);
     if (pConfig) {
       return pConfig;
+    }
+  }
+
+  // a要素の処理を追加
+  if (tagName === "a") {
+    const aConfig = AConverter.mapToFigma(htmlNode);
+    if (aConfig) {
+      return aConfig;
     }
   }
 

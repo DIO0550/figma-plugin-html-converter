@@ -9,6 +9,32 @@ import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 
 /**
+ * デフォルトスタイル定数
+ */
+const DEFAULT_FONT_SIZE = 16; // ブラウザデフォルトフォントサイズ
+const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
+const DEFAULT_LINK_COLOR = { r: 0, g: 0.478, b: 1, a: 1 }; // 青色(#007AFF): HTML標準のリンク色
+
+/**
+ * 単位変換係数
+ */
+const PT_TO_PX_RATIO = 1.333; // ポイントからピクセルへの変換係数（96DPI基準）
+const REM_BASE_SIZE = 16; // rem/emの基準サイズ（ブラウザデフォルト）
+
+/**
+ * 名前付きカラー定義
+ */
+const NAMED_COLORS: Record<string, { r: number; g: number; b: number }> = {
+  red: { r: 1, g: 0, b: 0 },
+  blue: { r: 0, g: 0, b: 1 },
+  green: { r: 0, g: 0.5, b: 0 },
+  black: { r: 0, g: 0, b: 0 },
+  white: { r: 1, g: 1, b: 1 },
+  gray: { r: 0.5, g: 0.5, b: 0.5 },
+  yellow: { r: 1, g: 1, b: 0 },
+};
+
+/**
  * AConverterクラス
  * a要素をFigmaのTEXTノードに変換します
  */
@@ -17,16 +43,13 @@ export const AConverter = {
    * a要素をFigmaノードに変換
    */
   toFigmaNode(element: AElementType): TextNodeConfig {
-    // HTMLリンクのデフォルトスタイル
-    // 青色(#007AFF): HTML標準のリンク色を採用
-    // 16px: ブラウザデフォルトフォントサイズを基準
     let textStyle: TextStyle = {
       fontFamily: "Inter",
-      fontSize: 16,
+      fontSize: DEFAULT_FONT_SIZE,
       fontWeight: 400,
       lineHeight: {
         unit: "PIXELS",
-        value: 24,
+        value: DEFAULT_LINE_HEIGHT,
       },
       letterSpacing: 0,
       textAlign: "LEFT",
@@ -35,12 +58,7 @@ export const AConverter = {
       fills: [
         {
           type: "SOLID",
-          color: {
-            r: 0,
-            g: 0.478,
-            b: 1,
-            a: 1,
-          },
+          color: DEFAULT_LINK_COLOR,
         },
       ],
     };
@@ -169,10 +187,10 @@ function parseFontSize(value: string): number | null {
 
     switch (unit) {
       case "pt":
-        return Math.round(size * 1.333);
+        return Math.round(size * PT_TO_PX_RATIO);
       case "rem":
       case "em":
-        return Math.round(size * 16);
+        return Math.round(size * REM_BASE_SIZE);
       default:
         return Math.round(size);
     }
@@ -215,18 +233,8 @@ function parseColor(value: string): { r: number; g: number; b: number } | null {
     return { r, g, b };
   }
 
-  const namedColors: Record<string, { r: number; g: number; b: number }> = {
-    red: { r: 1, g: 0, b: 0 },
-    blue: { r: 0, g: 0, b: 1 },
-    green: { r: 0, g: 0.5, b: 0 },
-    black: { r: 0, g: 0, b: 0 },
-    white: { r: 1, g: 1, b: 1 },
-    gray: { r: 0.5, g: 0.5, b: 0.5 },
-    yellow: { r: 1, g: 1, b: 0 },
-  };
-
-  if (value in namedColors) {
-    return namedColors[value];
+  if (value in NAMED_COLORS) {
+    return NAMED_COLORS[value];
   }
 
   return null;

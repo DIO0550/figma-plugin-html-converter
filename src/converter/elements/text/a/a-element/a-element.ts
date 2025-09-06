@@ -35,7 +35,6 @@ export const AElement = {
     attributes: Partial<AAttributes> = {},
     children: HTMLNode[] = [],
   ): AElement {
-    // デフォルト値と提供された属性をマージ
     const fullAttributes: AAttributes = {
       ...attributes,
     };

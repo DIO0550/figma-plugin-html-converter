@@ -27,7 +27,7 @@ export class UlAttributes implements UlAttributesProps {
   }
 
   // Index signature to satisfy GlobalAttributes
-  [key: string]: any;
+  [key: string]: unknown;
 
   constructor(props: UlAttributesProps = {}) {
     this.type = props.type;

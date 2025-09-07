@@ -40,7 +40,7 @@ export const UlElement = {
     const ulAttributes =
       attributes instanceof UlAttributes
         ? attributes
-        : new UlAttributes(attributes as any);
+        : new UlAttributes(attributes as Record<string, unknown>);
 
     return {
       type: "element" as const,

@@ -12,14 +12,16 @@ describe("UlConverter - Error Handling", () => {
   });
 
   describe("toFigmaNode error handling", () => {
-    it("should handle null element gracefully", () => {
-      // @ts-expect-error - Testing runtime behavior
-      expect(() => converter.toFigmaNode(null)).toThrow();
-    });
+    it("should handle invalid element types", () => {
+      const invalidElement = null as unknown as Parameters<
+        typeof converter.toFigmaNode
+      >[0];
+      expect(() => converter.toFigmaNode(invalidElement)).toThrow();
 
-    it("should handle undefined element gracefully", () => {
-      // @ts-expect-error - Testing runtime behavior
-      expect(() => converter.toFigmaNode(undefined)).toThrow();
+      const undefinedElement = undefined as unknown as Parameters<
+        typeof converter.toFigmaNode
+      >[0];
+      expect(() => converter.toFigmaNode(undefinedElement)).toThrow();
     });
 
     it("should handle element without attributes", () => {
@@ -27,9 +29,8 @@ describe("UlConverter - Error Handling", () => {
         type: "element" as const,
         tagName: "ul" as const,
         children: [],
-      };
+      } as unknown as Parameters<typeof converter.toFigmaNode>[0];
 
-      // @ts-expect-error - Testing partial element
       const result = converter.toFigmaNode(element);
 
       expect(result).toBeDefined();
@@ -53,7 +54,7 @@ describe("UlConverter - Error Handling", () => {
 
     it("should handle invalid padding values", () => {
       const mockGetPaddingLeft = vi.spyOn(Styles, "getPaddingLeft");
-      mockGetPaddingLeft.mockReturnValue("invalid" as any);
+      mockGetPaddingLeft.mockReturnValue("invalid" as unknown as number);
 
       const element = createUlElement({
         style: "padding-left: 20px",
@@ -145,20 +146,20 @@ describe("UlConverter - Error Handling", () => {
       expect(result.type).toBe("FRAME");
     });
 
-    it("should handle null HTML input", () => {
-      // @ts-expect-error - Testing runtime behavior
-      const result = converter.mapToFigma(null);
+    it("should handle invalid HTML input types", () => {
+      const nullInput = null as unknown as Parameters<
+        typeof converter.mapToFigma
+      >[0];
+      const result1 = converter.mapToFigma(nullInput);
+      expect(result1).toBeDefined();
+      expect(result1.type).toBe("FRAME");
 
-      expect(result).toBeDefined();
-      expect(result.type).toBe("FRAME");
-    });
-
-    it("should handle undefined HTML input", () => {
-      // @ts-expect-error - Testing runtime behavior
-      const result = converter.mapToFigma(undefined);
-
-      expect(result).toBeDefined();
-      expect(result.type).toBe("FRAME");
+      const undefinedInput = undefined as unknown as Parameters<
+        typeof converter.mapToFigma
+      >[0];
+      const result2 = converter.mapToFigma(undefinedInput);
+      expect(result2).toBeDefined();
+      expect(result2.type).toBe("FRAME");
     });
 
     it("should handle extremely malformed HTML", () => {

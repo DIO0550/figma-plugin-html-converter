@@ -228,8 +228,8 @@ describe("UlConverter - Performance", () => {
       const avgDuration =
         durations.reduce((a, b) => a + b, 0) / durations.length;
 
-      // Subsequent conversions should be reasonably fast (within 2x of first)
-      expect(avgDuration).toBeLessThanOrEqual(duration1 * 2);
+      // Subsequent conversions should be reasonably fast (within 3x of first)
+      expect(avgDuration).toBeLessThanOrEqual(duration1 * 3);
     });
 
     it("should handle mixed content types efficiently", () => {

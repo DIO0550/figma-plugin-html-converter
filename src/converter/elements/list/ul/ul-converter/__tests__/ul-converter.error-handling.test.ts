@@ -13,12 +13,12 @@ describe("UlConverter - Error Handling", () => {
 
   describe("toFigmaNode error handling", () => {
     it("should handle null element gracefully", () => {
-      // @ts-ignore - Testing runtime behavior
+      // @ts-expect-error - Testing runtime behavior
       expect(() => converter.toFigmaNode(null)).toThrow();
     });
 
     it("should handle undefined element gracefully", () => {
-      // @ts-ignore - Testing runtime behavior
+      // @ts-expect-error - Testing runtime behavior
       expect(() => converter.toFigmaNode(undefined)).toThrow();
     });
 
@@ -29,7 +29,7 @@ describe("UlConverter - Error Handling", () => {
         children: [],
       };
 
-      // @ts-ignore - Testing partial element
+      // @ts-expect-error - Testing partial element
       const result = converter.toFigmaNode(element);
 
       expect(result).toBeDefined();
@@ -146,7 +146,7 @@ describe("UlConverter - Error Handling", () => {
     });
 
     it("should handle null HTML input", () => {
-      // @ts-ignore - Testing runtime behavior
+      // @ts-expect-error - Testing runtime behavior
       const result = converter.mapToFigma(null);
 
       expect(result).toBeDefined();
@@ -154,7 +154,7 @@ describe("UlConverter - Error Handling", () => {
     });
 
     it("should handle undefined HTML input", () => {
-      // @ts-ignore - Testing runtime behavior
+      // @ts-expect-error - Testing runtime behavior
       const result = converter.mapToFigma(undefined);
 
       expect(result).toBeDefined();

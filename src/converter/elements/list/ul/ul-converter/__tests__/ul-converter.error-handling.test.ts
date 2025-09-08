@@ -165,8 +165,7 @@ test("UlConverter mapToFigma: throws error for undefined input", () => {
 
 test("UlConverter mapToFigma: handles ul with attributes", () => {
   const converter = new UlConverter();
-  const htmlWithAttrs =
-    '<ul id="myList" class="list-class"><<li>Item</li></ul>';
+  const htmlWithAttrs = '<ul id="myList" class="list-class"><li>Item</li></ul>';
   const result = converter.mapToFigma(htmlWithAttrs);
 
   expect(result).toBeDefined();

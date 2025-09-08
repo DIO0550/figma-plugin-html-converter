@@ -1,38 +1,53 @@
-import { describe, it, expect } from "vitest";
-import { createUlElement } from "../ul-element.factory";
+import { test, expect } from "vitest";
 import { UlElement } from "../ul-element";
 
-describe("createUlElement", () => {
-  it("should create a UlElement with default attributes", () => {
-    const element = createUlElement();
+test("UlElement.create: creates a basic ul element without attributes", () => {
+  const element = UlElement.create();
 
-    expect(element.type).toBe("element");
-    expect(element.tagName).toBe("ul");
-    expect(element.children).toEqual([]);
+  expect(element).toEqual({
+    type: "element",
+    tagName: "ul",
+    attributes: {},
+    children: [],
   });
+});
 
-  it("should create a UlElement with custom attributes", () => {
-    const element = createUlElement({
-      className: "custom-list",
-      id: "my-list",
-    });
+test("UlElement.create: creates a ul element with attributes", () => {
+  const attributes = { id: "my-list", className: "list-class" };
+  const element = UlElement.create(attributes);
 
-    expect(element.attributes?.className).toBe("custom-list");
-    expect(element.attributes?.id).toBe("my-list");
+  expect(element).toEqual({
+    type: "element",
+    tagName: "ul",
+    attributes,
+    children: [],
   });
+});
 
-  it("should handle style attributes", () => {
-    const element = createUlElement({
-      style: "list-style-type: none; padding-left: 20px",
-    });
+test("UlElement.create: creates a ul element with children", () => {
+  const children = [
+    { type: "text" as const, textContent: "Item 1" },
+    { type: "text" as const, textContent: "Item 2" },
+  ];
+  const element = UlElement.create({}, children);
 
-    expect(element.attributes?.style).toBe(
-      "list-style-type: none; padding-left: 20px",
-    );
+  expect(element).toEqual({
+    type: "element",
+    tagName: "ul",
+    attributes: {},
+    children,
   });
+});
 
-  it("should be recognized as UlElement", () => {
-    const element = createUlElement();
-    expect(UlElement.isUlElement(element)).toBe(true);
+test("UlElement.create: creates a ul element with both attributes and children", () => {
+  const attributes = { id: "list" };
+  const children = [{ type: "text" as const, textContent: "Item" }];
+  const element = UlElement.create(attributes, children);
+
+  expect(element).toEqual({
+    type: "element",
+    tagName: "ul",
+    attributes,
+    children,
   });
 });

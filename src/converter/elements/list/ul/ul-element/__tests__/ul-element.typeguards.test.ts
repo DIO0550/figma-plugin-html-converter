@@ -1,45 +1,56 @@
-import { describe, it, expect } from "vitest";
-import { isUlElement } from "../ul-element.typeguards";
-import { createUlElement } from "../ul-element.factory";
+import { test, expect } from "vitest";
 import { UlElement } from "../ul-element";
 
-describe("isUlElement", () => {
-  it("should return true for UlElement instances", () => {
-    const element = createUlElement();
-    expect(isUlElement(element)).toBe(true);
-  });
+test("UlElement.isUlElement: returns true for UlElement instances", () => {
+  const element = UlElement.create();
+  expect(UlElement.isUlElement(element)).toBe(true);
+});
 
-  it("should return false for non-UlElement instances", () => {
-    const div = {
-      type: "element",
-      tagName: "div",
-      attributes: {},
-      children: [],
-    };
-    expect(isUlElement(div)).toBe(false);
-  });
+test("UlElement.isUlElement: works with created elements", () => {
+  const element = UlElement.create();
+  expect(UlElement.isUlElement(element)).toBe(true);
+});
 
-  it("should return false for null", () => {
-    expect(isUlElement(null)).toBe(false);
-  });
+test("UlElement.isUlElement: works with manually created ul elements", () => {
+  const element = {
+    type: "element" as const,
+    tagName: "ul" as const,
+    attributes: {},
+    children: [],
+  };
+  expect(UlElement.isUlElement(element)).toBe(true);
+});
 
-  it("should return false for undefined", () => {
-    expect(isUlElement(undefined)).toBe(false);
-  });
+test("UlElement.isUlElement: returns false for non-ul elements", () => {
+  const element = {
+    type: "element" as const,
+    tagName: "div" as const,
+    attributes: {},
+    children: [],
+  };
+  expect(UlElement.isUlElement(element)).toBe(false);
+});
 
-  it("should return false for plain objects", () => {
-    const obj = { tagName: "ul" };
-    expect(isUlElement(obj)).toBe(false);
-  });
+test("UlElement.isUlElement: returns false for text nodes", () => {
+  const notElement = {
+    type: "text" as const,
+    content: "Hello",
+  };
+  expect(UlElement.isUlElement(notElement)).toBe(false);
+});
 
-  it("should check tagName property", () => {
-    const element = createUlElement();
-    expect(element.tagName).toBe("ul");
-    expect(isUlElement(element)).toBe(true);
-  });
+test("UlElement.isUlElement: returns false for null", () => {
+  expect(UlElement.isUlElement(null)).toBe(false);
+});
 
-  it("should use UlElement.isUlElement internally", () => {
-    const element = createUlElement();
-    expect(isUlElement(element)).toBe(UlElement.isUlElement(element));
-  });
+test("UlElement.isUlElement: returns false for undefined", () => {
+  expect(UlElement.isUlElement(undefined)).toBe(false);
+});
+
+test("UlElement.isUlElement: returns false for strings", () => {
+  expect(UlElement.isUlElement("string")).toBe(false);
+});
+
+test("UlElement.isUlElement: returns false for numbers", () => {
+  expect(UlElement.isUlElement(123)).toBe(false);
 });

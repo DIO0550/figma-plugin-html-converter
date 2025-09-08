@@ -1,1 +1,1 @@
-export { UlAttributes, type UlAttributesProps } from "./ul-attributes";
+export type { UlAttributes } from "./ul-attributes";

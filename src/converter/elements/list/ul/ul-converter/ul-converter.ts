@@ -1,7 +1,7 @@
 import type { UlElement } from "../ul-element";
-import { UlAttributes } from "../ul-attributes";
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
+import { HTML } from "../../../../models/html";
 
 /**
  * ul要素をFigmaノードに変換
@@ -125,14 +125,21 @@ export function toFigmaNode(element: UlElement): FigmaNodeConfig {
 /**
  * HTML文字列をFigmaノードに変換
  */
-export function mapToFigma(_html: string): FigmaNodeConfig {
-  // For now, just create a simple ul element
-  // In a real implementation, we would parse the HTML string
+export function mapToFigma(html: string): FigmaNodeConfig {
+  // HTMLを解析してHTMLNodeを取得
+  const htmlNode = HTML.toHTMLNode(HTML.from(html));
+
+  // ul要素であることを確認
+  if (htmlNode.type !== "element" || htmlNode.tagName !== "ul") {
+    throw new Error(`Expected ul element, but got ${htmlNode.tagName}`);
+  }
+
+  // UlElementに変換
   const element: UlElement = {
     type: "element",
     tagName: "ul",
-    attributes: new UlAttributes({}),
-    children: [],
+    attributes: htmlNode.attributes || {},
+    children: htmlNode.children || [],
   };
 
   return toFigmaNode(element);

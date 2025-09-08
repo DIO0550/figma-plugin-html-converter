@@ -6,9 +6,11 @@ test("UlElement.isUlElement: returns true for UlElement instances", () => {
   expect(UlElement.isUlElement(element)).toBe(true);
 });
 
-test("UlElement.isUlElement: works with created elements", () => {
-  const element = UlElement.create();
+test("UlElement.isUlElement: validates element with custom attributes", () => {
+  const element = UlElement.create({ id: "custom-list", className: "my-list" });
   expect(UlElement.isUlElement(element)).toBe(true);
+  expect(element.attributes.id).toBe("custom-list");
+  expect(element.attributes.className).toBe("my-list");
 });
 
 test("UlElement.isUlElement: works with manually created ul elements", () => {

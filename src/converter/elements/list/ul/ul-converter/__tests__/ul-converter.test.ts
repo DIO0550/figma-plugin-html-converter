@@ -19,7 +19,7 @@ test("UlConverter.toFigmaNode: applies default padding for list", () => {
   const element = UlElement.create();
   const node = converter.toFigmaNode(element);
 
-  expect(node.paddingLeft).toBe(40); // Default list padding
+  expect(node.paddingLeft).toBe(40); // DEFAULT_LIST_INDENT
   expect(node.paddingTop).toBe(16);
   expect(node.paddingBottom).toBe(16);
 });
@@ -39,7 +39,7 @@ test("UlConverter.toFigmaNode: sets item spacing", () => {
   const element = UlElement.create();
   const node = converter.toFigmaNode(element);
 
-  expect(node.itemSpacing).toBe(8); // Default spacing between list items
+  expect(node.itemSpacing).toBe(8); // DEFAULT_ITEM_SPACING
 });
 
 test("UlConverter.mapToFigma: maps HTML string to Figma node", () => {

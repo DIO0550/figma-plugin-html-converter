@@ -1,6 +1,6 @@
 import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { BaseElement } from "../../../base/base-element";
-import { UlAttributes } from "../ul-attributes";
+import type { UlAttributes } from "../ul-attributes";
 
 /**
  * ul要素の型定義
@@ -32,20 +32,11 @@ export const UlElement = {
   /**
    * ファクトリー: UlElementを作成
    */
-  create(
-    attributes: Partial<UlAttributes> | Record<string, string> = {},
-    children: HTMLNode[] = [],
-  ): UlElement {
-    // UlAttributesインスタンスを作成
-    const ulAttributes =
-      attributes instanceof UlAttributes
-        ? attributes
-        : new UlAttributes(attributes as Record<string, unknown>);
-
+  create(attributes: UlAttributes = {}, children: HTMLNode[] = []): UlElement {
     return {
       type: "element" as const,
       tagName: "ul" as const,
-      attributes: ulAttributes,
+      attributes,
       children,
     };
   },

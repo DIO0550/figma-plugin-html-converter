@@ -3,6 +3,17 @@ import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTML } from "../../../../models/html";
 
+// デフォルトのリストスタイル定数
+const DEFAULT_LIST_INDENT = 40; // デフォルトのインデント
+const DEFAULT_LIST_VERTICAL_PADDING = 16; // 上下のパディング
+const DEFAULT_ITEM_SPACING = 8; // リストアイテム間のスペース
+
+/**
+ * パディング値のバリデーション
+ */
+const isValidPadding = (value: unknown): value is number =>
+  typeof value === "number" && isFinite(value) && value >= 0;
+
 /**
  * ul要素をFigmaノードに変換
  */
@@ -34,11 +45,11 @@ export function toFigmaNode(element: UlElement): FigmaNodeConfig {
   config.layoutSizingVertical = "HUG";
 
   // デフォルトのリストスタイル
-  config.paddingLeft = 40; // デフォルトのインデント
-  config.paddingTop = 16;
-  config.paddingBottom = 16;
+  config.paddingLeft = DEFAULT_LIST_INDENT;
+  config.paddingTop = DEFAULT_LIST_VERTICAL_PADDING;
+  config.paddingBottom = DEFAULT_LIST_VERTICAL_PADDING;
   config.paddingRight = 0;
-  config.itemSpacing = 8; // リストアイテム間のスペース
+  config.itemSpacing = DEFAULT_ITEM_SPACING;
   config.children = []; // 子要素の初期化
 
   // スタイルがある場合は解析して適用
@@ -65,42 +76,22 @@ export function toFigmaNode(element: UlElement): FigmaNodeConfig {
       } else {
         // 個別のパディング値を適用
         const paddingLeft = Styles.getPaddingLeft(styles);
-        if (
-          paddingLeft !== undefined &&
-          typeof paddingLeft === "number" &&
-          isFinite(paddingLeft) &&
-          paddingLeft >= 0
-        ) {
+        if (paddingLeft !== undefined && isValidPadding(paddingLeft)) {
           config.paddingLeft = paddingLeft;
         }
 
         const paddingTop = Styles.getPaddingTop(styles);
-        if (
-          paddingTop !== undefined &&
-          typeof paddingTop === "number" &&
-          isFinite(paddingTop) &&
-          paddingTop >= 0
-        ) {
+        if (paddingTop !== undefined && isValidPadding(paddingTop)) {
           config.paddingTop = paddingTop;
         }
 
         const paddingBottom = Styles.getPaddingBottom(styles);
-        if (
-          paddingBottom !== undefined &&
-          typeof paddingBottom === "number" &&
-          isFinite(paddingBottom) &&
-          paddingBottom >= 0
-        ) {
+        if (paddingBottom !== undefined && isValidPadding(paddingBottom)) {
           config.paddingBottom = paddingBottom;
         }
 
         const paddingRight = Styles.getPaddingRight(styles);
-        if (
-          paddingRight !== undefined &&
-          typeof paddingRight === "number" &&
-          isFinite(paddingRight) &&
-          paddingRight >= 0
-        ) {
+        if (paddingRight !== undefined && isValidPadding(paddingRight)) {
           config.paddingRight = paddingRight;
         }
       }

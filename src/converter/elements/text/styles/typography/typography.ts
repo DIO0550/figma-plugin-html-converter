@@ -5,6 +5,7 @@ import { FontStyle } from "./font-style/font-style";
 import { LineHeight } from "./line-height/line-height";
 import { TextAlign } from "./text-align/text-align";
 import { TextColor } from "./text-color/text-color";
+import { FontFamily } from "./font-family/font-family";
 
 /**
  * Typographyのコンパニオンオブジェクト
@@ -53,6 +54,21 @@ export const Typography = {
 
     // フォントスタイルを適用（italic等）
     config = FontStyle.applyToConfig(config, styles);
+
+    // フォントファミリーを適用（存在時のみ）
+    {
+      const ffRaw = styles["font-family"];
+      const ff = ffRaw ? FontFamily.parse(ffRaw) : null;
+      if (ff) {
+        config = {
+          ...config,
+          style: {
+            ...config.style,
+            fontFamily: (ff as unknown as string) || config.style.fontFamily,
+          },
+        };
+      }
+    }
 
     // テキストカラーを適用（要素タグに関わらずデフォルトなし）
     config = TextColor.applyToConfig(config, styles);

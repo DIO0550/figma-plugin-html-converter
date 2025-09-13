@@ -133,13 +133,19 @@ export const FontWeight = {
     defaultWeight: number = DEFAULT_FONT_WEIGHT,
   ): number | null {
     const value = styles["font-weight"];
-    const fontWeight = value
-      ? this.parse(value)
-      : defaultWeight !== DEFAULT_FONT_WEIGHT
-        ? this.create(defaultWeight)
-        : null;
 
-    return fontWeight ? (fontWeight as unknown as number) : null;
+    // 明示的な値があれば解析
+    if (value) {
+      const parsed = this.parse(value);
+      return parsed ? (parsed as unknown as number) : null;
+    }
+
+    // デフォルトが通常値以外で指定されていれば適用
+    if (defaultWeight !== DEFAULT_FONT_WEIGHT) {
+      return this.create(defaultWeight) as unknown as number;
+    }
+
+    return null;
   },
 
   /**

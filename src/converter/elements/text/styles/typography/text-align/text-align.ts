@@ -97,13 +97,19 @@ export const TextAlign = {
     defaultAlign: TextAlignValue = DEFAULT_ALIGN,
   ): string | null {
     const value = styles["text-align"];
-    const textAlign = value
-      ? this.parse(value)
-      : defaultAlign !== DEFAULT_ALIGN
-        ? this.create(defaultAlign)
-        : null;
 
-    return textAlign ? (textAlign as unknown as string) : null;
+    // 明示的な値があれば解析
+    if (value) {
+      const parsed = this.parse(value);
+      return parsed ? (parsed as unknown as string) : null;
+    }
+
+    // デフォルトがLEFT以外で指定されていれば適用
+    if (defaultAlign !== DEFAULT_ALIGN) {
+      return this.create(defaultAlign) as unknown as string;
+    }
+
+    return null;
   },
 
   /**

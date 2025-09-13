@@ -95,13 +95,20 @@ export const TextColor = {
     defaultColor?: TextColorValue,
   ): Array<{ type: "SOLID"; color: TextColorValue }> | null {
     const value = styles["color"];
-    const textColor = value
-      ? this.parse(value)
-      : defaultColor
-        ? this.create(defaultColor)
-        : null;
 
-    return textColor ? this.toFills(textColor) : null;
+    // 明示的な値があれば解析
+    if (value) {
+      const parsed = this.parse(value);
+      return parsed ? this.toFills(parsed) : null;
+    }
+
+    // デフォルト色が与えられていれば使用
+    if (defaultColor) {
+      return this.toFills(this.create(defaultColor));
+    }
+
+    // いずれも無ければ適用なし
+    return null;
   },
 
   /**

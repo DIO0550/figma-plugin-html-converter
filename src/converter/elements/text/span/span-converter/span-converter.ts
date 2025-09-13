@@ -42,11 +42,11 @@ export const SpanConverter = {
 
     // span固有の互換性調整
     // 1) font-weight: 数値は範囲外でもそのまま採用（旧実装互換）
-    const fw = styles["font-weight"];
-    if (fw && /^-?\d+(?:\.\d+)?$/.test(fw.trim())) {
-      const n = parseFloat(fw);
-      if (!Number.isNaN(n)) {
-        config.style.fontWeight = n;
+    const fontWeightRaw = styles["font-weight"];
+    if (fontWeightRaw && /^-?\d+(?:\.\d+)?$/.test(fontWeightRaw.trim())) {
+      const numericValue = parseFloat(fontWeightRaw);
+      if (!Number.isNaN(numericValue)) {
+        config.style.fontWeight = numericValue;
       }
     }
     // 2) font-style: italic は小文字で保持（旧実装互換）

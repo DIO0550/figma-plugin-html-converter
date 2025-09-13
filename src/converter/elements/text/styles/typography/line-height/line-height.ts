@@ -179,11 +179,6 @@ export const LineHeight = {
     );
 
     // 安全な初期化（後方互換: 直接ミューテーション）
-    if (!config.style) {
-      // 型上は必須だが実行時安全性のため
-      // @ts-expect-error runtime guard
-      config.style = {} as any;
-    }
     if (!config.style.lineHeight) {
       config.style.lineHeight = { unit: "PIXELS", value: lineHeightValue };
       return;

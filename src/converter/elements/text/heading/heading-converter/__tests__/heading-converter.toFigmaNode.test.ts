@@ -66,7 +66,7 @@ test("toFigmaNode - h3要素を適切なフォントサイズで変換できる"
     type: "TEXT",
     content: "Subsection",
     style: {
-      fontSize: 20,
+      fontSize: 19,
       fontWeight: 700,
     },
   });
@@ -87,7 +87,7 @@ test("toFigmaNode - h4要素を適切なフォントサイズで変換できる"
     type: "TEXT",
     content: "Paragraph Title",
     style: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: 700,
     },
   });
@@ -108,7 +108,7 @@ test("toFigmaNode - h5要素を適切なフォントサイズで変換できる"
     type: "TEXT",
     content: "Minor Heading",
     style: {
-      fontSize: 16,
+      fontSize: 13,
       fontWeight: 700,
     },
   });
@@ -129,7 +129,7 @@ test("toFigmaNode - h6要素を適切なフォントサイズで変換できる"
     type: "TEXT",
     content: "Small Heading",
     style: {
-      fontSize: 14,
+      fontSize: 11,
       fontWeight: 700,
     },
   });

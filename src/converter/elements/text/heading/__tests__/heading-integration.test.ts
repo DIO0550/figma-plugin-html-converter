@@ -108,28 +108,28 @@ test("HeadingConverterで全ての見出しレベルをFigmaノードに変換�
   expect(h3Node.children![0]).toMatchObject({
     type: "TEXT",
     content: "H3 Text",
-    style: { fontSize: 20, fontWeight: 700 },
+    style: { fontSize: 19, fontWeight: 700 },
   });
 
   expect(h4Node.name).toBe("h4");
   expect(h4Node.children![0]).toMatchObject({
     type: "TEXT",
     content: "H4 Text",
-    style: { fontSize: 18, fontWeight: 700 },
+    style: { fontSize: 16, fontWeight: 700 },
   });
 
   expect(h5Node.name).toBe("h5");
   expect(h5Node.children![0]).toMatchObject({
     type: "TEXT",
     content: "H5 Text",
-    style: { fontSize: 16, fontWeight: 700 },
+    style: { fontSize: 13, fontWeight: 700 },
   });
 
   expect(h6Node.name).toBe("h6");
   expect(h6Node.children![0]).toMatchObject({
     type: "TEXT",
     content: "H6 Text",
-    style: { fontSize: 14, fontWeight: 700 },
+    style: { fontSize: 11, fontWeight: 700 },
   });
 });
 

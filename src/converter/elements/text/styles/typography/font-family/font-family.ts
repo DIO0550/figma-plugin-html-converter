@@ -18,6 +18,13 @@ export const FontFamily = {
   },
 
   /**
+   * ブランドを外してプレーンな文字列を取得
+   */
+  unwrap(value: FontFamily): string {
+    return value as unknown as string;
+  },
+
+  /**
    * font-familyをパース
    * "Arial, sans-serif" → "Arial"
    */

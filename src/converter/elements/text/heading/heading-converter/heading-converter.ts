@@ -5,7 +5,7 @@ import {
 } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLNode } from "../../../../models/html-node/html-node";
-import { createBaseTextNode } from "../../common/text-node-creator";
+import { Typography } from "../../styles/typography/typography";
 import type { H1Element } from "../h1/h1-element";
 import type { H2Element } from "../h2/h2-element";
 import type { H3Element } from "../h3/h3-element";
@@ -22,18 +22,6 @@ type HeadingElement =
   | H6Element;
 
 type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-
-/**
- * 見出しレベルに応じたデフォルトフォントサイズ
- */
-const HEADING_FONT_SIZES: Record<HeadingLevel, number> = {
-  h1: 32,
-  h2: 24,
-  h3: 20,
-  h4: 18,
-  h5: 16,
-  h6: 14,
-};
 
 /**
  * 見出し要素をFigmaノードに変換
@@ -159,13 +147,9 @@ function createHeadingTextNode(
   parentStyles: Record<string, string>,
   headingLevel?: HeadingLevel,
 ): TextNodeConfig {
-  const defaultFontSize = headingLevel ? HEADING_FONT_SIZES[headingLevel] : 16;
-
-  return createBaseTextNode(node, parentStyles, {
-    defaultFontSize,
-    defaultFontWeight: 700, // 見出しはデフォルトで太字
-    defaultLineHeightMultiplier: 1.2, // 見出しは行の高さを少し狭く
-  });
+  const baseConfig = TextNodeConfig.create(node.content);
+  // Typography統合オブジェクトを使用してスタイルを適用
+  return Typography.applyToTextNode(baseConfig, parentStyles, headingLevel);
 }
 
 /**

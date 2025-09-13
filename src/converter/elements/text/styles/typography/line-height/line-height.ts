@@ -110,7 +110,10 @@ export const LineHeight = {
   /**
    * デフォルトの行の高さを計算
    */
-  calculateDefault(fontSize: number, multiplier: number = 1.5): LineHeight {
+  calculateDefault(
+    fontSize: number,
+    multiplier: number = DEFAULT_LINE_HEIGHT_MULTIPLIER,
+  ): LineHeight {
     return LineHeight.create(fontSize * multiplier);
   },
 
@@ -121,7 +124,7 @@ export const LineHeight = {
   extractStyle(
     styles: Record<string, string>,
     fontSize: number,
-    defaultMultiplier: number = 1.5,
+    defaultMultiplier: number = DEFAULT_LINE_HEIGHT_MULTIPLIER,
   ): number {
     const value = styles["line-height"];
     const lineHeight = value
@@ -140,7 +143,7 @@ export const LineHeight = {
     config: TextNodeConfig,
     styles: Record<string, string>,
     fontSize: number,
-    defaultMultiplier: number = 1.5,
+    defaultMultiplier: number = DEFAULT_LINE_HEIGHT_MULTIPLIER,
   ): TextNodeConfig {
     const lineHeightValue = this.extractStyle(
       styles,
@@ -167,7 +170,7 @@ export const LineHeight = {
     config: TextNodeConfig,
     styles: Record<string, string>,
     fontSize: number,
-    defaultMultiplier: number = 1.5,
+    defaultMultiplier: number = DEFAULT_LINE_HEIGHT_MULTIPLIER,
   ): void {
     const lineHeightValue = this.extractStyle(
       styles,

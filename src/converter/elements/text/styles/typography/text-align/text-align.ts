@@ -15,11 +15,13 @@ export type TextAlign = Brand<TextAlignValue, "TextAlign">;
  * TextAlignのコンパニオンオブジェクト
  * テキスト配置の作成とパースを担当
  */
+const DEFAULT_ALIGN: TextAlignValue = "LEFT";
+
 export const TextAlign = {
   /**
    * デフォルトのテキスト配置
    */
-  DEFAULT: "LEFT" as const,
+  DEFAULT: DEFAULT_ALIGN,
 
   /**
    * TextAlignを作成
@@ -62,7 +64,7 @@ export const TextAlign = {
    * デフォルトのテキスト配置
    */
   default(): TextAlign {
-    return TextAlign.create("LEFT");
+    return TextAlign.create(DEFAULT_ALIGN);
   },
 
   /**
@@ -92,12 +94,12 @@ export const TextAlign = {
    */
   extractStyle(
     styles: Record<string, string>,
-    defaultAlign: TextAlignValue = "LEFT",
+    defaultAlign: TextAlignValue = DEFAULT_ALIGN,
   ): string | null {
     const value = styles["text-align"];
     const textAlign = value
       ? this.parse(value)
-      : defaultAlign !== "LEFT"
+      : defaultAlign !== DEFAULT_ALIGN
         ? this.create(defaultAlign)
         : null;
 
@@ -110,7 +112,7 @@ export const TextAlign = {
   applyToConfig(
     config: TextNodeConfig,
     styles: Record<string, string>,
-    defaultAlign: TextAlignValue = "LEFT",
+    defaultAlign: TextAlignValue = DEFAULT_ALIGN,
   ): TextNodeConfig {
     const textAlign = this.extractStyle(styles, defaultAlign);
     if (!textAlign) {
@@ -132,7 +134,7 @@ export const TextAlign = {
   applyTo(
     config: TextNodeConfig,
     styles: Record<string, string>,
-    defaultAlign: TextAlignValue = "LEFT",
+    defaultAlign: TextAlignValue = DEFAULT_ALIGN,
   ): void {
     const textAlign = this.extractStyle(styles, defaultAlign);
     if (textAlign) {

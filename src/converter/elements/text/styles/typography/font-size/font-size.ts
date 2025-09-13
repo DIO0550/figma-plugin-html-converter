@@ -82,7 +82,7 @@ export const FontSize = {
    */
   extractStyle(
     styles: Record<string, string>,
-    defaultSize: number = 16,
+    defaultSize: number = DEFAULT_FONT_SIZE,
   ): number {
     const value = styles["font-size"];
     const fontSize = value ? this.parse(value) : this.create(defaultSize);
@@ -95,7 +95,7 @@ export const FontSize = {
   applyToConfig(
     config: TextNodeConfig,
     styles: Record<string, string>,
-    defaultSize: number = 16,
+    defaultSize: number = DEFAULT_FONT_SIZE,
   ): TextNodeConfig {
     const sizeValue = this.extractStyle(styles, defaultSize);
     return {
@@ -114,7 +114,7 @@ export const FontSize = {
   applyTo(
     config: TextNodeConfig,
     styles: Record<string, string>,
-    defaultSize: number = 16,
+    defaultSize: number = DEFAULT_FONT_SIZE,
   ): number {
     const sizeValue = this.extractStyle(styles, defaultSize);
     config.style.fontSize = sizeValue;

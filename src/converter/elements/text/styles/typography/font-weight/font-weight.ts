@@ -130,12 +130,12 @@ export const FontWeight = {
    */
   extractStyle(
     styles: Record<string, string>,
-    defaultWeight: number = 400,
+    defaultWeight: number = DEFAULT_FONT_WEIGHT,
   ): number | null {
     const value = styles["font-weight"];
     const fontWeight = value
       ? this.parse(value)
-      : defaultWeight !== 400
+      : defaultWeight !== DEFAULT_FONT_WEIGHT
         ? this.create(defaultWeight)
         : null;
 
@@ -148,7 +148,7 @@ export const FontWeight = {
   applyToConfig(
     config: TextNodeConfig,
     styles: Record<string, string>,
-    defaultWeight: number = 400,
+    defaultWeight: number = DEFAULT_FONT_WEIGHT,
   ): TextNodeConfig {
     const fontWeight = this.extractStyle(styles, defaultWeight);
     if (!fontWeight) {
@@ -170,7 +170,7 @@ export const FontWeight = {
   applyTo(
     config: TextNodeConfig,
     styles: Record<string, string>,
-    defaultWeight: number = 400,
+    defaultWeight: number = DEFAULT_FONT_WEIGHT,
   ): void {
     const fontWeight = this.extractStyle(styles, defaultWeight);
     if (fontWeight) {

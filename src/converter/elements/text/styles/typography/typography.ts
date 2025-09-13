@@ -21,58 +21,53 @@ export const Typography = {
     styles: Record<string, string>,
     elementTag?: string,
   ): TextNodeConfig {
-    // 関数合成的なアプローチ: 各スタイルを順番に適用
-    let config = textConfig;
-
-    // フォントサイズを適用（各モジュールが要素タグからデフォルトを取得）
-    config = FontSize.applyToConfig(
-      config,
+    // 段階的に不変データで適用していく
+    const withFontSize = FontSize.applyToConfig(
+      textConfig,
       styles,
       FontSize.getDefault(elementTag),
     );
 
-    // 適用されたフォントサイズを取得（LineHeightで使用）
-    const appliedFontSize = config.style.fontSize;
+    // LineHeightのために適用後のfontSizeを参照
+    const appliedFontSize = withFontSize.style.fontSize;
 
-    // フォントウェイトを適用
-    config = FontWeight.applyToConfig(
-      config,
+    const withFontWeight = FontWeight.applyToConfig(
+      withFontSize,
       styles,
       FontWeight.getDefault(elementTag),
     );
 
-    // 行の高さを適用
-    config = LineHeight.applyToConfig(
-      config,
+    const withLineHeight = LineHeight.applyToConfig(
+      withFontWeight,
       styles,
       appliedFontSize,
       LineHeight.getDefaultMultiplier(elementTag),
     );
 
-    // テキスト配置を適用（要素タグに関わらずデフォルトはLEFT）
-    config = TextAlign.applyToConfig(config, styles, TextAlign.DEFAULT);
+    const withTextAlign = TextAlign.applyToConfig(
+      withLineHeight,
+      styles,
+      TextAlign.DEFAULT,
+    );
 
-    // フォントスタイルを適用（italic等）
-    config = FontStyle.applyToConfig(config, styles);
+    const withFontStyle = FontStyle.applyToConfig(withTextAlign, styles);
 
     // フォントファミリーを適用（存在時のみ）
-    {
-      const ffRaw = styles["font-family"];
-      const ff = ffRaw ? FontFamily.parse(ffRaw) : null;
-      if (ff) {
-        config = {
-          ...config,
+    const ffRaw = styles["font-family"];
+    const ff = ffRaw ? FontFamily.parse(ffRaw) : null;
+    const withFontFamily = ff
+      ? {
+          ...withFontStyle,
           style: {
-            ...config.style,
-            fontFamily: (ff as unknown as string) || config.style.fontFamily,
+            ...withFontStyle.style,
+            fontFamily: FontFamily.unwrap(ff),
           },
-        };
-      }
-    }
+        }
+      : withFontStyle;
 
     // テキストカラーを適用（要素タグに関わらずデフォルトなし）
-    config = TextColor.applyToConfig(config, styles);
+    const finalConfig = TextColor.applyToConfig(withFontFamily, styles);
 
-    return config;
+    return finalConfig;
   },
 } as const;

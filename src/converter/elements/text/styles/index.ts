@@ -1,0 +1,2 @@
+// Typographyグループ
+export * from "./typography";

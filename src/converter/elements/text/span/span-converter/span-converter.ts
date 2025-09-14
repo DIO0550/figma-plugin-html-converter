@@ -16,10 +16,10 @@ export const SpanConverter = {
    * span要素をFigmaノードに変換
    */
   toFigmaNode(element: SpanElement): TextNodeConfig {
-    // スタイルを解析
-    const styles: Record<string, string> = element.attributes?.style
-      ? (Styles.parse(element.attributes.style) as unknown as Record<string, string>)
-      : {};
+    // スタイルを解析（ブランド型 Styles をそのまま使用）
+    const styles = element.attributes?.style
+      ? Styles.parse(element.attributes.style)
+      : Styles.empty();
 
     // ベースのテキストノード（最小構成）
     let config: TextNodeConfig = {
@@ -49,18 +49,22 @@ export const SpanConverter = {
         config.style.fontWeight = numericValue;
       }
     }
-    // 2) font-style: italic は小文字で保持（旧実装互換）
-    if (styles["font-style"] && /italic/i.test(styles["font-style"])) {
-      config.style.fontStyle = "italic";
+    // 2) font-style: "italic" または "oblique" のみ厳密に判定し、小文字で保持
+    if (
+      styles["font-style"] &&
+      /^(italic|oblique)$/i.test(styles["font-style"].trim())
+    ) {
+      config.style.fontStyle = styles["font-style"].trim().toLowerCase();
     }
 
     // 3) color: rgb()/rgba() など不正値は無視（旧実装互換）
     if (styles["color"]) {
       const c = CSSColor.parse(styles["color"]);
       if (!c) {
-        // 不正な場合はfillsを外す（型安全に削除）
+        // 不正な場合はfillsを外す（restパターンで安全に除外）
         if ("fills" in config.style) {
-          delete config.style.fills;
+          const { fills: _fills, ...restStyle } = config.style;
+          config.style = restStyle;
         }
       }
     }

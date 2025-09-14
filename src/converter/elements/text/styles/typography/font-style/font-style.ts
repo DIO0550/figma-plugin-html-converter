@@ -69,12 +69,18 @@ export const FontStyle = {
       return config;
     }
 
-    return {
-      ...config,
-      style: {
-        ...config.style,
-        fontStyle: fontStyle === "italic" ? "ITALIC" : undefined,
-      },
-    };
+    // 斜体の場合のみfontStyleプロパティを設定
+    if (fontStyle === "italic") {
+      return {
+        ...config,
+        style: {
+          ...config.style,
+          fontStyle: "ITALIC",
+        },
+      };
+    }
+
+    // 通常スタイルの場合はfontStyleプロパティを含めない
+    return config;
   },
 } as const;

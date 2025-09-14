@@ -6,7 +6,7 @@ import {
 import { Styles } from "../../../../models/styles";
 import type { PElement } from "../p-element";
 import { HTMLNode } from "../../../../models/html-node/html-node";
-import { createBaseTextNode } from "../../common/text-node-creator";
+import { Typography } from "../../styles/typography/typography";
 
 /**
  * p要素をFigmaノードに変換
@@ -118,11 +118,9 @@ function createTextNode(
   node: { type: string; content: string },
   parentStyles: Record<string, string>,
 ): TextNodeConfig {
-  return createBaseTextNode(node, parentStyles, {
-    defaultFontSize: 16,
-    defaultFontWeight: 400,
-    defaultLineHeightMultiplier: 1.5,
-  });
+  const baseConfig = TextNodeConfig.create(node.content);
+  // Typography統合オブジェクトを使用してスタイルを適用
+  return Typography.applyToTextNode(baseConfig, parentStyles, "p");
 }
 
 /**
@@ -133,11 +131,9 @@ function createBoldTextNode(
   parentStyles: Record<string, string>,
 ): TextNodeConfig {
   const textContent = HTMLNode.extractTextContent(element);
-  const textNode = createTextNode(
-    { type: "text", content: textContent },
-    parentStyles,
-  );
-  return TextNodeConfig.setFontWeight(textNode, 700);
+  const baseConfig = TextNodeConfig.create(textContent);
+  const styles = { ...parentStyles, "font-weight": "700" };
+  return Typography.applyToTextNode(baseConfig, styles, "p");
 }
 
 /**
@@ -148,11 +144,9 @@ function createItalicTextNode(
   parentStyles: Record<string, string>,
 ): TextNodeConfig {
   const textContent = HTMLNode.extractTextContent(element);
-  const textNode = createTextNode(
-    { type: "text", content: textContent },
-    parentStyles,
-  );
-  return TextNodeConfig.setFontStyle(textNode, "ITALIC");
+  const baseConfig = TextNodeConfig.create(textContent);
+  const styles = { ...parentStyles, "font-style": "italic" };
+  return Typography.applyToTextNode(baseConfig, styles, "p");
 }
 
 /**

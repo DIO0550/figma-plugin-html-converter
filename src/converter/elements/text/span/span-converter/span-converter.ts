@@ -58,9 +58,9 @@ export const SpanConverter = {
     if (styles["color"]) {
       const c = CSSColor.parse(styles["color"]);
       if (!c) {
-        // 不正な場合はfillsを外す
+        // 不正な場合はfillsを外す（型安全に削除）
         if ("fills" in config.style) {
-          delete (config.style as any).fills;
+          delete config.style.fills;
         }
       }
     }

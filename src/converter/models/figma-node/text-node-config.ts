@@ -26,6 +26,7 @@ export interface TextStyle {
   textAlign: string;
   verticalAlign: string;
   textDecoration?: "UNDERLINE" | "STRIKETHROUGH";
+  textCase?: "UPPERCASE" | "LOWERCASE" | "CAPITALIZE" | "ORIGINAL";
   fills?: Array<{
     type: string;
     color: {

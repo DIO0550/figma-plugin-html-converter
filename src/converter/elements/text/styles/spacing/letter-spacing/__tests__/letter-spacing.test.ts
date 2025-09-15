@@ -2,10 +2,6 @@ import { test, expect } from "vitest";
 import { LetterSpacing } from "../letter-spacing";
 import type { TextNodeConfig } from "../../../../../../models/figma-node";
 
-// =============================================================================
-// テストヘルパー
-// =============================================================================
-
 /**
  * テスト用のTextNodeConfigを作成
  */
@@ -33,10 +29,6 @@ function createMockTextNodeConfig(
   };
 }
 
-// =============================================================================
-// LetterSpacing.create のテスト
-// =============================================================================
-
 test("LetterSpacing.create() - 正の数値からLetterSpacingを作成", () => {
   const result = LetterSpacing.create(2);
   expect(result).toBe(2);
@@ -57,10 +49,6 @@ test("LetterSpacing.create() - 小数値からLetterSpacingを作成", () => {
   expect(result).toBe(0.5);
 });
 
-// =============================================================================
-// LetterSpacing.parse のテスト - normal値
-// =============================================================================
-
 test("LetterSpacing.parse() - 'normal'を0として解析", () => {
   const result = LetterSpacing.parse("normal");
   expect(result).toBe(0);
@@ -70,10 +58,6 @@ test("LetterSpacing.parse() - 'NORMAL'を0として解析（大文字小文字�
   const result = LetterSpacing.parse("NORMAL");
   expect(result).toBe(0);
 });
-
-// =============================================================================
-// LetterSpacing.parse のテスト - px値
-// =============================================================================
 
 test.each([
   ["2px", 2],
@@ -87,10 +71,6 @@ test.each([
   const result = LetterSpacing.parse(input);
   expect(result).toBe(expected);
 });
-
-// =============================================================================
-// LetterSpacing.parse のテスト - em値
-// =============================================================================
 
 test.each([
   ["0.1em", 16, 1.6],
@@ -110,10 +90,6 @@ test("LetterSpacing.parse() - fontSizeなしのem値はnullを返す", () => {
   expect(result).toBeNull();
 });
 
-// =============================================================================
-// LetterSpacing.parse のテスト - rem値
-// =============================================================================
-
 test.each([
   ["0.125rem", undefined, 16, 2], // デフォルトベース
   ["-0.0625rem", undefined, 16, -1], // 負の値
@@ -125,10 +101,6 @@ test.each([
     expect(result).toBe(expected);
   },
 );
-
-// =============================================================================
-// LetterSpacing.parse のテスト - パーセンテージ値
-// =============================================================================
 
 test.each([
   ["10%", 20, 2],
@@ -146,10 +118,6 @@ test("LetterSpacing.parse() - fontSizeなしのパーセンテージはnullを�
   expect(result).toBeNull();
 });
 
-// =============================================================================
-// LetterSpacing.parse のテスト - CSS変数とキーワード
-// =============================================================================
-
 test.each([["var(--letter-spacing)"], ["inherit"], ["initial"], ["unset"]])(
   "LetterSpacing.parse() - CSS変数/キーワード '%s' はnullを返す",
   (input) => {
@@ -157,10 +125,6 @@ test.each([["var(--letter-spacing)"], ["inherit"], ["initial"], ["unset"]])(
     expect(result).toBeNull();
   },
 );
-
-// =============================================================================
-// LetterSpacing.parse のテスト - エッジケース
-// =============================================================================
 
 test.each([
   ["", null],
@@ -172,10 +136,6 @@ test.each([
   const result = LetterSpacing.parse(input);
   expect(result).toBe(expected);
 });
-
-// =============================================================================
-// LetterSpacing.extractStyle のテスト
-// =============================================================================
 
 test("LetterSpacing.extractStyle() - letter-spacingをスタイルから抽出", () => {
   const styles = { "letter-spacing": "2px" };
@@ -206,10 +166,6 @@ test("LetterSpacing.extractStyle() - normal値は0を返す", () => {
   const result = LetterSpacing.extractStyle(styles);
   expect(result).toBe(0);
 });
-
-// =============================================================================
-// LetterSpacing.applyToConfig のテスト
-// =============================================================================
 
 test("LetterSpacing.applyToConfig() - letter-spacingをconfigに適用", () => {
   // Arrange
@@ -293,10 +249,6 @@ test("LetterSpacing.applyToConfig() - 負の値を適用", () => {
   // Assert
   expect(result.style.letterSpacing).toBe(-0.5);
 });
-
-// =============================================================================
-// LetterSpacing.toFigmaLetterSpacing のテスト
-// =============================================================================
 
 test.each([
   [2, { value: 2, unit: "PIXELS" }],

@@ -32,6 +32,13 @@ export const LetterSpacing = {
   },
 
   /**
+   * LetterSpacingの生の数値を取得
+   */
+  getValue(letterSpacing: LetterSpacing): number {
+    return letterSpacing as unknown as number;
+  },
+
+  /**
    * letter-spacingをパース
    * @param letterSpacing - パース対象の文字列
    * @param fontSize - em/percentage計算用のフォントサイズ
@@ -123,7 +130,7 @@ export const LetterSpacing = {
     }
 
     const letterSpacing = this.parse(value, fontSize, baseFontSize);
-    return letterSpacing !== null ? (letterSpacing as unknown as number) : 0;
+    return letterSpacing !== null ? this.getValue(letterSpacing) : 0;
   },
 
   /**
@@ -155,7 +162,7 @@ export const LetterSpacing = {
    */
   toFigmaLetterSpacing(letterSpacing: LetterSpacing): FigmaLetterSpacing {
     return {
-      value: letterSpacing as unknown as number,
+      value: this.getValue(letterSpacing),
       unit: "PIXELS",
     };
   },

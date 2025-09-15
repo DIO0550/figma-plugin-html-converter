@@ -1,18 +1,14 @@
 import type { Brand } from "../../../../../../types";
 import type { TextNodeConfig } from "../../../../../models/figma-node";
 
-/**
- * 文字間隔のブランド型
- */
 export type LetterSpacing = Brand<number, "LetterSpacing">;
 
-/**
- * デフォルトのベースフォントサイズ（rem計算用）
- */
 const DEFAULT_BASE_FONT_SIZE = 16 as const;
 
 /**
- * Figmaの文字間隔フォーマット
+ * Figma letterSpacing representation used by Text nodes.
+ * - unit: Always "PIXELS" in this converter
+ * - value: Pixel amount after converting CSS letter-spacing to px
  */
 export interface FigmaLetterSpacing {
   value: number;
@@ -20,29 +16,39 @@ export interface FigmaLetterSpacing {
 }
 
 /**
- * LetterSpacingのコンパニオンオブジェクト
- * 文字間隔の作成とパースを担当
+ * Companion object providing creation, parsing and mapping utilities
+ * for the LetterSpacing branded type.
+ *
+ * Example:
+ *   const px = LetterSpacing.parse("0.1em", 16); // -> branded px value
+ *   const figma = LetterSpacing.toFigmaLetterSpacing(px!);
  */
 export const LetterSpacing = {
   /**
-   * LetterSpacingを作成
+   * Create a branded LetterSpacing from a raw number (px).
+   * @param value Raw pixel value
+   * @returns LetterSpacing branded value
    */
   create(value: number): LetterSpacing {
     return value as LetterSpacing;
   },
 
   /**
-   * LetterSpacingの生の数値を取得
+   * Get raw number value from a LetterSpacing branded type.
+   * @param letterSpacing Branded value
+   * @returns Raw pixel number
    */
   getValue(letterSpacing: LetterSpacing): number {
     return letterSpacing as unknown as number;
   },
 
   /**
-   * letter-spacingをパース
-   * @param letterSpacing - パース対象の文字列
-   * @param fontSize - em/percentage計算用のフォントサイズ
-   * @param baseFontSize - rem計算用のベースフォントサイズ
+   * Parse CSS letter-spacing string into a px-based LetterSpacing.
+   * Supports: px | rem | em | % | normal.
+   * Returns null for CSS variables and keywords: var(), inherit, initial, unset.
+   * @param letterSpacing Source CSS value
+   * @param fontSize Font size used for em and % conversions
+   * @param baseFontSize Base size for rem conversion (default 16)
    */
   parse(
     letterSpacing: string,
@@ -54,13 +60,9 @@ export const LetterSpacing = {
     }
 
     const trimmed = letterSpacing.trim().toLowerCase();
-
-    // "normal"の場合は0を返す
     if (trimmed === "normal") {
       return LetterSpacing.create(0);
     }
-
-    // CSS変数やキーワードの場合はnullを返す
     if (
       trimmed === "inherit" ||
       trimmed === "initial" ||
@@ -69,55 +71,43 @@ export const LetterSpacing = {
     ) {
       return null;
     }
-
-    // px値の処理
     if (trimmed.endsWith("px")) {
       const pxValue = parseFloat(trimmed);
       if (!isNaN(pxValue)) {
         return LetterSpacing.create(pxValue);
       }
     }
-
-    // rem値の処理（emより先にチェック）
     if (trimmed.endsWith("rem")) {
       const remValue = parseFloat(trimmed);
       if (!isNaN(remValue)) {
         return LetterSpacing.create(remValue * baseFontSize);
       }
     }
-
-    // em値の処理（fontSizeが必要）
     if (trimmed.endsWith("em") && fontSize !== undefined) {
       const emValue = parseFloat(trimmed);
       if (!isNaN(emValue)) {
         return LetterSpacing.create(emValue * fontSize);
       }
     } else if (trimmed.endsWith("em")) {
-      // fontSizeがない場合はnullを返す
       return null;
     }
-
-    // パーセンテージの処理（fontSizeが必要）
     if (trimmed.endsWith("%") && fontSize !== undefined) {
       const percentValue = parseFloat(trimmed);
       if (!isNaN(percentValue)) {
         return LetterSpacing.create((percentValue / 100) * fontSize);
       }
     } else if (trimmed.endsWith("%")) {
-      // fontSizeがない場合はnullを返す
       return null;
     }
-
-    // その他の無効な値
     return null;
   },
 
   /**
-   * スタイルから文字間隔を抽出
-   * @param styles - CSSスタイルオブジェクト
-   * @param fontSize - em/percentage計算用のフォントサイズ
-   * @param baseFontSize - rem計算用のベースフォントサイズ
-   * @returns 文字間隔値（デフォルト: 0）
+   * Extract letter-spacing from CSS style map and normalize to px.
+   * @param styles CSS declarations map
+   * @param fontSize Font size used for em/% conversions
+   * @param baseFontSize Base size for rem conversion
+   * @returns Pixel value (0 if missing or invalid)
    */
   extractStyle(
     styles: Record<string, string>,
@@ -134,10 +124,10 @@ export const LetterSpacing = {
   },
 
   /**
-   * TextNodeConfigに文字間隔を適用して新しいconfigを返す（イミュータブル）
-   * @param config - 元のconfig
-   * @param styles - CSSスタイルオブジェクト
-   * @returns 新しいconfig
+   * Apply parsed letter-spacing to a TextNodeConfig immutably.
+   * @param config Source config
+   * @param styles CSS declarations map
+   * @returns New config with letterSpacing applied
    */
   applyToConfig(
     config: TextNodeConfig,
@@ -156,9 +146,9 @@ export const LetterSpacing = {
   },
 
   /**
-   * FigmaのletterSpacing形式に変換
-   * @param letterSpacing - 文字間隔値
-   * @returns Figma形式の文字間隔オブジェクト
+   * Convert LetterSpacing to Figma's letterSpacing format.
+   * @param letterSpacing Branded px value
+   * @returns FigmaLetterSpacing object
    */
   toFigmaLetterSpacing(letterSpacing: LetterSpacing): FigmaLetterSpacing {
     return {

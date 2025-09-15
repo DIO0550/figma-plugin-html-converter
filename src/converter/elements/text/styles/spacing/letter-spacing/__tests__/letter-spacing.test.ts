@@ -2,9 +2,6 @@ import { test, expect } from "vitest";
 import { LetterSpacing } from "../letter-spacing";
 import type { TextNodeConfig } from "../../../../../../models/figma-node";
 
-/**
- * テスト用のTextNodeConfigを作成
- */
 function createMockTextNodeConfig(
   fontSize: number = 16,
   overrides: Partial<TextNodeConfig["style"]> = {},

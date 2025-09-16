@@ -1,5 +1,8 @@
 import type { Brand } from "../../../../../../types";
-import type { TextNodeConfig } from "../../../../../models/figma-node";
+import type {
+  TextNodeConfig,
+  TextStyle,
+} from "../../../../../models/figma-node";
 
 // Figmaがサポートするテキスト装飾
 export type FigmaTextDecoration = "UNDERLINE" | "STRIKETHROUGH";
@@ -115,7 +118,16 @@ export const TextDecoration = {
     decoration: TextDecoration | undefined,
   ): TextNodeConfig {
     if (!config.style) {
-      config.style = {} as any;
+      // Initialize with proper TextStyle type
+      config.style = {
+        fontFamily: "Inter",
+        fontSize: 16,
+        fontWeight: 400,
+        lineHeight: { unit: "PIXELS", value: 24 },
+        letterSpacing: 0,
+        textAlign: "LEFT",
+        verticalAlign: "TOP",
+      } as TextStyle;
     }
 
     if (decoration) {

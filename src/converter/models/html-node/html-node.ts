@@ -101,14 +101,25 @@ export const HTMLNode = {
 
   // converterで使用される型ガード（互換性のため）
   isTextNode(node: unknown): node is { type: string; content: string } {
-    return (
+    // 新形式（textContent）と旧形式（content）の両方に対応
+    if (
       node !== null &&
       typeof node === "object" &&
       "type" in node &&
-      node.type === "text" &&
-      "content" in node &&
-      typeof node.content === "string"
-    );
+      node.type === "text"
+    ) {
+      // textContentプロパティを持つ場合（新形式）
+      if ("textContent" in node && typeof node.textContent === "string") {
+        // contentプロパティを動的に追加して互換性を保つ
+        (node as any).content = node.textContent;
+        return true;
+      }
+      // contentプロパティを持つ場合（旧形式）
+      if ("content" in node && typeof node.content === "string") {
+        return true;
+      }
+    }
+    return false;
   },
 
   isElementNode(

@@ -1,11 +1,8 @@
-import {
-  FigmaNodeConfig,
-  FigmaNode,
-  TextNodeConfig,
-} from "../../../../models/figma-node";
-import { Styles } from "../../../../models/styles";
+import { FigmaNodeConfig } from "../../../../models/figma-node";
 import { HTMLNode } from "../../../../models/html-node/html-node";
-import { Typography } from "../../styles/typography/typography";
+import { ElementContextConverter } from "../../base/converters";
+import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
+import { Styles } from "../../../../models/styles";
 import type { H1Element } from "../h1/h1-element";
 import type { H2Element } from "../h2/h2-element";
 import type { H3Element } from "../h3/h3-element";
@@ -21,170 +18,57 @@ type HeadingElement =
   | H5Element
   | H6Element;
 
-type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-
 /**
  * 見出し要素をFigmaノードに変換
  */
 export function toFigmaNode(element: HeadingElement): FigmaNodeConfig {
   const level = element.tagName;
-  let config = FigmaNode.createFrame(level);
+  const frame = HTMLFrame.from(level, element.attributes);
+  let baseConfig = HTMLFrame.toFigmaNodeConfig(frame);
 
-  // HTML要素のデフォルト設定を適用
-  config = FigmaNodeConfig.applyHtmlElementDefaults(
-    config,
-    level,
-    element.attributes,
-  );
-
-  // スタイルがある場合は解析して適用
+  // スタイルを適用
   if (element.attributes?.style) {
     const styles = Styles.parse(element.attributes.style);
 
-    // 背景色を適用
     const backgroundColor = Styles.getBackgroundColor(styles);
     if (backgroundColor) {
-      config = FigmaNodeConfig.applyBackgroundColor(config, backgroundColor);
+      baseConfig = FigmaNodeConfig.applyBackgroundColor(
+        baseConfig,
+        backgroundColor,
+      );
     }
 
-    // パディングを適用
     const padding = Styles.getPadding(styles);
     if (padding) {
-      config = FigmaNodeConfig.applyPaddingStyles(config, padding);
+      baseConfig = FigmaNodeConfig.applyPaddingStyles(baseConfig, padding);
     }
 
-    // ボーダースタイルを適用
-    config = FigmaNodeConfig.applyBorderStyles(
-      config,
+    baseConfig = FigmaNodeConfig.applyBorderStyles(
+      baseConfig,
       Styles.extractBorderOptions(styles),
     );
 
-    // サイズスタイルを適用
-    config = FigmaNodeConfig.applySizeStyles(
-      config,
+    baseConfig = FigmaNodeConfig.applySizeStyles(
+      baseConfig,
       Styles.extractSizeOptions(styles),
     );
   }
 
-  // 子要素の処理
+  // 子要素を変換
+  const children: FigmaNodeConfig[] = [];
   if (element.children && element.children.length > 0) {
-    config.children = processChildren(
+    const results = ElementContextConverter.convertAll(
       element.children,
       element.attributes?.style,
       level,
-    ) as FigmaNodeConfig[];
-  } else {
-    config.children = [];
+    );
+    children.push(...results.map((result) => result.node as FigmaNodeConfig));
   }
 
-  return config;
-}
-
-/**
- * 子要素を処理してFigmaノードに変換
- */
-function processChildren(
-  children: HTMLNode[],
-  parentStyle?: string,
-  headingLevel?: HeadingLevel,
-): (FigmaNodeConfig | TextNodeConfig)[] {
-  const result: (FigmaNodeConfig | TextNodeConfig)[] = [];
-  const parentStyles = parentStyle ? Styles.parse(parentStyle) : {};
-
-  for (const child of children) {
-    if (HTMLNode.isTextNode(child)) {
-      // テキストノードの処理
-      const textConfig = createHeadingTextNode(
-        child,
-        parentStyles,
-        headingLevel,
-      );
-      result.push(textConfig);
-    } else if (HTMLNode.isElementNode(child)) {
-      // インライン要素の処理
-      const childElement = child as HTMLNode & { tagName: string };
-      if (childElement.tagName === "strong" || childElement.tagName === "b") {
-        const boldTextConfig = createBoldTextNode(
-          childElement,
-          parentStyles,
-          headingLevel,
-        );
-        result.push(boldTextConfig);
-      } else if (
-        childElement.tagName === "em" ||
-        childElement.tagName === "i"
-      ) {
-        const italicTextConfig = createItalicTextNode(
-          childElement,
-          parentStyles,
-          headingLevel,
-        );
-        result.push(italicTextConfig);
-      } else {
-        // その他の要素はテキストとして処理
-        const textContent = HTMLNode.extractTextContent(child as HTMLNode);
-        if (textContent) {
-          result.push(
-            createHeadingTextNode(
-              { type: "text", content: textContent },
-              parentStyles,
-              headingLevel,
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  return result;
-}
-
-/**
- * 見出し用テキストノードを作成
- */
-function createHeadingTextNode(
-  node: { type: string; content: string },
-  parentStyles: Record<string, string>,
-  headingLevel?: HeadingLevel,
-): TextNodeConfig {
-  const baseConfig = TextNodeConfig.create(node.content);
-  // Typography統合オブジェクトを使用してスタイルを適用
-  return Typography.applyToTextNode(baseConfig, parentStyles, headingLevel);
-}
-
-/**
- * 太字テキストノードを作成
- */
-function createBoldTextNode(
-  element: HTMLNode,
-  parentStyles: Record<string, string>,
-  headingLevel?: HeadingLevel,
-): TextNodeConfig {
-  const textContent = HTMLNode.extractTextContent(element);
-  const textNode = createHeadingTextNode(
-    { type: "text", content: textContent },
-    parentStyles,
-    headingLevel,
-  );
-  // 見出しは既に太字なので、そのまま返す
-  return textNode;
-}
-
-/**
- * 斜体テキストノードを作成
- */
-function createItalicTextNode(
-  element: HTMLNode,
-  parentStyles: Record<string, string>,
-  headingLevel?: HeadingLevel,
-): TextNodeConfig {
-  const textContent = HTMLNode.extractTextContent(element);
-  const textNode = createHeadingTextNode(
-    { type: "text", content: textContent },
-    parentStyles,
-    headingLevel,
-  );
-  return TextNodeConfig.setFontStyle(textNode, "ITALIC");
+  return {
+    ...baseConfig,
+    children,
+  };
 }
 
 /**

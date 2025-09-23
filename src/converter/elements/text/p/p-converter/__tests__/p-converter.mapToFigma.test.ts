@@ -23,7 +23,7 @@ test("mapToFigma - 属性とchildrenを持つp要素を正しくマッピング�
       id: "test-paragraph",
       style: "color: blue;",
     },
-    children: [{ type: "text", content: "Test content" }],
+    children: [{ type: "text", textContent: "Test content" }],
   };
 
   const result = mapToFigma(node);
@@ -76,7 +76,7 @@ test("mapToFigma - h1タグに対してnullを返す", () => {
 test("mapToFigma - テキストノードに対してnullを返す", () => {
   const node = {
     type: "text",
-    content: "text",
+    textContent: "text",
   };
 
   const result = mapToFigma(node);
@@ -87,7 +87,7 @@ test("mapToFigma - テキストノードに対してnullを返す", () => {
 test("mapToFigma - コメントノードに対してnullを返す", () => {
   const node = {
     type: "comment",
-    content: "<!-- comment -->",
+    textContent: "<!-- comment -->",
   };
 
   const result = mapToFigma(node);

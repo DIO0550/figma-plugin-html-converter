@@ -12,7 +12,7 @@ test("toFigmaNode - h1要素をFigmaノードに変換できる", () => {
     type: "element",
     tagName: "h1",
     attributes: {},
-    children: [{ type: "text", content: "Main Title" }],
+    children: [{ type: "text", textContent: "Main Title" }],
   };
 
   const result = toFigmaNode(element);
@@ -35,7 +35,7 @@ test("toFigmaNode - h2要素を適切なフォントサイズで変換できる"
     type: "element",
     tagName: "h2",
     attributes: {},
-    children: [{ type: "text", content: "Section Title" }],
+    children: [{ type: "text", textContent: "Section Title" }],
   };
 
   const result = toFigmaNode(element);
@@ -56,7 +56,7 @@ test("toFigmaNode - h3要素を適切なフォントサイズで変換できる"
     type: "element",
     tagName: "h3",
     attributes: {},
-    children: [{ type: "text", content: "Subsection" }],
+    children: [{ type: "text", textContent: "Subsection" }],
   };
 
   const result = toFigmaNode(element);
@@ -77,7 +77,7 @@ test("toFigmaNode - h4要素を適切なフォントサイズで変換できる"
     type: "element",
     tagName: "h4",
     attributes: {},
-    children: [{ type: "text", content: "Paragraph Title" }],
+    children: [{ type: "text", textContent: "Paragraph Title" }],
   };
 
   const result = toFigmaNode(element);
@@ -98,7 +98,7 @@ test("toFigmaNode - h5要素を適切なフォントサイズで変換できる"
     type: "element",
     tagName: "h5",
     attributes: {},
-    children: [{ type: "text", content: "Minor Heading" }],
+    children: [{ type: "text", textContent: "Minor Heading" }],
   };
 
   const result = toFigmaNode(element);
@@ -119,7 +119,7 @@ test("toFigmaNode - h6要素を適切なフォントサイズで変換できる"
     type: "element",
     tagName: "h6",
     attributes: {},
-    children: [{ type: "text", content: "Small Heading" }],
+    children: [{ type: "text", textContent: "Small Heading" }],
   };
 
   const result = toFigmaNode(element);
@@ -141,14 +141,14 @@ test("toFigmaNode - インライン要素を含む見出しを変換できる", 
     tagName: "h1",
     attributes: {},
     children: [
-      { type: "text", content: "Welcome to " },
+      { type: "text", textContent: "Welcome to " },
       {
         type: "element",
         tagName: "strong",
         attributes: {},
-        children: [{ type: "text", content: "Figma" }],
+        children: [{ type: "text", textContent: "Figma" }],
       },
-      { type: "text", content: " Converter" },
+      { type: "text", textContent: " Converter" },
     ],
   };
 
@@ -179,7 +179,7 @@ test("toFigmaNode - スタイル属性を適用できる", () => {
     attributes: {
       style: "color: #ff0000; text-align: center;",
     },
-    children: [{ type: "text", content: "Styled Heading" }],
+    children: [{ type: "text", textContent: "Styled Heading" }],
   };
 
   const result = toFigmaNode(element);

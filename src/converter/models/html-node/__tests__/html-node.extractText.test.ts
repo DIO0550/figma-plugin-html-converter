@@ -319,7 +319,7 @@ test("HTMLNode.extractText - コメントノードを無視する", () => {
 // 後方互換性のテスト
 // ========================================
 
-test("HTMLNode.extractTextContent - extractTextと同じ結果を返す（後方互換性）", () => {
+test("HTMLNode.extractText - APIを用いたテキスト抽出が行える", () => {
   const node = {
     type: "element" as const,
     tagName: "div",
@@ -334,8 +334,5 @@ test("HTMLNode.extractTextContent - extractTextと同じ結果を返す（後方
   };
 
   const extractTextResult = HTMLNode.extractText(node);
-  const extractTextContentResult = HTMLNode.extractTextContent(node);
-
-  expect(extractTextContentResult).toBe(extractTextResult);
-  expect(extractTextContentResult).toBe("Hello World");
+  expect(extractTextResult).toBe("Hello World");
 });

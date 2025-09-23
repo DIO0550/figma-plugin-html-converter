@@ -61,7 +61,7 @@ test("p要素スタイル - テキストの配置スタイルを処理できる"
     children: [
       {
         type: "text",
-        content: "Centered paragraph",
+        textContent: "Centered paragraph",
       } as TextNode,
     ],
   };
@@ -87,7 +87,7 @@ test("p要素スタイル - フォントサイズスタイルを処理できる"
     children: [
       {
         type: "text",
-        content: "Larger text",
+        textContent: "Larger text",
       } as TextNode,
     ],
   };
@@ -112,7 +112,7 @@ test("p要素スタイル - 行の高さスタイルを処理できる", () => {
     children: [
       {
         type: "text",
-        content: "Paragraph with custom line height",
+        textContent: "Paragraph with custom line height",
       } as TextNode,
     ],
   };
@@ -140,7 +140,7 @@ test("p要素スタイル - カラースタイルを処理できる", () => {
     children: [
       {
         type: "text",
-        content: "Colored text",
+        textContent: "Colored text",
       } as TextNode,
     ],
   };
@@ -176,7 +176,7 @@ test("p要素スタイル - 複数のテキストスタイルを組み合わせ�
     children: [
       {
         type: "text",
-        content: "Styled text",
+        textContent: "Styled text",
       } as TextNode,
     ],
   };

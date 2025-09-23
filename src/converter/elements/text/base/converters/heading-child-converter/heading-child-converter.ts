@@ -53,7 +53,6 @@ export const HeadingChildConverter = {
       const content =
         HTMLNode.getTextNodeContent(node) ||
         HTMLNode.getTextContent(node) ||
-        (node as any).content ||
         "";
       if (content) {
         return ChildNodeConverter.from(undefined, content, parentStyles);

@@ -99,15 +99,17 @@ export const HTMLNode = {
     return Array.isArray(node.children) && node.children.length > 0;
   },
 
-  // converterで使用される型ガード（互換性のため）
-  isTextNode(node: unknown): node is { type: string; content: string } {
+  // converterで使用される型ガード（新形式のみ）
+  isTextNode(
+    node: unknown,
+  ): node is { type: "text"; textContent: string } & Record<string, unknown> {
     return (
       node !== null &&
       typeof node === "object" &&
       "type" in node &&
-      node.type === "text" &&
-      "content" in node &&
-      typeof node.content === "string"
+      (node as { type: unknown }).type === "text" &&
+      "textContent" in node &&
+      typeof (node as { textContent: unknown }).textContent === "string"
     );
   },
 
@@ -119,20 +121,8 @@ export const HTMLNode = {
    * @returns コンテンツ文字列、取得できない場合は空文字列
    */
   getTextNodeContent(node: unknown): string {
-    if (
-      node !== null &&
-      typeof node === "object" &&
-      "type" in node &&
-      node.type === "text"
-    ) {
-      // 新形式（textContent）を優先
-      if ("textContent" in node && typeof node.textContent === "string") {
-        return node.textContent;
-      }
-      // 旧形式（content）にフォールバック
-      if ("content" in node && typeof node.content === "string") {
-        return node.content;
-      }
+    if (this.isTextNode(node)) {
+      return node.textContent;
     }
     return "";
   },
@@ -206,58 +196,9 @@ export const HTMLNode = {
     return "";
   },
 
-  // 要素からテキストコンテンツを抽出（後方互換性のため残す）
+  // 要素からテキストコンテンツを抽出（新形式のみ）
   extractTextContent(element: unknown): string {
-    // 旧形式のノード（contentプロパティを持つ）の場合
-    if (element && typeof element === "object") {
-      // 型ガードを使用して安全にプロパティアクセス
-      if (this.hasContentProperty(element)) {
-        return element.content;
-      }
-      // テキストノードで、textContentプロパティを持つ場合
-      if (this.hasTextContentProperty(element) && element.type === "text") {
-        return element.textContent;
-      }
-      // 子要素を持つ場合、再帰的に処理
-      if (this.hasChildrenProperty(element)) {
-        return element.children
-          .map((child: unknown) => this.extractTextContent(child))
-          .join("");
-      }
-    }
-    // 標準のextractTextにフォールバック
+    // 新形式の構造に限定し、標準のextractTextに委譲
     return this.extractText(element as HTMLNode);
-  },
-
-  // 型ガード：contentプロパティを持つかチェック
-  hasContentProperty(
-    obj: object,
-  ): obj is { content: string } & Record<string, unknown> {
-    return (
-      "content" in obj &&
-      typeof (obj as { content: unknown }).content === "string"
-    );
-  },
-
-  // 型ガード：textContentプロパティを持つかチェック
-  hasTextContentProperty(
-    obj: object,
-  ): obj is { textContent: string; type: string } & Record<string, unknown> {
-    return (
-      "textContent" in obj &&
-      typeof (obj as { textContent: unknown }).textContent === "string" &&
-      "type" in obj &&
-      typeof (obj as { type: unknown }).type === "string"
-    );
-  },
-
-  // 型ガード：childrenプロパティを持つかチェック
-  hasChildrenProperty(
-    obj: object,
-  ): obj is { children: unknown[] } & Record<string, unknown> {
-    return (
-      "children" in obj &&
-      Array.isArray((obj as { children: unknown }).children)
-    );
   },
 };

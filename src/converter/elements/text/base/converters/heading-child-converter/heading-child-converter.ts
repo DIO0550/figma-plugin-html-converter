@@ -48,12 +48,9 @@ export const HeadingChildConverter = {
     node: HTMLNode,
     parentStyles?: Record<string, string>,
   ): ChildNode | null {
-    // テキストノードの判定と内容取得
-    if (HTMLNode.isText(node) || HTMLNode.isTextNode(node)) {
-      const content =
-        HTMLNode.getTextNodeContent(node) ||
-        HTMLNode.getTextContent(node) ||
-        "";
+    // テキストノードの判定と内容取得（新形式）
+    if (HTMLNode.isText(node)) {
+      const content = node.textContent || "";
       if (content) {
         return ChildNodeConverter.from(undefined, content, parentStyles);
       }
@@ -65,7 +62,7 @@ export const HeadingChildConverter = {
 
     const element = node as HTMLNode & { tagName?: string };
     const tagName = element.tagName?.toLowerCase();
-    const textContent = HTMLNode.extractTextContent(node);
+    const textContent = HTMLNode.extractText(node);
 
     if (!textContent) {
       return null;

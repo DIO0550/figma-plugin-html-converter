@@ -48,12 +48,9 @@ export const ParagraphChildConverter = {
     node: HTMLNode,
     parentStyles?: Record<string, string>,
   ): ChildNode | null {
-    // テキストノードの判定と内容取得
-    if (HTMLNode.isText(node) || HTMLNode.isTextNode(node)) {
-      const content =
-        HTMLNode.getTextNodeContent(node) ||
-        HTMLNode.getTextContent(node) ||
-        "";
+    // テキストノードの判定と内容取得（新形式）
+    if (HTMLNode.isText(node)) {
+      const content = node.textContent || "";
       if (content) {
         return ChildNodeConverter.from(undefined, content, parentStyles);
       }
@@ -65,7 +62,14 @@ export const ParagraphChildConverter = {
 
     const element = node as HTMLNode & { tagName?: string };
     const tagName = element.tagName?.toLowerCase();
-    const textContent = HTMLNode.extractTextContent(node);
+    // 直接のテキスト子要素を優先して取得（単純な<b>text</b>などのケース）
+    const directText = (element.children ?? [])
+      .map((c) => (HTMLNode.isText(c) ? c.textContent || "" : ""))
+      .join("");
+    const textContent = directText || HTMLNode.extractText(node);
+    // debug
+    // eslint-disable-next-line no-console
+    // (no-op)
 
     if (!textContent) {
       return null;

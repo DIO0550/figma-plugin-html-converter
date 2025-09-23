@@ -42,17 +42,14 @@ export const ItalicChildNode = {
      * 見出し要素内の斜体処理
      *
      * 見出し（h1-h6）内の斜体要素は、テキストスタイルの一部として
-     * 処理されるため、個別のスタイルノードとして扱います。
+     * 処理されるため、追加のスタイル設定を行います。
      * これにより、見出しの階層構造を保ちながら斜体スタイルを適用できます。
-     *
-     * metadata.isText: false は、これが装飾的なスタイルノードであることを示し、
-     * 純粋なテキストノードではなく、スタイル情報を持つノードであることを表します。
      */
     if (context.isHeading) {
       return {
         node: TextNodeConfig.setFontStyle(figmaNode, "ITALIC"),
         metadata: {
-          isText: false, // スタイルノードであることを示す（純粋なテキストノードではない）
+          isText: true, // テキストコンテンツを持つため true
           isBold: false,
           isItalic: true,
           tagName: "italic",
@@ -63,7 +60,7 @@ export const ItalicChildNode = {
     return {
       node: figmaNode,
       metadata: {
-        isText: false,
+        isText: true, // テキストコンテンツを持つため true
         isBold: false,
         isItalic: true,
         tagName: "italic",

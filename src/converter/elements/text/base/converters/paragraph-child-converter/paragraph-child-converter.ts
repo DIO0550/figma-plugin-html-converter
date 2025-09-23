@@ -48,8 +48,16 @@ export const ParagraphChildConverter = {
     node: HTMLNode,
     parentStyles?: Record<string, string>,
   ): ChildNode | null {
-    if (HTMLNode.isTextNode(node)) {
-      return ChildNodeConverter.from(undefined, node.content, parentStyles);
+    // テキストノードの判定と内容取得
+    if (HTMLNode.isText(node) || HTMLNode.isTextNode(node)) {
+      const content =
+        HTMLNode.getTextNodeContent(node) ||
+        HTMLNode.getTextContent(node) ||
+        (node as any).content ||
+        "";
+      if (content) {
+        return ChildNodeConverter.from(undefined, content, parentStyles);
+      }
     }
 
     if (!HTMLNode.isElementNode(node)) {

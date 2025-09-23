@@ -1,6 +1,7 @@
 import type { BaseChildNode, ChildNodeContext, ChildNodeResult } from "./base";
 import { TextNodeConfig } from "../../../../models/figma-node";
 import { Typography } from "../../styles/typography/typography";
+import { parseStyles } from "./utils";
 
 /**
  * その他の要素ノード型
@@ -58,11 +59,3 @@ export const OtherChildNode = {
   },
 };
 
-// ヘルパー関数
-function parseStyles(styleString: string): Record<string, string> {
-  try {
-    return JSON.parse(styleString);
-  } catch {
-    return {};
-  }
-}

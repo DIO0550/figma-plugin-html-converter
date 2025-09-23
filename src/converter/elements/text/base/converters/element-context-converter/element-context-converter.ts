@@ -34,7 +34,8 @@ export const ElementContextConverter = {
       case "list":
       default:
         // 現時点では、heading以外は全てParagraphChildConverterを使用
-        // 将来的には各カテゴリ用のコンバーターを追加
+        // TODO: #56 各カテゴリ（code, quote, list）専用のコンバーターを実装
+        // https://github.com/DIO0550/figma-plugin-html-converter/issues/56
         return ParagraphChildConverter.convert(child, parentStyle, elementType);
     }
   },
@@ -64,7 +65,8 @@ export const ElementContextConverter = {
       case "list":
       default:
         // 現時点では、heading以外は全てParagraphChildConverterを使用
-        // 将来的には各カテゴリ用のコンバーターを追加
+        // TODO: #56 各カテゴリ（code, quote, list）専用のコンバーターを実装
+        // https://github.com/DIO0550/figma-plugin-html-converter/issues/56
         return ParagraphChildConverter.convertAll(
           children,
           parentStyle,

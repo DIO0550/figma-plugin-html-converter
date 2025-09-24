@@ -67,9 +67,6 @@ export const ParagraphChildConverter = {
       .map((c) => (HTMLNode.isText(c) ? c.textContent || "" : ""))
       .join("");
     const textContent = directText || HTMLNode.extractText(node);
-    // debug
-    // eslint-disable-next-line no-console
-    // (no-op)
 
     if (!textContent) {
       return null;

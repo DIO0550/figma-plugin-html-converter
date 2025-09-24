@@ -38,7 +38,7 @@ export const BoldChildNode = {
     return {
       node: figmaNode,
       metadata: {
-        isText: false,
+        isText: true, // テキストコンテンツを持つため true
         isBold: true,
         isItalic: false,
         tagName: context.isHeading ? undefined : "bold",

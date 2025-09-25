@@ -21,22 +21,22 @@ test("全ての見出し要素をインポートできる", () => {
 
 test("各見出し要素を作成できる", () => {
   const h1 = H1Element.create({ id: "h1" }, [
-    { type: "text", content: "Heading 1" },
+    { type: "text", textContent: "Heading 1" },
   ]);
   const h2 = H2Element.create({ id: "h2" }, [
-    { type: "text", content: "Heading 2" },
+    { type: "text", textContent: "Heading 2" },
   ]);
   const h3 = H3Element.create({ id: "h3" }, [
-    { type: "text", content: "Heading 3" },
+    { type: "text", textContent: "Heading 3" },
   ]);
   const h4 = H4Element.create({ id: "h4" }, [
-    { type: "text", content: "Heading 4" },
+    { type: "text", textContent: "Heading 4" },
   ]);
   const h5 = H5Element.create({ id: "h5" }, [
-    { type: "text", content: "Heading 5" },
+    { type: "text", textContent: "Heading 5" },
   ]);
   const h6 = H6Element.create({ id: "h6" }, [
-    { type: "text", content: "Heading 6" },
+    { type: "text", textContent: "Heading 6" },
   ]);
 
   expect(h1.tagName).toBe("h1");
@@ -75,12 +75,12 @@ test("各見出し要素の型ガードが正しく機能する", () => {
 });
 
 test("HeadingConverterで全ての見出しレベルをFigmaノードに変換できる", () => {
-  const h1 = H1Element.create({}, [{ type: "text", content: "H1 Text" }]);
-  const h2 = H2Element.create({}, [{ type: "text", content: "H2 Text" }]);
-  const h3 = H3Element.create({}, [{ type: "text", content: "H3 Text" }]);
-  const h4 = H4Element.create({}, [{ type: "text", content: "H4 Text" }]);
-  const h5 = H5Element.create({}, [{ type: "text", content: "H5 Text" }]);
-  const h6 = H6Element.create({}, [{ type: "text", content: "H6 Text" }]);
+  const h1 = H1Element.create({}, [{ type: "text", textContent: "H1 Text" }]);
+  const h2 = H2Element.create({}, [{ type: "text", textContent: "H2 Text" }]);
+  const h3 = H3Element.create({}, [{ type: "text", textContent: "H3 Text" }]);
+  const h4 = H4Element.create({}, [{ type: "text", textContent: "H4 Text" }]);
+  const h5 = H5Element.create({}, [{ type: "text", textContent: "H5 Text" }]);
+  const h6 = H6Element.create({}, [{ type: "text", textContent: "H6 Text" }]);
 
   const h1Node = HeadingConverter.toFigmaNode(h1);
   const h2Node = HeadingConverter.toFigmaNode(h2);
@@ -141,19 +141,19 @@ test("複雑な見出し構造を処理できる", () => {
       style: "color: #333; text-align: center;",
     },
     [
-      { type: "text", content: "Welcome to " },
+      { type: "text", textContent: "Welcome to " },
       {
         type: "element",
         tagName: "em",
         attributes: {},
-        children: [{ type: "text", content: "Our" }],
+        children: [{ type: "text", textContent: "Our" }],
       },
-      { type: "text", content: " " },
+      { type: "text", textContent: " " },
       {
         type: "element",
         tagName: "strong",
         attributes: {},
-        children: [{ type: "text", content: "Website" }],
+        children: [{ type: "text", textContent: "Website" }],
       },
     ],
   );

@@ -81,6 +81,7 @@ export const FigmaNodeConfig = {
       ...props
     };
   },
+  
 
   createText(content: string, props?: Partial<FigmaNodeConfig>): FigmaNodeConfig {
     return {

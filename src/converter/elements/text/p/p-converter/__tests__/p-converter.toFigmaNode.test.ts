@@ -37,7 +37,7 @@ test("toFigmaNode - テキストコンテンツを持つp要素を変換でき�
     type: "element",
     tagName: "p",
     attributes: {},
-    children: [{ type: "text" as const, content: "Hello, World!" }],
+    children: [{ type: "text" as const, textContent: "Hello, World!" }],
   };
 
   const result = toFigmaNode(element);
@@ -55,8 +55,8 @@ test("toFigmaNode - 複数のテキストノードを処理できる", () => {
     tagName: "p",
     attributes: {},
     children: [
-      { type: "text" as const, content: "First " },
-      { type: "text" as const, content: "Second" },
+      { type: "text" as const, textContent: "First " },
+      { type: "text" as const, textContent: "Second" },
     ],
   };
 
@@ -79,12 +79,12 @@ test("toFigmaNode - インライン要素を含むp要素を変換できる - st
     tagName: "p",
     attributes: {},
     children: [
-      { type: "text" as const, content: "Normal text " },
+      { type: "text" as const, textContent: "Normal text " },
       {
         type: "element" as const,
         tagName: "strong",
         attributes: {},
-        children: [{ type: "text" as const, content: "Bold text" }],
+        children: [{ type: "text" as const, textContent: "Bold text" }],
       },
     ],
   };
@@ -115,7 +115,7 @@ test("toFigmaNode - インライン要素を含むp要素を変換できる - em
         type: "element" as const,
         tagName: "em",
         attributes: {},
-        children: [{ type: "text" as const, content: "Italic text" }],
+        children: [{ type: "text" as const, textContent: "Italic text" }],
       },
     ],
   };
@@ -142,7 +142,7 @@ test("toFigmaNode - b要素を太字として処理できる", () => {
         type: "element" as const,
         tagName: "b",
         attributes: {},
-        children: [{ type: "text" as const, content: "Bold text" }],
+        children: [{ type: "text" as const, textContent: "Bold text" }],
       },
     ],
   };
@@ -168,7 +168,7 @@ test("toFigmaNode - i要素を斜体として処理できる", () => {
         type: "element" as const,
         tagName: "i",
         attributes: {},
-        children: [{ type: "text" as const, content: "Italic text" }],
+        children: [{ type: "text" as const, textContent: "Italic text" }],
       },
     ],
   };
@@ -194,7 +194,7 @@ test("toFigmaNode - 未知の要素をテキストとして処理できる", () 
         type: "element" as const,
         tagName: "span",
         attributes: {},
-        children: [{ type: "text" as const, content: "Span text" }],
+        children: [{ type: "text" as const, textContent: "Span text" }],
       },
     ],
   };

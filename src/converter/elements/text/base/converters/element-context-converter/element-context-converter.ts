@@ -1,4 +1,7 @@
-import { HTMLNode } from "../../../../../models/html-node/html-node";
+import type { HTMLNode } from "../../../../../models/html-node/html-node";
+// 要素タイプに応じた子要素コンバーター選択
+// 将来的にカテゴリごとの専用コンバーター（code/quote/list等）を実装予定。
+// 追跡はドキュメント（docs/html-elements-refactoring/plan.md）で管理。
 import {
   ParagraphChildConverter,
   type ParagraphChildResult,
@@ -33,9 +36,7 @@ export const ElementContextConverter = {
       case "quote":
       case "list":
       default:
-        // 現時点では、heading以外は全てParagraphChildConverterを使用
-        // TODO: 各カテゴリ（code, quote, list）専用のコンバーターを実装
-        // 将来的にIssueを作成して管理予定
+        // 現時点ではheading以外はParagraphChildConverterで処理
         return ParagraphChildConverter.convert(child, parentStyle, elementType);
     }
   },
@@ -64,9 +65,7 @@ export const ElementContextConverter = {
       case "quote":
       case "list":
       default:
-        // 現時点では、heading以外は全てParagraphChildConverterを使用
-        // TODO: 各カテゴリ（code, quote, list）専用のコンバーターを実装
-        // 将来的にIssueを作成して管理予定
+        // 現時点ではheading以外はParagraphChildConverterで処理
         return ParagraphChildConverter.convertAll(
           children,
           parentStyle,

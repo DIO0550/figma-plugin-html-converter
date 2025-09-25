@@ -66,7 +66,12 @@ export const ChildNodeConverter = {
         return OtherChildNode.toFigmaNode(node, context);
       default: {
         const _exhaustive: never = node;
-        throw new Error(`Unknown node kind: ${JSON.stringify(_exhaustive)}`);
+        // 予期しないノード種別。循環参照のリスクを避けるためkindのみ出力
+        throw new Error(
+          `Unknown node kind: ${(
+            _exhaustive as unknown as { kind?: unknown }
+          )?.kind ?? String(_exhaustive)}`,
+        );
       }
     }
   },

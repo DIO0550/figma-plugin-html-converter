@@ -41,6 +41,7 @@ export const BoldChildNode = {
         isText: true, // テキストコンテンツを持つため true
         isBold: true,
         isItalic: false,
+        // 見出し内では既に太字であるためタグ名は付与しない
         tagName: context.isHeading ? undefined : "bold",
       },
     };

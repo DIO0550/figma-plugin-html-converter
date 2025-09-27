@@ -64,7 +64,7 @@ export const createMinimalTextNodeConfig = (): TextNodeConfig => ({
 export const createRTLTextNodeConfig = (): TextNodeConfig => ({
   type: "TEXT",
   name: "RTL Text",
-  content: "مرحبا بالعالم", // "Hello World" in Arabic
+  content: "مرحبا بالعالم", // アラビア語でのHello World
   style: {
     fontFamily: "Arial",
     fontSize: DEFAULT_FONT_SIZE,

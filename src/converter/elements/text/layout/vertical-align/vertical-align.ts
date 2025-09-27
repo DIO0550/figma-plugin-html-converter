@@ -1,4 +1,5 @@
 import type { TextNodeConfig } from "../../../../models/figma-node";
+import { FontSize } from "../../styles/typography/font-size/font-size";
 
 /**
  * 垂直方向の配置を表す型
@@ -107,7 +108,7 @@ export const VerticalAlign = {
     // Figmaでのvertical-align相当の実装
     // super/subの場合、フォントサイズと位置を調整
     if (this.isSuper(value) || this.isSub(value)) {
-      const currentSize = config.style?.fontSize ?? 16;
+      const currentSize = config.style?.fontSize ?? FontSize.getDefault();
       const newSize = currentSize * SUPER_SUB_FONT_SCALE_RATIO; // 75%のサイズに縮小
 
       return {

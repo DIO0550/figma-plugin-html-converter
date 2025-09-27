@@ -20,6 +20,21 @@ export type WritingModeType =
  */
 export const TextDirection = {
   /**
+   * RTL言語コード一覧
+   */
+  rtlLanguages: [
+    "ar", // アラビア語
+    "he", // ヘブライ語
+    "fa", // ペルシア語
+    "ur", // ウルドゥー語
+    "yi", // イディッシュ語
+    "ji", // イディッシュ語（旧）
+    "iw", // ヘブライ語（旧）
+    "ku", // クルド語
+    "ps", // パシュトー語
+    "sd", // シンド語
+  ] as const,
+  /**
    * TextDirection値を作成
    */
   create(value: TextDirectionType = "ltr"): TextDirectionType {
@@ -200,20 +215,9 @@ export const TextDirection = {
    * 言語コードから推定される方向を取得
    */
   fromLanguage(langCode: string): TextDirectionType {
-    const rtlLanguages = [
-      "ar", // アラビア語
-      "he", // ヘブライ語
-      "fa", // ペルシア語
-      "ur", // ウルドゥー語
-      "yi", // イディッシュ語
-      "ji", // イディッシュ語（旧）
-      "iw", // ヘブライ語（旧）
-      "ku", // クルド語
-      "ps", // パシュトー語
-      "sd", // シンド語
-    ];
-
     const lang = langCode.toLowerCase().split("-")[0];
-    return rtlLanguages.includes(lang) ? "rtl" : "ltr";
+    return (TextDirection.rtlLanguages as readonly string[]).includes(lang)
+      ? "rtl"
+      : "ltr";
   },
 };

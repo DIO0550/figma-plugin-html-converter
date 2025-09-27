@@ -50,8 +50,8 @@ export const createMinimalTextNodeConfig = (): TextNodeConfig => ({
   style: {
     fontFamily: "Inter",
     fontSize: 12,
-    fontWeight: 400,
-    lineHeight: { unit: "AUTO", value: 100 },
+    fontWeight: DEFAULT_FONT_WEIGHT,
+    lineHeight: { unit: "AUTO", value: DEFAULT_LINE_HEIGHT_VALUE },
     letterSpacing: 0,
     textAlign: "LEFT",
     verticalAlign: "baseline",

@@ -3,14 +3,19 @@ import type {
   TextStyle,
 } from "../../../../../models/figma-node";
 
+// テスト用デフォルト値（マジックナンバー回避）
+export const DEFAULT_FONT_SIZE = 16 as const;
+export const DEFAULT_FONT_WEIGHT = 400 as const;
+export const DEFAULT_LINE_HEIGHT_VALUE = 100 as const;
+
 /**
  * デフォルトのテキストスタイル
  */
 export const defaultTextStyle: TextStyle = {
   fontFamily: "Arial",
-  fontSize: 16,
-  fontWeight: 400,
-  lineHeight: { unit: "AUTO", value: 100 },
+  fontSize: DEFAULT_FONT_SIZE,
+  fontWeight: DEFAULT_FONT_WEIGHT,
+  lineHeight: { unit: "AUTO", value: DEFAULT_LINE_HEIGHT_VALUE },
   letterSpacing: 0,
   textAlign: "LEFT",
   verticalAlign: "baseline",
@@ -62,9 +67,9 @@ export const createRTLTextNodeConfig = (): TextNodeConfig => ({
   content: "مرحبا بالعالم", // "Hello World" in Arabic
   style: {
     fontFamily: "Arial",
-    fontSize: 16,
-    fontWeight: 400,
-    lineHeight: { unit: "AUTO", value: 100 },
+    fontSize: DEFAULT_FONT_SIZE,
+    fontWeight: DEFAULT_FONT_WEIGHT,
+    lineHeight: { unit: "AUTO", value: DEFAULT_LINE_HEIGHT_VALUE },
     letterSpacing: 0,
     textAlign: "RIGHT",
     verticalAlign: "baseline",
@@ -80,9 +85,9 @@ export const createVerticalTextNodeConfig = (): TextNodeConfig => ({
   content: "縦書きテキスト",
   style: {
     fontFamily: "Noto Sans JP",
-    fontSize: 16,
-    fontWeight: 400,
-    lineHeight: { unit: "AUTO", value: 100 },
+    fontSize: DEFAULT_FONT_SIZE,
+    fontWeight: DEFAULT_FONT_WEIGHT,
+    lineHeight: { unit: "AUTO", value: DEFAULT_LINE_HEIGHT_VALUE },
     letterSpacing: 0,
     textAlign: "LEFT",
     verticalAlign: "baseline",

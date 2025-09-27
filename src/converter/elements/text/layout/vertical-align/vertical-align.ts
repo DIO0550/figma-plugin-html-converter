@@ -13,6 +13,9 @@ export type VerticalAlignType =
   | "super"
   | "sub";
 
+// super/sub時のフォント縮小率
+const SUPER_SUB_FONT_SCALE_RATIO = 0.75 as const;
+
 /**
  * VerticalAlignのコンパニオンオブジェクト
  */
@@ -105,7 +108,7 @@ export const VerticalAlign = {
     // super/subの場合、フォントサイズと位置を調整
     if (this.isSuper(value) || this.isSub(value)) {
       const currentSize = config.style?.fontSize ?? 16;
-      const newSize = currentSize * 0.75; // 75%のサイズに縮小
+      const newSize = currentSize * SUPER_SUB_FONT_SCALE_RATIO; // 75%のサイズに縮小
 
       return {
         ...config,

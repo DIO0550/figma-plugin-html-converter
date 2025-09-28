@@ -30,7 +30,7 @@ export const TextColor = {
   },
 
   /**
-   * colorをパース（Styles.parseColorを活用）
+   * colorをパース（rgba形式のalpha値もサポート）
    * hex, rgb, rgba, 名前付きカラー等に対応
    */
   parse(color: string): TextColor | null {
@@ -38,6 +38,30 @@ export const TextColor = {
       return null;
     }
 
+    // transparentの特別処理
+    if (color.toLowerCase() === "transparent") {
+      return TextColor.create({
+        r: 0,
+        g: 0,
+        b: 0,
+        a: 0,
+      });
+    }
+
+    // rgba形式の処理
+    const rgbaMatch = color.match(
+      /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/i,
+    );
+    if (rgbaMatch) {
+      return TextColor.create({
+        r: Math.min(255, Math.max(0, parseInt(rgbaMatch[1], 10))) / 255,
+        g: Math.min(255, Math.max(0, parseInt(rgbaMatch[2], 10))) / 255,
+        b: Math.min(255, Math.max(0, parseInt(rgbaMatch[3], 10))) / 255,
+        a: Math.min(1, Math.max(0, parseFloat(rgbaMatch[4]))),
+      });
+    }
+
+    // その他の形式はStyles.parseColorに委譲
     const parsedColor = Styles.parseColor(color);
     if (!parsedColor) {
       return null;
@@ -47,7 +71,7 @@ export const TextColor = {
       r: parsedColor.r,
       g: parsedColor.g,
       b: parsedColor.b,
-      a: 1, // Styles.parseColorはalphaを返さないので、デフォルト1
+      a: 1, // rgb, hex, 名前付きカラーはデフォルトでalpha=1
     });
   },
 

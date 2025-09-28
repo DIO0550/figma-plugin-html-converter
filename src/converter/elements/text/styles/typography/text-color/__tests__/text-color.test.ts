@@ -67,13 +67,12 @@ test("TextColor.parse() - rgb形式を処理できる", () => {
   expect(result).toEqual({ r: 1, g: 0, b: 0, a: 1 });
 });
 
-test("TextColor.parse() - rgba形式を処理できる（alphaは常に1）", () => {
+test("TextColor.parse() - rgba形式を処理できる（alpha値も保持）", () => {
   // Act
   const result = TextColor.parse("rgba(255, 0, 0, 0.5)");
 
   // Assert
-  // Styles.parseColorはalphaを返さないので、常に1
-  expect(result).toEqual({ r: 1, g: 0, b: 0, a: 1 });
+  expect(result).toEqual({ r: 1, g: 0, b: 0, a: 0.5 });
 });
 
 test("TextColor.parse() - 名前付きカラーを処理できる", () => {
@@ -114,6 +113,27 @@ test("TextColor.parse() - 白色を処理できる", () => {
 
   // Assert
   expect(result).toEqual({ r: 1, g: 1, b: 1, a: 1 });
+});
+
+test("TextColor.parse() - rgba形式で透明度0を処理できる", () => {
+  // Act
+  const result = TextColor.parse("rgba(255, 255, 255, 0)");
+
+  // Assert
+  expect(result).toEqual({ r: 1, g: 1, b: 1, a: 0 });
+});
+
+test("TextColor.parse() - rgba形式で部分的な透明度を処理できる", () => {
+  // Act
+  const result = TextColor.parse("rgba(128, 128, 128, 0.75)");
+
+  // Assert
+  expect(result).toEqual({
+    r: 0.5019607843137255,
+    g: 0.5019607843137255,
+    b: 0.5019607843137255,
+    a: 0.75,
+  });
 });
 
 // =============================================================================
@@ -525,7 +545,7 @@ test("TextColor.applyToConfig() - transparentを適用できる", () => {
   expect(result.style.fills).toEqual([
     {
       type: "SOLID",
-      color: { r: 0, g: 0, b: 0, a: 1 }, // transparentは黒として扱われる（alphaは別途処理が必要）
+      color: { r: 0, g: 0, b: 0, a: 0 }, // transparentはalpha=0
     },
   ]);
 });

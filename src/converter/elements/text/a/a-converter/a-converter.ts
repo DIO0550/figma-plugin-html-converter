@@ -7,6 +7,12 @@ import { Styles } from "../../../../models/styles";
 import { AElement, type AElement as AElementType } from "../a-element";
 import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
+import { FontFamily } from "../../styles/typography/font-family/font-family";
+import { FontSize } from "../../styles/typography/font-size/font-size";
+import { FontWeight } from "../../styles/typography/font-weight/font-weight";
+import { FontStyle } from "../../styles/typography/font-style/font-style";
+import { TextColor } from "../../styles/typography/text-color/text-color";
+import { TextDecoration } from "../../styles/decoration/text-decoration/text-decoration";
 
 /**
  * デフォルトスタイル定数
@@ -14,25 +20,6 @@ import { HTMLNode } from "../../../../models/html-node/html-node";
 const DEFAULT_FONT_SIZE = 16; // ブラウザデフォルトフォントサイズ
 const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
 const DEFAULT_LINK_COLOR = { r: 0, g: 0.478, b: 1, a: 1 }; // 青色(#007AFF): HTML標準のリンク色
-
-/**
- * 単位変換係数
- */
-const PT_TO_PX_RATIO = 1.333; // ポイントからピクセルへの変換係数（96DPI基準）
-const REM_BASE_SIZE = 16; // rem/emの基準サイズ（ブラウザデフォルト）
-
-/**
- * 名前付きカラー定義
- */
-const NAMED_COLORS: Record<string, { r: number; g: number; b: number }> = {
-  red: { r: 1, g: 0, b: 0 },
-  blue: { r: 0, g: 0, b: 1 },
-  green: { r: 0, g: 0.5, b: 0 },
-  black: { r: 0, g: 0, b: 0 },
-  white: { r: 1, g: 1, b: 1 },
-  gray: { r: 0.5, g: 0.5, b: 0.5 },
-  yellow: { r: 1, g: 1, b: 0 },
-};
 
 /**
  * AConverterクラス
@@ -117,142 +104,57 @@ function applyTextStyles(
 ): TextStyle {
   const updatedStyle = { ...textStyle };
 
-  const fontSize = styles["font-size"];
-  if (fontSize) {
-    const size = parseFontSize(fontSize);
-    if (size) {
-      updatedStyle.fontSize = size;
+  // フォントサイズの処理
+  const fontSize = FontSize.extractStyle(styles);
+  if (fontSize !== undefined) {
+    updatedStyle.fontSize = fontSize;
+  }
+
+  // フォントウェイトの処理
+  const fontWeight = FontWeight.extractStyle(styles);
+  if (fontWeight !== undefined && fontWeight !== null) {
+    updatedStyle.fontWeight = fontWeight;
+  }
+
+  // フォントスタイルの処理
+  const fontStyleValue = styles["font-style"];
+  if (fontStyleValue) {
+    const fontStyle = FontStyle.parse(fontStyleValue);
+    if (fontStyle === "italic") {
+      updatedStyle.fontStyle = "italic";
     }
   }
 
-  const fontWeight = styles["font-weight"];
-  if (fontWeight) {
-    const weight = parseFontWeight(fontWeight);
-    if (weight) {
-      updatedStyle.fontWeight = weight;
-    }
-  }
-
-  const fontStyle = styles["font-style"];
-  if (fontStyle === "italic") {
-    updatedStyle.fontStyle = "italic";
-  }
-
+  // フォントファミリーの処理
   const fontFamily = styles["font-family"];
   if (fontFamily) {
-    const family = parseFontFamily(fontFamily);
+    const family = FontFamily.parse(fontFamily);
     if (family) {
       updatedStyle.fontFamily = family;
     }
   }
 
+  // カラーの処理
   const color = styles["color"];
   if (color) {
-    const rgb = parseColor(color);
-    if (rgb) {
-      updatedStyle.fills = [
-        {
-          type: "SOLID",
-          color: {
-            ...rgb,
-            a: 1,
-          },
-        },
-      ];
+    const textColor = TextColor.parse(color);
+    if (textColor) {
+      updatedStyle.fills = TextColor.toFills(textColor);
     }
   }
 
-  const textDecoration = styles["text-decoration"];
-  if (textDecoration) {
-    if (textDecoration === "none") {
+  // テキスト装飾の処理
+  const textDecorationValue = styles["text-decoration"];
+  if (textDecorationValue) {
+    if (textDecorationValue === "none") {
       updatedStyle.textDecoration = undefined;
-    } else if (textDecoration === "underline") {
-      updatedStyle.textDecoration = "UNDERLINE";
-    } else if (textDecoration === "line-through") {
-      updatedStyle.textDecoration = "STRIKETHROUGH";
+    } else {
+      const textDecoration = TextDecoration.extractStyle(styles);
+      if (textDecoration !== undefined) {
+        updatedStyle.textDecoration = textDecoration;
+      }
     }
   }
 
   return updatedStyle;
-}
-
-/**
- * フォントサイズをパース
- */
-function parseFontSize(value: string): number | null {
-  const match = value.match(/^(\d+(?:\.\d+)?)(px|pt|rem|em)?$/);
-  if (match) {
-    const size = parseFloat(match[1]);
-    const unit = match[2];
-
-    switch (unit) {
-      case "pt":
-        return Math.round(size * PT_TO_PX_RATIO);
-      case "rem":
-      case "em":
-        return Math.round(size * REM_BASE_SIZE);
-      default:
-        return Math.round(size);
-    }
-  }
-  return null;
-}
-
-/**
- * フォントファミリーをパース
- */
-function parseFontFamily(value: string): string | null {
-  const families = value.split(",").map((f) => f.trim().replace(/["']/g, ""));
-  return families[0] || null;
-}
-
-/**
- * カラーをパース
- */
-function parseColor(value: string): { r: number; g: number; b: number } | null {
-  if (value.startsWith("#")) {
-    const hex = value.slice(1);
-    if (hex.length === 3) {
-      const r = parseInt(hex[0] + hex[0], 16) / 255;
-      const g = parseInt(hex[1] + hex[1], 16) / 255;
-      const b = parseInt(hex[2] + hex[2], 16) / 255;
-      return { r, g, b };
-    } else if (hex.length === 6) {
-      const r = parseInt(hex.slice(0, 2), 16) / 255;
-      const g = parseInt(hex.slice(2, 4), 16) / 255;
-      const b = parseInt(hex.slice(4, 6), 16) / 255;
-      return { r, g, b };
-    }
-  }
-
-  const rgbMatch = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-  if (rgbMatch) {
-    const r = parseInt(rgbMatch[1]) / 255;
-    const g = parseInt(rgbMatch[2]) / 255;
-    const b = parseInt(rgbMatch[3]) / 255;
-    return { r, g, b };
-  }
-
-  if (value in NAMED_COLORS) {
-    return NAMED_COLORS[value];
-  }
-
-  return null;
-}
-
-/**
- * font-weightをパース
- */
-function parseFontWeight(weight: string): number | null {
-  if (weight === "bold") {
-    return 700;
-  }
-  if (weight === "normal") {
-    return 400;
-  }
-  const numericWeight = parseInt(weight);
-  if (!isNaN(numericWeight)) {
-    return numericWeight;
-  }
-  return null;
 }

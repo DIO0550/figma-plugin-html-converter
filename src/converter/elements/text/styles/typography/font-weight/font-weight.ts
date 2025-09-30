@@ -126,26 +126,26 @@ export const FontWeight = {
 
   /**
    * スタイルから値を抽出（不変性を保つ）
-   * @returns 適用されるフォントウェイト値（nullの場合は適用しない）
+   * @returns 適用が必要なフォントウェイト値。変更不要の場合はundefined。
    */
   extractStyle(
     styles: Record<string, string>,
     defaultWeight: number = DEFAULT_FONT_WEIGHT,
-  ): number | null {
+  ): number | undefined {
     const value = styles["font-weight"];
 
     // 明示的な値があれば解析
     if (value) {
       const parsed = this.parse(value);
-      return parsed ? (parsed as unknown as number) : null;
+      return parsed ? (parsed as unknown as number) : undefined;
     }
 
     // デフォルトが通常値以外で指定されていれば適用
     if (defaultWeight !== DEFAULT_FONT_WEIGHT) {
-      return this.create(defaultWeight) as unknown as number;
+      return defaultWeight;
     }
 
-    return null;
+    return undefined;
   },
 
   /**
@@ -157,7 +157,7 @@ export const FontWeight = {
     defaultWeight: number = DEFAULT_FONT_WEIGHT,
   ): TextNodeConfig {
     const fontWeight = this.extractStyle(styles, defaultWeight);
-    if (!fontWeight) {
+    if (fontWeight === undefined) {
       return config;
     }
     return {
@@ -179,7 +179,7 @@ export const FontWeight = {
     defaultWeight: number = DEFAULT_FONT_WEIGHT,
   ): void {
     const fontWeight = this.extractStyle(styles, defaultWeight);
-    if (fontWeight) {
+    if (fontWeight !== undefined) {
       config.style.fontWeight = fontWeight;
     }
   },

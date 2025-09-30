@@ -112,7 +112,7 @@ function applyTextStyles(
 
   // フォントウェイトの処理
   const fontWeight = FontWeight.extractStyle(styles);
-  if (fontWeight !== null) {
+  if (fontWeight !== undefined) {
     updatedStyle.fontWeight = fontWeight;
   }
 

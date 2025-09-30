@@ -112,7 +112,7 @@ function applyTextStyles(
 
   // フォントウェイトの処理
   const fontWeight = FontWeight.extractStyle(styles);
-  if (fontWeight !== undefined && fontWeight !== null) {
+  if (fontWeight !== null) {
     updatedStyle.fontWeight = fontWeight;
   }
 
@@ -149,7 +149,7 @@ function applyTextStyles(
     if (textDecorationValue === "none") {
       updatedStyle.textDecoration = undefined;
     } else {
-      const textDecoration = TextDecoration.extractStyle(styles);
+      const textDecoration = TextDecoration.parse(textDecorationValue);
       if (textDecoration !== undefined) {
         updatedStyle.textDecoration = textDecoration;
       }

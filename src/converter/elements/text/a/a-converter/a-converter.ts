@@ -120,8 +120,12 @@ function applyTextStyles(
   const fontStyleValue = styles["font-style"];
   if (fontStyleValue) {
     const fontStyle = FontStyle.parse(fontStyleValue);
-    if (fontStyle === "italic") {
-      updatedStyle.fontStyle = "italic";
+    if (fontStyle) {
+      if (FontStyle.isItalic(fontStyle)) {
+        updatedStyle.fontStyle = "italic";
+      } else {
+        updatedStyle.fontStyle = undefined;
+      }
     }
   }
 

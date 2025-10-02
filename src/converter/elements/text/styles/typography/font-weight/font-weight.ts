@@ -142,7 +142,7 @@ export const FontWeight = {
 
     // デフォルトが通常値以外で指定されていれば適用
     if (defaultWeight !== DEFAULT_FONT_WEIGHT) {
-      return defaultWeight;
+      return this.create(defaultWeight) as unknown as number;
     }
 
     return undefined;

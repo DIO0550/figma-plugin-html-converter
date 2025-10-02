@@ -134,10 +134,10 @@ export const FontSize = {
     config: TextNodeConfig,
     styles: Record<string, string>,
     defaultSize: number = DEFAULT_FONT_SIZE,
-  ): number {
+  ): number | undefined {
     const sizeValue = this.extractStyle(styles, defaultSize);
     if (sizeValue === undefined) {
-      return config.style.fontSize;
+      return undefined;
     }
 
     config.style.fontSize = sizeValue;

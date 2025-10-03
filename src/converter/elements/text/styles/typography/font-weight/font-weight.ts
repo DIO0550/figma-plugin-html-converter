@@ -58,6 +58,13 @@ export const FontWeight = {
   },
 
   /**
+   * FontWeightの生の数値を取得
+   */
+  toNumber(weight: FontWeight): number {
+    return weight as number;
+  },
+
+  /**
    * font-weightをパース
    * "normal" → 400, "bold" → 700, "600" → 600
    */
@@ -137,12 +144,12 @@ export const FontWeight = {
     // 明示的な値があれば解析
     if (value) {
       const parsed = this.parse(value);
-      return parsed ? (parsed as unknown as number) : undefined;
+      return parsed ? this.toNumber(parsed) : undefined;
     }
 
     // デフォルトが通常値以外で指定されていれば適用
     if (defaultWeight !== DEFAULT_FONT_WEIGHT) {
-      return this.create(defaultWeight) as unknown as number;
+      return this.toNumber(this.create(defaultWeight));
     }
 
     return undefined;

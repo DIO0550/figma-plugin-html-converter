@@ -57,6 +57,13 @@ export const FontSize = {
   },
 
   /**
+   * FontSizeの生の数値を取得
+   */
+  toNumber(size: FontSize): number {
+    return size as number;
+  },
+
+  /**
    * font-sizeをパース（Styles.parseSizeを活用）
    * px, em, rem等に対応
    */
@@ -89,7 +96,7 @@ export const FontSize = {
     if (value) {
       const fontSize = this.parse(value);
       if (fontSize !== null) {
-        return fontSize as unknown as number;
+        return this.toNumber(fontSize);
       }
 
       // パースできない場合はフォールバックを適用

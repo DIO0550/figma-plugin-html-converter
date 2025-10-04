@@ -53,6 +53,13 @@ export const FontStyle = {
   },
 
   /**
+   * FigmaのTextStyleに設定可能なフォントスタイル値へ変換
+   */
+  toFigmaStyle(style: FontStyle): TextNodeConfig["style"]["fontStyle"] {
+    return this.isItalic(style) ? "italic" : undefined;
+  },
+
+  /**
    * TextNodeConfigにフォントスタイルを適用して新しいconfigを返す（イミュータブル）
    */
   applyToConfig(

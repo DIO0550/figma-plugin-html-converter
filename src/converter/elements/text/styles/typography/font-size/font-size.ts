@@ -57,6 +57,13 @@ export const FontSize = {
   },
 
   /**
+   * FontSizeの生の数値を取得
+   */
+  toNumber(size: FontSize): number {
+    return size as number;
+  },
+
+  /**
    * font-sizeをパース（Styles.parseSizeを活用）
    * px, em, rem等に対応
    */
@@ -78,15 +85,30 @@ export const FontSize = {
 
   /**
    * スタイルから値を抽出（不変性を保つ）
-   * @returns 適用されるフォントサイズ値
+   * @returns 適用が必要なフォントサイズ値。変更不要の場合はundefined。
    */
   extractStyle(
     styles: Record<string, string>,
     defaultSize: number = DEFAULT_FONT_SIZE,
-  ): number {
+  ): number | undefined {
     const value = styles["font-size"];
-    const fontSize = value ? this.parse(value) : this.create(defaultSize);
-    return fontSize !== null ? (fontSize as unknown as number) : defaultSize;
+
+    if (value) {
+      const fontSize = this.parse(value);
+      if (fontSize !== null) {
+        return this.toNumber(fontSize);
+      }
+
+      // パースできない場合はフォールバックを適用
+      return defaultSize;
+    }
+
+    // デフォルト値が標準と異なる場合のみ適用
+    if (defaultSize !== DEFAULT_FONT_SIZE) {
+      return defaultSize;
+    }
+
+    return undefined;
   },
 
   /**
@@ -98,6 +120,10 @@ export const FontSize = {
     defaultSize: number = DEFAULT_FONT_SIZE,
   ): TextNodeConfig {
     const sizeValue = this.extractStyle(styles, defaultSize);
+    if (sizeValue === undefined) {
+      return config;
+    }
+
     return {
       ...config,
       style: {
@@ -115,8 +141,12 @@ export const FontSize = {
     config: TextNodeConfig,
     styles: Record<string, string>,
     defaultSize: number = DEFAULT_FONT_SIZE,
-  ): number {
+  ): number | undefined {
     const sizeValue = this.extractStyle(styles, defaultSize);
+    if (sizeValue === undefined) {
+      return undefined;
+    }
+
     config.style.fontSize = sizeValue;
     return sizeValue;
   },

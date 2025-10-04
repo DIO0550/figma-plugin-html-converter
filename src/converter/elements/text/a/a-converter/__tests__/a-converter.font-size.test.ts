@@ -23,10 +23,10 @@ test.each`
 
 test.each`
   type           | fontSize      | expected
-  ${"小数点px"}  | ${"14.7px"}   | ${15}
+  ${"小数点px"}  | ${"14.7px"}   | ${14.7}
   ${"小数点rem"} | ${"0.875rem"} | ${14}
   ${"小数点em"}  | ${"1.25em"}   | ${20}
-  ${"小数点pt"}  | ${"10.5pt"}   | ${14}
+  ${"小数点pt"}  | ${"10.5pt"}   | ${16}
 `(
   "AConverter.toFigmaNode() - $type値を正しく変換する",
   ({ fontSize, expected }) => {

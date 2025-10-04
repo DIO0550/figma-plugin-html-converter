@@ -67,6 +67,30 @@ test("AConverter.toFigmaNode() - font-style:italicスタイルをfontStyle:itali
   expect(result.style.fontStyle).toBe("italic");
 });
 
+test("AConverter.toFigmaNode() - font-style:obliqueスタイルをfontStyle:italicに変換する", () => {
+  const element = createAElement(
+    "#",
+    [createTextNode("Oblique")],
+    "font-style: oblique 15deg;",
+  );
+
+  const result = AConverter.toFigmaNode(element);
+
+  expect(result.style.fontStyle).toBe("italic");
+});
+
+test("AConverter.toFigmaNode() - font-style:normalスタイルでfontStyleを削除する", () => {
+  const element = createAElement(
+    "#",
+    [createTextNode("Normal Style")],
+    "font-style: normal;",
+  );
+
+  const result = AConverter.toFigmaNode(element);
+
+  expect(result.style.fontStyle).toBeUndefined();
+});
+
 test("AConverter.toFigmaNode() - font-familyスタイルの最初のフォントファミリーを使用する", () => {
   const element = createAElement(
     "#",

@@ -280,6 +280,43 @@ test("FontStyle.isItalic() - 大文字小文字混在でparseした値でも正�
 });
 
 // =============================================================================
+// FontStyle.toFigmaStyle のテスト
+// =============================================================================
+
+test("FontStyle.toFigmaStyle() - イタリック体は'italic'を返す", () => {
+  // Arrange
+  const style = FontStyle.parse("italic");
+
+  // Act
+  const result = style ? FontStyle.toFigmaStyle(style) : undefined;
+
+  // Assert
+  expect(result).toBe("italic");
+});
+
+test("FontStyle.toFigmaStyle() - oblique指定も'italic'を返す", () => {
+  // Arrange
+  const style = FontStyle.parse("oblique 15deg");
+
+  // Act
+  const result = style ? FontStyle.toFigmaStyle(style) : undefined;
+
+  // Assert
+  expect(result).toBe("italic");
+});
+
+test("FontStyle.toFigmaStyle() - normalはundefinedを返す", () => {
+  // Arrange
+  const style = FontStyle.parse("normal");
+
+  // Act
+  const result = style ? FontStyle.toFigmaStyle(style) : undefined;
+
+  // Assert
+  expect(result).toBeUndefined();
+});
+
+// =============================================================================
 // FontStyle.parse - 国際化対応テスト
 // =============================================================================
 

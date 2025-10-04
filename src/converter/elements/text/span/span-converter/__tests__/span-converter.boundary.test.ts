@@ -150,8 +150,31 @@ test("font-size 9999pxをSpanConverterは9999として正しく処理する", ()
   expect(result.style.fontSize).toBe(9999);
 });
 
-test("font-weight境界値（1,100,400,700,900,999）をSpanConverterは正しく処理する", () => {
-  const testCases = [1, 100, 400, 700, 900, 999];
+test("font-weight境界値（100,400,700,900）をSpanConverterは正しく処理する", () => {
+  const testCases = [
+    { input: 100, expected: 100 },
+    { input: 400, expected: 400 },
+    { input: 700, expected: 700 },
+    { input: 900, expected: 900 },
+  ];
+
+  testCases.forEach(({ input, expected }) => {
+    const element: SpanElement = {
+      type: "element",
+      tagName: "span",
+      attributes: {
+        style: `font-weight: ${input};`,
+      },
+      children: [],
+    };
+
+    const result = SpanConverter.toFigmaNode(element);
+    expect(result.style.fontWeight).toBe(expected);
+  });
+});
+
+test("font-weight範囲外の値（1,999）はデフォルト値400にフォールバックする", () => {
+  const testCases = [1, 999];
 
   testCases.forEach((weight) => {
     const element: SpanElement = {
@@ -164,7 +187,7 @@ test("font-weight境界値（1,100,400,700,900,999）をSpanConverterは正し�
     };
 
     const result = SpanConverter.toFigmaNode(element);
-    expect(result.style.fontWeight).toBe(weight);
+    expect(result.style.fontWeight).toBe(400); // デフォルト値
   });
 });
 

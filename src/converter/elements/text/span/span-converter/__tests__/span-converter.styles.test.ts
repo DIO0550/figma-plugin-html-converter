@@ -47,7 +47,7 @@ test("font-weight: 700をSpanConverterは700として適用する", () => {
   expect(result.style.fontWeight).toBe(700);
 });
 
-test("font-style: italicをSpanConverterはitalicとして適用する", () => {
+test("font-style: italicをSpanConverterはITALICとして適用する", () => {
   const element: SpanElement = {
     type: "element",
     tagName: "span",
@@ -59,7 +59,7 @@ test("font-style: italicをSpanConverterはitalicとして適用する", () => {
 
   const result = SpanConverter.toFigmaNode(element);
 
-  expect(result.style.fontStyle).toBe("italic");
+  expect(result.style.fontStyle).toBe("ITALIC");
 });
 
 test("font-family: 'Helvetica Neue'をSpanConverterはHelvetica Neueとして適用する", () => {

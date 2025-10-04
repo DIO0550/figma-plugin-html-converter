@@ -88,7 +88,7 @@ test("巨大な属性値（10000文字のクラス名）を持つspan要素で�
   expect(result.name).toContain("span.");
 });
 
-test("不正なRGBカラー値（999,999,999）を含むstyleをSpanConverterは無視してデフォルト値を使用する", () => {
+test("不正なRGBカラー値（999,999,999）を含むstyleをSpanConverterは255にクランプして処理する", () => {
   const element: SpanElement = {
     type: "element",
     tagName: "span",
@@ -99,8 +99,18 @@ test("不正なRGBカラー値（999,999,999）を含むstyleをSpanConverterは
   };
 
   const result = SpanConverter.toFigmaNode(element);
-  // 不正な値は無視されるが、エラーは発生しない
-  expect(result.style.fills).toBeUndefined();
+  // RGB値は0-255の範囲にクランプされ、正規化される（999→255→1.0）
+  expect(result.style.fills).toEqual([
+    {
+      type: "SOLID",
+      color: {
+        r: 1,
+        g: 1,
+        b: 1,
+        a: 1,
+      },
+    },
+  ]);
 });
 
 test("不正なfont-size値（huge, -10px）をSpanConverterはデフォルト値16pxにフォールバックする", () => {

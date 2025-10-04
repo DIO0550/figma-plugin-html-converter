@@ -5,7 +5,6 @@ import { SpanElement as SpanElementHelper } from "../span-element";
 import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { Typography } from "../../styles/typography/typography";
-import { CSSColor } from "../../../../models/css-values/color";
 
 /**
  * SpanConverterクラス
@@ -39,35 +38,6 @@ export const SpanConverter = {
 
     // Typographyを利用して統一的に適用（タグはspan）
     config = Typography.applyToTextNode(config, styles, "span");
-
-    // span固有の互換性調整
-    // 1) font-weight: 数値は範囲外でもそのまま採用（旧実装互換）
-    const fontWeightRaw = styles["font-weight"];
-    if (fontWeightRaw && /^-?\d+(?:\.\d+)?$/.test(fontWeightRaw.trim())) {
-      const numericValue = parseFloat(fontWeightRaw);
-      if (!Number.isNaN(numericValue)) {
-        config.style.fontWeight = numericValue;
-      }
-    }
-    // 2) font-style: "italic" または "oblique" のみ厳密に判定し、小文字で保持
-    if (
-      styles["font-style"] &&
-      /^(italic|oblique)$/i.test(styles["font-style"].trim())
-    ) {
-      config.style.fontStyle = styles["font-style"].trim().toLowerCase();
-    }
-
-    // 3) color: rgb()/rgba() など不正値は無視（旧実装互換）
-    if (styles["color"]) {
-      const c = CSSColor.parse(styles["color"]);
-      if (!c) {
-        // 不正な場合はfillsを外す（restパターンで安全に除外）
-        if ("fills" in config.style) {
-          const { fills: _fills, ...restStyle } = config.style;
-          config.style = restStyle;
-        }
-      }
-    }
 
     return config;
   },

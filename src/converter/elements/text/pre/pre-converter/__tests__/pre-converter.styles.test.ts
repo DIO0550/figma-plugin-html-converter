@@ -2,8 +2,6 @@ import { test, expect } from "vitest";
 import { toFigmaNode } from "../pre-converter";
 import type { PreElement } from "../../pre-element";
 
-import type { TextNode } from "../../common/types";
-
 test("pre要素スタイル - 背景色とパディングのカスタムスタイルを適用できる", () => {
   const element: PreElement = {
     type: "element",
@@ -62,7 +60,7 @@ test("pre要素スタイル - フォントサイズスタイルを処理でき�
       {
         type: "text",
         textContent: "Code text",
-      } as TextNode,
+      },
     ],
   };
 
@@ -87,7 +85,7 @@ test("pre要素スタイル - 行の高さスタイルを処理できる", () =>
       {
         type: "text",
         textContent: "Code with line height",
-      } as TextNode,
+      },
     ],
   };
 
@@ -115,7 +113,7 @@ test("pre要素スタイル - カラースタイルを処理できる", () => {
       {
         type: "text",
         textContent: "Colored code",
-      } as TextNode,
+      },
     ],
   };
 
@@ -150,7 +148,7 @@ test("pre要素スタイル - 複数のテキストスタイルを組み合わ�
       {
         type: "text",
         textContent: "Styled code",
-      } as TextNode,
+      },
     ],
   };
 
@@ -237,7 +235,7 @@ test("pre要素スタイル - white-spaceスタイルを保持する", () => {
       {
         type: "text",
         textContent: "  Code with spaces  ",
-      } as TextNode,
+      },
     ],
   };
 

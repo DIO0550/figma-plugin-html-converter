@@ -13,6 +13,7 @@ export * from "./strong-node";
 export * from "./em-node";
 export * from "./b-node";
 export * from "./i-node";
+export * from "./code-child-node";
 export * from "./other-node";
 
 // 統合コンバーター
@@ -26,6 +27,7 @@ import type { StrongChildNode } from "./strong-node";
 import type { EmChildNode } from "./em-node";
 import type { BChildNode } from "./b-node";
 import type { IChildNode } from "./i-node";
+import type { CodeChildNode } from "./code-child-node";
 import type { OtherChildNode } from "./other-node";
 
 /**
@@ -39,4 +41,5 @@ export type ChildNode =
   | EmChildNode
   | BChildNode
   | IChildNode
+  | CodeChildNode
   | OtherChildNode;

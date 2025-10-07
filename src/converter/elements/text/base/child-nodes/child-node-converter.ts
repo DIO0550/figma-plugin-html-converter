@@ -6,6 +6,7 @@ import { StrongChildNode } from "./strong-node";
 import { EmChildNode } from "./em-node";
 import { BChildNode } from "./b-node";
 import { IChildNode } from "./i-node";
+import { CodeChildNode } from "./code-child-node";
 import { OtherChildNode } from "./other-node";
 
 /**
@@ -38,6 +39,8 @@ export const ChildNodeConverter = {
         return BoldChildNode.from(content, styles);
       case "italic":
         return ItalicChildNode.from(content, styles);
+      case "code":
+        return CodeChildNode.from(content, styles);
       default:
         return OtherChildNode.from(lowerTagName, content, styles);
     }
@@ -62,15 +65,18 @@ export const ChildNodeConverter = {
         return BChildNode.toFigmaNode(node, context);
       case "i":
         return IChildNode.toFigmaNode(node, context);
+      case "code":
+        return CodeChildNode.toFigmaNode(node, context);
       case "other":
         return OtherChildNode.toFigmaNode(node, context);
       default: {
         const _exhaustive: never = node;
         // 予期しないノード種別。循環参照のリスクを避けるためkindのみ出力
         throw new Error(
-          `Unknown node kind: ${(
-            _exhaustive as unknown as { kind?: unknown }
-          )?.kind ?? String(_exhaustive)}`,
+          `Unknown node kind: ${
+            (_exhaustive as unknown as { kind?: unknown })?.kind ??
+            String(_exhaustive)
+          }`,
         );
       }
     }

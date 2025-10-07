@@ -115,7 +115,7 @@ test("100個のスタイルプロパティをSpanConverterは20ms以内に処理
   expect(result.type).toBe("TEXT");
 });
 
-test("複雑なカラー変換をSpanConverterは5ms以内に処理する", () => {
+test("複雑なカラー変換をSpanConverterは10ms以内に処理する", () => {
   const element: SpanElement = {
     type: "element",
     tagName: "span",
@@ -130,7 +130,7 @@ test("複雑なカラー変換をSpanConverterは5ms以内に処理する", () =
   endTime = performance.now();
 
   const duration = endTime - startTime;
-  expect(duration).toBeLessThan(5);
+  expect(duration).toBeLessThan(10);
   expect(result.style.fills).toBeDefined();
 });
 

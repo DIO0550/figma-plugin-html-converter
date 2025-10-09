@@ -34,18 +34,13 @@ export const BlockquoteElement = {
    * ファクトリー: BlockquoteElementを作成
    */
   create(
-    attributes: Partial<BlockquoteAttributes> = {},
+    attributes: BlockquoteAttributes = {},
     children: HTMLNode[] = [],
   ): BlockquoteElement {
-    // デフォルト値と提供された属性をマージ
-    const fullAttributes: BlockquoteAttributes = {
-      ...attributes,
-    };
-
     return {
       type: "element",
       tagName: "blockquote",
-      attributes: fullAttributes,
+      attributes,
       children,
     };
   },

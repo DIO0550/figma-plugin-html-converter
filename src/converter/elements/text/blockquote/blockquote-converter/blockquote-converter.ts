@@ -1,5 +1,6 @@
 import { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { BlockquoteElement } from "../blockquote-element";
+import { BlockquoteElement } from "../blockquote-element";
+import type { BlockquoteElement as BlockquoteElementType } from "../blockquote-element";
 import { ElementContextConverter } from "../../base/converters";
 import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
 import { Styles } from "../../../../models/styles";
@@ -7,7 +8,7 @@ import { Styles } from "../../../../models/styles";
 /**
  * blockquote要素をFigmaノードに変換
  */
-export function toFigmaNode(element: BlockquoteElement): FigmaNodeConfig {
+export function toFigmaNode(element: BlockquoteElementType): FigmaNodeConfig {
   const frame = HTMLFrame.from("blockquote", element.attributes);
   let baseConfig = HTMLFrame.toFigmaNodeConfig(frame);
 
@@ -61,16 +62,8 @@ export function toFigmaNode(element: BlockquoteElement): FigmaNodeConfig {
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
   // blockquote要素かどうかをチェック
-  if (
-    node !== null &&
-    typeof node === "object" &&
-    "type" in node &&
-    "tagName" in node &&
-    node.type === "element" &&
-    node.tagName === "blockquote"
-  ) {
-    const element = node as BlockquoteElement;
-    return toFigmaNode(element);
+  if (BlockquoteElement.isBlockquoteElement(node)) {
+    return toFigmaNode(node);
   }
   return null;
 }

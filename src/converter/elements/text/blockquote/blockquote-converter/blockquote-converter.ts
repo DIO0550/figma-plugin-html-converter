@@ -70,7 +70,7 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
 
 /**
  * blockquote要素のコンバーター
- * 後方互換性のためのエクスポート
+ * toFigmaNodeとmapToFigma関数をまとめた名前空間
  */
 export const BlockquoteConverter = {
   toFigmaNode,

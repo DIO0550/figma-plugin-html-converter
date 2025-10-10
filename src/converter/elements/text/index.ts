@@ -15,6 +15,7 @@ export * from "./strong";
 export * from "./em";
 export * from "./b";
 export * from "./i";
+export * from "./blockquote";
 
 // Converters (exported with specific names to avoid conflicts)
 export {
@@ -26,3 +27,8 @@ export {
   toFigmaNode as headingToFigmaNode,
   mapToFigma as headingMapToFigma,
 } from "./heading/heading-converter";
+export {
+  toFigmaNode as blockquoteToFigmaNode,
+  mapToFigma as blockquoteMapToFigma,
+  BlockquoteConverter,
+} from "./blockquote/blockquote-converter";

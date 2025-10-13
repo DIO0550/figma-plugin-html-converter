@@ -94,7 +94,7 @@ test("InsElement.create - 属性と子要素を指定してInsElementを作成�
 
 test("InsElement.create - グローバル属性を正しく設定できる", () => {
   const attributes = {
-    id: "global-del",
+    id: "global-ins",
     class: "text-inserted",
     style: "text-decoration: line-through;",
     "data-version": "1.0",

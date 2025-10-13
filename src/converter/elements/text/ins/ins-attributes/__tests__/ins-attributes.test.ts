@@ -34,7 +34,7 @@ test("InsAttributes - すべての属性がオプション", () => {
   expect(attributes).toEqual({});
 });
 
-test("InsAttributes - グローバル属性とdel特有の属性を組み合わせる", () => {
+test("InsAttributes - グローバル属性とins特有の属性を組み合わせる", () => {
   const attributes: InsAttributes = {
     id: "ins-1",
     class: "inserted",

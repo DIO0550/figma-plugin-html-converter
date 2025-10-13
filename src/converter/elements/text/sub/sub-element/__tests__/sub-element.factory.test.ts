@@ -8,7 +8,7 @@ test("デフォルトのSubElementを作成する", () => {
     tagName: "sub",
     attributes: {},
     children: [],
-});
+  });
 });
 
 test("属性を持つSubElementを作成する", () => {
@@ -22,7 +22,7 @@ test("属性を持つSubElementを作成する", () => {
     tagName: "sub",
     attributes,
     children: [],
-});
+  });
 });
 
 test("子要素を持つSubElementを作成する", () => {
@@ -33,7 +33,7 @@ test("子要素を持つSubElementを作成する", () => {
     tagName: "sub",
     attributes: {},
     children,
-});
+  });
 });
 
 test("属性と子要素の両方を持つSubElementを作成する", () => {
@@ -45,5 +45,5 @@ test("属性と子要素の両方を持つSubElementを作成する", () => {
     tagName: "sub",
     attributes,
     children,
-});
+  });
 });

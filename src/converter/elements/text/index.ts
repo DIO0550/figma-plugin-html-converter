@@ -16,6 +16,14 @@ export * from "./em";
 export * from "./b";
 export * from "./i";
 export * from "./blockquote";
+export * from "./code";
+export * from "./pre";
+export * from "./small";
+export * from "./mark";
+export * from "./del";
+export * from "./ins";
+export * from "./sub";
+export * from "./sup";
 
 // Converters (exported with specific names to avoid conflicts)
 export {

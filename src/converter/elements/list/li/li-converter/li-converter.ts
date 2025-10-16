@@ -143,8 +143,8 @@ export function mapToFigma(
     node !== null &&
     "type" in node &&
     "tagName" in node &&
-    (node as any).type === "element" &&
-    (node as any).tagName === "li"
+    (node as { type: unknown }).type === "element" &&
+    (node as { tagName: unknown }).tagName === "li"
   ) {
     const htmlNode = node as HTMLNode;
     const attributes = htmlNode.attributes || {};

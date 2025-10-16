@@ -9,8 +9,6 @@ import { DlElement } from "../dl-element";
 import { Styles } from "../../../../models/styles";
 
 // デフォルトのスタイル定数
-const DEFAULT_TERM_INDENT = 0; // 用語（dt）のインデント
-const DEFAULT_DESCRIPTION_INDENT = 40; // 説明（dd）のインデント
 const DEFAULT_LIST_VERTICAL_PADDING = 16; // 上下のパディング
 const DEFAULT_ITEM_SPACING = 8; // 項目間のスペース
 
@@ -101,8 +99,8 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
     node !== null &&
     "type" in node &&
     "tagName" in node &&
-    (node as any).type === "element" &&
-    (node as any).tagName === "dl"
+    (node as { type: unknown }).type === "element" &&
+    (node as { tagName: unknown }).tagName === "dl"
   ) {
     const htmlNode = node as HTMLNode;
     const attributes = htmlNode.attributes || {};

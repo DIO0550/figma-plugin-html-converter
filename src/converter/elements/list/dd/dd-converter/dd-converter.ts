@@ -10,7 +10,6 @@ import { Styles } from "../../../../models/styles";
 
 // デフォルトのスタイル定数
 const DEFAULT_INDENT = 40; // 説明のインデント
-const DEFAULT_MARGIN_BOTTOM = 8; // 説明項目間の間隔
 
 /**
  * DD要素をFigmaノードに変換
@@ -96,8 +95,8 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
     node !== null &&
     "type" in node &&
     "tagName" in node &&
-    (node as any).type === "element" &&
-    (node as any).tagName === "dd"
+    (node as { type: unknown }).type === "element" &&
+    (node as { tagName: unknown }).tagName === "dd"
   ) {
     const htmlNode = node as HTMLNode;
     const attributes = htmlNode.attributes || {};

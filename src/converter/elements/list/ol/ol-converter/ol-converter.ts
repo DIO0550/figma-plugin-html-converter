@@ -119,8 +119,8 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
     node !== null &&
     "type" in node &&
     "tagName" in node &&
-    (node as any).type === "element" &&
-    (node as any).tagName === "ol"
+    (node as { type: unknown }).type === "element" &&
+    (node as { tagName: unknown }).tagName === "ol"
   ) {
     const htmlNode = node as HTMLNode;
     // 属性がundefinedでもcreateメソッドがデフォルト値を提供する

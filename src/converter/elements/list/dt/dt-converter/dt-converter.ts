@@ -10,7 +10,6 @@ import { Styles } from "../../../../models/styles";
 
 // デフォルトのスタイル定数
 const DEFAULT_FONT_WEIGHT = 700; // 用語は太字で表示
-const DEFAULT_MARGIN_BOTTOM = 4; // 用語と説明の間隔
 
 /**
  * DT要素をFigmaノードに変換
@@ -76,8 +75,8 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
     node !== null &&
     "type" in node &&
     "tagName" in node &&
-    (node as any).type === "element" &&
-    (node as any).tagName === "dt"
+    (node as { type: unknown }).type === "element" &&
+    (node as { tagName: unknown }).tagName === "dt"
   ) {
     const htmlNode = node as HTMLNode;
     const attributes = htmlNode.attributes || {};

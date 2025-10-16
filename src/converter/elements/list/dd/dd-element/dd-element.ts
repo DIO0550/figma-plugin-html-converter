@@ -41,8 +41,8 @@ export const DdElement = {
       node !== null &&
       "type" in node &&
       "tagName" in node &&
-      (node as any).type === "element" &&
-      (node as any).tagName === "dd"
+      (node as { type: unknown }).type === "element" &&
+      (node as { tagName: unknown }).tagName === "dd"
     );
   },
 };

@@ -83,6 +83,31 @@ test("LiElement.calculateItemNumber: considers reversed order in ol", () => {
   expect(LiElement.calculateItemNumber(context, element)).toBe(8);
 });
 
+test("LiElement.calculateItemNumber: uses itemCount for reversed order when start is not specified", () => {
+  const element = LiElement.create();
+  const context: ListContext = {
+    listType: "ol",
+    index: 0,
+    reversed: true,
+    itemCount: 5,
+  };
+  // startが未指定の場合、itemCountから開始: 5 - 0 = 5
+  expect(LiElement.calculateItemNumber(context, element)).toBe(5);
+});
+
+test("LiElement.calculateItemNumber: prefers startNumber over itemCount for reversed order", () => {
+  const element = LiElement.create();
+  const context: ListContext = {
+    listType: "ol",
+    index: 1,
+    startNumber: 10,
+    reversed: true,
+    itemCount: 5,
+  };
+  // startが指定されている場合、startNumberを使用: 10 - 1 = 9
+  expect(LiElement.calculateItemNumber(context, element)).toBe(9);
+});
+
 test("LiElement.calculateItemNumber: returns default 1 when index is undefined", () => {
   const element = LiElement.create();
   const context: ListContext = {

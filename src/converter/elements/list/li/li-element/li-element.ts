@@ -31,6 +31,8 @@ export interface ListContext {
   type?: "1" | "a" | "A" | "i" | "I";
   /** OLの場合の逆順フラグ */
   reversed?: boolean;
+  /** リスト全体の要素数 */
+  itemCount?: number;
 }
 
 /**
@@ -103,11 +105,15 @@ export const LiElement = {
 
     // インデックスから計算
     if (context.index !== undefined) {
-      const startNumber = context.startNumber || 1;
       if (context.reversed) {
-        // 意図: reversed属性の正しい実装にはitemCountが必要（TODO: ListContextへの追加）
-        return startNumber - context.index;
+        // reversed属性の場合、startが未指定ならitemCountから開始
+        const effectiveStart =
+          context.startNumber !== undefined
+            ? context.startNumber
+            : context.itemCount || 1;
+        return effectiveStart - context.index;
       } else {
+        const startNumber = context.startNumber || 1;
         return startNumber + context.index;
       }
     }

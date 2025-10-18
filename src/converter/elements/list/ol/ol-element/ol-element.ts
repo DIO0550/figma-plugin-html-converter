@@ -93,13 +93,13 @@ export const OlElement = {
       case "1":
         return `${index}`;
       case "a":
-        return toAlpha(index).toLowerCase();
+        return toAlpha(index, true);
       case "A":
-        return toAlpha(index).toUpperCase();
+        return toAlpha(index);
       case "i":
-        return toRoman(index).toLowerCase();
+        return toRoman(index, true);
       case "I":
-        return toRoman(index).toUpperCase();
+        return toRoman(index);
       default:
         return `${index}`;
     }

@@ -5,50 +5,57 @@
 /**
  * 数字をアルファベットに変換
  * @param num - 変換する数字（1以上）
+ * @param lowercase - 小文字で返すかどうか（デフォルト: false）
  * @returns アルファベット表記（例: 1→A, 2→B, 27→AA）
  */
-export function toAlpha(num: number): string {
+export function toAlpha(num: number, lowercase = false): string {
   let result = "";
   let n = num - 1;
   while (n >= 0) {
     result = String.fromCharCode(65 + (n % 26)) + result;
     n = Math.floor(n / 26) - 1;
   }
-  return result;
+  return lowercase ? result.toLowerCase() : result;
 }
+
+/**
+ * ローマ数字変換用の定数
+ */
+const ROMAN_NUMERAL_VALUES = [
+  1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1,
+];
+const ROMAN_NUMERAL_SYMBOLS = [
+  "M",
+  "CM",
+  "D",
+  "CD",
+  "C",
+  "XC",
+  "L",
+  "XL",
+  "X",
+  "IX",
+  "V",
+  "IV",
+  "I",
+];
 
 /**
  * 数字をローマ数字に変換
  * @param num - 変換する数字（1以上）
+ * @param lowercase - 小文字で返すかどうか（デフォルト: false）
  * @returns ローマ数字表記（例: 1→I, 5→V, 10→X）
  */
-export function toRoman(num: number): string {
-  const values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
-  const symbols = [
-    "M",
-    "CM",
-    "D",
-    "CD",
-    "C",
-    "XC",
-    "L",
-    "XL",
-    "X",
-    "IX",
-    "V",
-    "IV",
-    "I",
-  ];
-
+export function toRoman(num: number, lowercase = false): string {
   let result = "";
   let n = num;
 
-  for (let i = 0; i < values.length; i++) {
-    while (n >= values[i]) {
-      result += symbols[i];
-      n -= values[i];
+  for (let i = 0; i < ROMAN_NUMERAL_VALUES.length; i++) {
+    while (n >= ROMAN_NUMERAL_VALUES[i]) {
+      result += ROMAN_NUMERAL_SYMBOLS[i];
+      n -= ROMAN_NUMERAL_VALUES[i];
     }
   }
 
-  return result;
+  return lowercase ? result.toLowerCase() : result;
 }

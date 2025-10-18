@@ -144,13 +144,13 @@ export const LiElement = {
       case "1":
         return `${number}.`;
       case "a":
-        return `${toAlpha(number).toLowerCase()}.`;
+        return `${toAlpha(number, true)}.`;
       case "A":
-        return `${toAlpha(number).toUpperCase()}.`;
+        return `${toAlpha(number)}.`;
       case "i":
-        return `${toRoman(number).toLowerCase()}.`;
+        return `${toRoman(number, true)}.`;
       case "I":
-        return `${toRoman(number).toUpperCase()}.`;
+        return `${toRoman(number)}.`;
       default:
         return `${number}.`;
     }

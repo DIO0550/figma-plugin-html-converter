@@ -15,3 +15,6 @@ export * from "./dt";
 
 // dd element exports
 export * from "./dd";
+
+// list utilities exports
+export * from "./utils/list-number-formatter";

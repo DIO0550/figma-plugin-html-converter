@@ -3,6 +3,7 @@
  */
 
 import { BaseElement } from "../../../base";
+import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { LiAttributes } from "../li-attributes";
 
 /**
@@ -54,7 +55,7 @@ export const LiElement = {
    */
   create(
     attributes: Partial<LiAttributes> = {},
-    children: BaseElement["children"] = [],
+    children: HTMLNode[] = [],
   ): LiElement {
     return {
       type: "element",

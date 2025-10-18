@@ -3,6 +3,7 @@
  */
 
 import { BaseElement } from "../../../base";
+import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { OlAttributes } from "../ol-attributes";
 
 /**
@@ -37,7 +38,7 @@ export const OlElement = {
    */
   create(
     attributes: Partial<OlAttributes> = {},
-    children: BaseElement["children"] = [],
+    children: HTMLNode[] = [],
   ): OlElement {
     return {
       type: "element",

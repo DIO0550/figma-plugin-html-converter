@@ -11,7 +11,6 @@ import { Styles } from "../../../../models/styles";
 // デフォルトのスタイル定数
 const DEFAULT_MARKER_WIDTH = 24; // マーカーの幅
 const DEFAULT_MARKER_SPACING = 8; // マーカーとコンテンツの間隔
-const DEFAULT_MARKER_FONT_SIZE = 14; // マーカーのフォントサイズ
 const DEFAULT_BULLET_SIZE = 6; // バレットのサイズ
 
 /**
@@ -48,8 +47,6 @@ export function createMarker(
     const markerText = LiElement.getMarkerText(ctx, element);
     const textConfig = FigmaNode.createText(markerText);
     textConfig.name = "marker";
-    textConfig.fontSize = DEFAULT_MARKER_FONT_SIZE;
-    textConfig.fontWeight = 400;
     textConfig.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
 
     // テキストを右揃えするためのコンテナ

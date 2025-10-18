@@ -5,4 +5,8 @@
 export { LiAttributes } from "./li-attributes";
 export { LiElement } from "./li-element";
 export type { LiElement as LiElementType, ListContext } from "./li-element";
-export { LiConverter, toFigmaNode, mapToFigma } from "./li-converter";
+export {
+  LiConverter,
+  toFigmaNode as liToFigmaNode,
+  mapToFigma as liMapToFigma,
+} from "./li-converter";

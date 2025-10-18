@@ -2,7 +2,7 @@
  * @fileoverview DT要素のモデル
  */
 
-import type { HTMLNode } from "../../../models/html-node";
+import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { DtAttributes } from "../dt-attributes";
 
 /**

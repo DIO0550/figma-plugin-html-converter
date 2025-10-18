@@ -8,9 +8,6 @@ import { FigmaNode } from "../../../../models/figma-node";
 import { DtElement } from "../dt-element";
 import { Styles } from "../../../../models/styles";
 
-// デフォルトのスタイル定数
-const DEFAULT_FONT_WEIGHT = 700; // 用語は太字で表示
-
 /**
  * DT要素をFigmaノードに変換
  */
@@ -20,9 +17,7 @@ export function toFigmaNode(element: DtElement): FigmaNodeConfig {
   config.layoutSizingHorizontal = "FILL";
   config.layoutSizingVertical = "HUG";
 
-  // デフォルトで太字スタイル
-  const textConfig = FigmaNode.createText("");
-  textConfig.fontWeight = DEFAULT_FONT_WEIGHT;
+  // デフォルトで太字スタイル（子要素で適用）
 
   // スタイルの適用
   if (element.attributes && element.attributes.style) {

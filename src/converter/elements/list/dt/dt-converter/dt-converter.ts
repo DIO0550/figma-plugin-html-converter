@@ -17,8 +17,6 @@ export function toFigmaNode(element: DtElement): FigmaNodeConfig {
   config.layoutSizingHorizontal = "FILL";
   config.layoutSizingVertical = "HUG";
 
-  // デフォルトで太字スタイル（子要素で適用）
-
   // スタイルの適用
   if (element.attributes && element.attributes.style) {
     const styles = Styles.parse(element.attributes.style);

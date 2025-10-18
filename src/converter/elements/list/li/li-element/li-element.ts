@@ -105,19 +105,7 @@ export const LiElement = {
     if (context.index !== undefined) {
       const startNumber = context.startNumber || 1;
       if (context.reversed) {
-        // 制限事項: 逆順（reversed）リストの場合、正しい番号付けにはリスト全体の要素数（itemCount）が必要です。
-        // 現在は itemCount を受け取っていないため、HTML仕様通りの番号付けができません。
-        //
-        // 期待される動作: reversed属性がtrueの場合、番号は startNumber から始まり、リストの末尾から順に減少します。
-        // 例: start=5, itemCount=3 の場合、各liの番号は 5, 4, 3 となるべきですが、
-        //     現状は index のみで計算しています。
-        //
-        // 実装の差異: 現在は startNumber - context.index で簡易計算しており、itemCountが考慮されていません。
-        //             このため、リスト全体の要素数によって開始番号が変わる正しい動作とは異なります。
-        //
-        // TODO: ListContextに itemCount（リスト全体の要素数）フィールドを追加し、
-        //       正しい逆順番号付けを実装すること。
-        //       正しい計算式: startNumber - (itemCount - 1 - context.index)
+        // 意図: reversed属性の正しい実装にはitemCountが必要（TODO: ListContextへの追加）
         return startNumber - context.index;
       } else {
         return startNumber + context.index;

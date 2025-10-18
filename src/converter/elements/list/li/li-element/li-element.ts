@@ -70,6 +70,8 @@ export const LiElement = {
 
   /**
    * value属性から番号を取得
+   * @param element 対象のLI要素
+   * @returns value属性の値（整数）。未指定または無効な値の場合はundefinedを返す
    */
   getValue(element: LiElement): number | undefined {
     if (!element.attributes || !element.attributes.value) {

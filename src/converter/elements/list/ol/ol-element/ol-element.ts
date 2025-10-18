@@ -51,6 +51,8 @@ export const OlElement = {
 
   /**
    * 開始番号を取得
+   * @param element 開始番号を取得する対象のOL要素
+   * @returns start属性の値（整数）。未指定または無効な値の場合は1を返す
    */
   getStartNumber(element: OlElement): number {
     // 属性が存在しない場合はデフォルト値を返す
@@ -67,6 +69,8 @@ export const OlElement = {
 
   /**
    * リストタイプを取得
+   * @param element リストタイプを取得する対象のOL要素
+   * @returns OL要素のtype属性の値（"1": 数字, "a": 小文字アルファベット, "A": 大文字アルファベット, "i": 小文字ローマ数字, "I": 大文字ローマ数字）。未指定の場合は"1"を返す
    */
   getListType(element: OlElement): "1" | "a" | "A" | "i" | "I" {
     if (!element.attributes || !element.attributes.type) {
@@ -77,6 +81,8 @@ export const OlElement = {
 
   /**
    * 逆順かどうかを判定
+   * @param element 判定対象のOL要素
+   * @returns reversed属性が指定されていればtrue、そうでなければfalse
    */
   isReversed(element: OlElement): boolean {
     if (!element.attributes) {
@@ -87,6 +93,9 @@ export const OlElement = {
 
   /**
    * リスト番号をフォーマット
+   * @param index リスト項目のインデックス（1から始まる番号）
+   * @param type リストのタイプ（"1": 数字, "a": 小文字アルファベット, "A": 大文字アルファベット, "i": 小文字ローマ数字, "I": 大文字ローマ数字）
+   * @returns フォーマットされたリスト番号の文字列
    */
   formatNumber(index: number, type: "1" | "a" | "A" | "i" | "I"): string {
     switch (type) {

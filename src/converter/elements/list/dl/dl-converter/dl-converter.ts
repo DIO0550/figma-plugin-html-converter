@@ -7,6 +7,7 @@ import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { DlElement } from "../dl-element";
 import { Styles } from "../../../../models/styles";
+import { isValidPadding } from "../../utils/validation";
 
 // デフォルトのスタイル定数
 const DEFAULT_LIST_VERTICAL_PADDING = 16; // 上下のパディング
@@ -48,19 +49,19 @@ export function toFigmaNode(element: DlElement): FigmaNodeConfig {
       } else {
         // 個別のパディング値を適用
         const paddingLeft = Styles.getPaddingLeft(styles);
-        if (paddingLeft !== undefined && typeof paddingLeft === "number") {
+        if (paddingLeft !== undefined && isValidPadding(paddingLeft)) {
           config.paddingLeft = paddingLeft;
         }
         const paddingTop = Styles.getPaddingTop(styles);
-        if (paddingTop !== undefined && typeof paddingTop === "number") {
+        if (paddingTop !== undefined && isValidPadding(paddingTop)) {
           config.paddingTop = paddingTop;
         }
         const paddingBottom = Styles.getPaddingBottom(styles);
-        if (paddingBottom !== undefined && typeof paddingBottom === "number") {
+        if (paddingBottom !== undefined && isValidPadding(paddingBottom)) {
           config.paddingBottom = paddingBottom;
         }
         const paddingRight = Styles.getPaddingRight(styles);
-        if (paddingRight !== undefined && typeof paddingRight === "number") {
+        if (paddingRight !== undefined && isValidPadding(paddingRight)) {
           config.paddingRight = paddingRight;
         }
       }

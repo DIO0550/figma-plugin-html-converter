@@ -7,17 +7,12 @@ import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { OlElement } from "../ol-element";
 import { Styles } from "../../../../models/styles";
+import { isValidPadding } from "../../utils/validation";
 
 // デフォルトのリストスタイル定数
 const DEFAULT_LIST_INDENT = 40; // デフォルトのインデント
 const DEFAULT_LIST_VERTICAL_PADDING = 16; // 上下のパディング
 const DEFAULT_ITEM_SPACING = 8; // リストアイテム間のスペース
-
-/**
- * パディング値のバリデーション
- */
-const isValidPadding = (value: unknown): value is number =>
-  typeof value === "number" && isFinite(value) && value >= 0;
 
 /**
  * OL要素をFigmaノードに変換

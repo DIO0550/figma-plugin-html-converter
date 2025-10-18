@@ -4,6 +4,7 @@
 
 import { test, expect } from "vitest";
 import { LiElement, type ListContext } from "../li-element";
+import { toAlpha, toRoman } from "../../../utils/list-number-formatter";
 
 // getValue テスト
 test("LiElement.getValue: returns value attribute when set", () => {
@@ -170,55 +171,55 @@ test("LiElement.getMarkerText: handles multi-digit numbers correctly", () => {
 });
 
 // toAlpha テスト
-test("LiElement.toAlpha: basic alphabet conversion", () => {
-  expect(LiElement.toAlpha(1)).toBe("A");
-  expect(LiElement.toAlpha(2)).toBe("B");
-  expect(LiElement.toAlpha(26)).toBe("Z");
+test("toAlpha: basic alphabet conversion", () => {
+  expect(toAlpha(1)).toBe("A");
+  expect(toAlpha(2)).toBe("B");
+  expect(toAlpha(26)).toBe("Z");
 });
 
-test("LiElement.toAlpha: multi-character alphabet conversion", () => {
-  expect(LiElement.toAlpha(27)).toBe("AA");
-  expect(LiElement.toAlpha(52)).toBe("AZ");
-  expect(LiElement.toAlpha(53)).toBe("BA");
+test("toAlpha: multi-character alphabet conversion", () => {
+  expect(toAlpha(27)).toBe("AA");
+  expect(toAlpha(52)).toBe("AZ");
+  expect(toAlpha(53)).toBe("BA");
 });
 
-test("LiElement.toAlpha: large number alphabet conversion", () => {
-  expect(LiElement.toAlpha(702)).toBe("ZZ");
-  expect(LiElement.toAlpha(703)).toBe("AAA");
+test("toAlpha: large number alphabet conversion", () => {
+  expect(toAlpha(702)).toBe("ZZ");
+  expect(toAlpha(703)).toBe("AAA");
 });
 
 // toRoman テスト
-test("LiElement.toRoman: basic roman numeral conversion", () => {
-  expect(LiElement.toRoman(1)).toBe("I");
-  expect(LiElement.toRoman(2)).toBe("II");
-  expect(LiElement.toRoman(3)).toBe("III");
-  expect(LiElement.toRoman(4)).toBe("IV");
-  expect(LiElement.toRoman(5)).toBe("V");
+test("toRoman: basic roman numeral conversion", () => {
+  expect(toRoman(1)).toBe("I");
+  expect(toRoman(2)).toBe("II");
+  expect(toRoman(3)).toBe("III");
+  expect(toRoman(4)).toBe("IV");
+  expect(toRoman(5)).toBe("V");
 });
 
-test("LiElement.toRoman: tens place roman numeral conversion", () => {
-  expect(LiElement.toRoman(9)).toBe("IX");
-  expect(LiElement.toRoman(10)).toBe("X");
-  expect(LiElement.toRoman(40)).toBe("XL");
-  expect(LiElement.toRoman(50)).toBe("L");
-  expect(LiElement.toRoman(90)).toBe("XC");
+test("toRoman: tens place roman numeral conversion", () => {
+  expect(toRoman(9)).toBe("IX");
+  expect(toRoman(10)).toBe("X");
+  expect(toRoman(40)).toBe("XL");
+  expect(toRoman(50)).toBe("L");
+  expect(toRoman(90)).toBe("XC");
 });
 
-test("LiElement.toRoman: hundreds place roman numeral conversion", () => {
-  expect(LiElement.toRoman(100)).toBe("C");
-  expect(LiElement.toRoman(400)).toBe("CD");
-  expect(LiElement.toRoman(500)).toBe("D");
-  expect(LiElement.toRoman(900)).toBe("CM");
+test("toRoman: hundreds place roman numeral conversion", () => {
+  expect(toRoman(100)).toBe("C");
+  expect(toRoman(400)).toBe("CD");
+  expect(toRoman(500)).toBe("D");
+  expect(toRoman(900)).toBe("CM");
 });
 
-test("LiElement.toRoman: thousands place roman numeral conversion", () => {
-  expect(LiElement.toRoman(1000)).toBe("M");
-  expect(LiElement.toRoman(2000)).toBe("MM");
-  expect(LiElement.toRoman(3000)).toBe("MMM");
+test("toRoman: thousands place roman numeral conversion", () => {
+  expect(toRoman(1000)).toBe("M");
+  expect(toRoman(2000)).toBe("MM");
+  expect(toRoman(3000)).toBe("MMM");
 });
 
-test("LiElement.toRoman: compound roman numeral conversion", () => {
-  expect(LiElement.toRoman(1984)).toBe("MCMLXXXIV");
-  expect(LiElement.toRoman(2024)).toBe("MMXXIV");
-  expect(LiElement.toRoman(3999)).toBe("MMMCMXCIX");
+test("toRoman: compound roman numeral conversion", () => {
+  expect(toRoman(1984)).toBe("MCMLXXXIV");
+  expect(toRoman(2024)).toBe("MMXXIV");
+  expect(toRoman(3999)).toBe("MMMCMXCIX");
 });

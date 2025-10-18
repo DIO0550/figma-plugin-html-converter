@@ -5,6 +5,7 @@
 import { BaseElement } from "../../../base";
 import type { HTMLNode } from "../../../../models/html-node/html-node";
 import type { LiAttributes } from "../li-attributes";
+import { toAlpha, toRoman } from "../../utils/list-number-formatter";
 
 /**
  * LI要素のインターフェース
@@ -104,8 +105,19 @@ export const LiElement = {
     if (context.index !== undefined) {
       const startNumber = context.startNumber || 1;
       if (context.reversed) {
-        // TODO: 逆順の場合、全体の要素数が必要
-        // 現在は簡易的に実装
+        // 制限事項: 逆順（reversed）リストの場合、正しい番号付けにはリスト全体の要素数（itemCount）が必要です。
+        // 現在は itemCount を受け取っていないため、HTML仕様通りの番号付けができません。
+        //
+        // 期待される動作: reversed属性がtrueの場合、番号は startNumber から始まり、リストの末尾から順に減少します。
+        // 例: start=5, itemCount=3 の場合、各liの番号は 5, 4, 3 となるべきですが、
+        //     現状は index のみで計算しています。
+        //
+        // 実装の差異: 現在は startNumber - context.index で簡易計算しており、itemCountが考慮されていません。
+        //             このため、リスト全体の要素数によって開始番号が変わる正しい動作とは異なります。
+        //
+        // TODO: ListContextに itemCount（リスト全体の要素数）フィールドを追加し、
+        //       正しい逆順番号付けを実装すること。
+        //       正しい計算式: startNumber - (itemCount - 1 - context.index)
         return startNumber - context.index;
       } else {
         return startNumber + context.index;
@@ -133,68 +145,20 @@ export const LiElement = {
 
     const type = context.type || "1";
 
-    // OlElementの変換関数を使用するために、動的にインポートする必要がある
-    // ここでは簡易的な実装
+    // 共通ユーティリティを使用して番号をフォーマット
     switch (type) {
       case "1":
         return `${number}.`;
       case "a":
-        return `${this.toAlpha(number).toLowerCase()}.`;
+        return `${toAlpha(number).toLowerCase()}.`;
       case "A":
-        return `${this.toAlpha(number).toUpperCase()}.`;
+        return `${toAlpha(number).toUpperCase()}.`;
       case "i":
-        return `${this.toRoman(number).toLowerCase()}.`;
+        return `${toRoman(number).toLowerCase()}.`;
       case "I":
-        return `${this.toRoman(number).toUpperCase()}.`;
+        return `${toRoman(number).toUpperCase()}.`;
       default:
         return `${number}.`;
     }
-  },
-
-  /**
-   * 数字をアルファベットに変換（簡易実装）
-   */
-  toAlpha(num: number): string {
-    let result = "";
-    let n = num - 1;
-    while (n >= 0) {
-      result = String.fromCharCode(65 + (n % 26)) + result;
-      n = Math.floor(n / 26) - 1;
-    }
-    return result;
-  },
-
-  /**
-   * 数字をローマ数字に変換（簡易実装）
-   */
-  toRoman(num: number): string {
-    const values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
-    const symbols = [
-      "M",
-      "CM",
-      "D",
-      "CD",
-      "C",
-      "XC",
-      "L",
-      "XL",
-      "X",
-      "IX",
-      "V",
-      "IV",
-      "I",
-    ];
-
-    let result = "";
-    let n = num;
-
-    for (let i = 0; i < values.length; i++) {
-      while (n >= values[i]) {
-        result += symbols[i];
-        n -= values[i];
-      }
-    }
-
-    return result;
   },
 };

@@ -4,6 +4,7 @@
 
 import { test, expect } from "vitest";
 import { OlElement } from "../ol-element";
+import { toAlpha, toRoman } from "../../../utils/list-number-formatter";
 
 // getStartNumber テスト
 test("OlElement.getStartNumber: returns start attribute value when set", () => {
@@ -110,30 +111,30 @@ test("OlElement.formatNumber: uppercase roman format converts numbers to upperca
 });
 
 // toAlpha テスト
-test("OlElement.toAlpha: converts numbers to alphabets", () => {
-  expect(OlElement.toAlpha(1)).toBe("A");
-  expect(OlElement.toAlpha(26)).toBe("Z");
-  expect(OlElement.toAlpha(27)).toBe("AA");
-  expect(OlElement.toAlpha(52)).toBe("AZ");
-  expect(OlElement.toAlpha(53)).toBe("BA");
-  expect(OlElement.toAlpha(702)).toBe("ZZ");
-  expect(OlElement.toAlpha(703)).toBe("AAA");
+test("toAlpha: converts numbers to alphabets", () => {
+  expect(toAlpha(1)).toBe("A");
+  expect(toAlpha(26)).toBe("Z");
+  expect(toAlpha(27)).toBe("AA");
+  expect(toAlpha(52)).toBe("AZ");
+  expect(toAlpha(53)).toBe("BA");
+  expect(toAlpha(702)).toBe("ZZ");
+  expect(toAlpha(703)).toBe("AAA");
 });
 
 // toRoman テスト
-test("OlElement.toRoman: converts numbers to roman numerals", () => {
-  expect(OlElement.toRoman(1)).toBe("I");
-  expect(OlElement.toRoman(4)).toBe("IV");
-  expect(OlElement.toRoman(5)).toBe("V");
-  expect(OlElement.toRoman(9)).toBe("IX");
-  expect(OlElement.toRoman(10)).toBe("X");
-  expect(OlElement.toRoman(40)).toBe("XL");
-  expect(OlElement.toRoman(50)).toBe("L");
-  expect(OlElement.toRoman(90)).toBe("XC");
-  expect(OlElement.toRoman(100)).toBe("C");
-  expect(OlElement.toRoman(400)).toBe("CD");
-  expect(OlElement.toRoman(500)).toBe("D");
-  expect(OlElement.toRoman(900)).toBe("CM");
-  expect(OlElement.toRoman(1000)).toBe("M");
-  expect(OlElement.toRoman(3999)).toBe("MMMCMXCIX");
+test("toRoman: converts numbers to roman numerals", () => {
+  expect(toRoman(1)).toBe("I");
+  expect(toRoman(4)).toBe("IV");
+  expect(toRoman(5)).toBe("V");
+  expect(toRoman(9)).toBe("IX");
+  expect(toRoman(10)).toBe("X");
+  expect(toRoman(40)).toBe("XL");
+  expect(toRoman(50)).toBe("L");
+  expect(toRoman(90)).toBe("XC");
+  expect(toRoman(100)).toBe("C");
+  expect(toRoman(400)).toBe("CD");
+  expect(toRoman(500)).toBe("D");
+  expect(toRoman(900)).toBe("CM");
+  expect(toRoman(1000)).toBe("M");
+  expect(toRoman(3999)).toBe("MMMCMXCIX");
 });

@@ -2,6 +2,10 @@
  * @fileoverview リスト番号フォーマットのユーティリティ関数
  */
 
+// アルファベット変換用の定数
+const UPPERCASE_A_CHARCODE = 65; // 大文字Aの開始位置
+const ALPHABET_SIZE = 26; // アルファベットの文字数
+
 /**
  * 数字をアルファベットに変換
  * @param num - 変換する数字（1以上）
@@ -12,8 +16,9 @@ export function toAlpha(num: number, lowercase = false): string {
   let result = "";
   let n = num - 1;
   while (n >= 0) {
-    result = String.fromCharCode(65 + (n % 26)) + result;
-    n = Math.floor(n / 26) - 1;
+    result =
+      String.fromCharCode(UPPERCASE_A_CHARCODE + (n % ALPHABET_SIZE)) + result;
+    n = Math.floor(n / ALPHABET_SIZE) - 1;
   }
   return lowercase ? result.toLowerCase() : result;
 }

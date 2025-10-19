@@ -83,6 +83,9 @@ export function toFigmaNode(element: OlElement): FigmaNodeConfig {
     } else if (element.attributes.class) {
       const className = element.attributes.class.split(" ")[0];
       config.name = `ol.${className}`;
+    } else {
+      // IDもclassもない場合はデフォルト名を設定
+      config.name = "ol";
     }
 
     // 開始番号が1以外の場合はノード名に反映

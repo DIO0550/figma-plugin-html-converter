@@ -109,8 +109,10 @@ export const OlElement = {
         return toRoman(index, true);
       case "I":
         return toRoman(index);
-      default:
-        return `${index}`;
+      default: {
+        const _exhaustiveCheck: never = type;
+        throw new Error(`Unexpected type: ${_exhaustiveCheck}`);
+      }
     }
   },
 };

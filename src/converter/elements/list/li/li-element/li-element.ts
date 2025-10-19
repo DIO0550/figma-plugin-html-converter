@@ -153,8 +153,10 @@ export const LiElement = {
         return `${toRoman(number, true)}.`;
       case "I":
         return `${toRoman(number)}.`;
-      default:
-        return `${number}.`;
+      default: {
+        const _exhaustiveCheck: never = type;
+        throw new Error(`Unexpected type: ${_exhaustiveCheck}`);
+      }
     }
   },
 };

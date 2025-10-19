@@ -155,7 +155,7 @@ export const LiElement = {
         return `${toRoman(number)}.`;
       default: {
         const _exhaustiveCheck: never = type;
-        throw new Error(`Unexpected type: ${_exhaustiveCheck}`);
+        throw new Error(`Unexpected list type: ${type}`);
       }
     }
   },

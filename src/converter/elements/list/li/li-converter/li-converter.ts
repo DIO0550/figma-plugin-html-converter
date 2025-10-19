@@ -12,6 +12,7 @@ import { Styles } from "../../../../models/styles";
 const DEFAULT_MARKER_WIDTH = 24; // マーカーの幅
 const DEFAULT_MARKER_SPACING = 8; // マーカーとコンテンツの間隔
 const DEFAULT_BULLET_SIZE = 6; // バレットのサイズ
+const CIRCLE_RADIUS_DIVISOR = 2; // 円形にするための半径計算用の除数
 
 /**
  * マーカーノードを作成
@@ -30,7 +31,7 @@ export function createMarker(
     const bulletConfig = FigmaNode.createRectangle("bullet");
     bulletConfig.width = DEFAULT_BULLET_SIZE;
     bulletConfig.height = DEFAULT_BULLET_SIZE;
-    bulletConfig.cornerRadius = DEFAULT_BULLET_SIZE / 2; // 半径を設定して円形に
+    bulletConfig.cornerRadius = DEFAULT_BULLET_SIZE / CIRCLE_RADIUS_DIVISOR; // 半径を設定して円形に
     bulletConfig.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
 
     // バレットを中央揃えするためのコンテナ

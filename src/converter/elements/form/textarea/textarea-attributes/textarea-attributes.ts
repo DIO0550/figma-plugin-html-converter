@@ -47,4 +47,10 @@ export interface TextareaAttributes extends GlobalAttributes {
    * 読み取り専用かどうか
    */
   readonly?: string;
+
+  /**
+   * テキストの折り返し方法
+   * 'soft' | 'hard'
+   */
+  wrap?: string;
 }

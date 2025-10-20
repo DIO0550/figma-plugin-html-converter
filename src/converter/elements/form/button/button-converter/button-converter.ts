@@ -41,9 +41,12 @@ export function toFigmaNode(element: ButtonElement): FigmaNodeConfig {
       firstChild !== null &&
       "type" in firstChild &&
       firstChild.type === "text" &&
-      "textContent" in firstChild
+      "textContent" in firstChild &&
+      typeof (firstChild as { textContent: unknown }).textContent === "string"
     ) {
-      text = (firstChild as { textContent?: string }).textContent || "Button";
+      text =
+        (firstChild as { type: "text"; textContent: string }).textContent ||
+        "Button";
     }
   } else if (element.attributes.value) {
     text = element.attributes.value;

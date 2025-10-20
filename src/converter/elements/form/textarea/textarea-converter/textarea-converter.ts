@@ -47,9 +47,12 @@ export function toFigmaNode(element: TextareaElement): FigmaNodeConfig {
       firstChild !== null &&
       "type" in firstChild &&
       firstChild.type === "text" &&
-      "textContent" in firstChild
+      "textContent" in firstChild &&
+      typeof (firstChild as { textContent: unknown }).textContent === "string"
     ) {
-      text = (firstChild as { textContent?: string }).textContent || text;
+      text =
+        (firstChild as { type: "text"; textContent: string }).textContent ||
+        text;
     }
   }
 

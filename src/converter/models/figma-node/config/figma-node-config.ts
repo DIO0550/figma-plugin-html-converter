@@ -1,6 +1,6 @@
-import type { Paint } from '../../paint';
-import { Paint as PaintUtil } from '../../paint';
-import type { Constraints, NodeType } from '../figma-node';
+import type { Paint } from "../../paint";
+import { Paint as PaintUtil } from "../../paint";
+import type { Constraints, NodeType } from "../figma-node";
 
 export interface FigmaNodeConfig {
   type: NodeType;
@@ -13,16 +13,17 @@ export interface FigmaNodeConfig {
   strokes?: Paint[];
   strokeWeight?: number;
   cornerRadius?: number;
+  opacity?: number;
   // Auto Layoutプロパティ
-  layoutMode?: 'NONE' | 'HORIZONTAL' | 'VERTICAL';
-  primaryAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX' | 'SPACE_BETWEEN';
-  counterAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH';
+  layoutMode?: "NONE" | "HORIZONTAL" | "VERTICAL";
+  primaryAxisAlignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
+  counterAxisAlignItems?: "MIN" | "CENTER" | "MAX" | "STRETCH";
   paddingLeft?: number;
   paddingRight?: number;
   paddingTop?: number;
   paddingBottom?: number;
   itemSpacing?: number;
-  layoutWrap?: 'NO_WRAP' | 'WRAP';
+  layoutWrap?: "NO_WRAP" | "WRAP";
   // Positioning
   constraints?: Constraints;
   zIndex?: number;
@@ -30,17 +31,20 @@ export interface FigmaNodeConfig {
   children?: FigmaNodeConfig[];
   // レスポンシブプロパティ
   layoutGrow?: number;
-  layoutSizingHorizontal?: 'FIXED' | 'HUG' | 'FILL';
-  layoutSizingVertical?: 'FIXED' | 'HUG' | 'FILL';
+  layoutSizingHorizontal?: "FIXED" | "HUG" | "FILL";
+  layoutSizingVertical?: "FIXED" | "HUG" | "FILL";
   minWidth?: number;
   maxWidth?: number;
   minHeight?: number;
   maxHeight?: number;
   aspectRatio?: number;
+  // テキストプロパティ
+  fontSize?: number;
+  characters?: string;
 }
 
 export interface AutoLayoutConfig {
-  mode: 'HORIZONTAL' | 'VERTICAL';
+  mode: "HORIZONTAL" | "VERTICAL";
   spacing?: number;
   padding?: {
     top?: number;
@@ -48,62 +52,67 @@ export interface AutoLayoutConfig {
     bottom?: number;
     left?: number;
   };
-  primaryAxisAlign?: 'MIN' | 'CENTER' | 'MAX' | 'SPACE_BETWEEN';
-  counterAxisAlign?: 'MIN' | 'CENTER' | 'MAX' | 'STRETCH';
+  primaryAxisAlign?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
+  counterAxisAlign?: "MIN" | "CENTER" | "MAX" | "STRETCH";
 }
 
 // ヘルパー関数
-const isDivTag = (tagName: string): boolean => tagName === 'div';
+const isDivTag = (tagName: string): boolean => tagName === "div";
 
 export const FigmaNodeConfig = {
   // 型ガード
   isFrame(node: FigmaNodeConfig): boolean {
-    return node.type === 'FRAME';
+    return node.type === "FRAME";
   },
 
   isText(node: FigmaNodeConfig): boolean {
-    return node.type === 'TEXT';
+    return node.type === "TEXT";
   },
 
   isRectangle(node: FigmaNodeConfig): boolean {
-    return node.type === 'RECTANGLE';
+    return node.type === "RECTANGLE";
   },
 
   isGroup(node: FigmaNodeConfig): boolean {
-    return node.type === 'GROUP';
+    return node.type === "GROUP";
   },
 
   // ファクトリーメソッド
   createFrame(name: string, props?: Partial<FigmaNodeConfig>): FigmaNodeConfig {
     return {
-      type: 'FRAME',
+      type: "FRAME",
       name,
-      ...props
+      ...props,
     };
   },
-  
 
-  createText(content: string, props?: Partial<FigmaNodeConfig>): FigmaNodeConfig {
+  createText(
+    content: string,
+    props?: Partial<FigmaNodeConfig>,
+  ): FigmaNodeConfig {
     return {
-      type: 'TEXT',
+      type: "TEXT",
       name: content,
-      ...props
+      ...props,
     };
   },
 
-  createRectangle(name: string, props?: Partial<FigmaNodeConfig>): FigmaNodeConfig {
+  createRectangle(
+    name: string,
+    props?: Partial<FigmaNodeConfig>,
+  ): FigmaNodeConfig {
     return {
-      type: 'RECTANGLE',
+      type: "RECTANGLE",
       name,
-      ...props
+      ...props,
     };
   },
 
   createGroup(name: string, props?: Partial<FigmaNodeConfig>): FigmaNodeConfig {
     return {
-      type: 'GROUP',
+      type: "GROUP",
       name,
-      ...props
+      ...props,
     };
   },
 
@@ -135,16 +144,20 @@ export const FigmaNodeConfig = {
 
   setAutoLayout(node: FigmaNodeConfig, config: AutoLayoutConfig): void {
     node.layoutMode = config.mode;
-    
+
     if (config.spacing !== undefined) {
       node.itemSpacing = config.spacing;
     }
 
     if (config.padding) {
-      if (config.padding.top !== undefined) node.paddingTop = config.padding.top;
-      if (config.padding.right !== undefined) node.paddingRight = config.padding.right;
-      if (config.padding.bottom !== undefined) node.paddingBottom = config.padding.bottom;
-      if (config.padding.left !== undefined) node.paddingLeft = config.padding.left;
+      if (config.padding.top !== undefined)
+        node.paddingTop = config.padding.top;
+      if (config.padding.right !== undefined)
+        node.paddingRight = config.padding.right;
+      if (config.padding.bottom !== undefined)
+        node.paddingBottom = config.padding.bottom;
+      if (config.padding.left !== undefined)
+        node.paddingLeft = config.padding.left;
     }
 
     if (config.primaryAxisAlign) {
@@ -161,31 +174,36 @@ export const FigmaNodeConfig = {
    * ブロック要素のレイアウト設定とHTML属性（ID、クラス）からのノード名生成を行う
    */
   applyHtmlElementDefaults(
-    config: FigmaNodeConfig, 
+    config: FigmaNodeConfig,
     tagName: string,
-    attributes?: { id?: string; class?: string; [key: string]: unknown }
+    attributes?: { id?: string; class?: string; [key: string]: unknown },
   ): FigmaNodeConfig {
     const newConfig = { ...config };
-    
+
     // div要素の場合はデフォルトでNONEレイアウト
     if (isDivTag(tagName)) {
-      newConfig.layoutMode = 'NONE';
+      newConfig.layoutMode = "NONE";
     } else {
       // その他のブロック要素はverticalレイアウト
-      newConfig.layoutMode = 'VERTICAL';
+      newConfig.layoutMode = "VERTICAL";
       // 通常、親要素の幅いっぱいに広がる
-      newConfig.layoutSizingHorizontal = 'FILL';
+      newConfig.layoutSizingHorizontal = "FILL";
     }
-    
+
     // IDやクラスをノード名に反映（div要素の場合はtagNameを含めない）
     if (attributes?.id) {
-      newConfig.name = isDivTag(tagName) ? `#${attributes.id}` : `${tagName}#${attributes.id}`;
+      newConfig.name = isDivTag(tagName)
+        ? `#${attributes.id}`
+        : `${tagName}#${attributes.id}`;
     } else if (attributes?.class) {
-      const className = typeof attributes.class === 'string' ? attributes.class : '';
-      const firstClass = className.split(' ')[0];
-      newConfig.name = isDivTag(tagName) ? `.${firstClass}` : `${tagName}.${firstClass}`;
+      const className =
+        typeof attributes.class === "string" ? attributes.class : "";
+      const firstClass = className.split(" ")[0];
+      newConfig.name = isDivTag(tagName)
+        ? `.${firstClass}`
+        : `${tagName}.${firstClass}`;
     }
-    
+
     return newConfig;
   },
 
@@ -193,10 +211,15 @@ export const FigmaNodeConfig = {
    * パディングスタイルを適用
    * CSSのpadding値をFigmaのパディングプロパティに変換
    */
-  applyPaddingStyles(config: FigmaNodeConfig, padding: number | { top?: number; right?: number; bottom?: number; left?: number }): FigmaNodeConfig {
+  applyPaddingStyles(
+    config: FigmaNodeConfig,
+    padding:
+      | number
+      | { top?: number; right?: number; bottom?: number; left?: number },
+  ): FigmaNodeConfig {
     const newConfig = { ...config };
-    
-    if (typeof padding === 'number') {
+
+    if (typeof padding === "number") {
       newConfig.paddingTop = padding;
       newConfig.paddingRight = padding;
       newConfig.paddingBottom = padding;
@@ -207,7 +230,7 @@ export const FigmaNodeConfig = {
       newConfig.paddingBottom = padding.bottom ?? 0;
       newConfig.paddingLeft = padding.left ?? 0;
     }
-    
+
     return newConfig;
   },
 
@@ -215,7 +238,10 @@ export const FigmaNodeConfig = {
    * 背景色を適用
    * RGB色をFigmaのfillプロパティに変換
    */
-  applyBackgroundColor(config: FigmaNodeConfig, color: { r: number; g: number; b: number }): FigmaNodeConfig {
+  applyBackgroundColor(
+    config: FigmaNodeConfig,
+    color: { r: number; g: number; b: number },
+  ): FigmaNodeConfig {
     const newConfig = { ...config };
     newConfig.fills = [PaintUtil.solid(color)];
     return newConfig;
@@ -233,42 +259,47 @@ export const FigmaNodeConfig = {
       gap?: number;
       alignItems?: string;
       justifyContent?: string;
-    }
+    },
   ): FigmaNodeConfig {
     const newConfig = { ...config };
-    
-    if (options.display === 'flex') {
+
+    if (options.display === "flex") {
       // Flex direction
-      newConfig.layoutMode = options.flexDirection === 'column' ? 'VERTICAL' : 'HORIZONTAL';
-      
+      newConfig.layoutMode =
+        options.flexDirection === "column" ? "VERTICAL" : "HORIZONTAL";
+
       // Gap
       if (options.gap !== undefined) {
         newConfig.itemSpacing = options.gap;
       }
-      
+
       // Align items (cross axis)
       if (options.alignItems) {
-        const alignMap: Record<string, 'MIN' | 'CENTER' | 'MAX' | 'STRETCH'> = {
-          'flex-start': 'MIN',
-          'center': 'CENTER',
-          'flex-end': 'MAX',
-          'stretch': 'STRETCH'
+        const alignMap: Record<string, "MIN" | "CENTER" | "MAX" | "STRETCH"> = {
+          "flex-start": "MIN",
+          center: "CENTER",
+          "flex-end": "MAX",
+          stretch: "STRETCH",
         };
-        newConfig.counterAxisAlignItems = alignMap[options.alignItems] || 'MIN';
+        newConfig.counterAxisAlignItems = alignMap[options.alignItems] || "MIN";
       }
-      
+
       // Justify content (main axis)
       if (options.justifyContent) {
-        const justifyMap: Record<string, 'MIN' | 'CENTER' | 'MAX' | 'SPACE_BETWEEN'> = {
-          'flex-start': 'MIN',
-          'center': 'CENTER',
-          'flex-end': 'MAX',
-          'space-between': 'SPACE_BETWEEN'
+        const justifyMap: Record<
+          string,
+          "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN"
+        > = {
+          "flex-start": "MIN",
+          center: "CENTER",
+          "flex-end": "MAX",
+          "space-between": "SPACE_BETWEEN",
         };
-        newConfig.primaryAxisAlignItems = justifyMap[options.justifyContent] || 'MIN';
+        newConfig.primaryAxisAlignItems =
+          justifyMap[options.justifyContent] || "MIN";
       }
     }
-    
+
     return newConfig;
   },
 
@@ -281,21 +312,21 @@ export const FigmaNodeConfig = {
     options: {
       border?: { color: { r: number; g: number; b: number }; width: number };
       borderRadius?: number;
-    }
+    },
   ): FigmaNodeConfig {
     const newConfig = { ...config };
-    
+
     // ボーダー
     if (options.border) {
       newConfig.strokes = [PaintUtil.solid(options.border.color)];
       newConfig.strokeWeight = options.border.width;
     }
-    
+
     // 角丸
     if (options.borderRadius !== undefined) {
       newConfig.cornerRadius = options.borderRadius;
     }
-    
+
     return newConfig;
   },
 
@@ -308,18 +339,18 @@ export const FigmaNodeConfig = {
     options: {
       width?: number;
       height?: number;
-    }
+    },
   ): FigmaNodeConfig {
     const newConfig = { ...config };
-    
+
     if (options.width !== undefined) {
       newConfig.width = options.width;
     }
-    
+
     if (options.height !== undefined) {
       newConfig.height = options.height;
     }
-    
+
     return newConfig;
-  }
+  },
 };

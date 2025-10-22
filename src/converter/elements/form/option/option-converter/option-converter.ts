@@ -11,6 +11,7 @@ import { OptionElement } from "../option-element";
 const DEFAULT_OPTION_PADDING = 8;
 const DEFAULT_OPTION_VERTICAL_PADDING = 4;
 const DEFAULT_BORDER_RADIUS = 2;
+const DEFAULT_OPTION_TEXT = "Option";
 
 /**
  * option要素からテキストを取得
@@ -42,7 +43,7 @@ function getOptionText(element: OptionElement): string {
   }
 
   // デフォルト
-  return "Option";
+  return DEFAULT_OPTION_TEXT;
 }
 
 /**

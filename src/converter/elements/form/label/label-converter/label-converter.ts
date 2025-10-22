@@ -10,13 +10,14 @@ import { LabelElement } from "../label-element";
 // デフォルトスタイル定数
 const DEFAULT_LABEL_FONT_SIZE = 14;
 const DEFAULT_LABEL_PADDING = 4;
+const DEFAULT_LABEL_TEXT = "Label";
 
 /**
  * label要素からテキストを取得
  */
 function getLabelText(element: LabelElement): string {
   if (!element.children || element.children.length === 0) {
-    return "Label";
+    return DEFAULT_LABEL_TEXT;
   }
 
   // すべてのテキストノードを結合
@@ -34,7 +35,7 @@ function getLabelText(element: LabelElement): string {
     }
   }
 
-  return texts.length > 0 ? texts.join("") : "Label";
+  return texts.length > 0 ? texts.join("") : DEFAULT_LABEL_TEXT;
 }
 
 /**

@@ -12,6 +12,8 @@ const DEFAULT_SELECT_PADDING = 12;
 const DEFAULT_SELECT_VERTICAL_PADDING = 8;
 const DEFAULT_BORDER_RADIUS = 4;
 const DEFAULT_ARROW_SIZE = 8;
+const DEFAULT_ITEM_SPACING = 8;
+const DEFAULT_PLACEHOLDER_TEXT = "Select an option";
 
 /**
  * option要素からテキストを取得
@@ -98,7 +100,7 @@ export function toFigmaNode(element: SelectElement): FigmaNodeConfig {
   config.layoutSizingVertical = "HUG";
   config.primaryAxisAlignItems = "CENTER";
   config.counterAxisAlignItems = "CENTER";
-  config.itemSpacing = 8;
+  config.itemSpacing = DEFAULT_ITEM_SPACING;
 
   // 背景と枠線
   config.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
@@ -114,7 +116,7 @@ export function toFigmaNode(element: SelectElement): FigmaNodeConfig {
 
   // 表示テキストを取得
   const selectedOption = getSelectedOption(element.children);
-  let displayText = "Select an option";
+  let displayText = DEFAULT_PLACEHOLDER_TEXT;
   if (selectedOption) {
     const optionText = getOptionText(selectedOption);
     if (optionText) {

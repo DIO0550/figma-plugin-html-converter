@@ -63,17 +63,6 @@ test("toFigmaNode: 適切なフォントサイズを設定する", () => {
   }
 });
 
-test("toFigmaNode: テキストをボールドに設定する", () => {
-  const children = [{ type: "text" as const, textContent: "Legend" }];
-  const element = LegendElement.create({}, children);
-  const config = toFigmaNode(element);
-
-  const textNode = config.children?.[0];
-  if (textNode && "fontWeight" in textNode) {
-    expect(textNode.fontWeight).toBe(600);
-  }
-});
-
 test("toFigmaNode: ID属性からノード名を設定する", () => {
   const element = LegendElement.create({ id: "personal-legend" });
   const config = toFigmaNode(element);

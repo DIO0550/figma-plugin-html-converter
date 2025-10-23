@@ -9,7 +9,6 @@ import { LegendElement } from "../legend-element";
 
 // デフォルトスタイル定数
 const DEFAULT_LEGEND_FONT_SIZE = 16;
-const DEFAULT_LEGEND_FONT_WEIGHT = 600;
 const DEFAULT_LEGEND_BOTTOM_PADDING = 8;
 const DEFAULT_LEGEND_TEXT = "Legend";
 
@@ -63,7 +62,6 @@ export function toFigmaNode(element: LegendElement): FigmaNodeConfig {
   const displayText = getLegendText(element);
   const textNode = FigmaNode.createText(displayText);
   textNode.fontSize = DEFAULT_LEGEND_FONT_SIZE;
-  textNode.fontWeight = DEFAULT_LEGEND_FONT_WEIGHT;
   textNode.fills = [{ type: "SOLID", color: { r: 0.1, g: 0.1, b: 0.1 } }];
 
   config.children = [textNode];

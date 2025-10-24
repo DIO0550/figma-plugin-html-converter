@@ -8,10 +8,10 @@ import { FigmaNode } from "../../../../models/figma-node";
 import { FieldsetElement } from "../fieldset-element";
 
 // デフォルトスタイル定数
-const FIELDSET_PADDING = 12;
-const FIELDSET_BORDER_WIDTH = 1;
-const FIELDSET_BORDER_COLOR = { r: 0.7, g: 0.7, b: 0.7 };
-const FIELDSET_ITEM_SPACING = 8;
+const FIELDSET_DEFAULT_PADDING_PX = 12;
+const FIELDSET_DEFAULT_BORDER_WIDTH_PX = 1;
+const FIELDSET_DEFAULT_BORDER_COLOR = { r: 0.7, g: 0.7, b: 0.7 };
+const FIELDSET_DEFAULT_ITEM_SPACING_PX = 8;
 const DISABLED_OPACITY = 0.5;
 
 /**
@@ -26,21 +26,21 @@ export function toFigmaNode(element: FieldsetElement): FigmaNodeConfig {
   config.layoutSizingVertical = "HUG";
   config.primaryAxisAlignItems = "MIN";
   config.counterAxisAlignItems = "MIN";
-  config.itemSpacing = FIELDSET_ITEM_SPACING;
+  config.itemSpacing = FIELDSET_DEFAULT_ITEM_SPACING_PX;
 
   // 背景を透明に
   config.fills = [];
 
   // 枠線
-  config.strokes = [{ type: "SOLID", color: FIELDSET_BORDER_COLOR }];
-  config.strokeWeight = FIELDSET_BORDER_WIDTH;
+  config.strokes = [{ type: "SOLID", color: FIELDSET_DEFAULT_BORDER_COLOR }];
+  config.strokeWeight = FIELDSET_DEFAULT_BORDER_WIDTH_PX;
   config.cornerRadius = 4;
 
   // パディング
-  config.paddingLeft = FIELDSET_PADDING;
-  config.paddingRight = FIELDSET_PADDING;
-  config.paddingTop = FIELDSET_PADDING;
-  config.paddingBottom = FIELDSET_PADDING;
+  config.paddingLeft = FIELDSET_DEFAULT_PADDING_PX;
+  config.paddingRight = FIELDSET_DEFAULT_PADDING_PX;
+  config.paddingTop = FIELDSET_DEFAULT_PADDING_PX;
+  config.paddingBottom = FIELDSET_DEFAULT_PADDING_PX;
 
   // disabled状態
   if (element.attributes.disabled) {

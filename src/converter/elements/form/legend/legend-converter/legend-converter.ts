@@ -8,16 +8,16 @@ import { FigmaNode } from "../../../../models/figma-node";
 import { LegendElement } from "../legend-element";
 
 // デフォルトスタイル定数
-const LEGEND_FONT_SIZE = 16;
-const LEGEND_BOTTOM_PADDING = 8;
-const PLACEHOLDER_TEXT = "Legend";
+const LEGEND_DEFAULT_FONT_SIZE_PX = 16;
+const LEGEND_DEFAULT_BOTTOM_PADDING_PX = 8;
+const LEGEND_DEFAULT_PLACEHOLDER_TEXT = "Legend";
 
 /**
  * legend要素からテキストを取得
  */
 function getLegendText(element: LegendElement): string {
   if (!element.children || element.children.length === 0) {
-    return PLACEHOLDER_TEXT;
+    return LEGEND_DEFAULT_PLACEHOLDER_TEXT;
   }
 
   // すべてのテキストノードを結合
@@ -35,7 +35,7 @@ function getLegendText(element: LegendElement): string {
     }
   }
 
-  return texts.length > 0 ? texts.join("") : PLACEHOLDER_TEXT;
+  return texts.length > 0 ? texts.join("") : LEGEND_DEFAULT_PLACEHOLDER_TEXT;
 }
 
 /**
@@ -56,12 +56,12 @@ export function toFigmaNode(element: LegendElement): FigmaNodeConfig {
   config.paddingLeft = 0;
   config.paddingRight = 0;
   config.paddingTop = 0;
-  config.paddingBottom = LEGEND_BOTTOM_PADDING;
+  config.paddingBottom = LEGEND_DEFAULT_BOTTOM_PADDING_PX;
 
   // テキストノード
   const displayText = getLegendText(element);
   const textNode = FigmaNode.createText(displayText);
-  textNode.fontSize = LEGEND_FONT_SIZE;
+  textNode.fontSize = LEGEND_DEFAULT_FONT_SIZE_PX;
   textNode.fills = [{ type: "SOLID", color: { r: 0.1, g: 0.1, b: 0.1 } }];
 
   config.children = [textNode];

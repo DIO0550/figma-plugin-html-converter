@@ -3,6 +3,7 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
+import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { SelectElement } from "../select-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";

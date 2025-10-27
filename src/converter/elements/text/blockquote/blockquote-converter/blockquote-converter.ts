@@ -4,6 +4,7 @@ import type { BlockquoteElement as BlockquoteElementType } from "../blockquote-e
 import { ElementContextConverter } from "../../base/converters";
 import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
 import { Styles } from "../../../../models/styles";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 /**
  * blockquote要素をFigmaノードに変換
@@ -61,11 +62,13 @@ export function toFigmaNode(element: BlockquoteElementType): FigmaNodeConfig {
  * ノードをFigmaノードにマッピング
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  // blockquote要素かどうかをチェック
-  if (BlockquoteElement.isBlockquoteElement(node)) {
-    return toFigmaNode(node);
-  }
-  return null;
+  return mapToFigmaWith(
+    node,
+    "blockquote",
+    BlockquoteElement.isBlockquoteElement,
+    BlockquoteElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

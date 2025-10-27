@@ -1,8 +1,10 @@
 import { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { PreElement } from "../pre-element";
+import { PreElement as PreElementCompanion } from "../pre-element";
 import { ElementContextConverter } from "../../base/converters";
 import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
 import { Styles } from "../../../../models/styles";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 /**
  * pre要素をFigmaノードに変換
@@ -60,19 +62,13 @@ export function toFigmaNode(element: PreElement): FigmaNodeConfig {
  * ノードをFigmaノードにマッピング
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  // pre要素かどうかをチェック
-  if (
-    node !== null &&
-    typeof node === "object" &&
-    "type" in node &&
-    "tagName" in node &&
-    node.type === "element" &&
-    node.tagName === "pre"
-  ) {
-    const element = node as PreElement;
-    return toFigmaNode(element);
-  }
-  return null;
+  return mapToFigmaWith(
+    node,
+    "pre",
+    PreElementCompanion.isPreElement,
+    PreElementCompanion.create,
+    toFigmaNode,
+  );
 }
 
 /**

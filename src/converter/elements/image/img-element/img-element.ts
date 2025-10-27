@@ -1,28 +1,29 @@
-import type { FigmaNodeConfig } from '../../../models/figma-node';
-import { FigmaNode } from '../../../models/figma-node';
-import { Paint } from '../../../models/paint';
-import { ImgAttributes } from '../img-attributes';
+import type { FigmaNodeConfig } from "../../../models/figma-node";
+import { FigmaNode } from "../../../models/figma-node";
+import { Paint } from "../../../models/paint";
+import { ImgAttributes } from "../img-attributes";
+import { mapToFigmaWith } from "../../../utils/element-utils";
 
 // object-fitの定数
 const OBJECT_FIT = {
-  FILL: 'fill',
-  CONTAIN: 'contain',
-  COVER: 'cover',
-  NONE: 'none',
-  SCALE_DOWN: 'scale-down'
+  FILL: "fill",
+  CONTAIN: "contain",
+  COVER: "cover",
+  NONE: "none",
+  SCALE_DOWN: "scale-down",
 } as const;
 
-export type ObjectFit = typeof OBJECT_FIT[keyof typeof OBJECT_FIT];
+export type ObjectFit = (typeof OBJECT_FIT)[keyof typeof OBJECT_FIT];
 
 // FigmaのScaleModeの定数
 const SCALE_MODE = {
-  FILL: 'FILL',
-  FIT: 'FIT',
-  CROP: 'CROP',
-  TILE: 'TILE'
+  FILL: "FILL",
+  FIT: "FIT",
+  CROP: "CROP",
+  TILE: "TILE",
 } as const;
 
-export type ScaleMode = typeof SCALE_MODE[keyof typeof SCALE_MODE];
+export type ScaleMode = (typeof SCALE_MODE)[keyof typeof SCALE_MODE];
 
 // object-fitからScaleModeへのマッピング
 const OBJECT_FIT_TO_SCALE_MODE: Record<ObjectFit, ScaleMode> = {
@@ -30,7 +31,7 @@ const OBJECT_FIT_TO_SCALE_MODE: Record<ObjectFit, ScaleMode> = {
   [OBJECT_FIT.CONTAIN]: SCALE_MODE.FIT,
   [OBJECT_FIT.COVER]: SCALE_MODE.FILL,
   [OBJECT_FIT.NONE]: SCALE_MODE.CROP,
-  [OBJECT_FIT.SCALE_DOWN]: SCALE_MODE.FIT
+  [OBJECT_FIT.SCALE_DOWN]: SCALE_MODE.FIT,
 };
 
 /**
@@ -38,8 +39,8 @@ const OBJECT_FIT_TO_SCALE_MODE: Record<ObjectFit, ScaleMode> = {
  * HTMLNodeから独立した専用の型
  */
 export interface ImgElement {
-  type: 'element';
-  tagName: 'img';
+  type: "element";
+  tagName: "img";
   attributes: ImgAttributes;
   children?: never; // img要素は子要素を持たない
 }
@@ -54,21 +55,21 @@ export const ImgElement = {
   // 型ガード（任意のオブジェクトから判定）
   isImgElement(node: unknown): node is ImgElement {
     return (
-      typeof node === 'object' &&
+      typeof node === "object" &&
       node !== null &&
-      'type' in node &&
-      'tagName' in node &&
-      node.type === 'element' &&
-      node.tagName === 'img'
+      "type" in node &&
+      "tagName" in node &&
+      node.type === "element" &&
+      node.tagName === "img"
     );
   },
 
   // ファクトリーメソッド
   create(attributes: Partial<ImgAttributes> = {}): ImgElement {
     return {
-      type: 'element',
-      tagName: 'img',
-      attributes: attributes as ImgAttributes
+      type: "element",
+      tagName: "img",
+      attributes: attributes as ImgAttributes,
     };
   },
 
@@ -96,32 +97,33 @@ export const ImgElement = {
   // ノード名の生成
   getNodeName(element: ImgElement): string {
     const alt = this.getAlt(element);
-    return alt ? `img: ${alt}` : 'img';
+    return alt ? `img: ${alt}` : "img";
   },
-
 
   // Fillsの作成
   createFills(element: ImgElement): Paint[] {
     const src = this.getSrc(element);
-    
+
     if (ImgAttributes.isValidUrl(src)) {
       return [Paint.image(src!)];
     }
-    
+
     return [Paint.solid(DEFAULT_PLACEHOLDER_COLOR)];
   },
 
   // object-fitの適用
   applyObjectFit(config: FigmaNodeConfig, element: ImgElement): void {
     if (!config.fills || config.fills.length === 0) return;
-    
-    const objectFit = ImgAttributes.getObjectFit(element.attributes) as ObjectFit | null;
-    
+
+    const objectFit = ImgAttributes.getObjectFit(
+      element.attributes,
+    ) as ObjectFit | null;
+
     if (!objectFit) return;
-    
+
     const fill = config.fills[0];
-    if (fill.type !== 'IMAGE') return;
-    
+    if (fill.type !== "IMAGE") return;
+
     fill.scaleMode = OBJECT_FIT_TO_SCALE_MODE[objectFit] || SCALE_MODE.FILL;
   },
 
@@ -132,7 +134,7 @@ export const ImgElement = {
     if (border) {
       FigmaNode.setStrokes(config, [Paint.solid(border.color)], border.width);
     }
-    
+
     // 角丸
     const borderRadius = ImgAttributes.getBorderRadius(element.attributes);
     if (borderRadius !== null) {
@@ -142,21 +144,21 @@ export const ImgElement = {
 
   // FigmaNodeConfigへの変換
   toFigmaNode(element: ImgElement): FigmaNodeConfig {
-    const config = FigmaNode.createRectangle('img');
-    
+    const config = FigmaNode.createRectangle("img");
+
     // 基本設定
     config.name = this.getNodeName(element);
     config.fills = this.createFills(element);
-    
+
     // サイズ設定
     const { width, height } = ImgAttributes.parseSize(element.attributes);
     config.width = width;
     config.height = height;
-    
+
     // スタイル適用
     this.applyObjectFit(config, element);
     this.applyStyles(config, element);
-    
+
     return config;
   },
 
@@ -166,13 +168,13 @@ export const ImgElement = {
       // HTMLNodeのような構造から変換を試みる
       if (
         node !== null &&
-        typeof node === 'object' &&
-        'type' in node &&
-        'tagName' in node &&
-        'attributes' in node &&
-        node.type === 'element' &&
-        node.tagName === 'img' &&
-        typeof node.attributes === 'object' &&
+        typeof node === "object" &&
+        "type" in node &&
+        "tagName" in node &&
+        "attributes" in node &&
+        node.type === "element" &&
+        node.tagName === "img" &&
+        typeof node.attributes === "object" &&
         node.attributes !== null
       ) {
         return this.create(node.attributes as Record<string, string>);
@@ -184,9 +186,12 @@ export const ImgElement = {
 
   // マッピング関数（mapperから呼ばれる）
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    const imgElement = this.fromHTMLNode(node);
-    if (!imgElement) return null;
-    
-    return this.toFigmaNode(imgElement);
-  }
+    return mapToFigmaWith(
+      node,
+      "img",
+      this.isImgElement,
+      this.create,
+      (element) => this.toFigmaNode(element),
+    );
+  },
 };

@@ -3,11 +3,11 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { OlElement } from "../ol-element";
 import { Styles } from "../../../../models/styles";
 import { isValidPadding } from "../../utils/validation";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトのリストスタイル定数
 const DEFAULT_LIST_INDENT = 40; // デフォルトのインデント
@@ -106,29 +106,13 @@ export function toFigmaNode(element: OlElement): FigmaNodeConfig {
  * HTMLNodeからOL要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  // OlElementの場合
-  if (OlElement.isOlElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  // HTMLNodeからの変換
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "ol"
-  ) {
-    const htmlNode = node as HTMLNode;
-    // 属性がundefinedでもcreateメソッドがデフォルト値を提供する
-    const attributes = htmlNode.attributes || {};
-    const children = htmlNode.children || [];
-    const element = OlElement.create(attributes, children);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "ol",
+    OlElement.isOlElement,
+    OlElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

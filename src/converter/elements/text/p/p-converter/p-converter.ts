@@ -1,8 +1,10 @@
 import { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { PElement } from "../p-element";
+import { PElement as PElementCompanion } from "../p-element";
 import { ElementContextConverter } from "../../base/converters";
 import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
 import { Styles } from "../../../../models/styles";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 /**
  * p要素をFigmaノードに変換
@@ -60,19 +62,13 @@ export function toFigmaNode(element: PElement): FigmaNodeConfig {
  * ノードをFigmaノードにマッピング
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  // p要素かどうかをチェック
-  if (
-    node !== null &&
-    typeof node === "object" &&
-    "type" in node &&
-    "tagName" in node &&
-    node.type === "element" &&
-    node.tagName === "p"
-  ) {
-    const element = node as PElement;
-    return toFigmaNode(element);
-  }
-  return null;
+  return mapToFigmaWith(
+    node,
+    "p",
+    PElementCompanion.isPElement,
+    PElementCompanion.create,
+    toFigmaNode,
+  );
 }
 
 /**

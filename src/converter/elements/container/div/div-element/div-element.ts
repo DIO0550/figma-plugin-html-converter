@@ -2,6 +2,7 @@ import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import type { DivAttributes } from "../div-attributes";
 import type { BaseElement } from "../../../base/base-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 /**
  * div要素の型定義
@@ -86,25 +87,12 @@ export const DivElement = {
   },
 
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    if (!this.isDivElement(node)) {
-      // 互換性のためのHTMLNodeからの変換
-      if (
-        node !== null &&
-        typeof node === "object" &&
-        "type" in node &&
-        "tagName" in node &&
-        node.type === "element" &&
-        node.tagName === "div"
-      ) {
-        const attributes =
-          "attributes" in node && typeof node.attributes === "object"
-            ? (node.attributes as Partial<DivAttributes>)
-            : {};
-        const element = this.create(attributes);
-        return this.toFigmaNode(element);
-      }
-      return null;
-    }
-    return this.toFigmaNode(node);
+    return mapToFigmaWith(
+      node,
+      "div",
+      this.isDivElement,
+      this.create,
+      this.toFigmaNode,
+    );
   },
 };

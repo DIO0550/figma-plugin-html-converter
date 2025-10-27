@@ -3,9 +3,9 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { ButtonElement } from "../button-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトスタイル定数
 const DEFAULT_BUTTON_PADDING = 16;
@@ -80,26 +80,13 @@ export function toFigmaNode(element: ButtonElement): FigmaNodeConfig {
  * HTMLNodeからbutton要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  if (ButtonElement.isButtonElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "button"
-  ) {
-    const htmlNode = node as HTMLNode;
-    const attributes = htmlNode.attributes || {};
-    const children = htmlNode.children || [];
-    const element = ButtonElement.create(attributes, children);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "button",
+    ButtonElement.isButtonElement,
+    ButtonElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

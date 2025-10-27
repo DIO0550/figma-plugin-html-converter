@@ -6,6 +6,7 @@ import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { SelectElement } from "../select-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトスタイル定数
 const DEFAULT_SELECT_PADDING = 12;
@@ -153,26 +154,13 @@ export function toFigmaNode(element: SelectElement): FigmaNodeConfig {
  * HTMLNodeからselect要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  if (SelectElement.isSelectElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "select"
-  ) {
-    const htmlNode = node as HTMLNode;
-    const attributes = htmlNode.attributes || {};
-    const children = htmlNode.children || [];
-    const element = SelectElement.create(attributes, children);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "select",
+    SelectElement.isSelectElement,
+    SelectElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

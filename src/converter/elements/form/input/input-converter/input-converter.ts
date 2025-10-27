@@ -3,9 +3,9 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { InputElement } from "../input-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトスタイル定数
 const DEFAULT_INPUT_PADDING = 12;
@@ -223,27 +223,13 @@ function getNodeName(element: InputElement, defaultName: string): string {
  * HTMLNodeからinput要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  // InputElementの場合
-  if (InputElement.isInputElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  // HTMLNodeからの変換
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "input"
-  ) {
-    const htmlNode = node as HTMLNode;
-    const attributes = htmlNode.attributes || {};
-    const element = InputElement.create(attributes);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "input",
+    InputElement.isInputElement,
+    InputElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

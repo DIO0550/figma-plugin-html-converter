@@ -2,6 +2,7 @@ import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import type { SectionAttributes } from "../section-attributes";
 import type { BaseElement } from "../../../base/base-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 /**
  * section要素の型定義
@@ -121,27 +122,12 @@ export const SectionElement = {
    * マッピング: 汎用的なHTMLNodeをFigmaノードに変換
    */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    if (!this.isSectionElement(node)) {
-      // 互換性のためのHTMLNodeからの変換
-      if (
-        typeof node === "object" &&
-        node !== null &&
-        "type" in node &&
-        "tagName" in node &&
-        (node as { type: unknown; tagName: unknown }).type === "element" &&
-        (node as { type: unknown; tagName: unknown }).tagName === "section"
-      ) {
-        const nodeWithType = node as { attributes?: unknown };
-        const attributes =
-          "attributes" in nodeWithType &&
-          typeof nodeWithType.attributes === "object"
-            ? (nodeWithType.attributes as Partial<SectionAttributes>)
-            : {};
-        const element = this.create(attributes);
-        return this.toFigmaNode(element);
-      }
-      return null;
-    }
-    return this.toFigmaNode(node);
+    return mapToFigmaWith(
+      node,
+      "section",
+      this.isSectionElement,
+      this.create,
+      this.toFigmaNode,
+    );
   },
 };

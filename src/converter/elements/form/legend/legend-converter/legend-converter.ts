@@ -3,9 +3,9 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { LegendElement } from "../legend-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトスタイル定数
 const LEGEND_DEFAULT_FONT_SIZE_PX = 16;
@@ -81,26 +81,13 @@ export function toFigmaNode(element: LegendElement): FigmaNodeConfig {
  * HTMLNodeからlegend要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  if (LegendElement.isLegendElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "legend"
-  ) {
-    const htmlNode = node as HTMLNode;
-    const attributes = htmlNode.attributes || {};
-    const children = htmlNode.children || [];
-    const element = LegendElement.create(attributes, children);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "legend",
+    LegendElement.isLegendElement,
+    LegendElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

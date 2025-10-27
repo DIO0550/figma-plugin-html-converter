@@ -3,9 +3,9 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { OptionElement } from "../option-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトスタイル定数
 const DEFAULT_OPTION_PADDING = 8;
@@ -99,26 +99,13 @@ export function toFigmaNode(element: OptionElement): FigmaNodeConfig {
  * HTMLNodeからoption要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  if (OptionElement.isOptionElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "option"
-  ) {
-    const htmlNode = node as HTMLNode;
-    const attributes = htmlNode.attributes || {};
-    const children = htmlNode.children || [];
-    const element = OptionElement.create(attributes, children);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "option",
+    OptionElement.isOptionElement,
+    OptionElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

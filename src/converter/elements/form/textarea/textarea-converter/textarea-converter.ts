@@ -3,9 +3,9 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNode } from "../../../../models/figma-node";
 import { TextareaElement } from "../textarea-element";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
 
 // デフォルトスタイル定数
 const DEFAULT_TEXTAREA_PADDING = 12;
@@ -91,26 +91,13 @@ export function toFigmaNode(element: TextareaElement): FigmaNodeConfig {
  * HTMLNodeからtextarea要素に変換してFigmaノードへ
  */
 export function mapToFigma(node: unknown): FigmaNodeConfig | null {
-  if (TextareaElement.isTextareaElement(node)) {
-    return toFigmaNode(node);
-  }
-
-  if (
-    typeof node === "object" &&
-    node !== null &&
-    "type" in node &&
-    "tagName" in node &&
-    (node as { type: unknown }).type === "element" &&
-    (node as { tagName: unknown }).tagName === "textarea"
-  ) {
-    const htmlNode = node as HTMLNode;
-    const attributes = htmlNode.attributes || {};
-    const children = htmlNode.children || [];
-    const element = TextareaElement.create(attributes, children);
-    return toFigmaNode(element);
-  }
-
-  return null;
+  return mapToFigmaWith(
+    node,
+    "textarea",
+    TextareaElement.isTextareaElement,
+    TextareaElement.create,
+    toFigmaNode,
+  );
 }
 
 /**

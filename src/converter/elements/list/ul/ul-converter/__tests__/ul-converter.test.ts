@@ -48,7 +48,7 @@ test("UlConverter.mapToFigma: maps HTML string to Figma node", () => {
   const result = converter.mapToFigma(html);
 
   expect(result.type).toBe("FRAME");
-  expect(result.name).toBe("ul");
+  expect(result.name).toBe("ul.my-list");
   expect(result.layoutMode).toBe("VERTICAL");
 });
 

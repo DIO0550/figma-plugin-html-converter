@@ -16,8 +16,14 @@ export interface FigmaNodeConfig {
   opacity?: number;
   // Auto Layoutプロパティ
   layoutMode?: "NONE" | "HORIZONTAL" | "VERTICAL";
-  primaryAxisAlignItems?: "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
-  counterAxisAlignItems?: "MIN" | "CENTER" | "MAX" | "STRETCH";
+  primaryAxisAlignItems?:
+    | "MIN"
+    | "CENTER"
+    | "MAX"
+    | "SPACE_BETWEEN"
+    | "SPACE_AROUND"
+    | "SPACE_EVENLY";
+  counterAxisAlignItems?: "MIN" | "CENTER" | "MAX" | "STRETCH" | "BASELINE";
   paddingLeft?: number;
   paddingRight?: number;
   paddingTop?: number;
@@ -275,11 +281,15 @@ export const FigmaNodeConfig = {
 
       // Align items (cross axis)
       if (options.alignItems) {
-        const alignMap: Record<string, "MIN" | "CENTER" | "MAX" | "STRETCH"> = {
+        const alignMap: Record<
+          string,
+          "MIN" | "CENTER" | "MAX" | "STRETCH" | "BASELINE"
+        > = {
           "flex-start": "MIN",
           center: "CENTER",
           "flex-end": "MAX",
           stretch: "STRETCH",
+          baseline: "BASELINE",
         };
         newConfig.counterAxisAlignItems = alignMap[options.alignItems] || "MIN";
       }
@@ -288,12 +298,19 @@ export const FigmaNodeConfig = {
       if (options.justifyContent) {
         const justifyMap: Record<
           string,
-          "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN"
+          | "MIN"
+          | "CENTER"
+          | "MAX"
+          | "SPACE_BETWEEN"
+          | "SPACE_AROUND"
+          | "SPACE_EVENLY"
         > = {
           "flex-start": "MIN",
           center: "CENTER",
           "flex-end": "MAX",
           "space-between": "SPACE_BETWEEN",
+          "space-around": "SPACE_AROUND",
+          "space-evenly": "SPACE_EVENLY",
         };
         newConfig.primaryAxisAlignItems =
           justifyMap[options.justifyContent] || "MIN";

@@ -3,11 +3,15 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import { FigmaNode } from "../../../../models/figma-node";
+import {
+  FigmaNode,
+  FigmaNodeConfig as FigmaNodeConfigUtil,
+} from "../../../../models/figma-node";
 import { DlElement } from "../dl-element";
 import { Styles } from "../../../../models/styles";
 import { isValidPadding } from "../../utils/validation";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 // デフォルトのスタイル定数
 const DEFAULT_LIST_VERTICAL_PADDING = 16; // 上下のパディング
@@ -17,72 +21,70 @@ const DEFAULT_ITEM_SPACING = 8; // 項目間のスペース
  * DL要素をFigmaノードに変換
  */
 export function toFigmaNode(element: DlElement): FigmaNodeConfig {
-  const config = FigmaNode.createFrame("dl");
-  config.layoutMode = "VERTICAL";
-  config.itemSpacing = DEFAULT_ITEM_SPACING;
-
-  // デフォルトのパディング
-  config.paddingTop = DEFAULT_LIST_VERTICAL_PADDING;
-  config.paddingBottom = DEFAULT_LIST_VERTICAL_PADDING;
-  config.paddingLeft = 0;
-  config.paddingRight = 0;
-
-  // 属性が存在する場合のみ処理
-  if (element.attributes) {
-    // スタイルの適用
-    if (element.attributes.style) {
-      const styles = Styles.parse(element.attributes.style);
-
-      // 背景色を適用
-      const backgroundColor = Styles.getBackgroundColor(styles);
-      if (backgroundColor) {
-        config.fills = [{ type: "SOLID", color: backgroundColor }];
-      }
-
-      // paddingショートハンドプロパティをチェック
-      const padding = Styles.getPadding(styles);
-      if (padding) {
-        config.paddingTop = padding.top;
-        config.paddingBottom = padding.bottom;
-        config.paddingLeft = padding.left;
-        config.paddingRight = padding.right;
-      } else {
-        // 個別のパディング値を適用
-        const paddingLeft = Styles.getPaddingLeft(styles);
-        if (paddingLeft !== undefined && isValidPadding(paddingLeft)) {
-          config.paddingLeft = paddingLeft;
+  return toFigmaNodeWith(
+    element,
+    (el) => {
+      // className/classをclassに変換してapplyHtmlElementDefaultsに渡す
+      const attributesForDefaults: Record<string, unknown> = {};
+      if (el.attributes) {
+        if (el.attributes.id) {
+          attributesForDefaults.id = el.attributes.id;
         }
-        const paddingTop = Styles.getPaddingTop(styles);
-        if (paddingTop !== undefined && isValidPadding(paddingTop)) {
-          config.paddingTop = paddingTop;
-        }
-        const paddingBottom = Styles.getPaddingBottom(styles);
-        if (paddingBottom !== undefined && isValidPadding(paddingBottom)) {
-          config.paddingBottom = paddingBottom;
-        }
-        const paddingRight = Styles.getPaddingRight(styles);
-        if (paddingRight !== undefined && isValidPadding(paddingRight)) {
-          config.paddingRight = paddingRight;
+        const classValue = el.attributes.className || el.attributes.class;
+        if (classValue) {
+          attributesForDefaults.class = classValue;
         }
       }
 
-      // marginをgapに変換（リストアイテム間）
-      const marginBottom = Styles.getMarginBottom(styles);
-      if (marginBottom !== undefined && typeof marginBottom === "number") {
-        config.itemSpacing = marginBottom;
-      }
-    }
+      const config = FigmaNode.createFrame("dl");
+      const result = FigmaNodeConfigUtil.applyHtmlElementDefaults(
+        config,
+        "dl",
+        attributesForDefaults,
+      );
 
-    // クラス名やIDをノード名に反映
-    if (element.attributes.id) {
-      config.name = `dl#${element.attributes.id}`;
-    } else if (element.attributes.class) {
-      const className = element.attributes.class.split(" ")[0];
-      config.name = `dl.${className}`;
-    }
-  }
+      // リストの基本レイアウト設定
+      result.layoutMode = "VERTICAL";
+      result.layoutSizingHorizontal = "HUG";
+      result.layoutSizingVertical = "HUG";
 
-  return config;
+      // デフォルトのパディングとitemSpacing
+      result.paddingTop = DEFAULT_LIST_VERTICAL_PADDING;
+      result.paddingBottom = DEFAULT_LIST_VERTICAL_PADDING;
+      result.paddingLeft = 0;
+      result.paddingRight = 0;
+      result.itemSpacing = DEFAULT_ITEM_SPACING;
+      result.children = [];
+
+      return result;
+    },
+    {
+      applyCommonStyles: true,
+      customStyleApplier: (config, _, styles) => {
+        // NaNやInfinityの値をデフォルトに戻す
+        if (!isValidPadding(config.paddingTop ?? 0)) {
+          config.paddingTop = DEFAULT_LIST_VERTICAL_PADDING;
+        }
+        if (!isValidPadding(config.paddingBottom ?? 0)) {
+          config.paddingBottom = DEFAULT_LIST_VERTICAL_PADDING;
+        }
+        if (!isValidPadding(config.paddingLeft ?? 0)) {
+          config.paddingLeft = 0;
+        }
+        if (!isValidPadding(config.paddingRight ?? 0)) {
+          config.paddingRight = 0;
+        }
+
+        // marginBottomをitemSpacingに変換
+        const marginBottom = Styles.getMarginBottom(styles);
+        if (marginBottom !== undefined && typeof marginBottom === "number") {
+          config.itemSpacing = marginBottom;
+        }
+
+        return config;
+      },
+    },
+  );
 }
 
 /**

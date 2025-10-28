@@ -14,8 +14,7 @@ test("solid() は色を持つソリッドペイントを作成する", () => {
 
   expect(paint.type).toBe("SOLID");
   expect(paint.color).toEqual(color);
-  expect(paint.visible).toBe(true);
-  expect(paint.opacity).toBeUndefined();
+  expect(paint.opacity).toBe(1);
 });
 
 test("solid() は色と不透明度を持つソリッドペイントを作成する", () => {
@@ -26,7 +25,6 @@ test("solid() は色と不透明度を持つソリッドペイントを作成す
   expect(paint.type).toBe("SOLID");
   expect(paint.color).toEqual(color);
   expect(paint.opacity).toBe(opacity);
-  expect(paint.visible).toBe(true);
 });
 
 test("solid() は黒色のソリッドペイントを作成する", () => {
@@ -224,7 +222,7 @@ test("twoColorGradient() は2色の線形グラデーションを作成する", 
   const endColor: RGB = { r: 0, g: 0, b: 1 };
   const paint = Paint.twoColorGradient(
     startColor,
-    endColor
+    endColor,
   ) as LinearGradientPaint;
 
   expect(paint.type).toBe("GRADIENT_LINEAR");
@@ -241,7 +239,7 @@ test("twoColorGradient() は2色の放射グラデーションを作成する", 
   const paint = Paint.twoColorGradient(
     startColor,
     endColor,
-    "radial"
+    "radial",
   ) as RadialGradientPaint;
 
   expect(paint.type).toBe("GRADIENT_RADIAL");

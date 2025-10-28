@@ -1,39 +1,39 @@
-import type { RGB, RGBA } from '../colors';
+import type { RGB, RGBA } from "../colors";
 
 // ペイントタイプの定数
 const PAINT_TYPE = {
-  SOLID: 'SOLID',
-  GRADIENT_LINEAR: 'GRADIENT_LINEAR',
-  GRADIENT_RADIAL: 'GRADIENT_RADIAL',
-  GRADIENT_ANGULAR: 'GRADIENT_ANGULAR',
-  GRADIENT_DIAMOND: 'GRADIENT_DIAMOND',
-  IMAGE: 'IMAGE',
-  EMOJI: 'EMOJI'
+  SOLID: "SOLID",
+  GRADIENT_LINEAR: "GRADIENT_LINEAR",
+  GRADIENT_RADIAL: "GRADIENT_RADIAL",
+  GRADIENT_ANGULAR: "GRADIENT_ANGULAR",
+  GRADIENT_DIAMOND: "GRADIENT_DIAMOND",
+  IMAGE: "IMAGE",
+  EMOJI: "EMOJI",
 } as const;
 
-export type PaintType = typeof PAINT_TYPE[keyof typeof PAINT_TYPE];
+export type PaintType = (typeof PAINT_TYPE)[keyof typeof PAINT_TYPE];
 
 // ブレンドモードの定数
 const BLEND_MODE = {
-  NORMAL: 'NORMAL',
-  DARKEN: 'DARKEN',
-  MULTIPLY: 'MULTIPLY',
-  COLOR_BURN: 'COLOR_BURN',
-  LIGHTEN: 'LIGHTEN',
-  SCREEN: 'SCREEN',
-  COLOR_DODGE: 'COLOR_DODGE',
-  OVERLAY: 'OVERLAY',
-  SOFT_LIGHT: 'SOFT_LIGHT',
-  HARD_LIGHT: 'HARD_LIGHT',
-  DIFFERENCE: 'DIFFERENCE',
-  EXCLUSION: 'EXCLUSION',
-  HUE: 'HUE',
-  SATURATION: 'SATURATION',
-  COLOR: 'COLOR',
-  LUMINOSITY: 'LUMINOSITY'
+  NORMAL: "NORMAL",
+  DARKEN: "DARKEN",
+  MULTIPLY: "MULTIPLY",
+  COLOR_BURN: "COLOR_BURN",
+  LIGHTEN: "LIGHTEN",
+  SCREEN: "SCREEN",
+  COLOR_DODGE: "COLOR_DODGE",
+  OVERLAY: "OVERLAY",
+  SOFT_LIGHT: "SOFT_LIGHT",
+  HARD_LIGHT: "HARD_LIGHT",
+  DIFFERENCE: "DIFFERENCE",
+  EXCLUSION: "EXCLUSION",
+  HUE: "HUE",
+  SATURATION: "SATURATION",
+  COLOR: "COLOR",
+  LUMINOSITY: "LUMINOSITY",
 } as const;
 
-export type BlendMode = typeof BLEND_MODE[keyof typeof BLEND_MODE];
+export type BlendMode = (typeof BLEND_MODE)[keyof typeof BLEND_MODE];
 
 // グラデーションのカラーストップ
 export interface ColorStop {
@@ -53,13 +53,13 @@ export interface Transform {
 
 // 画像のスケールモード
 const SCALE_MODE = {
-  FILL: 'FILL',
-  FIT: 'FIT',
-  CROP: 'CROP',
-  TILE: 'TILE'
+  FILL: "FILL",
+  FIT: "FIT",
+  CROP: "CROP",
+  TILE: "TILE",
 } as const;
 
-export type ScaleMode = typeof SCALE_MODE[keyof typeof SCALE_MODE];
+export type ScaleMode = (typeof SCALE_MODE)[keyof typeof SCALE_MODE];
 
 // ベースペイント
 interface BasePaint {
@@ -77,7 +77,11 @@ export interface SolidPaint extends BasePaint {
 
 // グラデーション共通
 interface GradientPaint extends BasePaint {
-  type: typeof PAINT_TYPE.GRADIENT_LINEAR | typeof PAINT_TYPE.GRADIENT_RADIAL | typeof PAINT_TYPE.GRADIENT_ANGULAR | typeof PAINT_TYPE.GRADIENT_DIAMOND;
+  type:
+    | typeof PAINT_TYPE.GRADIENT_LINEAR
+    | typeof PAINT_TYPE.GRADIENT_RADIAL
+    | typeof PAINT_TYPE.GRADIENT_ANGULAR
+    | typeof PAINT_TYPE.GRADIENT_DIAMOND;
   gradientTransform?: Transform;
   gradientStops: ColorStop[];
 }
@@ -107,7 +111,7 @@ export interface ImagePaint extends BasePaint {
   type: typeof PAINT_TYPE.IMAGE;
   scaleMode: ScaleMode;
   imageHash?: string;
-  imageUrl?: string;  // URLも追加
+  imageUrl?: string; // URLも追加
   imageTransform?: Transform;
   scalingFactor?: number;
   rotation?: number; // degrees
@@ -123,12 +127,12 @@ export interface ImagePaint extends BasePaint {
 }
 
 // 統合Paint型
-export type Paint = 
-  | SolidPaint 
-  | LinearGradientPaint 
-  | RadialGradientPaint 
-  | AngularGradientPaint 
-  | DiamondGradientPaint 
+export type Paint =
+  | SolidPaint
+  | LinearGradientPaint
+  | RadialGradientPaint
+  | AngularGradientPaint
+  | DiamondGradientPaint
   | ImagePaint;
 
 // Paintのコンパニオンオブジェクト
@@ -139,54 +143,63 @@ export const Paint = {
   ScaleMode: SCALE_MODE,
 
   // ファクトリーメソッド
-  solid(color: RGB, opacity?: number): SolidPaint {
+  solid(color: RGB, opacity: number = 1): SolidPaint {
     return {
       type: PAINT_TYPE.SOLID,
       color,
       opacity,
-      visible: true
     };
   },
 
-  linearGradient(stops: ColorStop[], transform?: Transform): LinearGradientPaint {
+  linearGradient(
+    stops: ColorStop[],
+    transform?: Transform,
+  ): LinearGradientPaint {
     return {
       type: PAINT_TYPE.GRADIENT_LINEAR,
       gradientStops: stops,
       gradientTransform: transform,
-      visible: true
+      visible: true,
     };
   },
 
-  radialGradient(stops: ColorStop[], transform?: Transform): RadialGradientPaint {
+  radialGradient(
+    stops: ColorStop[],
+    transform?: Transform,
+  ): RadialGradientPaint {
     return {
       type: PAINT_TYPE.GRADIENT_RADIAL,
       gradientStops: stops,
       gradientTransform: transform,
-      visible: true
+      visible: true,
     };
   },
 
-  image(imageUrlOrHash: string, scaleMode: ScaleMode = SCALE_MODE.FILL): ImagePaint {
+  image(
+    imageUrlOrHash: string,
+    scaleMode: ScaleMode = SCALE_MODE.FILL,
+  ): ImagePaint {
     // URLかハッシュかを判別
-    const isUrl = imageUrlOrHash.startsWith('http') || 
-                  imageUrlOrHash.startsWith('data:') || 
-                  imageUrlOrHash.startsWith('/') ||
-                  imageUrlOrHash.includes('.');
-    
+    const isUrl =
+      imageUrlOrHash.startsWith("http") ||
+      imageUrlOrHash.startsWith("data:") ||
+      imageUrlOrHash.startsWith("/") ||
+      imageUrlOrHash.includes(".");
+
     return {
       type: PAINT_TYPE.IMAGE,
       ...(isUrl ? { imageUrl: imageUrlOrHash } : { imageHash: imageUrlOrHash }),
       scaleMode,
-      visible: true
+      visible: true,
     };
   },
 
   // カラーストップ作成
   colorStop(position: number, color: RGB | RGBA, opacity?: number): ColorStop {
-    const rgba = 'a' in color ? color : { ...color, a: opacity ?? 1 };
+    const rgba = "a" in color ? color : { ...color, a: opacity ?? 1 };
     return {
       position: Math.max(0, Math.min(1, position)),
-      color: rgba
+      color: rgba,
     };
   },
 
@@ -196,10 +209,12 @@ export const Paint = {
   },
 
   isGradient(paint: Paint): paint is GradientPaint {
-    return paint.type === PAINT_TYPE.GRADIENT_LINEAR ||
-           paint.type === PAINT_TYPE.GRADIENT_RADIAL ||
-           paint.type === PAINT_TYPE.GRADIENT_ANGULAR ||
-           paint.type === PAINT_TYPE.GRADIENT_DIAMOND;
+    return (
+      paint.type === PAINT_TYPE.GRADIENT_LINEAR ||
+      paint.type === PAINT_TYPE.GRADIENT_RADIAL ||
+      paint.type === PAINT_TYPE.GRADIENT_ANGULAR ||
+      paint.type === PAINT_TYPE.GRADIENT_DIAMOND
+    );
   },
 
   isLinearGradient(paint: Paint): paint is LinearGradientPaint {
@@ -231,29 +246,27 @@ export const Paint = {
   twoColorGradient(
     startColor: RGB,
     endColor: RGB,
-    type: 'linear' | 'radial' = 'linear'
+    type: "linear" | "radial" = "linear",
   ): LinearGradientPaint | RadialGradientPaint {
     const stops = [
       Paint.colorStop(0, startColor),
-      Paint.colorStop(1, endColor)
+      Paint.colorStop(1, endColor),
     ];
 
-    return type === 'linear' 
+    return type === "linear"
       ? Paint.linearGradient(stops)
       : Paint.radialGradient(stops);
   },
 
   // 透明度グラデーション
-  fadeGradient(color: RGB, direction: 'in' | 'out' = 'out'): LinearGradientPaint {
-    const stops = direction === 'out'
-      ? [
-          Paint.colorStop(0, color, 1),
-          Paint.colorStop(1, color, 0)
-        ]
-      : [
-          Paint.colorStop(0, color, 0),
-          Paint.colorStop(1, color, 1)
-        ];
+  fadeGradient(
+    color: RGB,
+    direction: "in" | "out" = "out",
+  ): LinearGradientPaint {
+    const stops =
+      direction === "out"
+        ? [Paint.colorStop(0, color, 1), Paint.colorStop(1, color, 0)]
+        : [Paint.colorStop(0, color, 0), Paint.colorStop(1, color, 1)];
 
     return Paint.linearGradient(stops);
   },
@@ -265,7 +278,7 @@ export const Paint = {
     skewX: number = 0,
     skewY: number = 0,
     translateX: number = 0,
-    translateY: number = 0
+    translateY: number = 0,
   ): Transform {
     return {
       a: scaleX,
@@ -273,7 +286,7 @@ export const Paint = {
       c: skewX,
       d: scaleY,
       tx: translateX,
-      ty: translateY
+      ty: translateY,
     };
   },
 
@@ -283,8 +296,12 @@ export const Paint = {
   },
 
   // 回転変換
-  rotationTransform(degrees: number, centerX: number = 0, centerY: number = 0): Transform {
-    const radians = degrees * Math.PI / 180;
+  rotationTransform(
+    degrees: number,
+    centerX: number = 0,
+    centerY: number = 0,
+  ): Transform {
+    const radians = (degrees * Math.PI) / 180;
     const cos = Math.cos(radians);
     const sin = Math.sin(radians);
 
@@ -294,7 +311,7 @@ export const Paint = {
       c: -sin,
       d: cos,
       tx: centerX - centerX * cos + centerY * sin,
-      ty: centerY - centerX * sin - centerY * cos
+      ty: centerY - centerX * sin - centerY * cos,
     };
-  }
+  },
 };

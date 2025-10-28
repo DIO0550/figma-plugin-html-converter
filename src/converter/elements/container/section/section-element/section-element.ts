@@ -3,6 +3,7 @@ import { Styles } from "../../../../models/styles";
 import type { SectionAttributes } from "../section-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * section要素の型定義
@@ -69,53 +70,40 @@ export const SectionElement = {
    * Figma変換: SectionElementをFigmaノードに変換
    */
   toFigmaNode(element: SectionElement): FigmaNodeConfig {
-    let config = FigmaNode.createFrame("section");
+    return toFigmaNodeWith(
+      element,
+      (el) => {
+        const config = FigmaNode.createFrame("section");
+        return FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "section",
+          el.attributes,
+        );
+      },
+      {
+        applyCommonStyles: true,
+        customStyleApplier: (config, _el, styles) => {
+          // Flexboxスタイルを適用（section固有）
+          const flexboxOptions = Styles.extractFlexboxOptions(styles);
+          const result = FigmaNodeConfig.applyFlexboxStyles(
+            config,
+            flexboxOptions,
+          );
 
-    // HTML要素のデフォルト設定を適用
-    config = FigmaNodeConfig.applyHtmlElementDefaults(
-      config,
-      "section",
-      element.attributes,
+          // gapをitemSpacingとして適用
+          if (flexboxOptions.gap !== undefined) {
+            result.itemSpacing = flexboxOptions.gap;
+          }
+
+          // heightが設定されている場合、layoutSizingVerticalを"FIXED"に
+          if (styles.height) {
+            result.layoutSizingVertical = "FIXED";
+          }
+
+          return result;
+        },
+      },
     );
-
-    // スタイルがない場合は早期リターン
-    if (!element.attributes?.style) {
-      return config;
-    }
-
-    const styles = Styles.parse(element.attributes?.style);
-
-    // 背景色を適用
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      config = FigmaNodeConfig.applyBackgroundColor(config, backgroundColor);
-    }
-
-    // パディングを適用
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      config = FigmaNodeConfig.applyPaddingStyles(config, padding);
-    }
-
-    // Flexboxスタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applyFlexboxStyles(
-      config,
-      Styles.extractFlexboxOptions(styles),
-    );
-
-    // ボーダースタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applyBorderStyles(
-      config,
-      Styles.extractBorderOptions(styles),
-    );
-
-    // サイズスタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applySizeStyles(
-      config,
-      Styles.extractSizeOptions(styles),
-    );
-
-    return config;
   },
 
   /**

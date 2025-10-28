@@ -4,6 +4,7 @@ import type { BaseElement } from "../../../base/base-element";
 import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * nav要素の型定義
@@ -91,54 +92,45 @@ export const NavElement = {
    * nav要素をFigmaノードに変換
    */
   toFigmaNode(element: NavElement): FigmaNodeConfig {
-    let config = FigmaNode.createFrame("nav");
+    return toFigmaNodeWith(
+      element,
+      (el) => {
+        const config = FigmaNode.createFrame("nav");
+        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
+        const attributesForDefaults = {
+          ...el.attributes,
+          class: el.attributes?.className || el.attributes?.class,
+        };
+        return FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "nav",
+          attributesForDefaults,
+        );
+      },
+      {
+        applyCommonStyles: true,
+        customStyleApplier: (config, _el, styles) => {
+          // Flexboxスタイルを適用（nav固有）
+          const flexboxOptions = Styles.extractFlexboxOptions(styles);
+          const result = FigmaNodeConfig.applyFlexboxStyles(
+            config,
+            flexboxOptions,
+          );
 
-    // ReactやJSXではclassName属性を使用するが、HTML標準ではclass属性を使用する。
-    // applyHtmlElementDefaultsメソッドはHTML標準のclass属性を期待するため、
-    // className属性が存在する場合はそれをclass属性として渡す必要がある。
-    // classNameとclassの両方が存在する場合は、classNameを優先する。
-    const attributesForDefaults = {
-      ...element.attributes,
-      class: element.attributes?.className || element.attributes?.class,
-    };
-    config = FigmaNodeConfig.applyHtmlElementDefaults(
-      config,
-      "nav",
-      attributesForDefaults,
+          // gapをitemSpacingとして適用
+          if (flexboxOptions.gap !== undefined) {
+            result.itemSpacing = flexboxOptions.gap;
+          }
+
+          // heightが設定されている場合、layoutSizingVerticalを"FIXED"に
+          if (styles.height) {
+            result.layoutSizingVertical = "FIXED";
+          }
+
+          return result;
+        },
+      },
     );
-
-    if (!element.attributes?.style) {
-      return config;
-    }
-
-    const styles = Styles.parse(element.attributes?.style);
-
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      config = FigmaNodeConfig.applyBackgroundColor(config, backgroundColor);
-    }
-
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      config = FigmaNodeConfig.applyPaddingStyles(config, padding);
-    }
-
-    config = FigmaNodeConfig.applyFlexboxStyles(
-      config,
-      Styles.extractFlexboxOptions(styles),
-    );
-
-    config = FigmaNodeConfig.applyBorderStyles(
-      config,
-      Styles.extractBorderOptions(styles),
-    );
-
-    config = FigmaNodeConfig.applySizeStyles(
-      config,
-      Styles.extractSizeOptions(styles),
-    );
-
-    return config;
   },
 
   /**

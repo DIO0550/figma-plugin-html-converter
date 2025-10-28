@@ -4,6 +4,7 @@ import type { BaseElement } from "../../../base/base-element";
 import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * footer要素の型定義
@@ -76,51 +77,45 @@ export const FooterElement = {
    * footer要素をFigmaノードに変換
    */
   toFigmaNode(element: FooterElement): FigmaNodeConfig {
-    let config = FigmaNode.createFrame("footer");
+    return toFigmaNodeWith(
+      element,
+      (el) => {
+        const config = FigmaNode.createFrame("footer");
+        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
+        const attributesForDefaults = {
+          ...el.attributes,
+          class: el.attributes?.className || el.attributes?.class,
+        };
+        return FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "footer",
+          attributesForDefaults,
+        );
+      },
+      {
+        applyCommonStyles: true,
+        customStyleApplier: (config, _el, styles) => {
+          // Flexboxスタイルを適用（footer固有）
+          const flexboxOptions = Styles.extractFlexboxOptions(styles);
+          const result = FigmaNodeConfig.applyFlexboxStyles(
+            config,
+            flexboxOptions,
+          );
 
-    // applyHtmlElementDefaultsはclassプロパティを期待するため変換が必要
-    const attributesForDefaults = {
-      ...element.attributes,
-      class: element.attributes?.className || element.attributes?.class,
-    };
-    config = FigmaNodeConfig.applyHtmlElementDefaults(
-      config,
-      "footer",
-      attributesForDefaults,
+          // gapをitemSpacingとして適用
+          if (flexboxOptions.gap !== undefined) {
+            result.itemSpacing = flexboxOptions.gap;
+          }
+
+          // heightが設定されている場合、layoutSizingVerticalを"FIXED"に
+          if (styles.height) {
+            result.layoutSizingVertical = "FIXED";
+          }
+
+          return result;
+        },
+      },
     );
-
-    if (!element.attributes?.style) {
-      return config;
-    }
-
-    const styles = Styles.parse(element.attributes?.style);
-
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      config = FigmaNodeConfig.applyBackgroundColor(config, backgroundColor);
-    }
-
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      config = FigmaNodeConfig.applyPaddingStyles(config, padding);
-    }
-
-    config = FigmaNodeConfig.applyFlexboxStyles(
-      config,
-      Styles.extractFlexboxOptions(styles),
-    );
-
-    config = FigmaNodeConfig.applyBorderStyles(
-      config,
-      Styles.extractBorderOptions(styles),
-    );
-
-    config = FigmaNodeConfig.applySizeStyles(
-      config,
-      Styles.extractSizeOptions(styles),
-    );
-
-    return config;
   },
 
   /**

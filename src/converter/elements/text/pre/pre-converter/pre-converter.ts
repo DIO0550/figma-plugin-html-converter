@@ -3,59 +3,34 @@ import type { PreElement } from "../pre-element";
 import { PreElement as PreElementCompanion } from "../pre-element";
 import { ElementContextConverter } from "../../base/converters";
 import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
-import { Styles } from "../../../../models/styles";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * pre要素をFigmaノードに変換
  */
 export function toFigmaNode(element: PreElement): FigmaNodeConfig {
-  const frame = HTMLFrame.from("pre", element.attributes);
-  let baseConfig = HTMLFrame.toFigmaNodeConfig(frame);
-
-  // スタイルを適用
-  if (element.attributes?.style) {
-    const styles = Styles.parse(element.attributes.style);
-
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      baseConfig = FigmaNodeConfig.applyBackgroundColor(
-        baseConfig,
-        backgroundColor,
-      );
-    }
-
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      baseConfig = FigmaNodeConfig.applyPaddingStyles(baseConfig, padding);
-    }
-
-    baseConfig = FigmaNodeConfig.applyBorderStyles(
-      baseConfig,
-      Styles.extractBorderOptions(styles),
-    );
-
-    baseConfig = FigmaNodeConfig.applySizeStyles(
-      baseConfig,
-      Styles.extractSizeOptions(styles),
-    );
-  }
-
-  // 子要素を変換
-  const children: FigmaNodeConfig[] = [];
-  if (element.children && element.children.length > 0) {
-    const results = ElementContextConverter.convertAll(
-      element.children,
-      element.attributes?.style,
-      "pre",
-    );
-    children.push(...results.map((result) => result.node as FigmaNodeConfig));
-  }
-
-  return {
-    ...baseConfig,
-    children,
-  };
+  return toFigmaNodeWith(
+    element,
+    (el) => {
+      const frame = HTMLFrame.from("pre", el.attributes);
+      return HTMLFrame.toFigmaNodeConfig(frame);
+    },
+    {
+      applyCommonStyles: true,
+      childrenConverter: (el) => {
+        if (!el.children || el.children.length === 0) {
+          return [];
+        }
+        const results = ElementContextConverter.convertAll(
+          el.children,
+          el.attributes?.style,
+          "pre",
+        );
+        return results.map((result) => result.node as FigmaNodeConfig);
+      },
+    },
+  );
 }
 
 /**

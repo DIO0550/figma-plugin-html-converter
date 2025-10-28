@@ -3,54 +3,52 @@
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
-import { FigmaNode } from "../../../../models/figma-node";
+import {
+  FigmaNode,
+  FigmaNodeConfig as FigmaNodeConfigUtil,
+} from "../../../../models/figma-node";
 import { DtElement } from "../dt-element";
-import { Styles } from "../../../../models/styles";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * DT要素をFigmaノードに変換
  */
 export function toFigmaNode(element: DtElement): FigmaNodeConfig {
-  const config = FigmaNode.createFrame("dt");
-  config.layoutMode = "VERTICAL";
-  config.layoutSizingHorizontal = "FILL";
-  config.layoutSizingVertical = "HUG";
+  return toFigmaNodeWith(
+    element,
+    (el) => {
+      // className/classをclassに変換してapplyHtmlElementDefaultsに渡す
+      const attributesForDefaults: Record<string, unknown> = {};
+      if (el.attributes) {
+        if (el.attributes.id) {
+          attributesForDefaults.id = el.attributes.id;
+        }
+        const classValue = el.attributes.className || el.attributes.class;
+        if (classValue) {
+          attributesForDefaults.class = classValue;
+        }
+      }
 
-  // スタイルの適用
-  if (element.attributes && element.attributes.style) {
-    const styles = Styles.parse(element.attributes.style);
+      const config = FigmaNode.createFrame("dt");
+      const result = FigmaNodeConfigUtil.applyHtmlElementDefaults(
+        config,
+        "dt",
+        attributesForDefaults,
+      );
 
-    // 背景色を適用
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      config.fills = [{ type: "SOLID", color: backgroundColor }];
-    }
+      // リストの基本レイアウト設定
+      result.layoutMode = "VERTICAL";
+      result.layoutSizingHorizontal = "FILL";
+      result.layoutSizingVertical = "HUG";
+      result.children = [];
 
-    // パディングを適用
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      config.paddingTop = padding.top;
-      config.paddingBottom = padding.bottom;
-      config.paddingLeft = padding.left;
-      config.paddingRight = padding.right;
-    }
-
-    // フォントウェイトはStylesモジュールではサポートされていないため、
-    // デフォルトの太字設定をそのまま使用
-  }
-
-  // クラス名やIDをノード名に反映
-  if (element.attributes) {
-    if (element.attributes.id) {
-      config.name = `dt#${element.attributes.id}`;
-    } else if (element.attributes.class) {
-      const className = element.attributes.class.split(" ")[0];
-      config.name = `dt.${className}`;
-    }
-  }
-
-  return config;
+      return result;
+    },
+    {
+      applyCommonStyles: true,
+    },
+  );
 }
 
 /**

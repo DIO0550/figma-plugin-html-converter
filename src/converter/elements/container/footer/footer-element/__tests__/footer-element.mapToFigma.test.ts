@@ -130,7 +130,7 @@ describe("FooterElement.mapToFigma", () => {
             g: 0.9411764705882353,
             b: 0.9411764705882353,
           },
-          opacity: undefined,
+          opacity: 1,
         },
       ],
       children: [],

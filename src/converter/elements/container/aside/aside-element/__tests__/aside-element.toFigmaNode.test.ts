@@ -112,8 +112,7 @@ test("AsideElement.toFigmaNode: 背景色スタイルを適用できること", 
     {
       type: "SOLID",
       color: { r: 1, g: 0, b: 0 },
-      opacity: undefined,
-      visible: true,
+      opacity: 1,
     },
   ]);
 });

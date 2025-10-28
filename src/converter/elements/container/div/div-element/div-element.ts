@@ -3,6 +3,7 @@ import { Styles } from "../../../../models/styles";
 import type { DivAttributes } from "../div-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * div要素の型定義
@@ -37,53 +38,27 @@ export const DivElement = {
   },
 
   toFigmaNode(element: DivElement): FigmaNodeConfig {
-    let config = FigmaNode.createFrame("div");
-
-    // HTML要素のデフォルト設定を適用
-    config = FigmaNodeConfig.applyHtmlElementDefaults(
-      config,
-      "div",
-      element.attributes,
+    return toFigmaNodeWith(
+      element,
+      (el) => {
+        const config = FigmaNode.createFrame("div");
+        return FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "div",
+          el.attributes,
+        );
+      },
+      {
+        applyCommonStyles: true,
+        customStyleApplier: (config, _el, styles) => {
+          // Flexboxスタイルを適用（div固有）
+          return FigmaNodeConfig.applyFlexboxStyles(
+            config,
+            Styles.extractFlexboxOptions(styles),
+          );
+        },
+      },
     );
-
-    // スタイルがない場合は早期リターン
-    if (!element.attributes?.style) {
-      return config;
-    }
-
-    const styles = Styles.parse(element.attributes?.style);
-
-    // 背景色を適用
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      config = FigmaNodeConfig.applyBackgroundColor(config, backgroundColor);
-    }
-
-    // パディングを適用
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      config = FigmaNodeConfig.applyPaddingStyles(config, padding);
-    }
-
-    // Flexboxスタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applyFlexboxStyles(
-      config,
-      Styles.extractFlexboxOptions(styles),
-    );
-
-    // ボーダースタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applyBorderStyles(
-      config,
-      Styles.extractBorderOptions(styles),
-    );
-
-    // サイズスタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applySizeStyles(
-      config,
-      Styles.extractSizeOptions(styles),
-    );
-
-    return config;
   },
 
   mapToFigma(node: unknown): FigmaNodeConfig | null {

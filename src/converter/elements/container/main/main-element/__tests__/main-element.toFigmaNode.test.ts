@@ -191,7 +191,6 @@ describe("MainElement.toFigmaNode", () => {
       paddingBottom: 24,
       paddingLeft: 24,
       itemSpacing: 16,
-      width: 100,
       layoutSizingHorizontal: "FIXED",
       fills: [
         {

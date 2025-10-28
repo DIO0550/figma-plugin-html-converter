@@ -9,6 +9,7 @@ import type { AsideAttributes } from "../aside-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * aside要素の型定義
@@ -120,124 +121,78 @@ export const AsideElement = {
    * @returns Figmaノード設定オブジェクト
    */
   toFigmaNode(element: AsideElement): FigmaNodeConfig {
-    let config = FigmaNode.createFrame("aside");
+    return toFigmaNodeWith(
+      element,
+      (el) => {
+        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
+        const attributesForDefaults = {
+          ...el.attributes,
+          class: el.attributes?.className || el.attributes?.class,
+        };
 
-    // ノード名の生成
-    let name = "aside";
-    if (element.attributes?.id) {
-      name += `#${element.attributes?.id}`;
-    }
-    if (element.attributes?.className) {
-      const classes = element.attributes?.className.split(" ").filter(Boolean);
-      if (classes.length > 0) {
-        name += `.${classes.join(".")}`;
-      }
-    }
-    if (element.attributes?.role) {
-      name += `[role=${element.attributes?.role}]`;
-    }
-    if (element.attributes?.["aria-label"]) {
-      name += `[aria-label=${element.attributes?.["aria-label"]}]`;
-    }
-    config.name = name;
+        const config = FigmaNode.createFrame("aside");
+        const result = FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "aside",
+          attributesForDefaults,
+        );
 
-    // asideのデフォルトレイアウト設定
-    config.layoutMode = "VERTICAL";
-    config.layoutSizingHorizontal = "FIXED";
-    config.layoutSizingVertical = "HUG";
+        // asideはFIXED幅
+        result.layoutSizingHorizontal = "FIXED";
+        result.layoutSizingVertical = "HUG";
 
-    // スタイルがない場合は早期リターン
-    if (!element.attributes?.style) {
-      return config;
-    }
+        // padding と itemSpacing のデフォルト値を設定
+        result.paddingLeft = 0;
+        result.paddingRight = 0;
+        result.paddingTop = 0;
+        result.paddingBottom = 0;
+        result.itemSpacing = 0;
 
-    const styles = Styles.parse(element.attributes?.style);
+        // 複数クラス対応のノード名を生成（applyHtmlElementDefaultsは最初のクラスのみ使用）
+        if (el.attributes?.className) {
+          const classes = el.attributes?.className.split(" ").filter(Boolean);
+          if (classes.length >= 1) {
+            // 全てのクラスを含める
+            result.name = el.attributes?.id
+              ? `aside#${el.attributes.id}.${classes.join(".")}`
+              : `aside.${classes.join(".")}`;
+          }
+        }
 
-    // 背景色を適用
-    const backgroundColor = Styles.getBackgroundColor(styles);
-    if (backgroundColor) {
-      config = FigmaNodeConfig.applyBackgroundColor(config, backgroundColor);
-    }
+        // role と aria-label を追加
+        if (el.attributes?.role) {
+          result.name += `[role=${el.attributes.role}]`;
+        }
+        if (el.attributes?.["aria-label"]) {
+          result.name += `[aria-label=${el.attributes["aria-label"]}]`;
+        }
 
-    // パディングを適用
-    const padding = Styles.getPadding(styles);
-    if (padding) {
-      config = FigmaNodeConfig.applyPaddingStyles(config, padding);
-    }
+        return result;
+      },
+      {
+        applyCommonStyles: true,
+        customStyleApplier: (config, _el, styles) => {
+          // Flexboxスタイルを適用（aside固有）
+          const flexboxOptions = Styles.extractFlexboxOptions(styles);
+          const result = FigmaNodeConfig.applyFlexboxStyles(
+            config,
+            flexboxOptions,
+          );
 
-    // 個別パディングも処理
-    const paddingTop = Styles.getPaddingTop(styles);
-    const paddingRight = Styles.getPaddingRight(styles);
-    const paddingBottom = Styles.getPaddingBottom(styles);
-    const paddingLeft = Styles.getPaddingLeft(styles);
+          // gapをitemSpacingとして適用
+          if (flexboxOptions.gap !== undefined) {
+            result.itemSpacing = flexboxOptions.gap;
+          }
 
-    if (paddingTop !== null && typeof paddingTop === "number") {
-      config.paddingTop = paddingTop;
-    }
-    if (paddingRight !== null && typeof paddingRight === "number") {
-      config.paddingRight = paddingRight;
-    }
-    if (paddingBottom !== null && typeof paddingBottom === "number") {
-      config.paddingBottom = paddingBottom;
-    }
-    if (paddingLeft !== null && typeof paddingLeft === "number") {
-      config.paddingLeft = paddingLeft;
-    }
+          // heightが設定されている場合、layoutSizingVerticalを"FIXED"に
+          if (styles.height) {
+            result.layoutSizingVertical = "FIXED";
+          }
 
-    // Flexboxスタイルを適用（常に実行、内部で判定）
-    const flexboxOptions = Styles.extractFlexboxOptions(styles);
-    config = FigmaNodeConfig.applyFlexboxStyles(config, flexboxOptions);
-
-    // gapをitemSpacingとして適用
-    if (flexboxOptions.gap !== undefined) {
-      config.itemSpacing = flexboxOptions.gap;
-    }
-
-    // ボーダースタイルを適用（常に実行、内部で判定）
-    config = FigmaNodeConfig.applyBorderStyles(
-      config,
-      Styles.extractBorderOptions(styles),
+          return result;
+        },
+      },
     );
-
-    // サイズスタイルを適用（常に実行、内部で判定）
-    const sizeOptions = Styles.extractSizeOptions(styles);
-    config = FigmaNodeConfig.applySizeStyles(config, sizeOptions);
-
-    // width/heightが明示的に設定されている場合はlayoutSizingを調整
-    if (sizeOptions.width !== undefined) {
-      config.layoutSizingHorizontal = "FIXED";
-    }
-    if (sizeOptions.height !== undefined) {
-      config.layoutSizingVertical = "FIXED";
-    }
-
-    // 最小・最大サイズの処理
-    if (styles["min-width"]) {
-      const minWidth = parseFloat(styles["min-width"]);
-      if (!isNaN(minWidth)) {
-        config.minWidth = minWidth;
-      }
-    }
-    if (styles["max-width"]) {
-      const maxWidth = parseFloat(styles["max-width"]);
-      if (!isNaN(maxWidth)) {
-        config.maxWidth = maxWidth;
-      }
-    }
-    if (styles["min-height"]) {
-      const minHeight = parseFloat(styles["min-height"]);
-      if (!isNaN(minHeight)) {
-        config.minHeight = minHeight;
-      }
-    }
-    if (styles["max-height"]) {
-      const maxHeight = parseFloat(styles["max-height"]);
-      if (!isNaN(maxHeight)) {
-        config.maxHeight = maxHeight;
-      }
-    }
-
-    return config;
   },
 
   /**

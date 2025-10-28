@@ -1,9 +1,10 @@
 import type { HTMLNode } from "../../../../models/html-node";
-import type { FigmaNodeConfig } from "../../../../models/figma-node";
+import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import type { HeaderAttributes } from "../header-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
+import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * header要素の型定義
@@ -94,179 +95,71 @@ export const HeaderElement = {
    * header要素をFigmaノードに変換
    */
   toFigmaNode(element: HeaderElement): FigmaNodeConfig {
-    const id = element.attributes?.id;
-    const className = element.attributes?.className;
-    const style = element.attributes?.style;
-    const styles = Styles.parse(style || "");
-
-    // ノード名の生成
-    let name = "header";
-    if (id) {
-      name += `#${id}`;
-    }
-    if (className) {
-      const classes = className.split(" ").filter(Boolean);
-      if (classes.length > 0) {
-        name += `.${classes.join(".")}`;
-      }
-    }
-
-    // 基本設定（デフォルトは横方向のレイアウト - ヘッダーは通常横並び）
-    const figmaNode: FigmaNodeConfig = {
-      type: "FRAME",
-      name,
-      layoutMode: "HORIZONTAL",
-      layoutSizingVertical: "HUG",
-      layoutSizingHorizontal: "FIXED",
-      paddingLeft: 0,
-      paddingRight: 0,
-      paddingTop: 0,
-      paddingBottom: 0,
-      itemSpacing: 0,
-    };
-
-    // display: flexの処理
-    if (styles.display === "flex") {
-      // Flexbox設定
-      // CSSのデフォルトはflex-direction: row
-      const flexDirection = styles["flex-direction"] || "row";
-      figmaNode.layoutMode =
-        flexDirection === "row" ? "HORIZONTAL" : "VERTICAL";
-
-      // justify-content
-      const justifyContent = styles["justify-content"];
-      if (justifyContent) {
-        const alignMap: Record<string, string> = {
-          "flex-start": "MIN",
-          "flex-end": "MAX",
-          center: "CENTER",
-          "space-between": "SPACE_BETWEEN",
-          "space-around": "SPACE_AROUND",
-          "space-evenly": "SPACE_EVENLY",
+    return toFigmaNodeWith(
+      element,
+      (el) => {
+        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
+        const attributesForDefaults = {
+          ...el.attributes,
+          class: el.attributes?.className || el.attributes?.class,
         };
-        figmaNode.primaryAxisAlignItems = (alignMap[justifyContent] ||
-          "MIN") as "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN";
-      }
 
-      // align-items
-      const alignItems = styles["align-items"];
-      if (alignItems) {
-        const alignMap: Record<string, string> = {
-          "flex-start": "MIN",
-          "flex-end": "MAX",
-          center: "CENTER",
-          stretch: "STRETCH",
-          baseline: "BASELINE",
-        };
-        figmaNode.counterAxisAlignItems = (alignMap[alignItems] || "MIN") as
-          | "MIN"
-          | "CENTER"
-          | "MAX"
-          | "STRETCH";
-      }
-    }
+        const config = FigmaNode.createFrame("header");
+        const result = FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "header",
+          attributesForDefaults,
+        );
 
-    // パディング処理
-    if (styles.padding) {
-      const paddingValue = parseFloat(styles.padding);
-      if (!isNaN(paddingValue)) {
-        figmaNode.paddingTop = paddingValue;
-        figmaNode.paddingRight = paddingValue;
-        figmaNode.paddingBottom = paddingValue;
-        figmaNode.paddingLeft = paddingValue;
-      }
-    }
+        // headerはFIXED幅でHORIZONTALレイアウト
+        result.layoutMode = "HORIZONTAL";
+        result.layoutSizingHorizontal = "FIXED";
+        result.layoutSizingVertical = "HUG";
 
-    // 個別パディング
-    ["top", "right", "bottom", "left"].forEach((side) => {
-      const key = `padding-${side}` as keyof typeof styles;
-      const figmaKey = `padding${
-        side.charAt(0).toUpperCase() + side.slice(1)
-      }` as keyof FigmaNodeConfig;
-      if (styles[key]) {
-        const value = parseFloat(styles[key] as string);
-        if (!isNaN(value)) {
-          (figmaNode as unknown as Record<string, unknown>)[figmaKey] = value;
+        // padding と itemSpacing のデフォルト値を設定
+        result.paddingLeft = 0;
+        result.paddingRight = 0;
+        result.paddingTop = 0;
+        result.paddingBottom = 0;
+        result.itemSpacing = 0;
+
+        // 複数クラス対応のノード名を生成（applyHtmlElementDefaultsは最初のクラスのみ使用）
+        if (el.attributes?.className) {
+          const classes = el.attributes?.className.split(" ").filter(Boolean);
+          if (classes.length >= 1) {
+            // 全てのクラスを含める
+            result.name = el.attributes?.id
+              ? `header#${el.attributes.id}.${classes.join(".")}`
+              : `header.${classes.join(".")}`;
+          }
         }
-      }
-    });
 
-    // ギャップ（itemSpacing）
-    if (styles.gap) {
-      const gapValue = parseFloat(styles.gap);
-      if (!isNaN(gapValue)) {
-        figmaNode.itemSpacing = gapValue;
-      }
-    }
+        return result;
+      },
+      {
+        applyCommonStyles: true,
+        customStyleApplier: (config, _el, styles) => {
+          // Flexboxスタイルを適用（header固有）
+          const flexboxOptions = Styles.extractFlexboxOptions(styles);
+          const result = FigmaNodeConfig.applyFlexboxStyles(
+            config,
+            flexboxOptions,
+          );
 
-    // 背景色
-    if (styles["background-color"]) {
-      const color = styles["background-color"];
-      let r = 0,
-        g = 0,
-        b = 0;
-      const opacity = 1;
+          // gapをitemSpacingとして適用
+          if (flexboxOptions.gap !== undefined) {
+            result.itemSpacing = flexboxOptions.gap;
+          }
 
-      if (color.startsWith("#")) {
-        const hex = color.slice(1);
-        if (hex.length === 3) {
-          r = parseInt(hex[0] + hex[0], 16) / 255;
-          g = parseInt(hex[1] + hex[1], 16) / 255;
-          b = parseInt(hex[2] + hex[2], 16) / 255;
-        } else if (hex.length === 6) {
-          r = parseInt(hex.slice(0, 2), 16) / 255;
-          g = parseInt(hex.slice(2, 4), 16) / 255;
-          b = parseInt(hex.slice(4, 6), 16) / 255;
-        }
-      } else if (color === "white") {
-        r = g = b = 1;
-      } else if (color === "black") {
-        r = g = b = 0;
-      }
+          // heightが設定されている場合、layoutSizingVerticalを"FIXED"に
+          if (styles.height) {
+            result.layoutSizingVertical = "FIXED";
+          }
 
-      figmaNode.fills = [
-        {
-          type: "SOLID",
-          color: { r, g, b },
-          opacity,
+          return result;
         },
-      ];
-    }
-
-    // サイズ設定
-    if (styles.width) {
-      const width = parseFloat(styles.width);
-      if (!isNaN(width)) {
-        figmaNode.width = width;
-        figmaNode.layoutSizingHorizontal = "FIXED";
-      }
-    }
-
-    if (styles.height) {
-      const height = parseFloat(styles.height);
-      if (!isNaN(height)) {
-        figmaNode.height = height;
-        figmaNode.layoutSizingVertical = "FIXED";
-      }
-    }
-
-    // 最小・最大サイズ
-    ["min-width", "max-width", "min-height", "max-height"].forEach((prop) => {
-      if (styles[prop]) {
-        const value = parseFloat(styles[prop]);
-        if (!isNaN(value)) {
-          const figmaKey = prop.replace("-", "") as keyof FigmaNodeConfig;
-          const camelCaseKey =
-            figmaKey.slice(0, 3) +
-            figmaKey.charAt(3).toUpperCase() +
-            figmaKey.slice(4);
-          (figmaNode as unknown as Record<string, unknown>)[camelCaseKey] =
-            value;
-        }
-      }
-    });
-
-    return figmaNode;
+      },
+    );
   },
 
   /**

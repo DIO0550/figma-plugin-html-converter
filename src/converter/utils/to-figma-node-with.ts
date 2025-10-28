@@ -162,10 +162,29 @@ function applyCommonStylesInternal(
     result = FigmaNodeConfigUtil.applyBackgroundColor(result, backgroundColor);
   }
 
-  // 2. パディング
+  // 2. パディング（統一）
   const padding = Styles.getPadding(styles);
   if (padding) {
     result = FigmaNodeConfigUtil.applyPaddingStyles(result, padding);
+  }
+
+  // 2.5. 個別パディング
+  const paddingTop = Styles.getPaddingTop(styles);
+  const paddingRight = Styles.getPaddingRight(styles);
+  const paddingBottom = Styles.getPaddingBottom(styles);
+  const paddingLeft = Styles.getPaddingLeft(styles);
+
+  if (paddingTop !== null && typeof paddingTop === "number") {
+    result.paddingTop = paddingTop;
+  }
+  if (paddingRight !== null && typeof paddingRight === "number") {
+    result.paddingRight = paddingRight;
+  }
+  if (paddingBottom !== null && typeof paddingBottom === "number") {
+    result.paddingBottom = paddingBottom;
+  }
+  if (paddingLeft !== null && typeof paddingLeft === "number") {
+    result.paddingLeft = paddingLeft;
   }
 
   // 3. ボーダー
@@ -179,6 +198,32 @@ function applyCommonStylesInternal(
     result,
     Styles.extractSizeOptions(styles),
   );
+
+  // 5. 最小・最大サイズ
+  if (styles["min-width"]) {
+    const minWidth = parseFloat(styles["min-width"]);
+    if (!isNaN(minWidth)) {
+      result.minWidth = minWidth;
+    }
+  }
+  if (styles["max-width"]) {
+    const maxWidth = parseFloat(styles["max-width"]);
+    if (!isNaN(maxWidth)) {
+      result.maxWidth = maxWidth;
+    }
+  }
+  if (styles["min-height"]) {
+    const minHeight = parseFloat(styles["min-height"]);
+    if (!isNaN(minHeight)) {
+      result.minHeight = minHeight;
+    }
+  }
+  if (styles["max-height"]) {
+    const maxHeight = parseFloat(styles["max-height"]);
+    if (!isNaN(maxHeight)) {
+      result.maxHeight = maxHeight;
+    }
+  }
 
   return result;
 }

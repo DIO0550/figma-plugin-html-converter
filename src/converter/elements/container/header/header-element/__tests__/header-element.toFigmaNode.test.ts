@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, test } from "vitest";
 import { HeaderElement } from "../header-element";
 import type { HeaderElement as HeaderElementType } from "../header-element";
 
@@ -324,4 +324,77 @@ describe("HeaderElement.toFigmaNode", () => {
       ],
     });
   });
+});
+
+test("HeaderElement.toFigmaNode: height: autoの場合はlayoutSizingVerticalを設定しないこと", () => {
+  const element: HeaderElementType = {
+    type: "element",
+    tagName: "header",
+    attributes: {
+      style: "height: auto;",
+    },
+  };
+
+  const figmaNode = HeaderElement.toFigmaNode(element);
+
+  expect(figmaNode.height).toBeUndefined();
+  expect(figmaNode.layoutSizingVertical).not.toBe("FIXED");
+});
+
+test("HeaderElement.toFigmaNode: height: 50%の場合はlayoutSizingVerticalを設定しないこと", () => {
+  const element: HeaderElementType = {
+    type: "element",
+    tagName: "header",
+    attributes: {
+      style: "height: 50%;",
+    },
+  };
+
+  const figmaNode = HeaderElement.toFigmaNode(element);
+
+  expect(figmaNode.height).toBeUndefined();
+  expect(figmaNode.layoutSizingVertical).not.toBe("FIXED");
+});
+
+test("HeaderElement.toFigmaNode: height: 1remの場合はlayoutSizingVerticalを設定しないこと", () => {
+  const element: HeaderElementType = {
+    type: "element",
+    tagName: "header",
+    attributes: {
+      style: "height: 5rem;",
+    },
+  };
+
+  const figmaNode = HeaderElement.toFigmaNode(element);
+
+  expect(figmaNode.height).toBeUndefined();
+  expect(figmaNode.layoutSizingVertical).not.toBe("FIXED");
+});
+
+test("HeaderElement.toFigmaNode: gap: 1remの場合はitemSpacingを設定しないこと", () => {
+  const element: HeaderElementType = {
+    type: "element",
+    tagName: "header",
+    attributes: {
+      style: "display: flex; gap: 1rem;",
+    },
+  };
+
+  const figmaNode = HeaderElement.toFigmaNode(element);
+
+  expect(figmaNode.itemSpacing).toBe(0);
+});
+
+test("HeaderElement.toFigmaNode: gap: 10%の場合はitemSpacingを設定しないこと", () => {
+  const element: HeaderElementType = {
+    type: "element",
+    tagName: "header",
+    attributes: {
+      style: "display: flex; gap: 10%;",
+    },
+  };
+
+  const figmaNode = HeaderElement.toFigmaNode(element);
+
+  expect(figmaNode.itemSpacing).toBe(0);
 });

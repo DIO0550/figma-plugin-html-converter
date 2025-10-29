@@ -200,29 +200,24 @@ function applyCommonStylesInternal(
   );
 
   // 5. 最小・最大サイズ
-  if (styles["min-width"]) {
-    const minWidth = parseFloat(styles["min-width"]);
-    if (!isNaN(minWidth)) {
-      result.minWidth = minWidth;
-    }
+  const minWidth = Styles.getMinWidth(styles);
+  if (minWidth !== null) {
+    result.minWidth = minWidth;
   }
-  if (styles["max-width"]) {
-    const maxWidth = parseFloat(styles["max-width"]);
-    if (!isNaN(maxWidth)) {
-      result.maxWidth = maxWidth;
-    }
+
+  const maxWidth = Styles.getMaxWidth(styles);
+  if (maxWidth !== null) {
+    result.maxWidth = maxWidth;
   }
-  if (styles["min-height"]) {
-    const minHeight = parseFloat(styles["min-height"]);
-    if (!isNaN(minHeight)) {
-      result.minHeight = minHeight;
-    }
+
+  const minHeight = Styles.getMinHeight(styles);
+  if (minHeight !== null) {
+    result.minHeight = minHeight;
   }
-  if (styles["max-height"]) {
-    const maxHeight = parseFloat(styles["max-height"]);
-    if (!isNaN(maxHeight)) {
-      result.maxHeight = maxHeight;
-    }
+
+  const maxHeight = Styles.getMaxHeight(styles);
+  if (maxHeight !== null) {
+    result.maxHeight = maxHeight;
   }
 
   return result;

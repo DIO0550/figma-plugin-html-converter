@@ -20,7 +20,27 @@ export interface BorderStyle {
 }
 
 // px値または単位なしの数値のみを受け入れる正規表現パターン (Issue #88)
+// マッチ例: "100", "100px", "12.5", "12.5px"
+// 非マッチ例: "10rem", "50%", "calc(100% - 20px)", "auto"
 const PX_OR_UNITLESS_PATTERN = /^(\d+(?:\.\d+)?)(px)?$/;
+
+/**
+ * px値または単位なしの数値のみを受け入れるヘルパー関数
+ * @param sizeStr - チェックするサイズ文字列
+ * @param getter - サイズを取得するgetter関数
+ * @returns 有効な場合は数値、それ以外はundefined
+ */
+const parseSizeIfValid = (
+  sizeStr: string | undefined,
+  getter: (styles: Styles) => number | SizeValue | null,
+  styles: Styles,
+): number | undefined => {
+  if (!sizeStr || !PX_OR_UNITLESS_PATTERN.test(sizeStr.trim())) {
+    return undefined;
+  }
+  const size = getter(styles);
+  return typeof size === "number" ? size : undefined;
+};
 
 // Stylesコンパニオンオブジェクト
 export const Styles = {
@@ -454,25 +474,9 @@ export const Styles = {
     height?: number;
   } {
     // Issue #88: px値、または単位なしの数値のみを受け入れ
-    const widthStr = styles.width;
-    const heightStr = styles.height;
-
-    let widthValue: number | undefined = undefined;
-    let heightValue: number | undefined = undefined;
-
-    if (widthStr && PX_OR_UNITLESS_PATTERN.test(widthStr.trim())) {
-      const width = Styles.getWidth(styles);
-      widthValue = typeof width === "number" ? width : undefined;
-    }
-
-    if (heightStr && PX_OR_UNITLESS_PATTERN.test(heightStr.trim())) {
-      const height = Styles.getHeight(styles);
-      heightValue = typeof height === "number" ? height : undefined;
-    }
-
     return {
-      width: widthValue,
-      height: heightValue,
+      width: parseSizeIfValid(styles.width, Styles.getWidth, styles),
+      height: parseSizeIfValid(styles.height, Styles.getHeight, styles),
     };
   },
 };

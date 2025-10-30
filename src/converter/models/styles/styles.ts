@@ -19,6 +19,9 @@ export interface BorderStyle {
   color: RGB;
 }
 
+// px値または単位なしの数値のみを受け入れる正規表現パターン (Issue #88)
+const PX_OR_UNITLESS_PATTERN = /^(\d+(?:\.\d+)?)(px)?$/;
+
 // Stylesコンパニオンオブジェクト
 export const Styles = {
   // 空のStylesを作成
@@ -335,7 +338,7 @@ export const Styles = {
     const minWidth = styles["min-width"];
     if (!minWidth) return null;
     // px値、または単位なしの数値のみを受け入れ
-    if (!/^(\d+(?:\.\d+)?)(px)?$/.test(minWidth.trim())) {
+    if (!PX_OR_UNITLESS_PATTERN.test(minWidth.trim())) {
       return null;
     }
     const size = Styles.parseSize(minWidth);
@@ -347,7 +350,7 @@ export const Styles = {
     const maxWidth = styles["max-width"];
     if (!maxWidth) return null;
     // px値、または単位なしの数値のみを受け入れ
-    if (!/^(\d+(?:\.\d+)?)(px)?$/.test(maxWidth.trim())) {
+    if (!PX_OR_UNITLESS_PATTERN.test(maxWidth.trim())) {
       return null;
     }
     const size = Styles.parseSize(maxWidth);
@@ -359,7 +362,7 @@ export const Styles = {
     const minHeight = styles["min-height"];
     if (!minHeight) return null;
     // px値、または単位なしの数値のみを受け入れ
-    if (!/^(\d+(?:\.\d+)?)(px)?$/.test(minHeight.trim())) {
+    if (!PX_OR_UNITLESS_PATTERN.test(minHeight.trim())) {
       return null;
     }
     const size = Styles.parseSize(minHeight);
@@ -371,7 +374,7 @@ export const Styles = {
     const maxHeight = styles["max-height"];
     if (!maxHeight) return null;
     // px値、または単位なしの数値のみを受け入れ
-    if (!/^(\d+(?:\.\d+)?)(px)?$/.test(maxHeight.trim())) {
+    if (!PX_OR_UNITLESS_PATTERN.test(maxHeight.trim())) {
       return null;
     }
     const size = Styles.parseSize(maxHeight);
@@ -410,7 +413,7 @@ export const Styles = {
     let gapValue: number | undefined = undefined;
     if (gap) {
       // Issue #88: px値、または単位なしの数値のみを受け入れ
-      if (/^(\d+(?:\.\d+)?)(px)?$/.test(gap.trim())) {
+      if (PX_OR_UNITLESS_PATTERN.test(gap.trim())) {
         const parsed = Styles.parseSize(gap);
         // 数値（px値）の場合のみ設定
         if (typeof parsed === "number") {
@@ -457,12 +460,12 @@ export const Styles = {
     let widthValue: number | undefined = undefined;
     let heightValue: number | undefined = undefined;
 
-    if (widthStr && /^(\d+(?:\.\d+)?)(px)?$/.test(widthStr.trim())) {
+    if (widthStr && PX_OR_UNITLESS_PATTERN.test(widthStr.trim())) {
       const width = Styles.getWidth(styles);
       widthValue = typeof width === "number" ? width : undefined;
     }
 
-    if (heightStr && /^(\d+(?:\.\d+)?)(px)?$/.test(heightStr.trim())) {
+    if (heightStr && PX_OR_UNITLESS_PATTERN.test(heightStr.trim())) {
       const height = Styles.getHeight(styles);
       heightValue = typeof height === "number" ? height : undefined;
     }

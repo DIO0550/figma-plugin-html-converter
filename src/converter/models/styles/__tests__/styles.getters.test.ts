@@ -213,3 +213,162 @@ test("Styles.extractSizeOptions: rem値のheightはundefinedになること", ()
   expect(result.width).toBe(300);
   expect(result.height).toBeUndefined();
 });
+
+// getMinWidth/getMaxWidth/getMinHeight/getMaxHeight のpx値制限テスト (Issue #88)
+test("Styles.getMinWidth: px値が正しく返されること", () => {
+  const styles = Styles.from({ "min-width": "100px" });
+  expect(Styles.getMinWidth(styles)).toBe(100);
+});
+
+test("Styles.getMinWidth: 単位なしの数値が正しく返されること", () => {
+  const styles = Styles.from({ "min-width": "100" });
+  expect(Styles.getMinWidth(styles)).toBe(100);
+});
+
+test("Styles.getMinWidth: rem値はnullになること", () => {
+  const styles = Styles.from({ "min-width": "10rem" });
+  expect(Styles.getMinWidth(styles)).toBeNull();
+});
+
+test("Styles.getMinWidth: パーセント値はnullになること", () => {
+  const styles = Styles.from({ "min-width": "50%" });
+  expect(Styles.getMinWidth(styles)).toBeNull();
+});
+
+test("Styles.getMinWidth: calc()はnullになること", () => {
+  const styles = Styles.from({ "min-width": "calc(100% - 20px)" });
+  expect(Styles.getMinWidth(styles)).toBeNull();
+});
+
+test("Styles.getMaxWidth: px値が正しく返されること", () => {
+  const styles = Styles.from({ "max-width": "500px" });
+  expect(Styles.getMaxWidth(styles)).toBe(500);
+});
+
+test("Styles.getMaxWidth: rem値はnullになること", () => {
+  const styles = Styles.from({ "max-width": "30rem" });
+  expect(Styles.getMaxWidth(styles)).toBeNull();
+});
+
+test("Styles.getMaxWidth: パーセント値はnullになること", () => {
+  const styles = Styles.from({ "max-width": "100%" });
+  expect(Styles.getMaxWidth(styles)).toBeNull();
+});
+
+test("Styles.getMinHeight: px値が正しく返されること", () => {
+  const styles = Styles.from({ "min-height": "200px" });
+  expect(Styles.getMinHeight(styles)).toBe(200);
+});
+
+test("Styles.getMinHeight: rem値はnullになること", () => {
+  const styles = Styles.from({ "min-height": "15rem" });
+  expect(Styles.getMinHeight(styles)).toBeNull();
+});
+
+test("Styles.getMaxHeight: px値が正しく返されること", () => {
+  const styles = Styles.from({ "max-height": "600px" });
+  expect(Styles.getMaxHeight(styles)).toBe(600);
+});
+
+test("Styles.getMaxHeight: パーセント値はnullになること", () => {
+  const styles = Styles.from({ "max-height": "80%" });
+  expect(Styles.getMaxHeight(styles)).toBeNull();
+});
+
+// parseSizeIfValid ヘルパー関数のテスト (Issue #88)
+test("parseSizeIfValid: px値が正しく返されること", () => {
+  // parseSizeIfValidはprivate関数だが、extractFlexboxOptionsとextractSizeOptionsを通じてテスト可能
+  const styles = Styles.from({
+    display: "flex",
+    gap: "100px",
+  });
+  const result = Styles.extractFlexboxOptions(styles);
+  expect(result.gap).toBe(100);
+});
+
+test("parseSizeIfValid: 単位なしの数値が正しく返されること", () => {
+  const styles = Styles.from({
+    width: "100",
+  });
+  const result = Styles.extractSizeOptions(styles);
+  expect(result.width).toBe(100);
+});
+
+test("parseSizeIfValid: rem値はundefinedになること", () => {
+  const styles = Styles.from({
+    display: "flex",
+    gap: "10rem",
+  });
+  const result = Styles.extractFlexboxOptions(styles);
+  expect(result.gap).toBeUndefined();
+});
+
+test("parseSizeIfValid: パーセント値はundefinedになること", () => {
+  const styles = Styles.from({
+    width: "50%",
+  });
+  const result = Styles.extractSizeOptions(styles);
+  expect(result.width).toBeUndefined();
+});
+
+test("parseSizeIfValid: calc()はundefinedになること", () => {
+  const styles = Styles.from({
+    display: "flex",
+    gap: "calc(100% - 20px)",
+  });
+  const result = Styles.extractFlexboxOptions(styles);
+  expect(result.gap).toBeUndefined();
+});
+
+test("parseSizeIfValid: undefinedはundefinedになること", () => {
+  const styles = Styles.from({
+    display: "flex",
+  });
+  const result = Styles.extractFlexboxOptions(styles);
+  expect(result.gap).toBeUndefined();
+});
+
+test("parseSizeIfValid: 空文字列はundefinedになること", () => {
+  const styles = Styles.from({
+    width: "",
+  });
+  const result = Styles.extractSizeOptions(styles);
+  expect(result.width).toBeUndefined();
+});
+
+// getSizeWithPxRestriction ヘルパー関数のテスト (Issue #88)
+test("getSizeWithPxRestriction: px値が正しく返されること", () => {
+  // getSizeWithPxRestrictionはprivate関数だが、getMinWidth等を通じてテスト可能
+  const styles = Styles.from({ "min-width": "150px" });
+  expect(Styles.getMinWidth(styles)).toBe(150);
+});
+
+test("getSizeWithPxRestriction: 単位なしの数値が正しく返されること", () => {
+  const styles = Styles.from({ "max-width": "200" });
+  expect(Styles.getMaxWidth(styles)).toBe(200);
+});
+
+test("getSizeWithPxRestriction: rem値はnullになること", () => {
+  const styles = Styles.from({ "min-height": "20rem" });
+  expect(Styles.getMinHeight(styles)).toBeNull();
+});
+
+test("getSizeWithPxRestriction: パーセント値はnullになること", () => {
+  const styles = Styles.from({ "max-height": "75%" });
+  expect(Styles.getMaxHeight(styles)).toBeNull();
+});
+
+test("getSizeWithPxRestriction: calc()はnullになること", () => {
+  const styles = Styles.from({ "min-width": "calc(50% + 10px)" });
+  expect(Styles.getMinWidth(styles)).toBeNull();
+});
+
+test("getSizeWithPxRestriction: プロパティが存在しない場合はnullになること", () => {
+  const styles = Styles.empty();
+  expect(Styles.getMaxWidth(styles)).toBeNull();
+});
+
+test("getSizeWithPxRestriction: 空文字列はnullになること", () => {
+  const styles = Styles.from({ "min-height": "" });
+  expect(Styles.getMinHeight(styles)).toBeNull();
+});

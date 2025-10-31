@@ -5,6 +5,10 @@ import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import {
+  normalizeClassNameAttribute,
+  generateNodeName,
+} from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
  * nav要素の型定義
@@ -96,16 +100,24 @@ export const NavElement = {
       element,
       (el) => {
         const config = FigmaNode.createFrame("nav");
-        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
-        const attributesForDefaults = {
-          ...el.attributes,
-          class: el.attributes?.className || el.attributes?.class,
-        };
-        return FigmaNodeConfig.applyHtmlElementDefaults(
+        // classNameをclassに変換（共通ヘルパー使用）
+        const attributesForDefaults = normalizeClassNameAttribute(
+          el.attributes,
+        );
+        const result = FigmaNodeConfig.applyHtmlElementDefaults(
           config,
           "nav",
           attributesForDefaults,
         );
+
+        // 複数クラス対応のノード名を生成（共通ヘルパー使用）
+        result.name = generateNodeName(
+          "nav",
+          el.attributes?.id,
+          el.attributes?.className,
+        );
+
+        return result;
       },
       {
         applyCommonStyles: true,

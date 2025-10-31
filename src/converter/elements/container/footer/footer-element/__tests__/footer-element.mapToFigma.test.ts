@@ -116,7 +116,7 @@ describe("FooterElement.mapToFigma", () => {
 
     expect(result).toMatchObject({
       type: "FRAME",
-      name: "footer#footer",
+      name: "footer#footer.footer-container",
       layoutMode: "HORIZONTAL",
       paddingLeft: 20,
       paddingRight: 20,

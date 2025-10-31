@@ -150,8 +150,9 @@ export const MainElement = {
             result.itemSpacing = flexboxOptions.gap;
           }
 
-          // heightが設定されている場合、layoutSizingVerticalを"FIXED"に
-          if (styles.height) {
+          // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
+          const sizeOptions = Styles.extractSizeOptions(styles);
+          if (sizeOptions.height !== undefined) {
             result.layoutSizingVertical = "FIXED";
           }
 

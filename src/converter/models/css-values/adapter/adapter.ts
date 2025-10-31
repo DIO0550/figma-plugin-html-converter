@@ -2,17 +2,17 @@
  * 既存のコードとの互換性のためのアダプター
  */
 
-import { CSSSpacing } from '../spacing';
-import { CSSColor } from '../color';
-import { Calc } from '../calc';
-import type { SizeValue } from '../../styles';
-import type { RGB } from '../../colors';
+import { CSSSpacing } from "../spacing";
+import { CSSColor } from "../color";
+import { Calc } from "../calc";
+import type { SizeValue } from "../../styles";
+import type { RGB } from "../../colors";
 
 // デフォルトのコンテキスト
 const DEFAULT_CONTEXT = {
   viewportWidth: 1920,
   viewportHeight: 1080,
-  fontSize: 16
+  fontSize: 16,
 };
 
 /**
@@ -24,60 +24,60 @@ export const CSSValueAdapter = {
    */
   parseSize(str: string | undefined): number | SizeValue | null {
     if (!str) return null;
-    
+
     const trimmed = str.trim();
-    
+
     // 特殊な値
-    if (trimmed === 'auto' || trimmed === 'inherit' || trimmed === 'initial') {
+    if (trimmed === "auto" || trimmed === "inherit" || trimmed === "initial") {
       return null;
     }
-    
+
     // calc()式の場合
     if (Calc.isValid(trimmed)) {
       const calc = Calc.from(trimmed);
       if (calc) {
         // calc(100% - 40px)のような特殊ケース
         if (Calc.isPercentageMinusPixels(calc)) {
-          return { value: 100, unit: '%' };
+          return { value: 100, unit: "%" };
         }
         const pixels = Calc.evaluate(calc, DEFAULT_CONTEXT);
         return pixels !== null ? pixels : null;
       }
     }
-    
+
     // パーセンテージの場合
     const percentageMatch = trimmed.match(/^(\d+(?:\.\d+)?)%$/);
     if (percentageMatch) {
       return {
         value: parseFloat(percentageMatch[1]),
-        unit: '%'
+        unit: "%",
       };
     }
-    
+
     // 単位付きの数値
     const lengthMatch = trimmed.match(/^(\d+(?:\.\d+)?)(px|rem|em|vh|vw)?$/);
     if (lengthMatch) {
       const value = parseFloat(lengthMatch[1]);
       const unit = lengthMatch[2];
-      
-      if (!unit || unit === 'px') {
+
+      if (!unit || unit === "px") {
         return value;
       }
-      
+
       // viewport units
-      if (unit === 'vw') {
+      if (unit === "vw") {
         return value * (DEFAULT_CONTEXT.viewportWidth / 100);
       }
-      if (unit === 'vh') {
+      if (unit === "vh") {
         return value * (DEFAULT_CONTEXT.viewportHeight / 100);
       }
-      
+
       // font relative units
-      if (unit === 'rem' || unit === 'em') {
+      if (unit === "rem" || unit === "em") {
         return value * DEFAULT_CONTEXT.fontSize;
       }
     }
-    
+
     return null;
   },
 
@@ -86,7 +86,7 @@ export const CSSValueAdapter = {
    */
   parseSpacing(str: string | undefined, defaultValue: number = 0): number {
     if (!str) return defaultValue;
-    
+
     const spacing = CSSSpacing.parse(str, DEFAULT_CONTEXT);
     return spacing ? CSSSpacing.getValue(spacing) : defaultValue;
   },
@@ -94,26 +94,30 @@ export const CSSValueAdapter = {
   /**
    * パディングのショートハンドをパース（既存のStyles.parsePadding互換）
    */
-  parsePadding(str: string | undefined): { top: number; right: number; bottom: number; left: number } | null {
+  parsePadding(
+    str: string | undefined,
+  ): { top: number; right: number; bottom: number; left: number } | null {
     if (!str) return null;
-    
+
     const box = CSSSpacing.parseShorthand(str, DEFAULT_CONTEXT);
     if (!box) return null;
-    
+
     return {
       top: CSSSpacing.getValue(box.top),
       right: CSSSpacing.getValue(box.right),
       bottom: CSSSpacing.getValue(box.bottom),
-      left: CSSSpacing.getValue(box.left)
+      left: CSSSpacing.getValue(box.left),
     };
   },
 
   /**
    * 文字列から色をパース（既存のColors.parse互換）
    */
-  parseColor(str: string | undefined): RGB | { r: number; g: number; b: number } | null {
+  parseColor(
+    str: string | undefined,
+  ): RGB | { r: number; g: number; b: number } | null {
     if (!str) return null;
-    
+
     const color = CSSColor.parse(str);
     // テストはRGB値（0-255）を期待しているのでtoRGBを使う
     return color ? CSSColor.toRGB(color) : null;
@@ -137,7 +141,11 @@ export const CSSValueAdapter = {
   /**
    * コンテキストを設定
    */
-  setContext(context: { viewportWidth?: number; viewportHeight?: number; fontSize?: number }): void {
+  setContext(context: {
+    viewportWidth?: number;
+    viewportHeight?: number;
+    fontSize?: number;
+  }): void {
     Object.assign(DEFAULT_CONTEXT, context);
   },
 
@@ -148,5 +156,5 @@ export const CSSValueAdapter = {
     DEFAULT_CONTEXT.viewportWidth = 1920;
     DEFAULT_CONTEXT.viewportHeight = 1080;
     DEFAULT_CONTEXT.fontSize = 16;
-  }
+  },
 };

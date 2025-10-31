@@ -17,7 +17,7 @@ describe("NavElement.mapToFigma", () => {
 
     expect(figmaNode).toBeTruthy();
     expect(figmaNode!.type).toBe("FRAME");
-    expect(figmaNode!.name).toBe("nav#main-nav");
+    expect(figmaNode!.name).toBe("nav#main-nav.navbar");
     expect(figmaNode!.layoutMode).toBe("VERTICAL");
     expect(figmaNode!.layoutSizingHorizontal).toBe("FILL");
     expect(figmaNode!.children).toEqual([]);
@@ -129,7 +129,7 @@ describe("NavElement.mapToFigma", () => {
 
     expect(figmaNode).toBeTruthy();
     expect(figmaNode!.type).toBe("FRAME");
-    expect(figmaNode!.name).toBe("nav#sidebar");
+    expect(figmaNode!.name).toBe("nav#sidebar.vertical-nav");
     expect(figmaNode!.layoutMode).toBe("VERTICAL");
     expect(figmaNode!.paddingTop).toBe(24);
     expect(figmaNode!.paddingRight).toBe(24);

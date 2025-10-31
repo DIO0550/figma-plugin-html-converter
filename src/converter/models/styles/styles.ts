@@ -27,19 +27,34 @@ const PX_OR_UNITLESS_PATTERN = /^(\d+(?:\.\d+)?)(px)?$/;
 /**
  * px値または単位なしの数値のみを受け入れるヘルパー関数
  * @param sizeStr - チェックするサイズ文字列
- * @param getter - サイズを取得するgetter関数
  * @returns 有効な場合は数値、それ以外はundefined
  */
-const parseSizeIfValid = (
-  sizeStr: string | undefined,
-  getter: (styles: Styles) => number | SizeValue | null,
-  styles: Styles,
-): number | undefined => {
+const parseSizeIfValid = (sizeStr: string | undefined): number | undefined => {
   if (!sizeStr || !PX_OR_UNITLESS_PATTERN.test(sizeStr.trim())) {
     return undefined;
   }
-  const size = getter(styles);
+  const size = CSSValueAdapter.parseSize(sizeStr);
   return typeof size === "number" ? size : undefined;
+};
+
+/**
+ * 指定されたプロパティから px値または単位なしの数値のみを取得するヘルパー関数
+ * @param styles - Stylesオブジェクト
+ * @param property - チェックするプロパティ名
+ * @returns 有効な場合は数値、それ以外はnull
+ */
+const getSizeWithPxRestriction = (
+  styles: Styles,
+  property: string,
+): number | null => {
+  const value = styles[property];
+  if (!value) return null;
+  // px値、または単位なしの数値のみを受け入れ
+  if (!PX_OR_UNITLESS_PATTERN.test(value.trim())) {
+    return null;
+  }
+  const size = CSSValueAdapter.parseSize(value);
+  return typeof size === "number" ? size : null;
 };
 
 // Stylesコンパニオンオブジェクト
@@ -355,50 +370,22 @@ export const Styles = {
 
   // min-width (Issue #88: px値のみをサポート)
   getMinWidth(styles: Styles): number | null {
-    const minWidth = styles["min-width"];
-    if (!minWidth) return null;
-    // px値、または単位なしの数値のみを受け入れ
-    if (!PX_OR_UNITLESS_PATTERN.test(minWidth.trim())) {
-      return null;
-    }
-    const size = Styles.parseSize(minWidth);
-    return typeof size === "number" ? size : null;
+    return getSizeWithPxRestriction(styles, "min-width");
   },
 
   // max-width (Issue #88: px値のみをサポート)
   getMaxWidth(styles: Styles): number | null {
-    const maxWidth = styles["max-width"];
-    if (!maxWidth) return null;
-    // px値、または単位なしの数値のみを受け入れ
-    if (!PX_OR_UNITLESS_PATTERN.test(maxWidth.trim())) {
-      return null;
-    }
-    const size = Styles.parseSize(maxWidth);
-    return typeof size === "number" ? size : null;
+    return getSizeWithPxRestriction(styles, "max-width");
   },
 
   // min-height (Issue #88: px値のみをサポート)
   getMinHeight(styles: Styles): number | null {
-    const minHeight = styles["min-height"];
-    if (!minHeight) return null;
-    // px値、または単位なしの数値のみを受け入れ
-    if (!PX_OR_UNITLESS_PATTERN.test(minHeight.trim())) {
-      return null;
-    }
-    const size = Styles.parseSize(minHeight);
-    return typeof size === "number" ? size : null;
+    return getSizeWithPxRestriction(styles, "min-height");
   },
 
   // max-height (Issue #88: px値のみをサポート)
   getMaxHeight(styles: Styles): number | null {
-    const maxHeight = styles["max-height"];
-    if (!maxHeight) return null;
-    // px値、または単位なしの数値のみを受け入れ
-    if (!PX_OR_UNITLESS_PATTERN.test(maxHeight.trim())) {
-      return null;
-    }
-    const size = Styles.parseSize(maxHeight);
-    return typeof size === "number" ? size : null;
+    return getSizeWithPxRestriction(styles, "max-height");
   },
 
   // aspect-ratio
@@ -429,19 +416,10 @@ export const Styles = {
     alignItems?: string;
     justifyContent?: string;
   } {
+    // Issue #88: px値、または単位なしの数値のみを受け入れ
     const gap = Styles.get(styles, "gap");
-    let gapValue: number | undefined = undefined;
-    if (gap) {
-      // Issue #88: px値、または単位なしの数値のみを受け入れ
-      if (PX_OR_UNITLESS_PATTERN.test(gap.trim())) {
-        const parsed = Styles.parseSize(gap);
-        // 数値（px値）の場合のみ設定
-        if (typeof parsed === "number") {
-          gapValue = parsed;
-        }
-      }
-      // rem, em, %, calc()などはundefined
-    }
+    const gapValue = parseSizeIfValid(gap);
+
     return {
       display: Styles.get(styles, "display"),
       flexDirection: Styles.get(styles, "flex-direction"),
@@ -475,8 +453,8 @@ export const Styles = {
   } {
     // Issue #88: px値、または単位なしの数値のみを受け入れ
     return {
-      width: parseSizeIfValid(styles.width, Styles.getWidth, styles),
-      height: parseSizeIfValid(styles.height, Styles.getHeight, styles),
+      width: parseSizeIfValid(styles.width),
+      height: parseSizeIfValid(styles.height),
     };
   },
 };

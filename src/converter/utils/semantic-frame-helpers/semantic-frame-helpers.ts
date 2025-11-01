@@ -3,6 +3,12 @@ import type { FigmaNodeConfig } from "../../models/figma-node";
 type AttributesWithClass<T> = T & { class?: string };
 
 /**
+ * セマンティック要素のデフォルトパディング値
+ * header, footer, main などのセマンティック要素の初期padding/itemSpacingは0
+ */
+const SEMANTIC_FRAME_DEFAULT_PADDING = 0;
+
+/**
  * classNameをclassに変換した属性オブジェクトを返す
  *
  * HTML要素の属性でclassNameとして渡されるものを、
@@ -56,11 +62,11 @@ export function initializeSemanticFramePadding(
 ): FigmaNodeConfig {
   return {
     ...config,
-    paddingLeft: 0,
-    paddingRight: 0,
-    paddingTop: 0,
-    paddingBottom: 0,
-    itemSpacing: 0,
+    paddingLeft: SEMANTIC_FRAME_DEFAULT_PADDING,
+    paddingRight: SEMANTIC_FRAME_DEFAULT_PADDING,
+    paddingTop: SEMANTIC_FRAME_DEFAULT_PADDING,
+    paddingBottom: SEMANTIC_FRAME_DEFAULT_PADDING,
+    itemSpacing: SEMANTIC_FRAME_DEFAULT_PADDING,
   };
 }
 

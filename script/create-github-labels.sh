@@ -5,7 +5,7 @@ set -eu
 # 指定した GitHub リポジトリに共通ラベルを一括作成/更新します。
 # 依存: gh (GitHub CLI)
 # 使い方:
-#   REPO=owner/repo ./scripts/create-github-labels.sh
+#   REPO=owner/repo ./script/create-github-labels.sh
 # オプション:
 #   DRY_RUN=1      変更を加えずに実行内容のみ表示
 #   FORCE_UPDATE=1 既存ラベルに対して色/説明を上書き更新
@@ -25,7 +25,7 @@ require_cmd() {
 usage() {
   cat <<EOF
 Usage:
-  REPO=owner/repo ./scripts/create-github-labels.sh [options]
+  REPO=owner/repo ./script/create-github-labels.sh [options]
 
 Env options:
   REPO=owner/repo   対象リポジトリ（未指定時は gh から推定）

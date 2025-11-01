@@ -100,7 +100,6 @@ export const NavElement = {
       element,
       (el) => {
         const config = FigmaNode.createFrame("nav");
-        // classNameをclassに変換（共通ヘルパー使用）
         const attributesForDefaults = normalizeClassNameAttribute(
           el.attributes,
         );
@@ -110,9 +109,8 @@ export const NavElement = {
           attributesForDefaults,
         );
 
-        // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
-          "nav",
+          el.tagName,
           el.attributes?.id,
           attributesForDefaults.class,
         );

@@ -85,7 +85,6 @@ export const FooterElement = {
       element,
       (el) => {
         const config = FigmaNode.createFrame("footer");
-        // classNameをclassに変換（共通ヘルパー使用）
         const attributesForDefaults = normalizeClassNameAttribute(
           el.attributes,
         );
@@ -95,9 +94,8 @@ export const FooterElement = {
           attributesForDefaults,
         );
 
-        // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
-          "footer",
+          el.tagName,
           el.attributes?.id,
           attributesForDefaults.class,
         );

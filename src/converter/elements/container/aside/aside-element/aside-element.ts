@@ -129,7 +129,6 @@ export const AsideElement = {
     return toFigmaNodeWith(
       element,
       (el) => {
-        // classNameをclassに変換（共通ヘルパー使用）
         const attributesForDefaults = normalizeClassNameAttribute(
           el.attributes,
         );
@@ -141,21 +140,17 @@ export const AsideElement = {
           attributesForDefaults,
         );
 
-        // asideはFIXED幅
         baseResult.layoutSizingHorizontal = "FIXED";
         baseResult.layoutSizingVertical = "HUG";
 
-        // padding と itemSpacing を0で初期化（共通ヘルパー使用）
         const result = initializeSemanticFramePadding(baseResult);
 
-        // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
-          "aside",
+          el.tagName,
           el.attributes?.id,
           attributesForDefaults.class,
         );
 
-        // role と aria-label を追加
         if (el.attributes?.role) {
           result.name += `[role=${el.attributes.role}]`;
         }

@@ -191,7 +191,6 @@ describe("semantic-frame-helpers", () => {
 
     describe("既存コードとの互換性", () => {
       it("headerの既存パターンと一致する", () => {
-        // header-element.ts の行127-133と同じ結果
         const id = "site-header";
         const className = "sticky dark";
         const result = generateNodeName("header", id, className);
@@ -199,7 +198,6 @@ describe("semantic-frame-helpers", () => {
       });
 
       it("mainの既存パターンと一致する", () => {
-        // main-element.ts の行126-133と同じ結果
         const id = undefined;
         const className = "container wide";
         const result = generateNodeName("main", id, className);

@@ -1,5 +1,7 @@
 import type { FigmaNodeConfig } from "../../models/figma-node";
 
+type AttributesWithClass<T> = T & { class?: string };
+
 /**
  * classNameをclassに変換した属性オブジェクトを返す
  *
@@ -16,31 +18,23 @@ import type { FigmaNodeConfig } from "../../models/figma-node";
  */
 export function normalizeClassNameAttribute<T extends Record<string, unknown>>(
   attributes: T | undefined,
-): T & { class?: string } {
+): AttributesWithClass<T> {
   if (!attributes) {
-    return {} as T & { class?: string };
+    return {} as AttributesWithClass<T>;
   }
 
-  // classが既に存在する場合はそのまま使用
   if ("class" in attributes) {
-    return attributes as T & { class?: string };
+    return attributes as AttributesWithClass<T>;
   }
 
-  // classNameが存在し、かつ型がstringの場合はclassに変換
-  if (
-    "className" in attributes &&
-    attributes.className !== undefined &&
-    attributes.className !== null &&
-    typeof attributes.className === "string"
-  ) {
+  if ("className" in attributes && typeof attributes.className === "string") {
     return {
       ...attributes,
       class: attributes.className,
-    } as T & { class?: string };
+    } as AttributesWithClass<T>;
   }
 
-  // classNameもclassも存在しない場合
-  return attributes as T & { class?: string };
+  return attributes as AttributesWithClass<T>;
 }
 
 /**
@@ -97,17 +91,14 @@ export function generateNodeName(
   id: string | undefined,
   className: string | undefined,
 ): string {
-  // 空文字列をundefinedとして扱う
   const normalizedId = id && id.trim() ? id : undefined;
   const normalizedClassName =
     className && className.trim() ? className : undefined;
 
-  // クラス名を分割して整形
   const classes = normalizedClassName
     ? normalizedClassName.split(/\s+/).filter(Boolean)
     : [];
 
-  // ノード名を生成
   let name = tagName;
 
   if (normalizedId) {

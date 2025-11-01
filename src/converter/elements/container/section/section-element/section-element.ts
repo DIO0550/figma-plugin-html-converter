@@ -78,7 +78,6 @@ export const SectionElement = {
       element,
       (el) => {
         const config = FigmaNode.createFrame("section");
-        // classNameをclassに変換（共通ヘルパー使用）
         const attributesForDefaults = normalizeClassNameAttribute(
           el.attributes,
         );
@@ -88,9 +87,8 @@ export const SectionElement = {
           attributesForDefaults,
         );
 
-        // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
-          "section",
+          el.tagName,
           el.attributes?.id,
           attributesForDefaults.class,
         );

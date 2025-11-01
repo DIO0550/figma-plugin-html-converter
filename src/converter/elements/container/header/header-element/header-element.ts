@@ -103,7 +103,6 @@ export const HeaderElement = {
     return toFigmaNodeWith(
       element,
       (el) => {
-        // classNameをclassに変換（共通ヘルパー使用）
         const attributesForDefaults = normalizeClassNameAttribute(
           el.attributes,
         );
@@ -115,17 +114,14 @@ export const HeaderElement = {
           attributesForDefaults,
         );
 
-        // headerはFIXED幅でHORIZONTALレイアウト
         baseResult.layoutMode = "HORIZONTAL";
         baseResult.layoutSizingHorizontal = "FIXED";
         baseResult.layoutSizingVertical = "HUG";
 
-        // padding と itemSpacing を0で初期化（共通ヘルパー使用）
         const result = initializeSemanticFramePadding(baseResult);
 
-        // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
-          "header",
+          el.tagName,
           el.attributes?.id,
           attributesForDefaults.class,
         );

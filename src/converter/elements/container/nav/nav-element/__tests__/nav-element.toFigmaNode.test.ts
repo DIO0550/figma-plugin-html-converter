@@ -29,7 +29,7 @@ describe("NavElement.toFigmaNode", () => {
     const figmaNode = NavElement.toFigmaNode(element);
 
     expect(figmaNode.type).toBe("FRAME");
-    expect(figmaNode.name).toBe("nav.navbar");
+    expect(figmaNode.name).toBe("nav.navbar.primary-nav");
   });
 
   test("IDとclassNameを持つnav要素からFigmaノードを生成する", () => {
@@ -40,7 +40,7 @@ describe("NavElement.toFigmaNode", () => {
     const figmaNode = NavElement.toFigmaNode(element);
 
     expect(figmaNode.type).toBe("FRAME");
-    expect(figmaNode.name).toBe("nav#global-nav");
+    expect(figmaNode.name).toBe("nav#global-nav.nav-menu");
   });
 
   test("Flexboxスタイルを持つnav要素からFigmaノードを生成する", () => {
@@ -92,7 +92,7 @@ describe("NavElement.toFigmaNode", () => {
     const figmaNode = NavElement.toFigmaNode(element);
 
     expect(figmaNode.type).toBe("FRAME");
-    expect(figmaNode.name).toBe("nav#sidebar-nav");
+    expect(figmaNode.name).toBe("nav#sidebar-nav.nav-vertical");
     expect(figmaNode.layoutMode).toBe("VERTICAL");
     expect(figmaNode.itemSpacing).toBe(10);
     expect(figmaNode.paddingTop).toBe(20);

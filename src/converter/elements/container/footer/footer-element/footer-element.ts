@@ -5,6 +5,10 @@ import { FigmaNode, FigmaNodeConfig } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import {
+  normalizeClassNameAttribute,
+  generateNodeName,
+} from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
  * footer要素の型定義
@@ -81,16 +85,22 @@ export const FooterElement = {
       element,
       (el) => {
         const config = FigmaNode.createFrame("footer");
-        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
-        const attributesForDefaults = {
-          ...el.attributes,
-          class: el.attributes?.className || el.attributes?.class,
-        };
-        return FigmaNodeConfig.applyHtmlElementDefaults(
+        const attributesForDefaults = normalizeClassNameAttribute(
+          el.attributes,
+        );
+        const result = FigmaNodeConfig.applyHtmlElementDefaults(
           config,
           "footer",
           attributesForDefaults,
         );
+
+        result.name = generateNodeName(
+          el.tagName,
+          el.attributes?.id,
+          attributesForDefaults.class,
+        );
+
+        return result;
       },
       {
         applyCommonStyles: true,

@@ -10,6 +10,11 @@ import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import {
+  normalizeClassNameAttribute,
+  initializeSemanticFramePadding,
+  generateNodeName,
+} from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
  * aside要素の型定義
@@ -124,42 +129,29 @@ export const AsideElement = {
     return toFigmaNodeWith(
       element,
       (el) => {
-        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
-        const attributesForDefaults = {
-          ...el.attributes,
-          class: el.attributes?.className || el.attributes?.class,
-        };
+        const attributesForDefaults = normalizeClassNameAttribute(
+          el.attributes,
+        );
 
         const config = FigmaNode.createFrame("aside");
-        const result = FigmaNodeConfig.applyHtmlElementDefaults(
+        const baseResult = FigmaNodeConfig.applyHtmlElementDefaults(
           config,
           "aside",
           attributesForDefaults,
         );
 
-        // asideはFIXED幅
-        result.layoutSizingHorizontal = "FIXED";
-        result.layoutSizingVertical = "HUG";
+        baseResult.layoutSizingHorizontal = "FIXED";
+        baseResult.layoutSizingVertical = "HUG";
 
-        // padding と itemSpacing のデフォルト値を設定
-        result.paddingLeft = 0;
-        result.paddingRight = 0;
-        result.paddingTop = 0;
-        result.paddingBottom = 0;
-        result.itemSpacing = 0;
+        const result = initializeSemanticFramePadding(baseResult);
 
-        // 複数クラス対応のノード名を生成（applyHtmlElementDefaultsは最初のクラスのみ使用）
-        if (el.attributes?.className) {
-          const classes = el.attributes?.className.split(" ").filter(Boolean);
-          if (classes.length >= 1) {
-            // 全てのクラスを含める
-            result.name = el.attributes?.id
-              ? `aside#${el.attributes.id}.${classes.join(".")}`
-              : `aside.${classes.join(".")}`;
-          }
-        }
+        result.name = generateNodeName(
+          el.tagName,
+          el.attributes?.id,
+          attributesForDefaults.class,
+        );
 
-        // role と aria-label を追加
+        // aside特有の属性: アクセシビリティ情報をノード名に追加
         if (el.attributes?.role) {
           result.name += `[role=${el.attributes.role}]`;
         }

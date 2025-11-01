@@ -5,6 +5,11 @@ import type { BaseElement } from "../../../base/base-element";
 import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import {
+  normalizeClassNameAttribute,
+  initializeSemanticFramePadding,
+  generateNodeName,
+} from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
  * main要素の型定義
@@ -98,40 +103,27 @@ export const MainElement = {
     return toFigmaNodeWith(
       element,
       (el) => {
-        // classNameをclassに変換してapplyHtmlElementDefaultsに渡す
-        const attributesForDefaults = {
-          ...el.attributes,
-          class: el.attributes?.className || el.attributes?.class,
-        };
+        const attributesForDefaults = normalizeClassNameAttribute(
+          el.attributes,
+        );
 
         const config = FigmaNode.createFrame("main");
-        const result = FigmaNodeConfig.applyHtmlElementDefaults(
+        const baseResult = FigmaNodeConfig.applyHtmlElementDefaults(
           config,
           "main",
           attributesForDefaults,
         );
 
-        // mainはFIXED幅（applyHtmlElementDefaultsはFILLを設定するため上書き）
-        result.layoutSizingHorizontal = "FIXED";
-        result.layoutSizingVertical = "HUG";
+        baseResult.layoutSizingHorizontal = "FIXED";
+        baseResult.layoutSizingVertical = "HUG";
 
-        // padding と itemSpacing のデフォルト値を設定
-        result.paddingLeft = 0;
-        result.paddingRight = 0;
-        result.paddingTop = 0;
-        result.paddingBottom = 0;
-        result.itemSpacing = 0;
+        const result = initializeSemanticFramePadding(baseResult);
 
-        // 複数クラス対応のノード名を生成（applyHtmlElementDefaultsは最初のクラスのみ使用）
-        if (el.attributes?.className) {
-          const classes = el.attributes?.className.split(" ").filter(Boolean);
-          if (classes.length >= 1) {
-            // 全てのクラスを含める
-            result.name = el.attributes?.id
-              ? `main#${el.attributes.id}.${classes.join(".")}`
-              : `main.${classes.join(".")}`;
-          }
-        }
+        result.name = generateNodeName(
+          el.tagName,
+          el.attributes?.id,
+          attributesForDefaults.class,
+        );
 
         return result;
       },

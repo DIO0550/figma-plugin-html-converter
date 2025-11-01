@@ -39,7 +39,7 @@ describe("FooterElement.toFigmaNode", () => {
 
     const figmaNode = FooterElement.toFigmaNode(element);
 
-    expect(figmaNode.name).toBe("footer.footer");
+    expect(figmaNode.name).toBe("footer.footer.container.dark");
   });
 
   it("IDとクラス名の両方がある場合の名前生成", () => {
@@ -51,7 +51,7 @@ describe("FooterElement.toFigmaNode", () => {
 
     const figmaNode = FooterElement.toFigmaNode(element);
 
-    expect(figmaNode.name).toBe("footer#main-footer");
+    expect(figmaNode.name).toBe("footer#main-footer.site-footer.dark");
   });
 
   it("display: flexのスタイルが適用されること", () => {
@@ -213,7 +213,7 @@ describe("FooterElement.toFigmaNode", () => {
 
     const figmaNode = FooterElement.toFigmaNode(element);
 
-    expect(figmaNode.name).toBe("footer#footer");
+    expect(figmaNode.name).toBe("footer#footer.site-footer");
     expect(figmaNode.layoutMode).toBe("HORIZONTAL");
     expect(figmaNode.primaryAxisAlignItems).toBe("SPACE_BETWEEN");
     expect(figmaNode.paddingTop).toBeDefined();

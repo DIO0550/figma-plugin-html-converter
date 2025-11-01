@@ -4,6 +4,10 @@ import type { SectionAttributes } from "../section-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import {
+  normalizeClassNameAttribute,
+  generateNodeName,
+} from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
  * section要素の型定義
@@ -74,11 +78,22 @@ export const SectionElement = {
       element,
       (el) => {
         const config = FigmaNode.createFrame("section");
-        return FigmaNodeConfig.applyHtmlElementDefaults(
-          config,
-          "section",
+        const attributesForDefaults = normalizeClassNameAttribute(
           el.attributes,
         );
+        const result = FigmaNodeConfig.applyHtmlElementDefaults(
+          config,
+          "section",
+          attributesForDefaults,
+        );
+
+        result.name = generateNodeName(
+          el.tagName,
+          el.attributes?.id,
+          attributesForDefaults.class,
+        );
+
+        return result;
       },
       {
         applyCommonStyles: true,

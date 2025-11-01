@@ -1,6 +1,5 @@
 import { FigmaNodeConfig } from "../../../../models/figma-node";
 import { HTMLNode } from "../../../../models/html-node/html-node";
-import { ElementContextConverter } from "../../base/converters";
 import { HTMLFrame } from "../../../../models/figma-node/factories/html-frame";
 import type { H1Element } from "../h1/h1-element";
 import type { H2Element } from "../h2/h2-element";
@@ -9,6 +8,7 @@ import type { H4Element } from "../h4/h4-element";
 import type { H5Element } from "../h5/h5-element";
 import type { H6Element } from "../h6/h6-element";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import { createTextChildrenConverter } from "../../../../utils/children-converter-helpers";
 
 type HeadingElement =
   | H1Element
@@ -32,17 +32,7 @@ export function toFigmaNode(element: HeadingElement): FigmaNodeConfig {
     },
     {
       applyCommonStyles: true,
-      childrenConverter: (el) => {
-        if (!el.children || el.children.length === 0) {
-          return [];
-        }
-        const results = ElementContextConverter.convertAll(
-          el.children,
-          el.attributes?.style,
-          level,
-        );
-        return results.map((result) => result.node as FigmaNodeConfig);
-      },
+      childrenConverter: createTextChildrenConverter(level),
     },
   );
 }

@@ -151,6 +151,7 @@ export const AsideElement = {
           attributesForDefaults.class,
         );
 
+        // aside特有の属性: アクセシビリティ情報をノード名に追加
         if (el.attributes?.role) {
           result.name += `[role=${el.attributes.role}]`;
         }

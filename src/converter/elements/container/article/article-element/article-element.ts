@@ -110,24 +110,24 @@ export const ArticleElement = {
         );
 
         const config = FigmaNode.createFrame("article");
-        let result = FigmaNodeConfig.applyHtmlElementDefaults(
+        const baseResult = FigmaNodeConfig.applyHtmlElementDefaults(
           config,
           "article",
           attributesForDefaults,
         );
 
         // articleはFIXED幅（applyHtmlElementDefaultsはFILLを設定するため上書き）
-        result.layoutSizingHorizontal = "FIXED";
-        result.layoutSizingVertical = "HUG";
+        baseResult.layoutSizingHorizontal = "FIXED";
+        baseResult.layoutSizingVertical = "HUG";
 
         // padding と itemSpacing を0で初期化（共通ヘルパー使用）
-        result = initializeSemanticFramePadding(result);
+        const result = initializeSemanticFramePadding(baseResult);
 
         // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
           "article",
           el.attributes?.id,
-          el.attributes?.className,
+          attributesForDefaults.class,
         );
 
         return result;

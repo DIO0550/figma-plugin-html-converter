@@ -109,25 +109,25 @@ export const HeaderElement = {
         );
 
         const config = FigmaNode.createFrame("header");
-        let result = FigmaNodeConfig.applyHtmlElementDefaults(
+        const baseResult = FigmaNodeConfig.applyHtmlElementDefaults(
           config,
           "header",
           attributesForDefaults,
         );
 
         // headerはFIXED幅でHORIZONTALレイアウト
-        result.layoutMode = "HORIZONTAL";
-        result.layoutSizingHorizontal = "FIXED";
-        result.layoutSizingVertical = "HUG";
+        baseResult.layoutMode = "HORIZONTAL";
+        baseResult.layoutSizingHorizontal = "FIXED";
+        baseResult.layoutSizingVertical = "HUG";
 
         // padding と itemSpacing を0で初期化（共通ヘルパー使用）
-        result = initializeSemanticFramePadding(result);
+        const result = initializeSemanticFramePadding(baseResult);
 
         // 複数クラス対応のノード名を生成（共通ヘルパー使用）
         result.name = generateNodeName(
           "header",
           el.attributes?.id,
-          el.attributes?.className,
+          attributesForDefaults.class,
         );
 
         return result;

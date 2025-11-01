@@ -114,7 +114,7 @@ export const NavElement = {
         result.name = generateNodeName(
           "nav",
           el.attributes?.id,
-          el.attributes?.className,
+          attributesForDefaults.class,
         );
 
         return result;

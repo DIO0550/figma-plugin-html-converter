@@ -92,7 +92,7 @@ export const SectionElement = {
         result.name = generateNodeName(
           "section",
           el.attributes?.id,
-          el.attributes?.className || el.attributes?.class,
+          attributesForDefaults.class,
         );
 
         return result;

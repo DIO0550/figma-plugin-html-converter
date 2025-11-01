@@ -26,11 +26,16 @@ export function normalizeClassNameAttribute<T extends Record<string, unknown>>(
     return attributes as T & { class?: string };
   }
 
-  // classNameが存在する場合はclassに変換
-  if ("className" in attributes && attributes.className) {
+  // classNameが存在し、かつ型がstringの場合はclassに変換
+  if (
+    "className" in attributes &&
+    attributes.className !== undefined &&
+    attributes.className !== null &&
+    typeof attributes.className === "string"
+  ) {
     return {
       ...attributes,
-      class: attributes.className as string,
+      class: attributes.className,
     } as T & { class?: string };
   }
 

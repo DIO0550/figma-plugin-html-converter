@@ -99,7 +99,7 @@ export const FooterElement = {
         result.name = generateNodeName(
           "footer",
           el.attributes?.id,
-          el.attributes?.className,
+          attributesForDefaults.class,
         );
 
         return result;

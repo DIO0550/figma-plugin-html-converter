@@ -38,17 +38,7 @@ export function createTextChildrenConverter<
 
     // 結果をFigmaNodeConfig配列にマップ
     return results
-      .map((result) => {
-        if (
-          result &&
-          typeof result === "object" &&
-          "node" in result &&
-          result.node !== undefined
-        ) {
-          return result.node;
-        }
-        return undefined;
-      })
+      .map((result) => result.node)
       .filter((node): node is FigmaNodeConfig => node !== undefined);
   };
 }

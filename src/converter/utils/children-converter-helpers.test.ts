@@ -141,7 +141,6 @@ describe("createTextChildrenConverter", () => {
     const result = converter(element);
 
     // Assert
-    // コメントノードはnullとして処理され、フィルタリングされる
     expect(result.length).toBeGreaterThan(0);
     expect(result.every((node) => node !== null)).toBe(true);
   });

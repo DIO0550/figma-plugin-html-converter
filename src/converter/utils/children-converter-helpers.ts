@@ -15,12 +15,10 @@ import { ElementContextConverter } from "../elements/text/base/converters";
  * const children = converter(element);
  * ```
  */
-export function createTextChildrenConverter(
-  elementType: string,
-): <T extends BaseElement<string, unknown>>(element: T) => FigmaNodeConfig[] {
-  return <T extends BaseElement<string, unknown>>(
-    element: T,
-  ): FigmaNodeConfig[] => {
+export function createTextChildrenConverter<
+  T extends BaseElement<string, unknown>,
+>(elementType: string): (element: T) => FigmaNodeConfig[] {
+  return (element: T): FigmaNodeConfig[] => {
     // 子要素がない場合は空配列を返す
     if (!element.children || element.children.length === 0) {
       return [];

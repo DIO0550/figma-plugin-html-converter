@@ -4,6 +4,15 @@ import type { HTMLNode } from "../models/html-node/html-node";
 import { ElementContextConverter } from "../elements/text/base/converters";
 
 /**
+ * 子要素がHTMLNode配列であるかを型ガードする
+ */
+function isHTMLNodeArray(children: unknown[]): children is HTMLNode[] {
+  // BaseElementのchildrenは実装上常にHTMLNode[]として扱われる
+  // ここでは型システムの制約を満たすための型ガードとして機能
+  return Array.isArray(children);
+}
+
+/**
  * テキスト要素用の子要素変換関数を作成する
  *
  * @param elementType - 要素タイプ（p, h1-h6, blockquote, pre など）
@@ -29,9 +38,14 @@ export function createTextChildrenConverter<
       element.attributes as Record<string, unknown> | undefined
     )?.style as string | undefined;
 
+    // 子要素の型ガード
+    if (!isHTMLNodeArray(element.children)) {
+      return [];
+    }
+
     // ElementContextConverterで子要素を変換
     const results = ElementContextConverter.convertAll(
-      element.children as HTMLNode[],
+      element.children,
       parentStyle,
       elementType,
     );

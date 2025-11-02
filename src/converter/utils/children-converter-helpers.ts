@@ -25,13 +25,9 @@ export function createTextChildrenConverter<
     }
 
     // 親要素のスタイルを取得
-    const parentStyle =
-      element.attributes &&
-      typeof element.attributes === "object" &&
-      element.attributes !== null &&
-      "style" in element.attributes
-        ? (element.attributes.style as string | undefined)
-        : undefined;
+    const parentStyle = (
+      element.attributes as Record<string, unknown> | undefined
+    )?.style as string | undefined;
 
     // ElementContextConverterで子要素を変換
     const results = ElementContextConverter.convertAll(

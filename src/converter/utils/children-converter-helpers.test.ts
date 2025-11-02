@@ -93,7 +93,6 @@ describe("createTextChildrenConverter", () => {
     // Assert
     expect(result).toHaveLength(1);
     expect(result[0]).toBeDefined();
-    // スタイルが適用されていることを確認（具体的な検証は既存のテストに委譲）
   });
 
   test("見出し要素として変換できる", () => {

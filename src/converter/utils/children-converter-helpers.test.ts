@@ -118,7 +118,7 @@ describe("createTextChildrenConverter", () => {
     expect(result[0]).toBeDefined();
   });
 
-  test("nullの結果をフィルタリングする", () => {
+  test("null/undefinedの結果をフィルタリングする", () => {
     // Arrange
     const element: BaseElement<"p", { style?: string }> = {
       type: "element",

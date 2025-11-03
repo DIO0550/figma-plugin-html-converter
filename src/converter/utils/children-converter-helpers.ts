@@ -39,6 +39,6 @@ export function createTextChildrenConverter<
     // 結果をFigmaNodeConfig配列にマップ
     return results
       .map((result) => result.node)
-      .filter((node): node is FigmaNodeConfig => node !== undefined);
+      .filter((node): node is FigmaNodeConfig => node != null);
   };
 }

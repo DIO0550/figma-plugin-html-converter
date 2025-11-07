@@ -1,4 +1,6 @@
 import type { FigmaNodeConfig } from "../../models/figma-node";
+import { FigmaNodeConfig as FigmaNodeConfigUtil } from "../../models/figma-node";
+import { Styles } from "../../models/styles";
 
 type AttributesWithClass<T> = T & { class?: string };
 
@@ -116,4 +118,47 @@ export function generateNodeName(
   }
 
   return name;
+}
+
+/**
+ * セマンティック要素共通のFlexboxスタイルを適用
+ *
+ * 5つのセマンティック要素（section, nav, header, footer, article）で
+ * 共通して使用されるFlexboxスタイル適用ロジックを提供する。
+ *
+ * 適用内容:
+ * - Flexboxレイアウトの設定（display, flex-direction, align-items, justify-content）
+ * - gap → itemSpacing のマッピング
+ * - height指定時の layoutSizingVertical = "FIXED"
+ *
+ * @param config - スタイルを適用するFigmaNodeConfig
+ * @param styles - 解析済みのStyles
+ * @returns Flexboxスタイルが適用されたFigmaNodeConfig
+ *
+ * @example
+ * const config = { type: "FRAME", name: "section" };
+ * const styles = Styles.parse("display: flex; gap: 16px; height: 100px");
+ * const result = applySemanticFlexboxStyles(config, styles);
+ * // => { ...config, layoutMode: "HORIZONTAL", itemSpacing: 16, layoutSizingVertical: "FIXED" }
+ */
+export function applySemanticFlexboxStyles(
+  config: FigmaNodeConfig,
+  styles: Styles,
+): FigmaNodeConfig {
+  // Flexboxスタイルを適用
+  const flexboxOptions = Styles.extractFlexboxOptions(styles);
+  const result = FigmaNodeConfigUtil.applyFlexboxStyles(config, flexboxOptions);
+
+  // gapをitemSpacingとして適用
+  if (flexboxOptions.gap !== undefined) {
+    result.itemSpacing = flexboxOptions.gap;
+  }
+
+  // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
+  const sizeOptions = Styles.extractSizeOptions(styles);
+  if (sizeOptions.height !== undefined) {
+    result.layoutSizingVertical = "FIXED";
+  }
+
+  return result;
 }

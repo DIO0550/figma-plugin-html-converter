@@ -24,7 +24,7 @@ test("applySemanticFlexboxStyles - gapを指定すると、itemSpacingにマッ�
     type: "FRAME",
     name: "test",
   };
-  const styles = Styles.parse("gap: 16px");
+  const styles = Styles.parse("display: flex; gap: 16px");
 
   // Act
   const result = applySemanticFlexboxStyles(config, styles);
@@ -86,7 +86,7 @@ test("applySemanticFlexboxStyles - 既存のconfigプロパティを保持する
     width: 300,
     paddingLeft: 10,
   };
-  const styles = Styles.parse("gap: 8px; height: 50px");
+  const styles = Styles.parse("display: flex; gap: 8px; height: 50px");
 
   // Act
   const result = applySemanticFlexboxStyles(config, styles);

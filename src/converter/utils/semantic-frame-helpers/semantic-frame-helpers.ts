@@ -127,8 +127,7 @@ export function generateNodeName(
  * 共通して使用されるFlexboxスタイル適用ロジックを提供する。
  *
  * 適用内容:
- * - Flexboxレイアウトの設定（display, flex-direction, align-items, justify-content）
- * - gap → itemSpacing のマッピング
+ * - Flexboxレイアウトの設定（display, flex-direction, align-items, justify-content, gap）
  * - height指定時の layoutSizingVertical = "FIXED"
  *
  * @param config - スタイルを適用するFigmaNodeConfig
@@ -148,11 +147,6 @@ export function applySemanticFlexboxStyles(
   // Flexboxスタイルを適用
   const flexboxOptions = Styles.extractFlexboxOptions(styles);
   const result = FigmaNodeConfigUtil.applyFlexboxStyles(config, flexboxOptions);
-
-  // gapをitemSpacingとして適用
-  if (flexboxOptions.gap !== undefined) {
-    result.itemSpacing = flexboxOptions.gap;
-  }
 
   // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
   const sizeOptions = Styles.extractSizeOptions(styles);

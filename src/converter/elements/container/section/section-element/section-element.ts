@@ -1,5 +1,4 @@
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
-import { Styles } from "../../../../models/styles";
 import type { SectionAttributes } from "../section-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
@@ -7,6 +6,7 @@ import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 import {
   normalizeClassNameAttribute,
   generateNodeName,
+  applySemanticFlexboxStyles,
 } from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
@@ -97,27 +97,8 @@ export const SectionElement = {
       },
       {
         applyCommonStyles: true,
-        customStyleApplier: (config, _el, styles) => {
-          // Flexboxスタイルを適用（section固有）
-          const flexboxOptions = Styles.extractFlexboxOptions(styles);
-          const result = FigmaNodeConfig.applyFlexboxStyles(
-            config,
-            flexboxOptions,
-          );
-
-          // gapをitemSpacingとして適用
-          if (flexboxOptions.gap !== undefined) {
-            result.itemSpacing = flexboxOptions.gap;
-          }
-
-          // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
-          const sizeOptions = Styles.extractSizeOptions(styles);
-          if (sizeOptions.height !== undefined) {
-            result.layoutSizingVertical = "FIXED";
-          }
-
-          return result;
-        },
+        customStyleApplier: (config, _el, styles) =>
+          applySemanticFlexboxStyles(config, styles),
       },
     );
   },

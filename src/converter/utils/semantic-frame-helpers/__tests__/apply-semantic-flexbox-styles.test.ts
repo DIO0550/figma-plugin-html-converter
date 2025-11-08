@@ -3,7 +3,7 @@ import { applySemanticFlexboxStyles } from "../semantic-frame-helpers";
 import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { Styles } from "../../../models/styles";
 
-test("applySemanticFlexboxStyles - Flexboxスタイルを適用すると、layoutModeが設定される", () => {
+test("applySemanticFlexboxStyles - flex-direction: rowを指定すると、layoutModeがHORIZONTALに設定される", () => {
   // Arrange
   const config: FigmaNodeConfig = {
     type: "FRAME",

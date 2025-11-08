@@ -2,13 +2,13 @@ import type { HTMLNode } from "../../../../models/html-node";
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import type { HeaderAttributes } from "../header-attributes";
 import type { BaseElement } from "../../../base/base-element";
-import { Styles } from "../../../../models/styles";
 import { HTMLToFigmaMapper } from "../../../../mapper";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 import {
   normalizeClassNameAttribute,
   initializeSemanticFramePadding,
   generateNodeName,
+  applySemanticFlexboxStyles,
 } from "../../../../utils/semantic-frame-helpers/semantic-frame-helpers";
 
 /**
@@ -130,27 +130,8 @@ export const HeaderElement = {
       },
       {
         applyCommonStyles: true,
-        customStyleApplier: (config, _el, styles) => {
-          // Flexboxスタイルを適用（header固有）
-          const flexboxOptions = Styles.extractFlexboxOptions(styles);
-          const result = FigmaNodeConfig.applyFlexboxStyles(
-            config,
-            flexboxOptions,
-          );
-
-          // gapをitemSpacingとして適用
-          if (flexboxOptions.gap !== undefined) {
-            result.itemSpacing = flexboxOptions.gap;
-          }
-
-          // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
-          const sizeOptions = Styles.extractSizeOptions(styles);
-          if (sizeOptions.height !== undefined) {
-            result.layoutSizingVertical = "FIXED";
-          }
-
-          return result;
-        },
+        customStyleApplier: (config, _el, styles) =>
+          applySemanticFlexboxStyles(config, styles),
       },
     );
   },

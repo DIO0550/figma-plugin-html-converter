@@ -1,5 +1,5 @@
 import type { FigmaNodeConfig } from "../../models/figma-node";
-import { FigmaNodeConfig as FigmaNodeConfigUtil } from "../../models/figma-node";
+import { FigmaNode } from "../../models/figma-node";
 import { Styles } from "../../models/styles";
 
 type AttributesWithClass<T> = T & { class?: string };
@@ -146,7 +146,7 @@ export function applySemanticFlexboxStyles(
 ): FigmaNodeConfig {
   // Flexboxスタイルを適用
   const flexboxOptions = Styles.extractFlexboxOptions(styles);
-  const result = FigmaNodeConfigUtil.applyFlexboxStyles(config, flexboxOptions);
+  const result = FigmaNode.applyFlexboxStyles(config, flexboxOptions);
 
   // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
   const sizeOptions = Styles.extractSizeOptions(styles);

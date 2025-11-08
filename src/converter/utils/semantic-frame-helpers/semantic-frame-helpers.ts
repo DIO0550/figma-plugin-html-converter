@@ -148,6 +148,11 @@ export function applySemanticFlexboxStyles(
   const flexboxOptions = Styles.extractFlexboxOptions(styles);
   const result = FigmaNode.applyFlexboxStyles(config, flexboxOptions);
 
+  // gapをitemSpacingとして適用（display: flexがない場合でも適用）
+  if (flexboxOptions.gap !== undefined) {
+    result.itemSpacing = flexboxOptions.gap;
+  }
+
   // heightが数値（px値）の場合のみ、layoutSizingVerticalを"FIXED"に
   const sizeOptions = Styles.extractSizeOptions(styles);
   if (sizeOptions.height !== undefined) {

@@ -100,7 +100,7 @@ test("applySemanticFlexboxStyles - 既存のconfigプロパティを保持する
   expect(result.layoutSizingVertical).toBe("FIXED");
 });
 
-test("applySemanticFlexboxStyles - 複合的なFlexboxスタイルとgapとheightを同時に適用すると、すべて正しく反映される", () => {
+test("applySemanticFlexboxStyles - 複数のFlexboxプロパティを同時に指定すると、すべて正しく適用される", () => {
   // Arrange
   const config: FigmaNodeConfig = {
     type: "FRAME",

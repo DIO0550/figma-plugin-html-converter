@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { InsConverter } from "../ins-converter";
 import { InsElement } from "../../ins-element";
+import {
+  createInsElement,
+  createTextNode,
+  createElementNode,
+} from "./test-helpers";
 
 describe("InsConverter.toFigmaNode", () => {
   it("should apply underline text decoration by default", () => {
@@ -38,21 +43,14 @@ describe("InsConverter.toFigmaNode", () => {
   });
 
   it("should handle children elements", () => {
-    const element = InsElement.create({}, [
-      { type: "text", textContent: "inserted text" } as any,
-    ]);
+    const element = createInsElement({}, [createTextNode("inserted text")]);
     const config = InsConverter.toFigmaNode(element);
     expect(config.content).toBe("inserted text");
   });
 
   it("should handle nested elements", () => {
-    const element = InsElement.create({}, [
-      {
-        type: "element",
-        tagName: "strong",
-        attributes: {},
-        children: [{ type: "text", textContent: "bold inserted text" }],
-      } as any,
+    const element = createInsElement({}, [
+      createElementNode("strong", [createTextNode("bold inserted text")]),
     ]);
     const config = InsConverter.toFigmaNode(element);
     expect(config.content).toBe("bold inserted text");
@@ -80,24 +78,17 @@ describe("InsConverter.toFigmaNode", () => {
   });
 
   it("should handle complex text content", () => {
-    const element = InsElement.create({}, [
-      { type: "text", textContent: "This is " } as any,
-      {
-        type: "element",
-        tagName: "em",
-        attributes: {},
-        children: [{ type: "text", textContent: "emphasized" }],
-      } as any,
-      { type: "text", textContent: " inserted text" } as any,
+    const element = createInsElement({}, [
+      createTextNode("This is "),
+      createElementNode("em", [createTextNode("emphasized")]),
+      createTextNode(" inserted text"),
     ]);
     const config = InsConverter.toFigmaNode(element);
     expect(config.content).toBe("This is emphasized inserted text");
   });
 
   it("should handle special characters in text", () => {
-    const element = InsElement.create({}, [
-      { type: "text", textContent: "<>&\"'" } as any,
-    ]);
+    const element = createInsElement({}, [createTextNode("<>&\"'")]);
     const config = InsConverter.toFigmaNode(element);
     expect(config).toBeDefined();
     expect(config.content).toBe("<>&\"'");
@@ -105,29 +96,17 @@ describe("InsConverter.toFigmaNode", () => {
 
   it("should handle very long text content", () => {
     const longText = "a".repeat(1000);
-    const element = InsElement.create({}, [
-      { type: "text", textContent: longText } as any,
-    ]);
+    const element = createInsElement({}, [createTextNode(longText)]);
     const config = InsConverter.toFigmaNode(element);
     expect(config).toBeDefined();
     expect(config.content).toBe(longText);
   });
 
   it("should handle deeply nested elements", () => {
-    const element = InsElement.create({}, [
-      {
-        type: "element",
-        tagName: "span",
-        attributes: {},
-        children: [
-          {
-            type: "element",
-            tagName: "strong",
-            attributes: {},
-            children: [{ type: "text", textContent: "deeply nested" }],
-          },
-        ],
-      } as any,
+    const element = createInsElement({}, [
+      createElementNode("span", [
+        createElementNode("strong", [createTextNode("deeply nested")]),
+      ]),
     ]);
     const config = InsConverter.toFigmaNode(element);
     expect(config).toBeDefined();
@@ -135,12 +114,7 @@ describe("InsConverter.toFigmaNode", () => {
   });
 
   it("should handle undefined attributes", () => {
-    const element: any = {
-      type: "element",
-      tagName: "ins",
-      attributes: undefined,
-      children: [],
-    };
+    const element = createInsElement(undefined, []);
     const config = InsConverter.toFigmaNode(element);
     expect(config).toBeDefined();
     expect(config.type).toBe("TEXT");

@@ -62,8 +62,6 @@ export const InsConverter = {
       name: nodeName,
       content: textContent,
       style: textStyle,
-      layoutMode: "NONE",
-      layoutSizingHorizontal: "FIXED",
     };
 
     return config;

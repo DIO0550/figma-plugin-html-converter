@@ -1,207 +1,191 @@
-import { describe, it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { applyTextStyles } from "./text-style-applier";
 import type { TextStyle } from "../../../models/figma-node";
 
-describe("applyTextStyles", () => {
-  const createBaseStyle = (): TextStyle => ({
-    fontFamily: "Inter",
-    fontSize: 16,
-    fontWeight: 400,
-    lineHeight: {
-      unit: "PIXELS",
-      value: 24,
-    },
-    letterSpacing: 0,
-    textAlign: "LEFT",
-    verticalAlign: "TOP",
-  });
+const createBaseStyle = (): TextStyle => ({
+  fontFamily: "Inter",
+  fontSize: 16,
+  fontWeight: 400,
+  lineHeight: {
+    unit: "PIXELS",
+    value: 24,
+  },
+  letterSpacing: 0,
+  textAlign: "LEFT",
+  verticalAlign: "TOP",
+});
 
-  describe("font-size", () => {
-    it("should apply font-size from styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "font-size": "18px" };
+test("applyTextStyles() - font-sizeをスタイルから適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "font-size": "18px" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontSize).toBe(18);
-    });
+  expect(result.fontSize).toBe(18);
+});
 
-    it("should keep original fontSize if not specified", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {};
+test("applyTextStyles() - font-sizeが指定されていない場合は元のfontSizeを保持する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {};
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontSize).toBe(16);
-    });
-  });
+  expect(result.fontSize).toBe(16);
+});
 
-  describe("font-weight", () => {
-    it("should apply font-weight from styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "font-weight": "700" };
+test("applyTextStyles() - font-weightをスタイルから適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "font-weight": "700" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontWeight).toBe(700);
-    });
+  expect(result.fontWeight).toBe(700);
+});
 
-    it("should keep original fontWeight if not specified", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {};
+test("applyTextStyles() - font-weightが指定されていない場合は元のfontWeightを保持する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {};
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontWeight).toBe(400);
-    });
-  });
+  expect(result.fontWeight).toBe(400);
+});
 
-  describe("font-style", () => {
-    it("should apply font-style italic from styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "font-style": "italic" };
+test("applyTextStyles() - font-style italicをスタイルから適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "font-style": "italic" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontStyle).toBe("italic");
-    });
+  expect(result.fontStyle).toBe("italic");
+});
 
-    it("should not modify fontStyle if not specified", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {};
+test("applyTextStyles() - font-styleが指定されていない場合はfontStyleを変更しない", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {};
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontStyle).toBeUndefined();
-    });
-  });
+  expect(result.fontStyle).toBeUndefined();
+});
 
-  describe("font-family", () => {
-    it("should apply font-family from styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "font-family": "Arial" };
+test("applyTextStyles() - font-familyをスタイルから適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "font-family": "Arial" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontFamily).toBe("Arial");
-    });
+  expect(result.fontFamily).toBe("Arial");
+});
 
-    it("should keep original fontFamily if not specified", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {};
+test("applyTextStyles() - font-familyが指定されていない場合は元のfontFamilyを保持する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {};
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontFamily).toBe("Inter");
-    });
-  });
+  expect(result.fontFamily).toBe("Inter");
+});
 
-  describe("color", () => {
-    it("should apply color from RGB styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { color: "rgb(255, 0, 0)" };
+test("applyTextStyles() - RGBスタイルからcolorを適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { color: "rgb(255, 0, 0)" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fills).toBeDefined();
-      expect(result.fills?.[0].color.r).toBe(1);
-      expect(result.fills?.[0].color.g).toBe(0);
-      expect(result.fills?.[0].color.b).toBe(0);
-    });
+  expect(result.fills).toBeDefined();
+  expect(result.fills?.[0].color.r).toBe(1);
+  expect(result.fills?.[0].color.g).toBe(0);
+  expect(result.fills?.[0].color.b).toBe(0);
+});
 
-    it("should apply color from hex styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { color: "#0000FF" };
+test("applyTextStyles() - HEXスタイルからcolorを適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { color: "#0000FF" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fills).toBeDefined();
-      expect(result.fills?.[0].color.r).toBe(0);
-      expect(result.fills?.[0].color.g).toBe(0);
-      expect(result.fills?.[0].color.b).toBe(1);
-    });
+  expect(result.fills).toBeDefined();
+  expect(result.fills?.[0].color.r).toBe(0);
+  expect(result.fills?.[0].color.g).toBe(0);
+  expect(result.fills?.[0].color.b).toBe(1);
+});
 
-    it("should not modify fills if color not specified", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {};
+test("applyTextStyles() - colorが指定されていない場合はfillsを変更しない", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {};
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fills).toBeUndefined();
-    });
-  });
+  expect(result.fills).toBeUndefined();
+});
 
-  describe("text-decoration", () => {
-    it("should apply underline text-decoration", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "text-decoration": "underline" };
+test("applyTextStyles() - underline text-decorationを適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "text-decoration": "underline" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.textDecoration).toBe("UNDERLINE");
-    });
+  expect(result.textDecoration).toBe("UNDERLINE");
+});
 
-    it("should apply line-through text-decoration", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "text-decoration": "line-through" };
+test("applyTextStyles() - line-through text-decorationを適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "text-decoration": "line-through" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.textDecoration).toBe("STRIKETHROUGH");
-    });
+  expect(result.textDecoration).toBe("STRIKETHROUGH");
+});
 
-    it("should remove text-decoration if set to none", () => {
-      const baseStyle: TextStyle = {
-        ...createBaseStyle(),
-        textDecoration: "UNDERLINE",
-      };
-      const styles = { "text-decoration": "none" };
+test("applyTextStyles() - noneに設定するとtext-decorationを削除する", () => {
+  const baseStyle: TextStyle = {
+    ...createBaseStyle(),
+    textDecoration: "UNDERLINE",
+  };
+  const styles = { "text-decoration": "none" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.textDecoration).toBeUndefined();
-    });
+  expect(result.textDecoration).toBeUndefined();
+});
 
-    it("should not modify textDecoration if not specified", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {};
+test("applyTextStyles() - text-decorationが指定されていない場合はtextDecorationを変更しない", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {};
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.textDecoration).toBeUndefined();
-    });
-  });
+  expect(result.textDecoration).toBeUndefined();
+});
 
-  describe("multiple properties", () => {
-    it("should apply multiple style properties", () => {
-      const baseStyle = createBaseStyle();
-      const styles = {
-        "font-size": "20px",
-        "font-weight": "600",
-        color: "rgb(0, 255, 0)",
-        "text-decoration": "underline",
-      };
+test("applyTextStyles() - 複数のスタイルプロパティを適用する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = {
+    "font-size": "20px",
+    "font-weight": "600",
+    color: "rgb(0, 255, 0)",
+    "text-decoration": "underline",
+  };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontSize).toBe(20);
-      expect(result.fontWeight).toBe(600);
-      expect(result.fills?.[0].color.g).toBe(1);
-      expect(result.textDecoration).toBe("UNDERLINE");
-    });
+  expect(result.fontSize).toBe(20);
+  expect(result.fontWeight).toBe(600);
+  expect(result.fills?.[0].color.g).toBe(1);
+  expect(result.textDecoration).toBe("UNDERLINE");
+});
 
-    it("should preserve base style properties not in styles", () => {
-      const baseStyle = createBaseStyle();
-      const styles = { "font-size": "18px" };
+test("applyTextStyles() - スタイルにない基本スタイルプロパティを保持する", () => {
+  const baseStyle = createBaseStyle();
+  const styles = { "font-size": "18px" };
 
-      const result = applyTextStyles(baseStyle, styles);
+  const result = applyTextStyles(baseStyle, styles);
 
-      expect(result.fontFamily).toBe("Inter");
-      expect(result.fontWeight).toBe(400);
-      expect(result.lineHeight).toEqual({
-        unit: "PIXELS",
-        value: 24,
-      });
-    });
+  expect(result.fontFamily).toBe("Inter");
+  expect(result.fontWeight).toBe(400);
+  expect(result.lineHeight).toEqual({
+    unit: "PIXELS",
+    value: 24,
   });
 });

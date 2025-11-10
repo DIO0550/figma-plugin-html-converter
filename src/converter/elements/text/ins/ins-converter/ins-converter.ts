@@ -4,7 +4,7 @@ import {
   TextStyle,
 } from "../../../../models/figma-node";
 import { Styles } from "../../../../models/styles";
-import { AElement, type AElement as AElementType } from "../a-element";
+import { InsElement, type InsElement as InsElementType } from "../ins-element";
 import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { applyTextStyles } from "../../common/text-style-applier";
@@ -14,17 +14,22 @@ import { applyTextStyles } from "../../common/text-style-applier";
  */
 const DEFAULT_FONT_SIZE = 16; // ブラウザデフォルトフォントサイズ
 const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
-const DEFAULT_LINK_COLOR = { r: 0, g: 0.478, b: 1, a: 1 }; // 青色(#007AFF): HTML標準のリンク色
 
 /**
- * AConverterクラス
- * a要素をFigmaのTEXTノードに変換します
+ * InsConverterクラス
+ * ins要素をFigmaのTEXTノードに変換します
  */
-export const AConverter = {
+export const InsConverter = {
   /**
-   * a要素をFigmaノードに変換
+   * ins要素をFigmaノードに変換
+   *
+   * デフォルトスタイル:
+   * - text-decoration: underline
+   *
+   * @param element - 変換対象のins要素
+   * @returns Figmaノードの設定オブジェクト
    */
-  toFigmaNode(element: AElementType): TextNodeConfig {
+  toFigmaNode(element: InsElementType): TextNodeConfig {
     let textStyle: TextStyle = {
       fontFamily: "Inter",
       fontSize: DEFAULT_FONT_SIZE,
@@ -37,12 +42,6 @@ export const AConverter = {
       textAlign: "LEFT",
       verticalAlign: "TOP",
       textDecoration: "UNDERLINE",
-      fills: [
-        {
-          type: "SOLID",
-          color: DEFAULT_LINK_COLOR,
-        },
-      ],
     };
 
     if (element.attributes?.style) {
@@ -50,11 +49,7 @@ export const AConverter = {
       textStyle = applyTextStyles(textStyle, styles);
     }
 
-    const href = AElement.getHref(element);
-    const nodeName = href
-      ? `${buildNodeName(element)} [${href}]`
-      : buildNodeName(element);
-
+    const nodeName = buildNodeName(element);
     const textContent = extractTextFromElement(element);
 
     const config: TextNodeConfig = {
@@ -68,10 +63,13 @@ export const AConverter = {
   },
 
   /**
-   * 汎用的なノードをa要素としてFigmaノードにマッピング
+   * ノードをFigmaノードにマッピング
+   *
+   * @param node - マッピング対象のノード（unknown型）
+   * @returns 変換されたFigmaノード設定、または変換できない場合はnull
    */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    if (!AElement.isAElement(node)) {
+    if (!InsElement.isInsElement(node)) {
       return null;
     }
 
@@ -80,9 +78,9 @@ export const AConverter = {
 };
 
 /**
- * a要素からテキストを抽出する
+ * ins要素からテキストを抽出する
  */
-function extractTextFromElement(element: AElementType): string {
+function extractTextFromElement(element: InsElementType): string {
   if (!element.children) {
     return "";
   }

@@ -1,6 +1,10 @@
 import type { SupElement } from "../../sup-element";
 import type { HTMLNode } from "../../../../../models/html-node/html-node";
 
+// ===============================
+// 共通テストデータビルダー
+// ===============================
+
 export const createSupElement = (
   attributes?: {
     id?: string;

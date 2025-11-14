@@ -9,14 +9,28 @@ import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { applyTextStyles } from "../../common/text-style-applier";
 
-// ブラウザのデフォルトフォントサイズ（スタイル未指定時の基準値）
-const DEFAULT_FONT_SIZE = 16;
-// ブラウザのデフォルト行の高さ（スタイル未指定時の基準値）
-const DEFAULT_LINE_HEIGHT = 24;
-// 上付き文字のフォントサイズ比率（ブラウザ標準の上付き文字表示に準拠）
-const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75;
+/**
+ * デフォルトスタイル定数
+ */
+const DEFAULT_FONT_SIZE = 16; // ブラウザデフォルトフォントサイズ
+const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
+const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75; // 上付き文字のフォントサイズ比率（75%）
 
+/**
+ * SupConverterクラス
+ * sup要素をFigmaのTEXTノードに変換します
+ */
 export const SupConverter = {
+  /**
+   * sup要素をFigmaノードに変換
+   *
+   * デフォルトスタイル:
+   * - font-size: 0.75em（親フォントサイズの75% = 12px）
+   * - vertical-align: super（上付き配置）
+   *
+   * @param element - 変換対象のsup要素
+   * @returns Figmaノードの設定オブジェクト
+   */
   toFigmaNode(element: SupElementType): TextNodeConfig {
     const defaultFontSize = DEFAULT_FONT_SIZE * SUPERSCRIPT_FONT_SIZE_RATIO;
 
@@ -68,9 +82,6 @@ export const SupConverter = {
 
 /**
  * sup要素からテキストを抽出する
- *
- * @param element - テキスト抽出対象のsup要素
- * @returns 抽出されたテキスト文字列
  */
 function extractTextFromElement(element: SupElementType): string {
   if (!element.children) {

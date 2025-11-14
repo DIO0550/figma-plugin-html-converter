@@ -18,7 +18,6 @@ const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75; // 上付き文字のフォントサ�
 
 export const SupConverter = {
   toFigmaNode(element: SupElementType): TextNodeConfig {
-    // デフォルトフォントサイズを75%に縮小
     const defaultFontSize = DEFAULT_FONT_SIZE * SUPERSCRIPT_FONT_SIZE_RATIO;
 
     let textStyle: TextStyle = {

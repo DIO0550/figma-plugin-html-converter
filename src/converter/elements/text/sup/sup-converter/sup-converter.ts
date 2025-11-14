@@ -9,8 +9,11 @@ import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { applyTextStyles } from "../../common/text-style-applier";
 
+// ブラウザのデフォルトフォントサイズ（スタイル未指定時の基準値）
 const DEFAULT_FONT_SIZE = 16;
+// ブラウザのデフォルト行の高さ（スタイル未指定時の基準値）
 const DEFAULT_LINE_HEIGHT = 24;
+// 上付き文字のフォントサイズ比率（ブラウザ標準の上付き文字表示に準拠）
 const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75;
 
 export const SupConverter = {

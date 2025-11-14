@@ -26,7 +26,9 @@ export const SupConverter = {
    *
    * デフォルトスタイル:
    * - font-size: 0.75em（親フォントサイズの75% = 12px）
-   * - vertical-align: super（上付き配置）
+   *
+   * 注意: vertical-align: superはFigmaの制約により直接実装できないため、
+   * フォントサイズ縮小により上付き文字の視覚的効果を実現しています。
    *
    * @param element - 変換対象のsup要素
    * @returns Figmaノードの設定オブジェクト

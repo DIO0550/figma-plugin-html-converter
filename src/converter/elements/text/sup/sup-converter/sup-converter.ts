@@ -17,16 +17,6 @@ const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
 const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75; // 上付き文字のフォントサイズ比率（75%）
 
 export const SupConverter = {
-  /**
-   * sup要素をFigmaノードに変換
-   *
-   * デフォルトスタイル:
-   * - font-size: 0.75em（親フォントサイズの75% = 12px）
-   * - vertical-align: super（上付き配置）
-   *
-   * @param element - 変換対象のsup要素
-   * @returns Figmaノードの設定オブジェクト
-   */
   toFigmaNode(element: SupElementType): TextNodeConfig {
     // デフォルトフォントサイズを75%に縮小
     const defaultFontSize = DEFAULT_FONT_SIZE * SUPERSCRIPT_FONT_SIZE_RATIO;

@@ -17,7 +17,7 @@ const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
 const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75; // 上付き文字のフォントサイズ比率（75%）
 
 /**
- * SupConverterクラス
+ * SupConverterコンパニオンオブジェクト
  * sup要素をFigmaのTEXTノードに変換します
  */
 export const SupConverter = {

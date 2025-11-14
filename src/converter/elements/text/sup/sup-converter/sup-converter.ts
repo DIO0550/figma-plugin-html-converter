@@ -9,12 +9,9 @@ import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { applyTextStyles } from "../../common/text-style-applier";
 
-/**
- * デフォルトスタイル定数
- */
-const DEFAULT_FONT_SIZE = 16; // ブラウザデフォルトフォントサイズ
-const DEFAULT_LINE_HEIGHT = 24; // デフォルト行の高さ
-const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75; // 上付き文字のフォントサイズ比率（75%）
+const DEFAULT_FONT_SIZE = 16;
+const DEFAULT_LINE_HEIGHT = 24;
+const SUPERSCRIPT_FONT_SIZE_RATIO = 0.75;
 
 export const SupConverter = {
   toFigmaNode(element: SupElementType): TextNodeConfig {

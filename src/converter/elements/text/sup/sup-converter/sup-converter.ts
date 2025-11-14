@@ -63,6 +63,12 @@ export const SupConverter = {
   },
 };
 
+/**
+ * sup要素からテキストを抽出する
+ *
+ * @param element - テキスト抽出対象のsup要素
+ * @returns 抽出されたテキスト文字列
+ */
 function extractTextFromElement(element: SupElementType): string {
   if (!element.children) {
     return "";

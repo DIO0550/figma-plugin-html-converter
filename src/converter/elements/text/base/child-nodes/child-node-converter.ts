@@ -7,6 +7,10 @@ import { EmChildNode } from "./em-node";
 import { BChildNode } from "./b-node";
 import { IChildNode } from "./i-node";
 import { CodeChildNode } from "./code-child-node";
+import { DelChildNode } from "./del-child-node";
+import { InsChildNode } from "./ins-child-node";
+import { SubChildNode } from "./sub-child-node";
+import { SupChildNode } from "./sup-child-node";
 import { OtherChildNode } from "./other-node";
 
 /**
@@ -41,6 +45,14 @@ export const ChildNodeConverter = {
         return ItalicChildNode.from(content, styles);
       case "code":
         return CodeChildNode.from(content, styles);
+      case "del":
+        return DelChildNode.from(content, styles);
+      case "ins":
+        return InsChildNode.from(content, styles);
+      case "sub":
+        return SubChildNode.from(content, styles);
+      case "sup":
+        return SupChildNode.from(content, styles);
       default:
         return OtherChildNode.from(lowerTagName, content, styles);
     }
@@ -67,6 +79,14 @@ export const ChildNodeConverter = {
         return IChildNode.toFigmaNode(node, context);
       case "code":
         return CodeChildNode.toFigmaNode(node, context);
+      case "del":
+        return DelChildNode.toFigmaNode(node, context);
+      case "ins":
+        return InsChildNode.toFigmaNode(node, context);
+      case "sub":
+        return SubChildNode.toFigmaNode(node, context);
+      case "sup":
+        return SupChildNode.toFigmaNode(node, context);
       case "other":
         return OtherChildNode.toFigmaNode(node, context);
       default: {

@@ -8,7 +8,7 @@ import { parseStyles } from "./utils";
  * 上付き文字（sup要素）を表現
  *
  * @remarks
- * sup要素はフォントサイズ75%、vertical-align: superscriptの
+ * sup要素はフォントサイズ75%、vertical-align: superの
  * デフォルトスタイルが適用されます。
  *
  * 注意: vertical-align: superはFigmaの制約により直接実装できないため、

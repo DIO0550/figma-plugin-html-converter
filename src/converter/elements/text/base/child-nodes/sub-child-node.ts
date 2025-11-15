@@ -8,8 +8,11 @@ import { parseStyles } from "./utils";
  * 下付き文字（sub要素）を表現
  *
  * @remarks
- * sub要素はフォントサイズ75%、vertical-align: subscriptの
+ * sub要素はフォントサイズ75%、vertical-align: subの
  * デフォルトスタイルが適用されます。
+ *
+ * 注意: vertical-align: subはFigmaの制約により直接実装できないため、
+ * フォントサイズ縮小により下付き文字の視覚的効果を実現しています。
  */
 export type SubChildNode = BaseChildNode & {
   kind: "sub";
@@ -62,7 +65,10 @@ export const SubChildNode = {
    * @remarks
    * デフォルトスタイル:
    * - font-size: 0.75em (親の75%)
-   * - vertical-align: subscript
+   * - vertical-align: sub
+   *
+   * 注意: vertical-align: subはFigmaの制約により直接実装できないため、
+   * フォントサイズ縮小により下付き文字の視覚的効果を実現しています。
    *
    * @example
    * ```typescript

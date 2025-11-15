@@ -6,6 +6,7 @@ import { LineHeight } from "./line-height/line-height";
 import { TextAlign } from "./text-align/text-align";
 import { TextColor } from "./text-color/text-color";
 import { FontFamily } from "./font-family/font-family";
+import { TextDecoration } from "../decoration/text-decoration/text-decoration";
 
 /**
  * Typographyのコンパニオンオブジェクト
@@ -66,7 +67,11 @@ export const Typography = {
       : withFontStyle;
 
     // テキストカラーを適用（要素タグに関わらずデフォルトなし）
-    const finalConfig = TextColor.applyToConfig(withFontFamily, styles);
+    const withTextColor = TextColor.applyToConfig(withFontFamily, styles);
+
+    // テキスト装飾を適用（存在時のみ）
+    const decoration = TextDecoration.extractStyle(styles);
+    const finalConfig = TextDecoration.applyToConfig(withTextColor, decoration);
 
     return finalConfig;
   },

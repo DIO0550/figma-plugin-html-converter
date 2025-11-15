@@ -61,7 +61,7 @@ export const InsChildNode = {
    *
    * @remarks
    * デフォルトスタイル:
-   * - textDecoration: "UNDERLINE" (下線)
+   * - text-decoration: underline (下線)
    *
    * @example
    * ```typescript

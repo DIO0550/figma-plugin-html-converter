@@ -61,7 +61,7 @@ export const DelChildNode = {
    *
    * @remarks
    * デフォルトスタイル:
-   * - textDecoration: "STRIKETHROUGH" (取り消し線)
+   * - text-decoration: line-through (取り消し線)
    *
    * @example
    * ```typescript

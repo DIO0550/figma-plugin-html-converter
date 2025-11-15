@@ -14,6 +14,10 @@ export * from "./em-node";
 export * from "./b-node";
 export * from "./i-node";
 export * from "./code-child-node";
+export * from "./del-child-node";
+export * from "./ins-child-node";
+export * from "./sub-child-node";
+export * from "./sup-child-node";
 export * from "./other-node";
 
 // 統合コンバーター
@@ -28,6 +32,10 @@ import type { EmChildNode } from "./em-node";
 import type { BChildNode } from "./b-node";
 import type { IChildNode } from "./i-node";
 import type { CodeChildNode } from "./code-child-node";
+import type { DelChildNode } from "./del-child-node";
+import type { InsChildNode } from "./ins-child-node";
+import type { SubChildNode } from "./sub-child-node";
+import type { SupChildNode } from "./sup-child-node";
 import type { OtherChildNode } from "./other-node";
 
 /**
@@ -42,4 +50,8 @@ export type ChildNode =
   | BChildNode
   | IChildNode
   | CodeChildNode
+  | DelChildNode
+  | InsChildNode
+  | SubChildNode
+  | SupChildNode
   | OtherChildNode;

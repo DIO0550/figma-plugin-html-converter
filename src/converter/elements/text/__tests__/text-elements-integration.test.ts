@@ -6,6 +6,9 @@ import { SupElement, SupConverter } from "../sup";
 import { PElement, PConverter } from "../p";
 import type { HTMLNode } from "../../../models/html-node";
 
+// テスト用定数
+const DEFAULT_FONT_SIZE = 16; // ブラウザのデフォルトフォントサイズ
+
 // 化学式のテストケース
 test("H₂Oの化学式をp要素内のsub要素で正しく表現できる", () => {
   const h2oElement = PElement.create({}, [
@@ -34,7 +37,7 @@ test("H₂Oの化学式をp要素内のsub要素で正しく表現できる", ()
     type: "TEXT",
     content: "2",
   });
-  expect(figmaNode.children![1].style.fontSize).toBeLessThan(16); // デフォルトより小さい
+  expect(figmaNode.children![1].style.fontSize).toBeLessThan(DEFAULT_FONT_SIZE);
 
   // O
   expect(figmaNode.children![2]).toMatchObject({
@@ -106,7 +109,7 @@ test("x² + y² = r²の円の方程式をp要素内のsup要素で正しく表�
     type: "TEXT",
     content: "2",
   });
-  expect(figmaNode.children![1].style.fontSize).toBeLessThan(16); // デフォルトより小さい
+  expect(figmaNode.children![1].style.fontSize).toBeLessThan(DEFAULT_FONT_SIZE);
 });
 
 test("E = mc²のアインシュタインの方程式をp要素内のsup要素で正しく表現できる", () => {
@@ -254,7 +257,7 @@ test("脚注付き価格変更をp要素内でsup/del/ins要素を組み合わ�
     type: "TEXT",
     content: "1",
   });
-  expect(figmaNode.children![1].style.fontSize).toBeLessThan(16);
+  expect(figmaNode.children![1].style.fontSize).toBeLessThan(DEFAULT_FONT_SIZE);
 
   // :
   expect(figmaNode.children![2]).toMatchObject({
@@ -316,7 +319,7 @@ test("sub要素とsup要素を同時に使用した複合パターンを正し�
     type: "TEXT",
     content: "2",
   });
-  expect(figmaNode.children![1].style.fontSize).toBeLessThan(16);
+  expect(figmaNode.children![1].style.fontSize).toBeLessThan(DEFAULT_FONT_SIZE);
 
   // O と x
   expect(figmaNode.children![2]).toMatchObject({
@@ -329,7 +332,7 @@ test("sub要素とsup要素を同時に使用した複合パターンを正し�
     type: "TEXT",
     content: "2",
   });
-  expect(figmaNode.children![3].style.fontSize).toBeLessThan(16);
+  expect(figmaNode.children![3].style.fontSize).toBeLessThan(DEFAULT_FONT_SIZE);
 });
 
 test("del/ins/sub/sup要素を全て使用した完全な複合パターンを正しく表現できる", () => {
@@ -391,7 +394,7 @@ test("del/ins/sub/sup要素を全て使用した完全な複合パターンを�
     type: "TEXT",
     content: "*",
   });
-  expect(figmaNode.children![4].style.fontSize).toBeLessThan(16);
+  expect(figmaNode.children![4].style.fontSize).toBeLessThan(DEFAULT_FONT_SIZE);
 });
 
 // 親要素との組み合わせテスト

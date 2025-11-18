@@ -47,7 +47,7 @@ export const ThElement = {
     return {
       type: "element",
       tagName: "th",
-      attributes: { ...attributes } as ThAttributes,
+      attributes: attributes as ThAttributes,
       children: [],
     };
   },

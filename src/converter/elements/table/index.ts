@@ -1,2 +1,2 @@
 export { TdElement } from "./td";
-export type { TdElementType, TdAttributes } from "./td";
+export type { TdAttributes } from "./td";

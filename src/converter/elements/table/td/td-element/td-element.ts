@@ -16,14 +16,6 @@ export interface TdElement extends BaseElement<"td", TdAttributes> {
  * TdElementコンパニオンオブジェクト
  */
 export const TdElement = {
-  /**
-   * TdElement型ガード
-   *
-   * 与えられたオブジェクトがTdElementかどうかを判定します。
-   *
-   * @param node - 判定対象のオブジェクト
-   * @returns TdElementの場合true、それ以外はfalse
-   */
   isTdElement(node: unknown): node is TdElement {
     return (
       typeof node === "object" &&
@@ -35,14 +27,6 @@ export const TdElement = {
     );
   },
 
-  /**
-   * TdElementファクトリメソッド
-   *
-   * 新しいTdElementインスタンスを作成します。
-   *
-   * @param attributes - td要素の属性（省略可）
-   * @returns 新しいTdElement
-   */
   create(attributes: Partial<TdAttributes> = {}): TdElement {
     return {
       type: "element",
@@ -52,15 +36,6 @@ export const TdElement = {
     };
   },
 
-  /**
-   * TdElementをFigmaNodeConfigに変換
-   *
-   * td要素をFigma FrameNodeに変換します。
-   * スタイル属性（border、background-color、padding、width、height）が適用されます。
-   *
-   * @param element - 変換対象のTdElement
-   * @returns 変換されたFigmaNodeConfig
-   */
   toFigmaNode(element: TdElement): FigmaNodeConfig {
     return toFigmaNodeWith(
       element,
@@ -78,12 +53,6 @@ export const TdElement = {
     );
   },
 
-  /**
-   * unknown型のノードをTdElementに変換し、FigmaNodeConfigにマッピング
-   *
-   * @param node - 変換対象のノード
-   * @returns FigmaNodeConfig または null
-   */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     return mapToFigmaWith(
       node,

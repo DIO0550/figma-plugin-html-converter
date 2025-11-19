@@ -2,7 +2,6 @@ import { test, expect } from "vitest";
 import { ThElement } from "../th-element";
 import type { ThElement as ThElementType } from "../th-element";
 
-// mapToFigmaメソッドのテスト
 test("ThElement型の要素を正しく変換できる", () => {
   const element: ThElementType = {
     type: "element",
@@ -32,7 +31,6 @@ test("HTMLNode互換の構造から変換できる", () => {
   expect(node?.name).toBe("th-row");
 });
 
-// test.eachを使用した無効な要素のテスト
 test.each([
   { type: "element", tagName: "td", attributes: {} },
   { type: "text", tagName: "th", attributes: {} },

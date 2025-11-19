@@ -2,7 +2,6 @@ import { test, expect } from "vitest";
 import { ThElement } from "../th-element";
 import type { ThAttributes } from "../../th-attributes";
 
-// ファクトリメソッドのテスト
 test("空の属性でth要素を作成できる", () => {
   const element = ThElement.create();
 
@@ -30,7 +29,6 @@ test("abbr属性を指定してth要素を作成できる", () => {
   expect(element.attributes.abbr).toBe("Full Name");
 });
 
-// test.eachを使用した複数属性のテスト
 test.each([
   { scope: "col", width: "100px", abbr: "Name" },
   { scope: "row", colspan: "2", rowspan: "1" },

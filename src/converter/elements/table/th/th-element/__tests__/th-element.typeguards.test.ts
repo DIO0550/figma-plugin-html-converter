@@ -1,7 +1,6 @@
 import { test, expect } from "vitest";
 import { ThElement } from "../th-element";
 
-// 型ガードのテスト（フラット構造）
 test("有効なth要素を正しく判定できる", () => {
   const element = {
     type: "element",
@@ -46,7 +45,6 @@ test("tagNameがthでない場合はfalseを返す", () => {
   expect(ThElement.isThElement(element)).toBe(false);
 });
 
-// test.eachを使用したパラメータ化テスト
 test.each([
   [null, false],
   [undefined, false],

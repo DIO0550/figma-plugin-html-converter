@@ -1,7 +1,6 @@
 import { test, expect } from "vitest";
 import { ThElement } from "../th-element";
 
-// 基本的な変換テスト
 test("基本的なFrameノードを作成できる", () => {
   const element = ThElement.create();
   const node = ThElement.toFigmaNode(element);
@@ -10,7 +9,6 @@ test("基本的なFrameノードを作成できる", () => {
   expect(node.name).toBe("th");
 });
 
-// scope属性によるノード名のテスト
 test("scope='col'の場合、ノード名はth-colになる", () => {
   const element = ThElement.create({ scope: "col" });
   const node = ThElement.toFigmaNode(element);
@@ -39,7 +37,6 @@ test("scope='rowgroup'の場合、ノード名はth-rowgroupになる", () => {
   expect(node.name).toBe("th-rowgroup");
 });
 
-// ID属性が優先されるテスト
 test("ID属性がある場合、ノード名に反映される", () => {
   const element = ThElement.create({
     scope: "col",
@@ -60,7 +57,6 @@ test("class属性の最初のクラス名がノード名に反映される", () 
   expect(node.name).toBe("th.header-cell");
 });
 
-// test.eachを使用したノード名のパラメータ化テスト
 test.each([
   [{}, "th"],
   [{ scope: "col" }, "th-col"],

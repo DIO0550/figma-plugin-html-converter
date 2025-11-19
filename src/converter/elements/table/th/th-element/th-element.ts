@@ -56,7 +56,7 @@ export const ThElement = {
    * ThElementをFigmaNodeConfigに変換
    *
    * th要素をFigma FrameNodeに変換します。
-   * デフォルトスタイル（太字、中央揃え）とユーザー指定のスタイルを適用します。
+   * scope属性に基づくノード命名とHTML属性からのスタイル適用を行います。
    *
    * @param element - 変換対象のThElement
    * @returns 変換されたFigmaNodeConfig

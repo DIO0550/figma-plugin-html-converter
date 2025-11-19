@@ -55,6 +55,7 @@ describe("ThElement Integration Tests", () => {
 
       expect(figmaNode).toBeDefined();
       expect(figmaNode.type).toBe("FRAME");
+      expect(figmaNode.width).toBe(100);
     });
 
     it("height属性を持つth要素を変換できる", () => {
@@ -65,6 +66,7 @@ describe("ThElement Integration Tests", () => {
       const figmaNode = ThElement.toFigmaNode(element);
 
       expect(figmaNode).toBeDefined();
+      expect(figmaNode.height).toBe(50);
     });
 
     it("背景色を持つth要素を変換できる", () => {
@@ -75,6 +77,8 @@ describe("ThElement Integration Tests", () => {
 
       expect(figmaNode).toBeDefined();
       expect(figmaNode.fills).toBeDefined();
+      expect(Array.isArray(figmaNode.fills)).toBe(true);
+      expect(figmaNode.fills?.length).toBeGreaterThan(0);
     });
 
     it("ボーダーを持つth要素を変換できる", () => {
@@ -84,6 +88,8 @@ describe("ThElement Integration Tests", () => {
       const figmaNode = ThElement.toFigmaNode(element);
 
       expect(figmaNode).toBeDefined();
+      expect(figmaNode.strokes).toBeDefined();
+      expect(figmaNode.strokeWeight).toBeDefined();
     });
 
     it("パディングを持つth要素を変換できる", () => {
@@ -93,6 +99,10 @@ describe("ThElement Integration Tests", () => {
       const figmaNode = ThElement.toFigmaNode(element);
 
       expect(figmaNode).toBeDefined();
+      expect(figmaNode.paddingLeft).toBe(10);
+      expect(figmaNode.paddingRight).toBe(10);
+      expect(figmaNode.paddingTop).toBe(10);
+      expect(figmaNode.paddingBottom).toBe(10);
     });
   });
 

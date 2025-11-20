@@ -9,7 +9,7 @@ import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
  * BaseElementを継承した専用の型
  */
 export interface ThElement extends BaseElement<"th", ThAttributes> {
-  children: ThElement[] | [];
+  children?: ThElement[];
 }
 
 /**

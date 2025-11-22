@@ -34,6 +34,9 @@ RUN apt-get update && apt-get install -y \
     fonts-noto-cjk \
     ripgrep \
     vim \
+    python3 \
+    python3-pip \
+    python3-venv \
     && locale-gen ja_JP.UTF-8 \
     && update-locale LANG=ja_JP.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
@@ -70,11 +73,18 @@ RUN chmod +x /usr/local/bin/github-mcp-server \
 USER node
 WORKDIR /home/node
 
+# Install uv (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # Install Claude Code CLI
 # RUN npm install -g @anthropic-ai/claude-code
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
-ENV PATH="/home/node/.local/bin:${PATH}"
+# Update PATH to include uv and claude
+ENV PATH="/home/node/.local/bin:/home/node/.cargo/bin:${PATH}"
+
+# Install specify-cli using uv
+RUN uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
 # Set up workspace
 WORKDIR /workspace

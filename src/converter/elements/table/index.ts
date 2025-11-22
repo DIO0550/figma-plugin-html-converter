@@ -1,3 +1,5 @@
+export { TableElement } from "./table-element";
+export type { TableAttributes } from "./table-attributes";
 export { TdElement } from "./td";
 export type { TdAttributes } from "./td";
 export { ThElement } from "./th";

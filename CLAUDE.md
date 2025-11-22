@@ -352,3 +352,11 @@ Memories contain important project context, conventions, and guidelines that hel
 
 The context and modes of operation are described below. From them you can infer how to interact with your user
 and which tasks and kinds of interactions are expected of you.
+
+## Active Technologies
+- TypeScript 5.4.3 (strict mode有効) (149-tr-element-implementation)
+- N/A (Figmaプラグイン、ローカルストレージのみ) (149-tr-element-implementation)
+- TypeScript 5.4.3 (strict mode有効) + Figma Plugin API、Vitest 3.2.4 (150-table-element-implementation)
+
+## Recent Changes
+- 149-tr-element-implementation: Added TypeScript 5.4.3 (strict mode有効)

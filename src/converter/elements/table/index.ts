@@ -4,5 +4,7 @@ export { TdElement } from "./td";
 export type { TdAttributes } from "./td";
 export { ThElement } from "./th";
 export type { ThAttributes } from "./th";
+export { TheadElement } from "./thead";
+export type { TheadAttributes } from "./thead";
 export { TrElement } from "./tr";
 export type { TrAttributes } from "./tr";

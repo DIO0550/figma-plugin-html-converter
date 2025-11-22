@@ -7,21 +7,43 @@ import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
  * thead要素の型定義
- * BaseElementを継承した専用の型
+ *
+ * テーブルのヘッダーセクションを表すHTML要素です。
+ * Figma FrameNodeに変換され、子要素のtr要素を縦方向に配置します。
+ * thead要素は通常、th要素を含むtr要素を子要素として持ちます。
+ *
+ * @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/thead
  */
 export interface TheadElement extends BaseElement<"thead", TheadAttributes> {
+  /**
+   * 子要素（行要素の配列）
+   *
+   * thead要素はtr要素のみを直接の子として持ちます。
+   */
   children: TrElement[];
 }
 
 /**
  * TheadElementコンパニオンオブジェクト
+ *
+ * TheadElementの生成、検証、Figma変換を提供します。
  */
 export const TheadElement = {
   /**
    * TheadElement型ガード
    *
+   * 与えられたオブジェクトがTheadElement型であるかを判定します。
+   *
    * @param node - 判定対象のオブジェクト
    * @returns TheadElementであればtrue
+   *
+   * @example
+   * ```typescript
+   * const thead = TheadElement.create();
+   * if (TheadElement.isTheadElement(thead)) {
+   *   // theadはTheadElement型として扱える
+   * }
+   * ```
    */
   isTheadElement(node: unknown): node is TheadElement {
     return (
@@ -37,8 +59,20 @@ export const TheadElement = {
   /**
    * TheadElement生成
    *
+   * 新しいTheadElementオブジェクトを生成します。
+   * 属性は省略可能で、省略時は空のオブジェクトとして扱われます。
+   *
    * @param attributes - thead要素の属性（オプショナル）
    * @returns 新しいTheadElementオブジェクト
+   *
+   * @example
+   * ```typescript
+   * // デフォルト値で作成
+   * const thead = TheadElement.create();
+   *
+   * // id属性付きで作成
+   * const theadWithId = TheadElement.create({ id: "table-header" });
+   * ```
    */
   create(attributes: Partial<TheadAttributes> = {}): TheadElement {
     return {

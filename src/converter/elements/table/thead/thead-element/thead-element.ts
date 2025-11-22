@@ -1,6 +1,7 @@
 import { FigmaNodeConfig, FigmaNode } from "../../../../models/figma-node";
 import type { TheadAttributes } from "../thead-attributes";
 import type { BaseElement } from "../../../base/base-element";
+import type { TrElement } from "../../tr";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
@@ -9,7 +10,7 @@ import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
  * BaseElementを継承した専用の型
  */
 export interface TheadElement extends BaseElement<"thead", TheadAttributes> {
-  children: TheadElement[] | [];
+  children: TrElement[];
 }
 
 /**

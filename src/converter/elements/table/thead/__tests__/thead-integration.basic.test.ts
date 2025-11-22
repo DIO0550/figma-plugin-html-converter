@@ -31,7 +31,7 @@ test("thead要素がclassName属性を持つ場合、正しく変換される", 
 
 test("thead要素に1行のtr要素が含まれる", () => {
   const tr = TrElement.create();
-  const thead: typeof TheadElement.prototype = {
+  const thead: TheadElement = {
     type: "element",
     tagName: "thead",
     attributes: {},

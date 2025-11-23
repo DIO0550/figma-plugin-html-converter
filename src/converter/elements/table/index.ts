@@ -4,6 +4,8 @@ export { TbodyElement } from "./tbody";
 export type { TbodyAttributes } from "./tbody";
 export { TdElement } from "./td";
 export type { TdAttributes } from "./td";
+export { TfootElement } from "./tfoot";
+export type { TfootAttributes } from "./tfoot";
 export { ThElement } from "./th";
 export type { ThAttributes } from "./th";
 export { TheadElement } from "./thead";

@@ -41,14 +41,11 @@ import type { TbodyAttributes } from "../tbody";
 import type { TfootAttributes } from "../tfoot";
 import type { FigmaNodeConfig } from "../../../models/figma-node/config/figma-node-config";
 
-/**
- * ヘルパー関数: 3つのセクション要素を作成してFigmaノードに変換
- *
- * @param theadAttrs - thead要素の属性
- * @param tbodyAttrs - tbody要素の属性
- * @param tfootAttrs - tfoot要素の属性
- * @returns 変換後のFigmaノード設定
- */
+// テストで期待される値の定数
+const EXPECTED_LAYOUT_MODE = "VERTICAL" as const;
+const EXPECTED_NODE_TYPE = "FRAME" as const;
+
+// 繰り返しパターンを共通化し、テストコードの冗長性を削減するためのヘルパー
 function createAndConvertSections(
   theadAttrs: Partial<TheadAttributes> = {},
   tbodyAttrs: Partial<TbodyAttributes> = {},
@@ -86,9 +83,9 @@ test("TableSections - thead/tbody/tfootのいずれもFRAME型ノードとして
   const { theadConfig, tbodyConfig, tfootConfig } = createAndConvertSections();
 
   // Assert
-  expect(theadConfig.type).toBe("FRAME");
-  expect(tbodyConfig.type).toBe("FRAME");
-  expect(tfootConfig.type).toBe("FRAME");
+  expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 });
 
 // セクションごとの異なるスタイル適用
@@ -116,9 +113,9 @@ test("TableSections - className属性を持つセクションも正しくFRAME�
   );
 
   // Assert - className属性があってもFigma変換が正しく行われる
-  expect(theadConfig.type).toBe("FRAME");
-  expect(tbodyConfig.type).toBe("FRAME");
-  expect(tfootConfig.type).toBe("FRAME");
+  expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 
   // 基本的な名前は変わらない
   expect(theadConfig.name).toBe("thead");
@@ -140,9 +137,9 @@ test("TableSections - 異なる属性（id, className）を持つセクション
   expect(tfootConfig.name).toBe("tfoot#footer");
 
   // 全て正しくFRAMEとして変換される
-  expect(theadConfig.type).toBe("FRAME");
-  expect(tbodyConfig.type).toBe("FRAME");
-  expect(tfootConfig.type).toBe("FRAME");
+  expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 });
 
 // セクションの省略パターン
@@ -155,60 +152,66 @@ test("TableSections - tbody単体で変換しても、他セクションに依�
   const config = TbodyElement.toFigmaNode(tbody);
 
   // Assert
-  expect(config.type).toBe("FRAME");
+  expect(config.type).toBe(EXPECTED_NODE_TYPE);
   expect(config.name).toBe("tbody");
-  expect(config.layoutMode).toBe("VERTICAL");
+  expect(config.layoutMode).toBe(EXPECTED_LAYOUT_MODE);
 });
 
-test("TableSections - thead + tbody の組み合わせで両方が正しくFRAME変換される", () => {
-  // Arrange
+test("TableSections - theadとtbodyは互いに依存せず独立してFRAME変換される", () => {
+  // Arrange: thead, tbodyを個別に生成
   const thead = TheadElement.create();
   const tbody = TbodyElement.create();
 
-  // Act
+  // Act: 各セクションを個別に変換
   const theadConfig = TheadElement.toFigmaNode(thead);
   const tbodyConfig = TbodyElement.toFigmaNode(tbody);
 
-  // Assert
+  // Assert: 互いに依存せず正しく変換されること
   expect(theadConfig.name).toBe("thead");
   expect(tbodyConfig.name).toBe("tbody");
+  expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
 
-  expect(theadConfig.type).toBe("FRAME");
-  expect(tbodyConfig.type).toBe("FRAME");
+  // theadとtbodyの変換結果が互いに影響しないこと
+  expect(theadConfig).not.toEqual(tbodyConfig);
 });
 
-test("TableSections - tbody + tfoot の組み合わせで両方が正しくFRAME変換される", () => {
-  // Arrange
+test("TableSections - tbodyとtfootは互いに依存せず独立してFRAME変換される", () => {
+  // Arrange: tbody, tfootを個別に生成
   const tbody = TbodyElement.create();
   const tfoot = TfootElement.create();
 
-  // Act
+  // Act: 各セクションを個別に変換
   const tbodyConfig = TbodyElement.toFigmaNode(tbody);
   const tfootConfig = TfootElement.toFigmaNode(tfoot);
 
-  // Assert
+  // Assert: 互いに依存せず正しく変換されること
   expect(tbodyConfig.name).toBe("tbody");
   expect(tfootConfig.name).toBe("tfoot");
+  expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 
-  expect(tbodyConfig.type).toBe("FRAME");
-  expect(tfootConfig.type).toBe("FRAME");
+  // tbodyとtfootの変換結果が互いに影響しないこと
+  expect(tbodyConfig).not.toEqual(tfootConfig);
 });
 
-test("TableSections - thead + tfoot の組み合わせで両方が正しくFRAME変換される", () => {
-  // Arrange
+test("TableSections - theadとtfootは互いに依存せず独立してFRAME変換される", () => {
+  // Arrange: thead, tfootを個別に生成
   const thead = TheadElement.create();
   const tfoot = TfootElement.create();
 
-  // Act
+  // Act: 各セクションを個別に変換
   const theadConfig = TheadElement.toFigmaNode(thead);
   const tfootConfig = TfootElement.toFigmaNode(tfoot);
 
-  // Assert
+  // Assert: 互いに依存せず正しく変換されること
   expect(theadConfig.name).toBe("thead");
   expect(tfootConfig.name).toBe("tfoot");
+  expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 
-  expect(theadConfig.type).toBe("FRAME");
-  expect(tfootConfig.type).toBe("FRAME");
+  // theadとtfootの変換結果が互いに影響しないこと
+  expect(theadConfig).not.toEqual(tfootConfig);
 });
 
 test("TableSections - thead + tbody + tfoot の完全な組み合わせで全てが正しくVERTICALレイアウトのFRAMEとして変換される", () => {
@@ -220,12 +223,12 @@ test("TableSections - thead + tbody + tfoot の完全な組み合わせで全て
   expect(tbodyConfig.name).toBe("tbody");
   expect(tfootConfig.name).toBe("tfoot");
 
-  expect(theadConfig.type).toBe("FRAME");
-  expect(tbodyConfig.type).toBe("FRAME");
-  expect(tfootConfig.type).toBe("FRAME");
+  expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
+  expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 
   // 全てのセクションが同じレイアウトモード
-  expect(theadConfig.layoutMode).toBe("VERTICAL");
-  expect(tbodyConfig.layoutMode).toBe("VERTICAL");
-  expect(tfootConfig.layoutMode).toBe("VERTICAL");
+  expect(theadConfig.layoutMode).toBe(EXPECTED_LAYOUT_MODE);
+  expect(tbodyConfig.layoutMode).toBe(EXPECTED_LAYOUT_MODE);
+  expect(tfootConfig.layoutMode).toBe(EXPECTED_LAYOUT_MODE);
 });

@@ -36,7 +36,7 @@ test("tbody要素がid、className、styleをすべて持つ場合", () => {
   expect(config.type).toBe("FRAME");
 });
 
-test("tbody要素がborderスタイルを持つ場合", () => {
+test("tbody要素がborderスタイルを持つ場合、strokesとstrokeWeightが設定される", () => {
   const tbody = TbodyElement.create({
     style: "border: 1px solid #ddd;",
   });
@@ -45,4 +45,29 @@ test("tbody要素がborderスタイルを持つ場合", () => {
 
   expect(config.type).toBe("FRAME");
   expect(config.name).toBe("tbody");
+  expect(config.strokes).toBeDefined();
+  expect(config.strokes?.length).toBeGreaterThan(0);
+  expect(config.strokeWeight).toBe(1);
+});
+
+test("tbody要素がborder-bottomスタイルを持つ場合、セクション区切りの境界線として機能する", () => {
+  const tbody = TbodyElement.create({
+    style: "border-bottom: 2px solid #000;",
+  });
+
+  const config = TbodyElement.toFigmaNode(tbody);
+
+  expect(config.type).toBe("FRAME");
+  expect(config.name).toBe("tbody");
+});
+
+test("tbody要素がborder-radiusスタイルを持つ場合、cornerRadiusが設定される", () => {
+  const tbody = TbodyElement.create({
+    style: "border: 1px solid #ddd; border-radius: 4px;",
+  });
+
+  const config = TbodyElement.toFigmaNode(tbody);
+
+  expect(config.type).toBe("FRAME");
+  expect(config.cornerRadius).toBe(4);
 });

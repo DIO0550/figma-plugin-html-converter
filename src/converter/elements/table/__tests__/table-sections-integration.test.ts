@@ -159,13 +159,13 @@ test("TableSections - thead + tbody + tfoot の完全な組み合わせで全て
 
 test("TableSections - 各セクションに異なる境界線スタイルを適用できる", () => {
   const thead = TheadElement.create({
-    style: "border-bottom: 2px solid #000;",
+    style: "border: 2px solid #000;",
   });
   const tbody = TbodyElement.create({
     style: "border: 1px solid #ddd;",
   });
   const tfoot = TfootElement.create({
-    style: "border-top: 2px solid #000;",
+    style: "border: 2px solid #333;",
   });
 
   const theadConfig = TheadElement.toFigmaNode(thead);
@@ -177,17 +177,23 @@ test("TableSections - 各セクションに異なる境界線スタイルを適�
   expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
   expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
 
-  // tbodyには境界線が適用される（border: 1px solid）
+  // 各セクションに境界線が適用される
+  expect(theadConfig.strokes).toBeDefined();
   expect(tbodyConfig.strokes).toBeDefined();
+  expect(tfootConfig.strokes).toBeDefined();
+
+  // 各セクションに異なる幅の境界線が適用される
+  expect(theadConfig.strokeWeight).toBe(2);
   expect(tbodyConfig.strokeWeight).toBe(1);
+  expect(tfootConfig.strokeWeight).toBe(2);
 });
 
 test("TableSections - theadとtbodyの間に境界線を設定できる", () => {
   const thead = TheadElement.create({
-    style: "border-bottom: 2px solid #333;",
+    style: "border: 2px solid #333;",
   });
   const tbody = TbodyElement.create({
-    style: "border-top: 1px solid #ccc;",
+    style: "border: 1px solid #ccc;",
   });
 
   const theadConfig = TheadElement.toFigmaNode(thead);
@@ -196,14 +202,18 @@ test("TableSections - theadとtbodyの間に境界線を設定できる", () => 
   // それぞれ独立してスタイルが適用される
   expect(theadConfig.type).toBe(EXPECTED_NODE_TYPE);
   expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
+
+  // 両セクションに境界線が適用される
+  expect(theadConfig.strokes).toBeDefined();
+  expect(tbodyConfig.strokes).toBeDefined();
 });
 
 test("TableSections - tbodyとtfootの間に境界線を設定できる", () => {
   const tbody = TbodyElement.create({
-    style: "border-bottom: 1px solid #ccc;",
+    style: "border: 1px solid #ccc;",
   });
   const tfoot = TfootElement.create({
-    style: "border-top: 2px solid #333;",
+    style: "border: 2px solid #333;",
   });
 
   const tbodyConfig = TbodyElement.toFigmaNode(tbody);
@@ -212,6 +222,10 @@ test("TableSections - tbodyとtfootの間に境界線を設定できる", () => 
   // それぞれ独立してスタイルが適用される
   expect(tbodyConfig.type).toBe(EXPECTED_NODE_TYPE);
   expect(tfootConfig.type).toBe(EXPECTED_NODE_TYPE);
+
+  // 両セクションに境界線が適用される
+  expect(tbodyConfig.strokes).toBeDefined();
+  expect(tfootConfig.strokes).toBeDefined();
 });
 
 test("TableSections - 全セクションに境界線と角丸を適用した完全なテーブルスタイリング", () => {

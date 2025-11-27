@@ -47,7 +47,7 @@ test("tfoot要素がborderスタイルを持つ場合、strokesとstrokeWeight�
   expect(config.type).toBe("FRAME");
   expect(config.name).toBe("tfoot");
   expect(config.strokes).toBeDefined();
-  expect(config.strokes?.length).toBeGreaterThan(0);
+  expect(config.strokes?.length).toBe(1);
   expect(config.strokeWeight).toBe(2);
 });
 
@@ -62,7 +62,7 @@ test("tfoot要素がborder-topスタイルを持つ場合、セクション区�
   expect(config.name).toBe("tfoot");
 });
 
-test("tfoot要素がborder-radiusスタイルを持つ場合、cornerRadiusが設定される", () => {
+test("tfoot要素がborder-radiusスタイルを持つ場合、cornerRadiusとstrokes/strokeWeightが設定される", () => {
   const tfoot = TfootElement.create({
     style: "border: 1px solid #ddd; border-radius: 8px;",
   });
@@ -70,5 +70,8 @@ test("tfoot要素がborder-radiusスタイルを持つ場合、cornerRadiusが�
   const config = TfootElement.toFigmaNode(tfoot);
 
   expect(config.type).toBe("FRAME");
+  expect(config.strokes).toBeDefined();
+  expect(config.strokes?.length).toBe(1);
+  expect(config.strokeWeight).toBe(1);
   expect(config.cornerRadius).toBe(8);
 });

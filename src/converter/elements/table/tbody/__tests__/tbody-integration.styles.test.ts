@@ -46,7 +46,7 @@ test("tbody要素がborderスタイルを持つ場合、strokesとstrokeWeight�
   expect(config.type).toBe("FRAME");
   expect(config.name).toBe("tbody");
   expect(config.strokes).toBeDefined();
-  expect(config.strokes?.length).toBeGreaterThan(0);
+  expect(config.strokes?.length).toBe(1);
   expect(config.strokeWeight).toBe(1);
 });
 
@@ -65,7 +65,7 @@ test("tbody要素がborder-bottomスタイルを持つ場合、セクション�
   expect(config.strokeWeight).toBe(2);
 });
 
-test("tbody要素がborder-radiusスタイルを持つ場合、cornerRadiusが設定される", () => {
+test("tbody要素がborder-radiusスタイルを持つ場合、cornerRadiusとstrokes/strokeWeightが設定される", () => {
   const tbody = TbodyElement.create({
     style: "border: 1px solid #ddd; border-radius: 4px;",
   });
@@ -73,5 +73,8 @@ test("tbody要素がborder-radiusスタイルを持つ場合、cornerRadiusが�
   const config = TbodyElement.toFigmaNode(tbody);
 
   expect(config.type).toBe("FRAME");
+  expect(config.strokes).toBeDefined();
+  expect(config.strokes?.length).toBe(1);
+  expect(config.strokeWeight).toBe(1);
   expect(config.cornerRadius).toBe(4);
 });

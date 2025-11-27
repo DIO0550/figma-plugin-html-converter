@@ -188,7 +188,7 @@ test("TableSections - 各セクションに異なる境界線スタイルを適�
   expect(tfootConfig.strokeWeight).toBe(2);
 });
 
-test("TableSections - theadとtbodyの間に境界線を設定できる", () => {
+test("TableSections - theadとtbodyがそれぞれ独立した境界線スタイルを持つことができる", () => {
   const thead = TheadElement.create({
     style: "border: 2px solid #333;",
   });
@@ -208,7 +208,7 @@ test("TableSections - theadとtbodyの間に境界線を設定できる", () => 
   expect(tbodyConfig.strokes).toBeDefined();
 });
 
-test("TableSections - tbodyとtfootの間に境界線を設定できる", () => {
+test("TableSections - tbodyとtfootがそれぞれ独立した境界線スタイルを持つことができる", () => {
   const tbody = TbodyElement.create({
     style: "border: 1px solid #ccc;",
   });
@@ -249,6 +249,11 @@ test("TableSections - 全セクションに境界線と角丸を適用した完�
   expect(theadConfig.strokes).toBeDefined();
   expect(tbodyConfig.strokes).toBeDefined();
   expect(tfootConfig.strokes).toBeDefined();
+
+  // すべてのセクションに同じ境界線幅が適用される
+  expect(theadConfig.strokeWeight).toBe(1);
+  expect(tbodyConfig.strokeWeight).toBe(1);
+  expect(tfootConfig.strokeWeight).toBe(1);
 
   // theadとtfootには角丸が適用される
   expect(theadConfig.cornerRadius).toBe(4);

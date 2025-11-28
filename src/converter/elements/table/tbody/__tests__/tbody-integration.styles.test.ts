@@ -50,9 +50,7 @@ test("tbody要素がborderスタイルを持つ場合、strokesとstrokeWeight�
   expect(config.strokeWeight).toBe(1);
 });
 
-test("tbody要素がborder-bottomスタイルを持つ場合、セクション区切りの境界線として機能する", () => {
-  // Note: Figmaでは個別方向のボーダー（border-bottom等）は直接サポートされないため、
-  // border全体を使用してセクション区切りの境界線を表現する
+test("tbody要素が異なる太さのborderスタイルを持つ場合、strokeWeightが正しく設定される", () => {
   const tbody = TbodyElement.create({
     style: "border: 2px solid #000;",
   });
@@ -62,6 +60,7 @@ test("tbody要素がborder-bottomスタイルを持つ場合、セクション�
   expect(config.type).toBe("FRAME");
   expect(config.name).toBe("tbody");
   expect(config.strokes).toBeDefined();
+  expect(config.strokes?.length).toBe(1);
   expect(config.strokeWeight).toBe(2);
 });
 

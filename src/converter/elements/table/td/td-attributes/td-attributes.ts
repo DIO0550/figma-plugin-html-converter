@@ -28,4 +28,24 @@ export interface TdAttributes extends GlobalAttributes {
    * 例: "50px", "auto"
    */
   height?: string;
+
+  /**
+   * セルが水平方向に結合する列数
+   *
+   * デフォルト: "1"
+   * 例: "2", "3"
+   *
+   * @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/td#colspan
+   */
+  colspan?: string;
+
+  /**
+   * セルが垂直方向に結合する行数
+   *
+   * デフォルト: "1"
+   * 例: "2", "3"
+   *
+   * @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/td#rowspan
+   */
+  rowspan?: string;
 }

@@ -62,4 +62,46 @@ export const TdElement = {
       this.toFigmaNode,
     );
   },
+
+  /**
+   * td要素のcolspan属性を取得する
+   *
+   * @param element - td要素
+   * @returns colspan値（デフォルト: 1）
+   *
+   * @example
+   * ```typescript
+   * const td = TdElement.create({ colspan: "2" });
+   * TdElement.getColspan(td); // => 2
+   * ```
+   */
+  getColspan(element: TdElement): number {
+    const colspan = element.attributes?.colspan;
+    if (colspan === undefined || colspan === "") {
+      return 1;
+    }
+    const parsed = parseInt(String(colspan), 10);
+    return isNaN(parsed) || parsed <= 0 ? 1 : parsed;
+  },
+
+  /**
+   * td要素のrowspan属性を取得する
+   *
+   * @param element - td要素
+   * @returns rowspan値（デフォルト: 1）
+   *
+   * @example
+   * ```typescript
+   * const td = TdElement.create({ rowspan: "3" });
+   * TdElement.getRowspan(td); // => 3
+   * ```
+   */
+  getRowspan(element: TdElement): number {
+    const rowspan = element.attributes?.rowspan;
+    if (rowspan === undefined || rowspan === "") {
+      return 1;
+    }
+    const parsed = parseInt(String(rowspan), 10);
+    return isNaN(parsed) || parsed <= 0 ? 1 : parsed;
+  },
 };

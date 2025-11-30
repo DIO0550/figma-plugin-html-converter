@@ -96,7 +96,7 @@ export function getRowspanValue(element: ElementWithRowspan): number {
  */
 export function getSpanValue(element: ElementWithSpan): number {
   const span = element.attributes?.span;
-  if (span === undefined) {
+  if (span === undefined || span === "") {
     return 1;
   }
   const parsed = typeof span === "number" ? span : parseInt(String(span), 10);

@@ -114,4 +114,8 @@ describe("getSpanValue", () => {
     expect(getSpanValue({ attributes: { span: "-1" } })).toBe(1);
     expect(getSpanValue({ attributes: { span: 0 } })).toBe(1);
   });
+
+  test("空文字の場合デフォルト1を返す", () => {
+    expect(getSpanValue({ attributes: { span: "" } })).toBe(1);
+  });
 });

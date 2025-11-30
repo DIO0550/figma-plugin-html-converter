@@ -3,6 +3,7 @@ import type { TdAttributes } from "../td-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import { getColspanValue, getRowspanValue } from "../../utils";
 
 /**
  * td要素の型定義
@@ -76,12 +77,7 @@ export const TdElement = {
    * ```
    */
   getColspan(element: TdElement): number {
-    const colspan = element.attributes?.colspan;
-    if (colspan === undefined || colspan === "") {
-      return 1;
-    }
-    const parsed = parseInt(String(colspan), 10);
-    return isNaN(parsed) || parsed <= 0 ? 1 : parsed;
+    return getColspanValue(element);
   },
 
   /**
@@ -97,11 +93,6 @@ export const TdElement = {
    * ```
    */
   getRowspan(element: TdElement): number {
-    const rowspan = element.attributes?.rowspan;
-    if (rowspan === undefined || rowspan === "") {
-      return 1;
-    }
-    const parsed = parseInt(String(rowspan), 10);
-    return isNaN(parsed) || parsed <= 0 ? 1 : parsed;
+    return getRowspanValue(element);
   },
 };

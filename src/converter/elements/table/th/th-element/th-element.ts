@@ -3,6 +3,7 @@ import type { ThAttributes } from "../th-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import { getColspanValue, getRowspanValue } from "../../utils";
 
 /**
  * th要素の型定義
@@ -79,12 +80,7 @@ export const ThElement = {
    * ```
    */
   getColspan(element: ThElement): number {
-    const colspan = element.attributes?.colspan;
-    if (colspan === undefined || colspan === "") {
-      return 1;
-    }
-    const parsed = parseInt(String(colspan), 10);
-    return isNaN(parsed) || parsed <= 0 ? 1 : parsed;
+    return getColspanValue(element);
   },
 
   /**
@@ -100,11 +96,6 @@ export const ThElement = {
    * ```
    */
   getRowspan(element: ThElement): number {
-    const rowspan = element.attributes?.rowspan;
-    if (rowspan === undefined || rowspan === "") {
-      return 1;
-    }
-    const parsed = parseInt(String(rowspan), 10);
-    return isNaN(parsed) || parsed <= 0 ? 1 : parsed;
+    return getRowspanValue(element);
   },
 };

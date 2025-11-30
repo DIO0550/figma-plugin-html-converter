@@ -6,6 +6,7 @@ import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import type { ColgroupAttributes } from "../colgroup-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { ColElement } from "../../col";
+import { getSpanValue } from "../../utils";
 
 /**
  * colgroup要素の型定義
@@ -153,12 +154,7 @@ export const ColgroupElement = {
    * @returns span値（1以上の整数）
    */
   getSpan(element: ColgroupElement): number {
-    const span = element.attributes?.span;
-    if (span === undefined) {
-      return 1;
-    }
-    const parsed = typeof span === "string" ? parseInt(span, 10) : span;
-    return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+    return getSpanValue(element);
   },
 
   /**

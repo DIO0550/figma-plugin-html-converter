@@ -60,3 +60,49 @@ test("TdAttributes - 空の属性オブジェクトを許可する", () => {
 
   expect(Object.keys(attributes).length).toBe(0);
 });
+
+test("TdAttributes - colspan 属性を受け入れる", () => {
+  const attributes: TdAttributes = {
+    colspan: "2",
+  };
+
+  expect(attributes.colspan).toBe("2");
+});
+
+test("TdAttributes - rowspan 属性を受け入れる", () => {
+  const attributes: TdAttributes = {
+    rowspan: "3",
+  };
+
+  expect(attributes.rowspan).toBe("3");
+});
+
+test("TdAttributes - colspan と rowspan の両方を受け入れる", () => {
+  const attributes: TdAttributes = {
+    colspan: "2",
+    rowspan: "3",
+  };
+
+  expect(attributes.colspan).toBe("2");
+  expect(attributes.rowspan).toBe("3");
+});
+
+test("TdAttributes - 全ての属性（colspan/rowspan含む）を同時に受け入れる", () => {
+  const attributes: TdAttributes = {
+    id: "merged-cell",
+    className: "highlight",
+    style: "background-color: yellow;",
+    width: "200px",
+    height: "100px",
+    colspan: "2",
+    rowspan: "2",
+  };
+
+  expect(attributes.id).toBe("merged-cell");
+  expect(attributes.className).toBe("highlight");
+  expect(attributes.style).toBe("background-color: yellow;");
+  expect(attributes.width).toBe("200px");
+  expect(attributes.height).toBe("100px");
+  expect(attributes.colspan).toBe("2");
+  expect(attributes.rowspan).toBe("2");
+});

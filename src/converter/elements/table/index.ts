@@ -1,5 +1,11 @@
 export { TableElement } from "./table-element";
 export type { TableAttributes } from "./table-attributes";
+export { CaptionElement } from "./caption";
+export type { CaptionAttributes } from "./caption";
+export { ColElement } from "./col";
+export type { ColAttributes } from "./col";
+export { ColgroupElement } from "./colgroup";
+export type { ColgroupAttributes } from "./colgroup";
 export { TbodyElement } from "./tbody";
 export type { TbodyAttributes } from "./tbody";
 export { TdElement } from "./td";

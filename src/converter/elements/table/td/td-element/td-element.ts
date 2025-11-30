@@ -3,6 +3,7 @@ import type { TdAttributes } from "../td-attributes";
 import type { BaseElement } from "../../../base/base-element";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
+import { getColspanValue, getRowspanValue } from "../../utils";
 
 /**
  * td要素の型定義
@@ -61,5 +62,37 @@ export const TdElement = {
       this.create,
       this.toFigmaNode,
     );
+  },
+
+  /**
+   * td要素のcolspan属性を取得する
+   *
+   * @param element - td要素
+   * @returns colspan値（デフォルト: 1）
+   *
+   * @example
+   * ```typescript
+   * const td = TdElement.create({ colspan: "2" });
+   * TdElement.getColspan(td); // => 2
+   * ```
+   */
+  getColspan(element: TdElement): number {
+    return getColspanValue(element);
+  },
+
+  /**
+   * td要素のrowspan属性を取得する
+   *
+   * @param element - td要素
+   * @returns rowspan値（デフォルト: 1）
+   *
+   * @example
+   * ```typescript
+   * const td = TdElement.create({ rowspan: "3" });
+   * TdElement.getRowspan(td); // => 3
+   * ```
+   */
+  getRowspan(element: TdElement): number {
+    return getRowspanValue(element);
   },
 };

@@ -1,0 +1,107 @@
+import { Colors } from "../../../models/colors";
+import { Paint, type SolidPaint } from "../../../models/paint";
+import { SvgAttributes, type SvgBaseAttributes } from "../svg-attributes";
+
+/**
+ * SVGのfill/stroke属性をFigmaのPaintに変換するユーティリティ
+ */
+export const SvgPaintUtils = {
+  /**
+   * fill属性からPaintを生成
+   * @param attributes SVG属性
+   * @returns SolidPaint または null（fill="none"の場合）
+   */
+  parseFillToPaint(attributes: SvgBaseAttributes): SolidPaint | null {
+    // fill="none" の場合
+    if (SvgAttributes.isFillNone(attributes)) {
+      return null;
+    }
+
+    const fillValue = SvgAttributes.getFill(attributes);
+
+    // fillが未定義の場合、デフォルトは黒
+    const colorString = fillValue ?? "black";
+    const color = Colors.parse(colorString);
+
+    if (!color) {
+      // パースできない場合は黒
+      return Paint.solid({ r: 0, g: 0, b: 0 });
+    }
+
+    const paint = Paint.solid(color);
+
+    // fill-opacityの適用
+    const fillOpacity = SvgAttributes.getFillOpacity(attributes);
+    if (fillOpacity !== undefined) {
+      paint.opacity = fillOpacity;
+    }
+
+    return paint;
+  },
+
+  /**
+   * stroke属性からPaintを生成
+   * @param attributes SVG属性
+   * @returns SolidPaint または null（strokeが未定義または"none"の場合）
+   */
+  parseStrokeToPaint(attributes: SvgBaseAttributes): SolidPaint | null {
+    // stroke="none" の場合
+    if (SvgAttributes.isStrokeNone(attributes)) {
+      return null;
+    }
+
+    const strokeValue = SvgAttributes.getStroke(attributes);
+
+    // strokeが未定義の場合、nullを返す（SVGのデフォルトはstrokeなし）
+    if (strokeValue === undefined) {
+      return null;
+    }
+
+    const color = Colors.parse(strokeValue);
+
+    if (!color) {
+      // パースできない場合は黒
+      return Paint.solid({ r: 0, g: 0, b: 0 });
+    }
+
+    const paint = Paint.solid(color);
+
+    // stroke-opacityの適用
+    const strokeOpacity = SvgAttributes.getStrokeOpacity(attributes);
+    if (strokeOpacity !== undefined) {
+      paint.opacity = strokeOpacity;
+    }
+
+    return paint;
+  },
+
+  /**
+   * stroke-widthの値を取得
+   * @param attributes SVG属性
+   * @returns ストロークの太さ（デフォルト: 1）
+   */
+  getStrokeWeight(attributes: SvgBaseAttributes): number {
+    const strokeWidth = SvgAttributes.getStrokeWidth(attributes);
+    return strokeWidth ?? 1;
+  },
+
+  /**
+   * fillからFigmaのfills配列を生成
+   * @param attributes SVG属性
+   * @returns Paint配列
+   */
+  createFills(attributes: SvgBaseAttributes): SolidPaint[] {
+    const paint = this.parseFillToPaint(attributes);
+    return paint ? [paint] : [];
+  },
+
+  /**
+   * strokeからFigmaのstrokes配列を生成
+   * @param attributes SVG属性
+   * @returns Paint配列
+   */
+  createStrokes(attributes: SvgBaseAttributes): SolidPaint[] {
+    const paint = this.parseStrokeToPaint(attributes);
+    return paint ? [paint] : [];
+  },
+};

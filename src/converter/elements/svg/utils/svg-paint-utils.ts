@@ -113,7 +113,11 @@ export const SvgPaintUtils = {
     return paint ? [paint] : [];
   },
 
-  // fill/strokeをFigmaNodeConfigに一括適用
+  /**
+   * fill/strokeをFigmaNodeConfigに一括適用
+   * @param config 適用先のFigmaノード設定
+   * @param attributes SVG属性
+   */
   applyPaintToNode(
     config: FigmaNodeConfig,
     attributes: SvgBaseAttributes,

@@ -94,9 +94,9 @@ export const EllipseElement = {
     config.width = bounds.width;
     config.height = bounds.height;
 
-    // 楕円形にするためにcornerRadiusを設定
-    // Figmaでは完全な楕円は表現できないが、角丸を最大にすることで近似
-    // 小さい方の半径を使用して角丸を設定
+    // FigmaのRECTANGLEノードでは、cornerRadiusで円形にはできるが楕円（rx ≠ ry）は正確に再現できません
+    // そのため、SVG楕円要素（ellipse）の近似として、半径の小さい方をcornerRadiusに設定し「円形に近い角丸矩形」として表現します
+    // 注意: rx ≠ ry の場合、Figma上では本来の楕円形状にはなりません（円形の近似のみ）
     const cornerRadius = Math.min(rx, ry);
     config.cornerRadius = cornerRadius;
 

@@ -77,8 +77,13 @@ export const LineElement = {
     return SvgCoordinateUtils.parseNumericAttribute(element.attributes.y2, 0);
   },
 
-  // 意図: FigmaにはLINEノードがないため、FRAMEで線を表現
-  // line要素は常にstrokeで描画され、fillは持たない
+  /**
+   * LineElementをFigmaのFRAMEノードに変換
+   * FigmaにはLINEノードがないため、FRAMEで線を表現
+   * line要素は常にstrokeで描画され、fillは持たない
+   * @param element 変換するLine要素
+   * @returns FigmaノードConfig
+   */
   toFigmaNode(element: LineElement): FigmaNodeConfig {
     const x1 = this.getX1(element);
     const y1 = this.getY1(element);

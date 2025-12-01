@@ -3,6 +3,13 @@ import { Paint, type SolidPaint } from "../../../models/paint";
 import { SvgAttributes, type SvgBaseAttributes } from "../svg-attributes";
 
 /**
+ * SVG仕様に基づくデフォルト値
+ */
+const DEFAULT_FILL_COLOR = "black";
+const DEFAULT_STROKE_WIDTH = 1;
+const DEFAULT_FALLBACK_COLOR = { r: 0, g: 0, b: 0 };
+
+/**
  * SVGのfill/stroke属性をFigmaのPaintに変換するユーティリティ
  */
 export const SvgPaintUtils = {
@@ -20,12 +27,12 @@ export const SvgPaintUtils = {
     const fillValue = SvgAttributes.getFill(attributes);
 
     // fillが未定義の場合、デフォルトは黒
-    const colorString = fillValue ?? "black";
+    const colorString = fillValue ?? DEFAULT_FILL_COLOR;
     const color = Colors.parse(colorString);
 
     if (!color) {
       // パースできない場合は黒
-      return Paint.solid({ r: 0, g: 0, b: 0 });
+      return Paint.solid(DEFAULT_FALLBACK_COLOR);
     }
 
     const paint = Paint.solid(color);
@@ -61,7 +68,7 @@ export const SvgPaintUtils = {
 
     if (!color) {
       // パースできない場合は黒
-      return Paint.solid({ r: 0, g: 0, b: 0 });
+      return Paint.solid(DEFAULT_FALLBACK_COLOR);
     }
 
     const paint = Paint.solid(color);
@@ -82,7 +89,7 @@ export const SvgPaintUtils = {
    */
   getStrokeWeight(attributes: SvgBaseAttributes): number {
     const strokeWidth = SvgAttributes.getStrokeWidth(attributes);
-    return strokeWidth ?? 1;
+    return strokeWidth ?? DEFAULT_STROKE_WIDTH;
   },
 
   /**

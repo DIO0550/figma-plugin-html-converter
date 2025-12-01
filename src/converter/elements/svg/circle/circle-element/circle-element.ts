@@ -65,7 +65,12 @@ export const CircleElement = {
     return SvgCoordinateUtils.parseNumericAttribute(element.attributes.r, 0);
   },
 
-  // 意図: FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで円形を表現
+  /**
+   * CircleElementをFigmaのRECTANGLEノードに変換
+   * FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで円形を表現
+   * @param element 変換するCircle要素
+   * @returns FigmaノードConfig
+   */
   toFigmaNode(element: CircleElement): FigmaNodeConfig {
     const cx = this.getCx(element);
     const cy = this.getCy(element);

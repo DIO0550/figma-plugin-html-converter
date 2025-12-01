@@ -1,43 +1,65 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { RectElement } from "../rect-element";
 
-describe("RectElement.isRectElement", () => {
-  test("正常なRectElementを判定する", () => {
-    const element = RectElement.create({
-      x: 10,
-      y: 20,
-      width: 100,
-      height: 50,
-    });
-
-    expect(RectElement.isRectElement(element)).toBe(true);
+// RectElement.isRectElement
+test("RectElement.isRectElement - 正常なRectElement - trueを返す", () => {
+  // Arrange
+  const element = RectElement.create({
+    x: 10,
+    y: 20,
+    width: 100,
+    height: 50,
   });
 
-  test("nullを不正と判定する", () => {
-    expect(RectElement.isRectElement(null)).toBe(false);
-  });
+  // Act
+  const result = RectElement.isRectElement(element);
 
-  test("undefinedを不正と判定する", () => {
-    expect(RectElement.isRectElement(undefined)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(true);
+});
 
-  test("異なるタグ名の要素を不正と判定する", () => {
-    const element = {
-      type: "element",
-      tagName: "circle",
-      attributes: {},
-    };
+test("RectElement.isRectElement - null - falseを返す", () => {
+  // Arrange & Act
+  const result = RectElement.isRectElement(null);
 
-    expect(RectElement.isRectElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
 
-  test("異なるtypeの要素を不正と判定する", () => {
-    const element = {
-      type: "text",
-      tagName: "rect",
-      attributes: {},
-    };
+test("RectElement.isRectElement - undefined - falseを返す", () => {
+  // Arrange & Act
+  const result = RectElement.isRectElement(undefined);
 
-    expect(RectElement.isRectElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("RectElement.isRectElement - 異なるタグ名の要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "element",
+    tagName: "circle",
+    attributes: {},
+  };
+
+  // Act
+  const result = RectElement.isRectElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("RectElement.isRectElement - 異なるtypeの要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "text",
+    tagName: "rect",
+    attributes: {},
+  };
+
+  // Act
+  const result = RectElement.isRectElement(element);
+
+  // Assert
+  expect(result).toBe(false);
 });

@@ -1,66 +1,78 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { LineElement } from "../line-element";
 
-describe("LineElement.mapToFigma", () => {
-  test("正常なLineElementオブジェクトをマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "line",
-      attributes: {
-        x1: "10",
-        y1: "20",
-        x2: "100",
-        y2: "80",
-      },
-    };
+// LineElement.mapToFigma
+test("LineElement.mapToFigma - 文字列属性のLineElementオブジェクト - FigmaNodeConfigを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "line",
+    attributes: {
+      x1: "10",
+      y1: "20",
+      x2: "100",
+      y2: "80",
+    },
+  };
 
-    const config = LineElement.mapToFigma(node);
+  // Act
+  const config = LineElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.name).toBe("line");
-    expect(config?.type).toBe("FRAME");
-  });
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.name).toBe("line");
+  expect(config?.type).toBe("FRAME");
+});
 
-  test("HTMLNodeライクな構造をマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "line",
-      attributes: {
-        x1: 10,
-        y1: 20,
-        x2: 100,
-        y2: 80,
-        stroke: "#ff0000",
-      },
-    };
+test("LineElement.mapToFigma - 数値属性のHTMLNodeライクな構造 - FigmaNodeConfigを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "line",
+    attributes: {
+      x1: 10,
+      y1: 20,
+      x2: 100,
+      y2: 80,
+      stroke: "#ff0000",
+    },
+  };
 
-    const config = LineElement.mapToFigma(node);
+  // Act
+  const config = LineElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.strokes?.length).toBe(1);
-  });
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.strokes?.length).toBe(1);
+});
 
-  test("異なるタグ名の場合nullを返す", () => {
-    const node = {
-      type: "element",
-      tagName: "circle",
-      attributes: {},
-    };
+test("LineElement.mapToFigma - 異なるタグ名 - nullを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "circle",
+    attributes: {},
+  };
 
-    const config = LineElement.mapToFigma(node);
+  // Act
+  const config = LineElement.mapToFigma(node);
 
-    expect(config).toBeNull();
-  });
+  // Assert
+  expect(config).toBeNull();
+});
 
-  test("nullの場合nullを返す", () => {
-    const config = LineElement.mapToFigma(null);
+test("LineElement.mapToFigma - null - nullを返す", () => {
+  // Arrange & Act
+  const config = LineElement.mapToFigma(null);
 
-    expect(config).toBeNull();
-  });
+  // Assert
+  expect(config).toBeNull();
+});
 
-  test("undefinedの場合nullを返す", () => {
-    const config = LineElement.mapToFigma(undefined);
+test("LineElement.mapToFigma - undefined - nullを返す", () => {
+  // Arrange & Act
+  const config = LineElement.mapToFigma(undefined);
 
-    expect(config).toBeNull();
-  });
+  // Assert
+  expect(config).toBeNull();
 });

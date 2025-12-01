@@ -1,78 +1,93 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { CircleElement } from "../circle-element";
 
-describe("CircleElement.mapToFigma", () => {
-  test("正常なCircleElementオブジェクトをマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "circle",
-      attributes: {
-        cx: "50",
-        cy: "50",
-        r: "25",
-      },
-    };
+// CircleElement.mapToFigma
+test("CircleElement.mapToFigma - 文字列属性のCircleElementオブジェクト - FigmaNodeConfigを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "circle",
+    attributes: {
+      cx: "50",
+      cy: "50",
+      r: "25",
+    },
+  };
 
-    const config = CircleElement.mapToFigma(node);
+  // Act
+  const config = CircleElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.name).toBe("circle");
-    expect(config?.type).toBe("RECTANGLE");
-  });
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.name).toBe("circle");
+  expect(config?.type).toBe("RECTANGLE");
+});
 
-  test("HTMLNodeライクな構造をマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "circle",
-      attributes: {
-        cx: 100,
-        cy: 100,
-        r: 50,
-        fill: "#ff0000",
-      },
-    };
+test("CircleElement.mapToFigma - 数値属性のHTMLNodeライクな構造 - FigmaNodeConfigを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "circle",
+    attributes: {
+      cx: 100,
+      cy: 100,
+      r: 50,
+      fill: "#ff0000",
+    },
+  };
 
-    const config = CircleElement.mapToFigma(node);
+  // Act
+  const config = CircleElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.fills?.length).toBe(1);
-  });
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.fills?.length).toBe(1);
+});
 
-  test("異なるタグ名の場合nullを返す", () => {
-    const node = {
-      type: "element",
-      tagName: "rect",
-      attributes: {},
-    };
+test("CircleElement.mapToFigma - 異なるタグ名 - nullを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "rect",
+    attributes: {},
+  };
 
-    const config = CircleElement.mapToFigma(node);
+  // Act
+  const config = CircleElement.mapToFigma(node);
 
-    expect(config).toBeNull();
-  });
+  // Assert
+  expect(config).toBeNull();
+});
 
-  test("nullの場合nullを返す", () => {
-    const config = CircleElement.mapToFigma(null);
+test("CircleElement.mapToFigma - null - nullを返す", () => {
+  // Arrange & Act
+  const config = CircleElement.mapToFigma(null);
 
-    expect(config).toBeNull();
-  });
+  // Assert
+  expect(config).toBeNull();
+});
 
-  test("undefinedの場合nullを返す", () => {
-    const config = CircleElement.mapToFigma(undefined);
+test("CircleElement.mapToFigma - undefined - nullを返す", () => {
+  // Arrange & Act
+  const config = CircleElement.mapToFigma(undefined);
 
-    expect(config).toBeNull();
-  });
+  // Assert
+  expect(config).toBeNull();
+});
 
-  test("属性がないノードをマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "circle",
-      attributes: {},
-    };
+test("CircleElement.mapToFigma - 属性がないノード - デフォルト値でFigmaNodeConfigを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "circle",
+    attributes: {},
+  };
 
-    const config = CircleElement.mapToFigma(node);
+  // Act
+  const config = CircleElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.x).toBe(0);
-    expect(config?.y).toBe(0);
-  });
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.x).toBe(0);
+  expect(config?.y).toBe(0);
 });

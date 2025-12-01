@@ -1,48 +1,75 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { CircleElement } from "../circle-element";
 
-describe("CircleElement.isCircleElement", () => {
-  test("正常なCircleElementを判定する", () => {
-    const element = CircleElement.create({ cx: 50, cy: 50, r: 25 });
+// CircleElement.isCircleElement
+test("CircleElement.isCircleElement - 正常なCircleElement - trueを返す", () => {
+  // Arrange
+  const element = CircleElement.create({ cx: 50, cy: 50, r: 25 });
 
-    expect(CircleElement.isCircleElement(element)).toBe(true);
-  });
+  // Act
+  const result = CircleElement.isCircleElement(element);
 
-  test("nullを不正と判定する", () => {
-    expect(CircleElement.isCircleElement(null)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(true);
+});
 
-  test("undefinedを不正と判定する", () => {
-    expect(CircleElement.isCircleElement(undefined)).toBe(false);
-  });
+test("CircleElement.isCircleElement - null - falseを返す", () => {
+  // Arrange & Act
+  const result = CircleElement.isCircleElement(null);
 
-  test("異なるタグ名の要素を不正と判定する", () => {
-    const element = {
-      type: "element",
-      tagName: "rect",
-      attributes: {},
-    };
+  // Assert
+  expect(result).toBe(false);
+});
 
-    expect(CircleElement.isCircleElement(element)).toBe(false);
-  });
+test("CircleElement.isCircleElement - undefined - falseを返す", () => {
+  // Arrange & Act
+  const result = CircleElement.isCircleElement(undefined);
 
-  test("異なるtypeの要素を不正と判定する", () => {
-    const element = {
-      type: "text",
-      tagName: "circle",
-      attributes: {},
-    };
+  // Assert
+  expect(result).toBe(false);
+});
 
-    expect(CircleElement.isCircleElement(element)).toBe(false);
-  });
+test("CircleElement.isCircleElement - 異なるタグ名の要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "element",
+    tagName: "rect",
+    attributes: {},
+  };
 
-  test("プレーンオブジェクトを不正と判定する", () => {
-    const element = {
-      cx: 50,
-      cy: 50,
-      r: 25,
-    };
+  // Act
+  const result = CircleElement.isCircleElement(element);
 
-    expect(CircleElement.isCircleElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("CircleElement.isCircleElement - 異なるtypeの要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "text",
+    tagName: "circle",
+    attributes: {},
+  };
+
+  // Act
+  const result = CircleElement.isCircleElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("CircleElement.isCircleElement - プレーンオブジェクト - falseを返す", () => {
+  // Arrange
+  const element = {
+    cx: 50,
+    cy: 50,
+    r: 25,
+  };
+
+  // Act
+  const result = CircleElement.isCircleElement(element);
+
+  // Assert
+  expect(result).toBe(false);
 });

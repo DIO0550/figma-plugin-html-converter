@@ -1,43 +1,65 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { EllipseElement } from "../ellipse-element";
 
-describe("EllipseElement.isEllipseElement", () => {
-  test("正常なEllipseElementを判定する", () => {
-    const element = EllipseElement.create({
-      cx: 100,
-      cy: 50,
-      rx: 80,
-      ry: 40,
-    });
-
-    expect(EllipseElement.isEllipseElement(element)).toBe(true);
+// EllipseElement.isEllipseElement
+test("EllipseElement.isEllipseElement - 正常なEllipseElement - trueを返す", () => {
+  // Arrange
+  const element = EllipseElement.create({
+    cx: 100,
+    cy: 50,
+    rx: 80,
+    ry: 40,
   });
 
-  test("nullを不正と判定する", () => {
-    expect(EllipseElement.isEllipseElement(null)).toBe(false);
-  });
+  // Act
+  const result = EllipseElement.isEllipseElement(element);
 
-  test("undefinedを不正と判定する", () => {
-    expect(EllipseElement.isEllipseElement(undefined)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(true);
+});
 
-  test("異なるタグ名の要素を不正と判定する", () => {
-    const element = {
-      type: "element",
-      tagName: "circle",
-      attributes: {},
-    };
+test("EllipseElement.isEllipseElement - null - falseを返す", () => {
+  // Arrange & Act
+  const result = EllipseElement.isEllipseElement(null);
 
-    expect(EllipseElement.isEllipseElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
 
-  test("異なるtypeの要素を不正と判定する", () => {
-    const element = {
-      type: "text",
-      tagName: "ellipse",
-      attributes: {},
-    };
+test("EllipseElement.isEllipseElement - undefined - falseを返す", () => {
+  // Arrange & Act
+  const result = EllipseElement.isEllipseElement(undefined);
 
-    expect(EllipseElement.isEllipseElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("EllipseElement.isEllipseElement - 異なるタグ名の要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "element",
+    tagName: "circle",
+    attributes: {},
+  };
+
+  // Act
+  const result = EllipseElement.isEllipseElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("EllipseElement.isEllipseElement - 異なるtypeの要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "text",
+    tagName: "ellipse",
+    attributes: {},
+  };
+
+  // Act
+  const result = EllipseElement.isEllipseElement(element);
+
+  // Assert
+  expect(result).toBe(false);
 });

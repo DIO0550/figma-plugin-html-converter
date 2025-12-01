@@ -1,43 +1,65 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { LineElement } from "../line-element";
 
-describe("LineElement.isLineElement", () => {
-  test("正常なLineElementを判定する", () => {
-    const element = LineElement.create({
-      x1: 10,
-      y1: 20,
-      x2: 100,
-      y2: 80,
-    });
-
-    expect(LineElement.isLineElement(element)).toBe(true);
+// LineElement.isLineElement
+test("LineElement.isLineElement - 正常なLineElement - trueを返す", () => {
+  // Arrange
+  const element = LineElement.create({
+    x1: 10,
+    y1: 20,
+    x2: 100,
+    y2: 80,
   });
 
-  test("nullを不正と判定する", () => {
-    expect(LineElement.isLineElement(null)).toBe(false);
-  });
+  // Act
+  const result = LineElement.isLineElement(element);
 
-  test("undefinedを不正と判定する", () => {
-    expect(LineElement.isLineElement(undefined)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(true);
+});
 
-  test("異なるタグ名の要素を不正と判定する", () => {
-    const element = {
-      type: "element",
-      tagName: "circle",
-      attributes: {},
-    };
+test("LineElement.isLineElement - null - falseを返す", () => {
+  // Arrange & Act
+  const result = LineElement.isLineElement(null);
 
-    expect(LineElement.isLineElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
 
-  test("異なるtypeの要素を不正と判定する", () => {
-    const element = {
-      type: "text",
-      tagName: "line",
-      attributes: {},
-    };
+test("LineElement.isLineElement - undefined - falseを返す", () => {
+  // Arrange & Act
+  const result = LineElement.isLineElement(undefined);
 
-    expect(LineElement.isLineElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("LineElement.isLineElement - 異なるタグ名の要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "element",
+    tagName: "circle",
+    attributes: {},
+  };
+
+  // Act
+  const result = LineElement.isLineElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("LineElement.isLineElement - 異なるtypeの要素 - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "text",
+    tagName: "line",
+    attributes: {},
+  };
+
+  // Act
+  const result = LineElement.isLineElement(element);
+
+  // Assert
+  expect(result).toBe(false);
 });

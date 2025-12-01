@@ -7,6 +7,12 @@ import { SvgCoordinateUtils } from "../../utils/svg-coordinate-utils";
 import { SvgPaintUtils } from "../../utils/svg-paint-utils";
 
 /**
+ * SVG仕様に基づくデフォルト値
+ */
+const DEFAULT_LINE_STROKE_COLOR = { r: 0, g: 0, b: 0 };
+const DEFAULT_LINE_STROKE_WEIGHT = 1;
+
+/**
  * SVG line要素の型定義
  */
 export interface LineElement {
@@ -102,8 +108,8 @@ export const LineElement = {
       config.strokeWeight = SvgPaintUtils.getStrokeWeight(element.attributes);
     } else {
       // strokeが指定されていない場合、デフォルトで黒のストロークを設定
-      config.strokes = [Paint.solid({ r: 0, g: 0, b: 0 })];
-      config.strokeWeight = 1;
+      config.strokes = [Paint.solid(DEFAULT_LINE_STROKE_COLOR)];
+      config.strokeWeight = DEFAULT_LINE_STROKE_WEIGHT;
     }
 
     // lineはfillを持たない

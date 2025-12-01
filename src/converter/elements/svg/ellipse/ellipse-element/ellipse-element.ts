@@ -72,8 +72,13 @@ export const EllipseElement = {
     return SvgCoordinateUtils.parseNumericAttribute(element.attributes.ry, 0);
   },
 
-  // 意図: FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで楕円を近似表現
-  // 制限: rx ≠ ry の場合、Figmaでは正確な楕円にならず角丸矩形として表現される
+  /**
+   * EllipseElementをFigmaのRECTANGLEノードに変換
+   * FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで楕円を近似表現
+   * 制限: rx ≠ ry の場合、Figmaでは正確な楕円にならず角丸矩形として表現される
+   * @param element 変換するEllipse要素
+   * @returns FigmaノードConfig
+   */
   toFigmaNode(element: EllipseElement): FigmaNodeConfig {
     const cx = this.getCx(element);
     const cy = this.getCy(element);

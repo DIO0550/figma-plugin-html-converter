@@ -1,10 +1,4 @@
-/**
- * SVG座標とFigma座標の変換ユーティリティ
- */
-
-/**
- * SVG仕様に基づくデフォルト値
- */
+// SVG座標パース・境界ボックス計算ユーティリティ
 const DEFAULT_COORDINATE_VALUE = 0;
 
 /**

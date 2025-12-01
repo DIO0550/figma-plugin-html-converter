@@ -3,6 +3,11 @@
  */
 
 /**
+ * SVG仕様に基づくデフォルト値
+ */
+const DEFAULT_COORDINATE_VALUE = 0;
+
+/**
  * 境界ボックスの型
  */
 export interface BoundingBox {
@@ -21,7 +26,7 @@ export const SvgCoordinateUtils = {
    */
   parseNumericAttribute(
     value: string | number | undefined,
-    defaultValue: number = 0,
+    defaultValue: number = DEFAULT_COORDINATE_VALUE,
   ): number {
     if (value === undefined) {
       return defaultValue;

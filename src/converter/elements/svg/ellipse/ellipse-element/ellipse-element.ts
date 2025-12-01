@@ -72,43 +72,28 @@ export const EllipseElement = {
     return SvgCoordinateUtils.parseNumericAttribute(element.attributes.ry, 0);
   },
 
-  /**
-   * FigmaNodeConfigへの変換
-   * SVGの楕円は Figma の RECTANGLE + cornerRadius で表現
-   */
+  // 意図: FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで楕円を近似表現
+  // 制限: rx ≠ ry の場合、Figmaでは正確な楕円にならず角丸矩形として表現される
   toFigmaNode(element: EllipseElement): FigmaNodeConfig {
     const cx = this.getCx(element);
     const cy = this.getCy(element);
     const rx = this.getRx(element);
     const ry = this.getRy(element);
 
-    // 境界ボックスを計算
     const bounds = SvgCoordinateUtils.calculateEllipseBounds(cx, cy, rx, ry);
 
-    // RECTANGLEノードを作成（cornerRadiusで楕円形を表現）
     const config = FigmaNode.createRectangle("ellipse");
 
-    // 位置とサイズを設定
     config.x = bounds.x;
     config.y = bounds.y;
     config.width = bounds.width;
     config.height = bounds.height;
 
-    // FigmaのRECTANGLEノードでは、cornerRadiusで円形にはできるが楕円（rx ≠ ry）は正確に再現できません
-    // そのため、SVG楕円要素（ellipse）の近似として、半径の小さい方をcornerRadiusに設定し「円形に近い角丸矩形」として表現します
-    // 注意: rx ≠ ry の場合、Figma上では本来の楕円形状にはなりません（円形の近似のみ）
+    // 意図: 小さい方の半径を使用し、できるだけ楕円に近い形状を実現
     const cornerRadius = Math.min(rx, ry);
     config.cornerRadius = cornerRadius;
 
-    // fill を適用
-    config.fills = SvgPaintUtils.createFills(element.attributes);
-
-    // stroke を適用
-    const strokes = SvgPaintUtils.createStrokes(element.attributes);
-    if (strokes.length > 0) {
-      config.strokes = strokes;
-      config.strokeWeight = SvgPaintUtils.getStrokeWeight(element.attributes);
-    }
+    SvgPaintUtils.applyPaintToNode(config, element.attributes);
 
     return config;
   },

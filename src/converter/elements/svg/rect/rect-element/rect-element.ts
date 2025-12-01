@@ -112,30 +112,19 @@ export const RectElement = {
     const width = this.getWidth(element);
     const height = this.getHeight(element);
 
-    // RECTANGLEノードを作成
     const config = FigmaNode.createRectangle("rect");
 
-    // 位置とサイズを設定
     config.x = x;
     config.y = y;
     config.width = width;
     config.height = height;
 
-    // 角丸を設定
     const cornerRadius = this.getCornerRadius(element);
     if (cornerRadius !== undefined) {
       config.cornerRadius = cornerRadius;
     }
 
-    // fill を適用
-    config.fills = SvgPaintUtils.createFills(element.attributes);
-
-    // stroke を適用
-    const strokes = SvgPaintUtils.createStrokes(element.attributes);
-    if (strokes.length > 0) {
-      config.strokes = strokes;
-      config.strokeWeight = SvgPaintUtils.getStrokeWeight(element.attributes);
-    }
+    SvgPaintUtils.applyPaintToNode(config, element.attributes);
 
     return config;
   },

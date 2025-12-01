@@ -65,39 +65,25 @@ export const CircleElement = {
     return SvgCoordinateUtils.parseNumericAttribute(element.attributes.r, 0);
   },
 
-  /**
-   * FigmaNodeConfigへの変換
-   * SVGの円は Figma の RECTANGLE + cornerRadius で表現
-   */
+  // 意図: FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで円形を表現
   toFigmaNode(element: CircleElement): FigmaNodeConfig {
     const cx = this.getCx(element);
     const cy = this.getCy(element);
     const r = this.getR(element);
 
-    // 境界ボックスを計算
     const bounds = SvgCoordinateUtils.calculateCircleBounds(cx, cy, r);
 
-    // RECTANGLEノードを作成（cornerRadiusで円形を表現）
     const config = FigmaNode.createRectangle("circle");
 
-    // 位置とサイズを設定
     config.x = bounds.x;
     config.y = bounds.y;
     config.width = bounds.width;
     config.height = bounds.height;
 
-    // 円形にするためにcornerRadiusを半径に設定
+    // 意図: cornerRadius = 半径 で正円を実現
     config.cornerRadius = r;
 
-    // fill を適用
-    config.fills = SvgPaintUtils.createFills(element.attributes);
-
-    // stroke を適用
-    const strokes = SvgPaintUtils.createStrokes(element.attributes);
-    if (strokes.length > 0) {
-      config.strokes = strokes;
-      config.strokeWeight = SvgPaintUtils.getStrokeWeight(element.attributes);
-    }
+    SvgPaintUtils.applyPaintToNode(config, element.attributes);
 
     return config;
   },

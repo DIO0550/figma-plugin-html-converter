@@ -1,4 +1,5 @@
 import { Colors } from "../../../models/colors";
+import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { Paint, type SolidPaint } from "../../../models/paint";
 import { SvgAttributes, type SvgBaseAttributes } from "../svg-attributes";
 
@@ -110,5 +111,18 @@ export const SvgPaintUtils = {
   createStrokes(attributes: SvgBaseAttributes): SolidPaint[] {
     const paint = this.parseStrokeToPaint(attributes);
     return paint ? [paint] : [];
+  },
+
+  // fill/strokeをFigmaNodeConfigに一括適用
+  applyPaintToNode(
+    config: FigmaNodeConfig,
+    attributes: SvgBaseAttributes,
+  ): void {
+    config.fills = this.createFills(attributes);
+    const strokes = this.createStrokes(attributes);
+    if (strokes.length > 0) {
+      config.strokes = strokes;
+      config.strokeWeight = this.getStrokeWeight(attributes);
+    }
   },
 };

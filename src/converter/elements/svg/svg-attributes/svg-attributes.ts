@@ -37,6 +37,14 @@ export interface SvgPresentationAttributes {
  */
 export type SvgBaseAttributes = GlobalAttributes & SvgPresentationAttributes;
 
+// opacity値をパースして0-1の範囲に正規化するヘルパー
+function parseOpacity(value: string | number | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  const parsed = typeof value === "number" ? value : parseFloat(value);
+  if (isNaN(parsed)) return undefined;
+  return Math.max(0, Math.min(1, parsed));
+}
+
 /**
  * SvgAttributesコンパニオンオブジェクト
  */
@@ -69,33 +77,21 @@ export const SvgAttributes = {
    * opacity属性の値を取得（0-1の数値として）
    */
   getOpacity(attributes: SvgBaseAttributes): number | undefined {
-    const value = attributes.opacity;
-    if (value === undefined) return undefined;
-    const parsed = typeof value === "number" ? value : parseFloat(value);
-    if (isNaN(parsed)) return undefined;
-    return Math.max(0, Math.min(1, parsed));
+    return parseOpacity(attributes.opacity);
   },
 
   /**
    * fill-opacity属性の値を取得（0-1の数値として）
    */
   getFillOpacity(attributes: SvgBaseAttributes): number | undefined {
-    const value = attributes["fill-opacity"];
-    if (value === undefined) return undefined;
-    const parsed = typeof value === "number" ? value : parseFloat(value);
-    if (isNaN(parsed)) return undefined;
-    return Math.max(0, Math.min(1, parsed));
+    return parseOpacity(attributes["fill-opacity"]);
   },
 
   /**
    * stroke-opacity属性の値を取得（0-1の数値として）
    */
   getStrokeOpacity(attributes: SvgBaseAttributes): number | undefined {
-    const value = attributes["stroke-opacity"];
-    if (value === undefined) return undefined;
-    const parsed = typeof value === "number" ? value : parseFloat(value);
-    if (isNaN(parsed)) return undefined;
-    return Math.max(0, Math.min(1, parsed));
+    return parseOpacity(attributes["stroke-opacity"]);
   },
 
   /**

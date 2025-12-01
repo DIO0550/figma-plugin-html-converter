@@ -106,6 +106,11 @@ export const RectElement = {
     return undefined;
   },
 
+  /**
+   * RectElementをFigmaのRECTANGLEノードに変換
+   * @param element 変換するRect要素
+   * @returns FigmaノードConfig
+   */
   toFigmaNode(element: RectElement): FigmaNodeConfig {
     const x = this.getX(element);
     const y = this.getY(element);

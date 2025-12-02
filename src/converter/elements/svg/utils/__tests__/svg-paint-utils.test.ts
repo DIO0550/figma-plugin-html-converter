@@ -233,3 +233,78 @@ test("SvgPaintUtils.createStrokes - stroke属性がない - 空配列を返す",
   // Assert
   expect(strokes.length).toBe(0);
 });
+
+// SvgPaintUtils.applyPaintToNode
+test("SvgPaintUtils.applyPaintToNode - fill属性のみ - fillsを設定しstrokesは設定しない", () => {
+  // Arrange
+  const config = { name: "test", type: "RECTANGLE" as const };
+  const attributes: SvgBaseAttributes = { fill: "#ff0000" };
+
+  // Act
+  SvgPaintUtils.applyPaintToNode(config, attributes);
+
+  // Assert
+  expect(config.fills).toBeDefined();
+  expect(config.fills?.length).toBe(1);
+  expect(config.strokes).toBeUndefined();
+});
+
+test("SvgPaintUtils.applyPaintToNode - stroke属性のみ - strokesとstrokeWeightを設定する", () => {
+  // Arrange
+  const config = { name: "test", type: "RECTANGLE" as const };
+  const attributes: SvgBaseAttributes = {
+    stroke: "#00ff00",
+    "stroke-width": 3,
+  };
+
+  // Act
+  SvgPaintUtils.applyPaintToNode(config, attributes);
+
+  // Assert
+  expect(config.strokes).toBeDefined();
+  expect(config.strokes?.length).toBe(1);
+  expect(config.strokeWeight).toBe(3);
+});
+
+test("SvgPaintUtils.applyPaintToNode - fillとstroke両方 - 両方を設定する", () => {
+  // Arrange
+  const config = { name: "test", type: "RECTANGLE" as const };
+  const attributes: SvgBaseAttributes = {
+    fill: "#ff0000",
+    stroke: "#0000ff",
+    "stroke-width": 2,
+  };
+
+  // Act
+  SvgPaintUtils.applyPaintToNode(config, attributes);
+
+  // Assert
+  expect(config.fills?.length).toBe(1);
+  expect(config.strokes?.length).toBe(1);
+  expect(config.strokeWeight).toBe(2);
+});
+
+test("SvgPaintUtils.applyPaintToNode - fill='none' - fillsを空配列にする", () => {
+  // Arrange
+  const config = { name: "test", type: "RECTANGLE" as const };
+  const attributes: SvgBaseAttributes = { fill: "none" };
+
+  // Act
+  SvgPaintUtils.applyPaintToNode(config, attributes);
+
+  // Assert
+  expect(config.fills?.length).toBe(0);
+});
+
+test("SvgPaintUtils.applyPaintToNode - 属性なし - デフォルトfillを設定しstrokesは設定しない", () => {
+  // Arrange
+  const config = { name: "test", type: "RECTANGLE" as const };
+  const attributes: SvgBaseAttributes = {};
+
+  // Act
+  SvgPaintUtils.applyPaintToNode(config, attributes);
+
+  // Assert
+  expect(config.fills?.length).toBe(1); // デフォルトで黒
+  expect(config.strokes).toBeUndefined();
+});

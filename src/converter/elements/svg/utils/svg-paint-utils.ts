@@ -85,8 +85,12 @@ export const SvgPaintUtils = {
 
   /**
    * stroke-widthの値を取得
+   *
+   * stroke-width: 0 は有効な値として扱われ、0を返します。
+   * Figmaでは strokeWeight: 0 の場合、ストロークは描画されません。
+   *
    * @param attributes SVG属性
-   * @returns ストロークの太さ（デフォルト: 1）
+   * @returns ストロークの太さ（デフォルト: 1、0も有効値）
    */
   getStrokeWeight(attributes: SvgBaseAttributes): number {
     const strokeWidth = SvgAttributes.getStrokeWidth(attributes);
@@ -115,7 +119,13 @@ export const SvgPaintUtils = {
 
   /**
    * fill/strokeをFigmaNodeConfigに一括適用
-   * @param config 適用先のFigmaノード設定
+   *
+   * このメソッドは渡されたconfigオブジェクトを直接変更（ミューテート）します。
+   * これは、FigmaNodeConfigの構築パターンに合わせた設計判断であり、
+   * 各要素のtoFigmaNodeメソッド内でconfigを段階的に構築する際の
+   * コード重複を削減するためのヘルパーとして機能します。
+   *
+   * @param config 適用先のFigmaノード設定（直接変更されます）
    * @param attributes SVG属性
    */
   applyPaintToNode(

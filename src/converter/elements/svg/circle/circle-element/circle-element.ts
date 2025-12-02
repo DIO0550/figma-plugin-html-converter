@@ -67,9 +67,12 @@ export const CircleElement = {
 
   /**
    * CircleElementをFigmaのRECTANGLEノードに変換
-   * FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで円形を表現
+   *
+   * FigmaにはELLIPSEノードが存在しないため、RECTANGLE + cornerRadiusで円形を表現します。
+   * cornerRadiusを半径(r)と同じ値に設定することで、正円を実現しています。
+   *
    * @param element 変換するCircle要素
-   * @returns FigmaノードConfig
+   * @returns FigmaノードConfig（RECTANGLEタイプ、cornerRadius=r）
    */
   toFigmaNode(element: CircleElement): FigmaNodeConfig {
     const cx = this.getCx(element);
@@ -85,7 +88,6 @@ export const CircleElement = {
     config.width = bounds.width;
     config.height = bounds.height;
 
-    // 意図: cornerRadius = 半径 で正円を実現
     config.cornerRadius = r;
 
     SvgPaintUtils.applyPaintToNode(config, element.attributes);

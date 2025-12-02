@@ -96,7 +96,16 @@ export const RectElement = {
     return SvgCoordinateUtils.parseNumericAttribute(ry, 0);
   },
 
-  // 意図: Figmaは単一cornerRadiusのみサポート。SVG仕様に従いrx優先、なければryを使用
+  /**
+   * 角丸半径を取得
+   *
+   * Figmaは単一のcornerRadiusのみをサポートしているため、
+   * SVG仕様に従いrx属性を優先し、rxがなければry属性を使用します。
+   * rx≠ryの場合、Figmaでは正確な楕円角丸にならない制限があります。
+   *
+   * @param element Rect要素
+   * @returns 角丸半径（rx優先、なければry、どちらもなければundefined）
+   */
   getCornerRadius(element: RectElement): number | undefined {
     const rx = this.getRx(element);
     const ry = this.getRy(element);

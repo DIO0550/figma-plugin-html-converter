@@ -37,7 +37,16 @@ export interface SvgPresentationAttributes {
  */
 export type SvgBaseAttributes = GlobalAttributes & SvgPresentationAttributes;
 
-// opacity値をパースして0-1の範囲に正規化するヘルパー
+/**
+ * opacity値をパースして0-1の範囲に正規化するヘルパー
+ *
+ * SVGのopacity関連属性（opacity, fill-opacity, stroke-opacity）は
+ * 0〜1の範囲の数値を取りますが、範囲外の値が指定された場合も
+ * 適切にクランプして有効な値を返します。
+ *
+ * @param value パースする値（文字列、数値、またはundefined）
+ * @returns 0〜1の範囲に正規化された数値、またはundefined（無効な値の場合）
+ */
 function parseOpacity(value: string | number | undefined): number | undefined {
   if (value === undefined) return undefined;
   const parsed = typeof value === "number" ? value : parseFloat(value);

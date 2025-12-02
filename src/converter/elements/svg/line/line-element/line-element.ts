@@ -80,7 +80,8 @@ export const LineElement = {
   /**
    * LineElementをFigmaのFRAMEノードに変換
    *
-   * FigmaにはLINEノードが存在しないため、FRAMEノードで線を表現します。
+   * 設計判断: FigmaにはLINEノードが存在しますが、このコンバーターでは
+   * stroke属性の柔軟な適用とレイアウトの一貫性を保つため、FRAMEノードで線を表現します。
    * line要素はstrokeのみで描画され、fillは常に空配列となります。
    *
    * 注意: SVG仕様ではstroke未指定時は"none"（非表示）ですが、

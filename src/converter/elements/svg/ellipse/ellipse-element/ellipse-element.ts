@@ -74,8 +74,11 @@ export const EllipseElement = {
 
   /**
    * EllipseElementをFigmaのRECTANGLEノードに変換
-   * FigmaにはELLIPSEノードがないため、RECTANGLE + cornerRadiusで楕円を近似表現
-   * 制限: rx ≠ ry の場合、Figmaでは正確な楕円にならず角丸矩形として表現される
+   *
+   * 設計判断: FigmaにはELLIPSEノードが存在しますが、このコンバーターでは
+   * 他のSVG図形要素との一貫性を保つため、RECTANGLE + cornerRadiusで楕円を近似表現します。
+   * 制限: rx ≠ ry の場合、Figmaでは正確な楕円にならず角丸矩形として表現されます。
+   *
    * @param element 変換するEllipse要素
    * @returns FigmaノードConfig
    */

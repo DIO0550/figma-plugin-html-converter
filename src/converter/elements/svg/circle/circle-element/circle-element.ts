@@ -68,7 +68,8 @@ export const CircleElement = {
   /**
    * CircleElementをFigmaのRECTANGLEノードに変換
    *
-   * FigmaにはELLIPSEノードが存在しないため、RECTANGLE + cornerRadiusで円形を表現します。
+   * 設計判断: FigmaにはELLIPSEノードが存在しますが、このコンバーターでは
+   * 他のSVG図形要素との一貫性を保つため、RECTANGLE + cornerRadiusで円形を表現します。
    * cornerRadiusを半径(r)と同じ値に設定することで、正円を実現しています。
    *
    * @param element 変換するCircle要素

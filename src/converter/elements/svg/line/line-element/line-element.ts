@@ -79,10 +79,17 @@ export const LineElement = {
 
   /**
    * LineElementをFigmaのFRAMEノードに変換
-   * FigmaにはLINEノードがないため、FRAMEで線を表現
-   * line要素は常にstrokeで描画され、fillは持たない
+   *
+   * FigmaにはLINEノードが存在しないため、FRAMEノードで線を表現します。
+   * line要素はstrokeのみで描画され、fillは常に空配列となります。
+   *
+   * 注意: SVG仕様ではstroke未指定時は"none"（非表示）ですが、
+   * このコンバーターではユーザビリティを優先し、stroke未指定時に
+   * デフォルトで黒色(#000)、太さ1pxのストロークを適用します。
+   * これにより、変換後のFigma上でline要素が常に視認可能になります。
+   *
    * @param element 変換するLine要素
-   * @returns FigmaノードConfig
+   * @returns FigmaノードConfig（FRAMEタイプ）
    */
   toFigmaNode(element: LineElement): FigmaNodeConfig {
     const x1 = this.getX1(element);
@@ -99,7 +106,6 @@ export const LineElement = {
     config.width = bounds.width;
     config.height = bounds.height;
 
-    // 意図: stroke未指定時はSVG仕様に従いデフォルト黒を適用
     const strokes = SvgPaintUtils.createStrokes(element.attributes);
     if (strokes.length > 0) {
       config.strokes = strokes;

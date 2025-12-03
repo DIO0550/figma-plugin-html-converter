@@ -99,9 +99,13 @@ export const RectElement = {
   /**
    * 角丸半径を取得
    *
-   * Figmaは単一のcornerRadiusのみをサポートしているため、
-   * SVG仕様に従いrx属性を優先し、rxがなければry属性を使用します。
-   * rx≠ryの場合、Figmaでは正確な楕円角丸にならない制限があります。
+   * SVG仕様: rx/ry属性で楕円角丸を表現可能
+   * Figma制限: 単一のcornerRadiusのみサポート（楕円角丸は非対応）
+   *
+   * 対応方針:
+   * - rx属性を優先使用（SVG仕様に準拠）
+   * - rxがなければry属性を使用
+   * - rx≠ryの場合は近似となる（Figmaの制限）
    *
    * @param element Rect要素
    * @returns 角丸半径（rx優先、なければry、どちらもなければundefined）

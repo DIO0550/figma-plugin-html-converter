@@ -97,7 +97,9 @@ export const EllipseElement = {
     config.width = bounds.width;
     config.height = bounds.height;
 
-    // 意図: 小さい方の半径を使用し、できるだけ楕円に近い形状を実現
+    // 意図: Figmaは楕円角丸をサポートしないため、小さい方の半径を
+    // cornerRadiusに設定し、短軸方向の曲率を正確に維持する
+    // 長軸方向は近似になるが、完全な矩形よりは楕円に近い視覚効果を得られる
     const cornerRadius = Math.min(rx, ry);
     config.cornerRadius = cornerRadius;
 

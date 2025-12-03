@@ -30,7 +30,7 @@ export const SvgCoordinateUtils = {
       return value;
     }
 
-    // 単位を除去して数値のみを抽出
+    // parseFloatは文字列の先頭から数値をパース（例: "100px" → 100）
     const parsed = parseFloat(value);
     return isNaN(parsed) ? defaultValue : parsed;
   },

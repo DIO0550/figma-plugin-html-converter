@@ -8,7 +8,7 @@ import { SvgAttributes, type SvgBaseAttributes } from "../svg-attributes";
  */
 const DEFAULT_FILL_COLOR = "black";
 const DEFAULT_STROKE_WIDTH = 1;
-const DEFAULT_FALLBACK_COLOR = { r: 0, g: 0, b: 0 };
+const FALLBACK_COLOR = { r: 0, g: 0, b: 0 };
 
 /**
  * SVGのfill/stroke属性をFigmaのPaintに変換するユーティリティ
@@ -33,7 +33,7 @@ export const SvgPaintUtils = {
 
     if (!color) {
       // パースできない場合は黒
-      return Paint.solid(DEFAULT_FALLBACK_COLOR);
+      return Paint.solid(FALLBACK_COLOR);
     }
 
     const paint = Paint.solid(color);
@@ -69,7 +69,7 @@ export const SvgPaintUtils = {
 
     if (!color) {
       // パースできない場合は黒
-      return Paint.solid(DEFAULT_FALLBACK_COLOR);
+      return Paint.solid(FALLBACK_COLOR);
     }
 
     const paint = Paint.solid(color);

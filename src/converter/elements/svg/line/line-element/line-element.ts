@@ -6,9 +6,16 @@ import type { LineAttributes } from "../line-attributes";
 import { SvgCoordinateUtils } from "../../utils/svg-coordinate-utils";
 import { SvgPaintUtils } from "../../utils/svg-paint-utils";
 
-// SVG line要素のデフォルト値（stroke未指定時に使用）
-const DEFAULT_LINE_STROKE_COLOR = { r: 0, g: 0, b: 0 };
-const DEFAULT_LINE_STROKE_WEIGHT = 1;
+/**
+ * line要素専用のデフォルトストローク設定
+ *
+ * SVG仕様ではstroke未指定時は描画されませんが、line要素は
+ * ストロークがなければ視認できないため、ユーザビリティを優先して
+ * デフォルト値を適用します。この動作はline要素固有であり、
+ * 他のSVG図形要素（rect, circle等）には適用されません。
+ */
+const LINE_DEFAULT_STROKE_COLOR = { r: 0, g: 0, b: 0 };
+const LINE_DEFAULT_STROKE_WEIGHT = 1;
 
 /**
  * SVG line要素の型定義
@@ -112,8 +119,8 @@ export const LineElement = {
       config.strokes = strokes;
       config.strokeWeight = SvgPaintUtils.getStrokeWeight(element.attributes);
     } else {
-      config.strokes = [Paint.solid(DEFAULT_LINE_STROKE_COLOR)];
-      config.strokeWeight = DEFAULT_LINE_STROKE_WEIGHT;
+      config.strokes = [Paint.solid(LINE_DEFAULT_STROKE_COLOR)];
+      config.strokeWeight = LINE_DEFAULT_STROKE_WEIGHT;
     }
 
     config.fills = [];

@@ -4,6 +4,7 @@ import {
   RectElement,
   LineElement,
   EllipseElement,
+  PathElement,
 } from "../index";
 
 // 複数図形の同時変換
@@ -306,4 +307,96 @@ test("SVG基本図形統合テスト - rectの左上座標変換 - 座標がそ�
   expect(rectConfig.y).toBe(20);
   expect(rectConfig.width).toBe(100);
   expect(rectConfig.height).toBe(50);
+});
+
+// PathElement統合テスト
+test("SVG図形統合テスト - pathを含む全図形を変換 - 全要素が正しいノードタイプで変換される", () => {
+  // Arrange
+  const path = PathElement.create({
+    d: "M10 20 L50 80 L90 20 Z",
+    fill: "#ff0000",
+  });
+
+  const circle = CircleElement.create({
+    cx: 50,
+    cy: 50,
+    r: 25,
+    fill: "#00ff00",
+  });
+
+  // Act
+  const pathConfig = PathElement.toFigmaNode(path);
+  const circleConfig = CircleElement.toFigmaNode(circle);
+
+  // Assert
+  expect(pathConfig.name).toBe("path");
+  expect(pathConfig.type).toBe("FRAME");
+  expect(circleConfig.name).toBe("circle");
+  expect(circleConfig.type).toBe("RECTANGLE");
+});
+
+test("SVG図形統合テスト - pathにfillとstrokeを設定 - fillsとstrokesが正しく適用される", () => {
+  // Arrange
+  const path = PathElement.create({
+    d: "M0 0 L100 0 L100 50 L0 50 Z",
+    fill: "#ff5500",
+    stroke: "#0000ff",
+    "stroke-width": 2,
+  });
+
+  // Act
+  const pathConfig = PathElement.toFigmaNode(path);
+
+  // Assert
+  expect(pathConfig.fills?.length).toBe(1);
+  expect(pathConfig.strokes?.length).toBe(1);
+  expect(pathConfig.strokeWeight).toBe(2);
+});
+
+test("SVG図形統合テスト - pathのHTMLNodeライクなオブジェクトをマッピング - FigmaNodeConfigを返す", () => {
+  // Arrange
+  const pathNode = {
+    type: "element",
+    tagName: "path",
+    attributes: { d: "M0 0 L100 100", fill: "#ff0000" },
+  };
+
+  // Act & Assert
+  expect(PathElement.mapToFigma(pathNode)).not.toBeNull();
+  expect(
+    PathElement.mapToFigma({ type: "element", tagName: "rect" }),
+  ).toBeNull();
+});
+
+test("SVG図形統合テスト - pathの境界ボックス計算 - 正しい座標とサイズが設定される", () => {
+  // Arrange
+  const path = PathElement.create({
+    d: "M10 20 L90 20 L90 80 L10 80 Z",
+  });
+
+  // Act
+  const pathConfig = PathElement.toFigmaNode(path);
+
+  // Assert
+  expect(pathConfig.x).toBe(10);
+  expect(pathConfig.y).toBe(20);
+  expect(pathConfig.width).toBe(80);
+  expect(pathConfig.height).toBe(60);
+});
+
+test("SVG図形統合テスト - 複雑なパスデータ - ベジェ曲線を含むパスが変換される", () => {
+  // Arrange
+  const path = PathElement.create({
+    d: "M0 50 C25 0 75 0 100 50 C75 100 25 100 0 50",
+    fill: "#ff0000",
+  });
+
+  // Act
+  const pathConfig = PathElement.toFigmaNode(path);
+
+  // Assert
+  expect(pathConfig.type).toBe("FRAME");
+  expect(pathConfig.width).toBeGreaterThan(0);
+  expect(pathConfig.height).toBeGreaterThan(0);
+  expect(pathConfig.fills?.length).toBe(1);
 });

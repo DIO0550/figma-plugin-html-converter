@@ -1,0 +1,143 @@
+import type { FigmaNodeConfig } from "../../../../models/figma-node";
+import { FigmaNode } from "../../../../models/figma-node";
+import { Paint } from "../../../../models/paint";
+import { mapToFigmaWith } from "../../../../utils/element-utils";
+import type { LineAttributes } from "../line-attributes";
+import { SvgCoordinateUtils } from "../../utils/svg-coordinate-utils";
+import { SvgPaintUtils } from "../../utils/svg-paint-utils";
+
+/**
+ * line要素専用のデフォルトストローク設定
+ *
+ * SVG仕様ではstroke未指定時は描画されませんが、line要素は
+ * ストロークがなければ視認できないため、ユーザビリティを優先して
+ * デフォルト値を適用します。この動作はline要素固有であり、
+ * 他のSVG図形要素（rect, circle等）には適用されません。
+ */
+const LINE_DEFAULT_STROKE_COLOR = { r: 0, g: 0, b: 0 };
+const LINE_DEFAULT_STROKE_WEIGHT = 1;
+
+/**
+ * SVG line要素の型定義
+ */
+export interface LineElement {
+  type: "element";
+  tagName: "line";
+  attributes: LineAttributes;
+  children?: never;
+}
+
+/**
+ * LineElementコンパニオンオブジェクト
+ */
+export const LineElement = {
+  /**
+   * 型ガード
+   */
+  isLineElement(node: unknown): node is LineElement {
+    return (
+      typeof node === "object" &&
+      node !== null &&
+      "type" in node &&
+      "tagName" in node &&
+      node.type === "element" &&
+      node.tagName === "line"
+    );
+  },
+
+  /**
+   * ファクトリーメソッド
+   */
+  create(attributes: Partial<LineAttributes> = {}): LineElement {
+    return {
+      type: "element",
+      tagName: "line",
+      attributes: attributes as LineAttributes,
+    };
+  },
+
+  /**
+   * x1属性を数値として取得
+   */
+  getX1(element: LineElement): number {
+    return SvgCoordinateUtils.parseNumericAttribute(element.attributes.x1, 0);
+  },
+
+  /**
+   * y1属性を数値として取得
+   */
+  getY1(element: LineElement): number {
+    return SvgCoordinateUtils.parseNumericAttribute(element.attributes.y1, 0);
+  },
+
+  /**
+   * x2属性を数値として取得
+   */
+  getX2(element: LineElement): number {
+    return SvgCoordinateUtils.parseNumericAttribute(element.attributes.x2, 0);
+  },
+
+  /**
+   * y2属性を数値として取得
+   */
+  getY2(element: LineElement): number {
+    return SvgCoordinateUtils.parseNumericAttribute(element.attributes.y2, 0);
+  },
+
+  /**
+   * LineElementをFigmaのFRAMEノードに変換
+   *
+   * 設計判断: FigmaにはLINEノードが存在しますが、このコンバーターでは
+   * stroke属性の柔軟な適用とレイアウトの一貫性を保つため、FRAMEノードで線を表現します。
+   * line要素はstrokeのみで描画され、fillは常に空配列となります。
+   *
+   * 注意: SVG仕様ではstroke未指定時は"none"（非表示）ですが、
+   * このコンバーターではユーザビリティを優先し、stroke未指定時に
+   * デフォルトで黒色(#000)、太さ1pxのストロークを適用します。
+   * これにより、変換後のFigma上でline要素が常に視認可能になります。
+   *
+   * @param element 変換するLine要素
+   * @returns FigmaノードConfig（FRAMEタイプ）
+   */
+  toFigmaNode(element: LineElement): FigmaNodeConfig {
+    const x1 = this.getX1(element);
+    const y1 = this.getY1(element);
+    const x2 = this.getX2(element);
+    const y2 = this.getY2(element);
+
+    const bounds = SvgCoordinateUtils.calculateLineBounds(x1, y1, x2, y2);
+
+    const config = FigmaNode.createFrame("line");
+
+    config.x = bounds.x;
+    config.y = bounds.y;
+    config.width = bounds.width;
+    config.height = bounds.height;
+
+    const strokes = SvgPaintUtils.createStrokes(element.attributes);
+    if (strokes.length > 0) {
+      config.strokes = strokes;
+      config.strokeWeight = SvgPaintUtils.getStrokeWeight(element.attributes);
+    } else {
+      config.strokes = [Paint.solid(LINE_DEFAULT_STROKE_COLOR)];
+      config.strokeWeight = LINE_DEFAULT_STROKE_WEIGHT;
+    }
+
+    config.fills = [];
+
+    return config;
+  },
+
+  /**
+   * マッピング関数
+   */
+  mapToFigma(node: unknown): FigmaNodeConfig | null {
+    return mapToFigmaWith(
+      node,
+      "line",
+      this.isLineElement,
+      this.create,
+      (element) => this.toFigmaNode(element),
+    );
+  },
+};

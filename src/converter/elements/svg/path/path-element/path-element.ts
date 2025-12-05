@@ -99,9 +99,6 @@ export const PathElement = {
 
     let currentX = 0;
     let currentY = 0;
-    // startX, startYはClosePathコマンドで使用予定（将来の拡張用）
-    let _startX = 0;
-    let _startY = 0;
 
     const points: Array<{ x: number; y: number }> = [];
 
@@ -114,8 +111,6 @@ export const PathElement = {
           currentX = command.x;
           currentY = command.y;
         }
-        _startX = currentX;
-        _startY = currentY;
         points.push({ x: currentX, y: currentY });
       } else if (LineToCommand.isLineToCommand(command)) {
         if (command.relative) {
@@ -232,7 +227,7 @@ export const PathElement = {
         currentX = x;
         currentY = y;
       }
-      // ClosePathCommand は startX, startY に戻るだけなので points に追加不要
+      // ClosePathCommand は開始点に戻るだけなので points に追加不要
     }
 
     if (points.length === 0) {

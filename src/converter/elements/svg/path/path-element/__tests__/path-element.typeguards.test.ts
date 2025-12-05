@@ -1,55 +1,95 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { PathElement } from "../path-element";
 
-describe("PathElement.isPathElement", () => {
-  test("正常なPathElement - trueを返す", () => {
-    const element = PathElement.create({ d: "M0 0 L100 100" });
-    expect(PathElement.isPathElement(element)).toBe(true);
-  });
+test("PathElement.isPathElement - PathElement.createで作成した要素を渡す - trueを返す", () => {
+  // Arrange
+  const element = PathElement.create({ d: "M0 0 L100 100" });
 
-  test("null - falseを返す", () => {
-    expect(PathElement.isPathElement(null)).toBe(false);
-  });
+  // Act
+  const result = PathElement.isPathElement(element);
 
-  test("undefined - falseを返す", () => {
-    expect(PathElement.isPathElement(undefined)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(true);
+});
 
-  test("空オブジェクト - falseを返す", () => {
-    expect(PathElement.isPathElement({})).toBe(false);
-  });
+test("PathElement.isPathElement - nullを渡す - falseを返す", () => {
+  // Act
+  const result = PathElement.isPathElement(null);
 
-  test("異なるタグ名の要素 - falseを返す", () => {
-    const element = {
-      type: "element",
-      tagName: "rect",
-      attributes: {},
-    };
-    expect(PathElement.isPathElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
 
-  test("異なるtypeの要素 - falseを返す", () => {
-    const element = {
-      type: "text",
-      tagName: "path",
-      attributes: {},
-    };
-    expect(PathElement.isPathElement(element)).toBe(false);
-  });
+test("PathElement.isPathElement - undefinedを渡す - falseを返す", () => {
+  // Act
+  const result = PathElement.isPathElement(undefined);
 
-  test("typeがない要素 - falseを返す", () => {
-    const element = {
-      tagName: "path",
-      attributes: {},
-    };
-    expect(PathElement.isPathElement(element)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
 
-  test("tagNameがない要素 - falseを返す", () => {
-    const element = {
-      type: "element",
-      attributes: {},
-    };
-    expect(PathElement.isPathElement(element)).toBe(false);
-  });
+test("PathElement.isPathElement - 空オブジェクトを渡す - falseを返す", () => {
+  // Act
+  const result = PathElement.isPathElement({});
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("PathElement.isPathElement - tagName='rect'の要素を渡す - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "element",
+    tagName: "rect",
+    attributes: {},
+  };
+
+  // Act
+  const result = PathElement.isPathElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("PathElement.isPathElement - type='text'の要素を渡す - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "text",
+    tagName: "path",
+    attributes: {},
+  };
+
+  // Act
+  const result = PathElement.isPathElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("PathElement.isPathElement - typeプロパティがない要素を渡す - falseを返す", () => {
+  // Arrange
+  const element = {
+    tagName: "path",
+    attributes: {},
+  };
+
+  // Act
+  const result = PathElement.isPathElement(element);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("PathElement.isPathElement - tagNameプロパティがない要素を渡す - falseを返す", () => {
+  // Arrange
+  const element = {
+    type: "element",
+    attributes: {},
+  };
+
+  // Act
+  const result = PathElement.isPathElement(element);
+
+  // Assert
+  expect(result).toBe(false);
 });

@@ -225,18 +225,25 @@ test("SVG基本図形統合テスト - HTMLNodeライクなオブジェクトを
     attributes: { cx: "50", cy: "25", rx: "50", ry: "25" },
   };
 
-  // Act & Assert
-  expect(CircleElement.mapToFigma(circleNode)).not.toBeNull();
-  expect(CircleElement.mapToFigma(rectNode)).toBeNull();
+  // Act
+  const circleResult = CircleElement.mapToFigma(circleNode);
+  const circleFromRect = CircleElement.mapToFigma(rectNode);
+  const rectResult = RectElement.mapToFigma(rectNode);
+  const rectFromCircle = RectElement.mapToFigma(circleNode);
+  const lineResult = LineElement.mapToFigma(lineNode);
+  const lineFromCircle = LineElement.mapToFigma(circleNode);
+  const ellipseResult = EllipseElement.mapToFigma(ellipseNode);
+  const ellipseFromCircle = EllipseElement.mapToFigma(circleNode);
 
-  expect(RectElement.mapToFigma(rectNode)).not.toBeNull();
-  expect(RectElement.mapToFigma(circleNode)).toBeNull();
-
-  expect(LineElement.mapToFigma(lineNode)).not.toBeNull();
-  expect(LineElement.mapToFigma(circleNode)).toBeNull();
-
-  expect(EllipseElement.mapToFigma(ellipseNode)).not.toBeNull();
-  expect(EllipseElement.mapToFigma(circleNode)).toBeNull();
+  // Assert
+  expect(circleResult).not.toBeNull();
+  expect(circleFromRect).toBeNull();
+  expect(rectResult).not.toBeNull();
+  expect(rectFromCircle).toBeNull();
+  expect(lineResult).not.toBeNull();
+  expect(lineFromCircle).toBeNull();
+  expect(ellipseResult).not.toBeNull();
+  expect(ellipseFromCircle).toBeNull();
 });
 
 // 座標変換の正確性テスト
@@ -361,11 +368,16 @@ test("SVG図形統合テスト - pathのHTMLNodeライクなオブジェクト�
     attributes: { d: "M0 0 L100 100", fill: "#ff0000" },
   };
 
-  // Act & Assert
-  expect(PathElement.mapToFigma(pathNode)).not.toBeNull();
-  expect(
-    PathElement.mapToFigma({ type: "element", tagName: "rect" }),
-  ).toBeNull();
+  // Act
+  const pathResult = PathElement.mapToFigma(pathNode);
+  const pathFromRect = PathElement.mapToFigma({
+    type: "element",
+    tagName: "rect",
+  });
+
+  // Assert
+  expect(pathResult).not.toBeNull();
+  expect(pathFromRect).toBeNull();
 });
 
 test("SVG図形統合テスト - pathの境界ボックス計算 - 正しい座標とサイズが設定される", () => {

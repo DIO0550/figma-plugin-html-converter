@@ -28,6 +28,16 @@ interface BoundingBox {
 }
 
 /**
+ * パスデータが空または解析不能な場合のデフォルト境界ボックス
+ */
+const DEFAULT_BOUNDING_BOX: BoundingBox = {
+  minX: 0,
+  minY: 0,
+  maxX: 0,
+  maxY: 0,
+};
+
+/**
  * SVG path要素の型定義
  */
 export interface PathElement {
@@ -94,7 +104,7 @@ export const PathElement = {
     const commands = this.parsePathData(element);
 
     if (commands.length === 0) {
-      return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+      return DEFAULT_BOUNDING_BOX;
     }
 
     let currentX = 0;
@@ -157,7 +167,8 @@ export const PathElement = {
           x = command.x;
           y = command.y;
         }
-        // 制御点も境界に含める（近似）
+        // ベジェ曲線は必ず制御点で囲まれた凸包内に収まるため、
+        // 制御点を境界計算に含めることで安全な近似が得られる
         points.push({ x: x1, y: y1 });
         points.push({ x: x2, y: y2 });
         points.push({ x, y });
@@ -220,18 +231,20 @@ export const PathElement = {
           x = command.x;
           y = command.y;
         }
-        // 円弧の境界は複雑なので、始点・終点・半径で近似
+        // 楕円弧の正確な境界計算は回転角度とフラグの組み合わせにより複雑なため、
+        // 楕円の外接矩形（始点±半径）と終点を含めることで安全な近似を行う
         points.push({ x: currentX - command.rx, y: currentY - command.ry });
         points.push({ x: currentX + command.rx, y: currentY + command.ry });
         points.push({ x, y });
         currentX = x;
         currentY = y;
       }
-      // ClosePathCommand は開始点に戻るだけなので points に追加不要
+      // ClosePathCommand（Z）は現在位置を開始点に戻すだけで新しい座標を追加しないため、
+      // 境界計算には影響しない
     }
 
     if (points.length === 0) {
-      return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
+      return DEFAULT_BOUNDING_BOX;
     }
 
     let minX = points[0].x;

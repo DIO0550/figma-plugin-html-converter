@@ -146,12 +146,10 @@ export const PathElement = {
         }
         points.push({ x: currentX, y: currentY });
       } else if (CubicBezierCommand.isCubicBezierCommand(command)) {
-        let x1: number,
-          y1: number,
-          x2: number,
-          y2: number,
-          x: number,
-          y: number;
+        // 制御点1 (x1, y1)、制御点2 (x2, y2)、終点 (x, y)
+        let x1: number, y1: number;
+        let x2: number, y2: number;
+        let x: number, y: number;
         if (command.relative) {
           x1 = currentX + command.x1;
           y1 = currentY + command.y1;
@@ -175,7 +173,9 @@ export const PathElement = {
         currentX = x;
         currentY = y;
       } else if (SmoothCubicBezierCommand.isSmoothCubicBezierCommand(command)) {
-        let x2: number, y2: number, x: number, y: number;
+        // 制御点2 (x2, y2)、終点 (x, y) ※制御点1は前コマンドから反射
+        let x2: number, y2: number;
+        let x: number, y: number;
         if (command.relative) {
           x2 = currentX + command.x2;
           y2 = currentY + command.y2;
@@ -192,7 +192,9 @@ export const PathElement = {
         currentX = x;
         currentY = y;
       } else if (QuadraticBezierCommand.isQuadraticBezierCommand(command)) {
-        let x1: number, y1: number, x: number, y: number;
+        // 制御点 (x1, y1)、終点 (x, y)
+        let x1: number, y1: number;
+        let x: number, y: number;
         if (command.relative) {
           x1 = currentX + command.x1;
           y1 = currentY + command.y1;

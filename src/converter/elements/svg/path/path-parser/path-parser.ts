@@ -51,9 +51,6 @@ export const PathParser = {
     // コマンドセグメントを正規表現で分割
     const segments = this.splitIntoCommandSegments(trimmed);
 
-    let implicitCommand = "";
-    let implicitRelative = false;
-
     for (const segment of segments) {
       const commandChar = segment.command;
       const argsString = segment.args;
@@ -67,22 +64,9 @@ export const PathParser = {
       }
 
       const numbers = this.parseNumbers(argsString);
-      const newCommands = this.createCommands(command, numbers, isRelative, "");
+      const newCommands = this.createCommands(command, numbers, isRelative);
       commands.push(...newCommands);
-
-      // Mの後の暗黙的なLineToに対応
-      if (command === "M") {
-        implicitCommand = "L";
-        implicitRelative = isRelative;
-      } else {
-        implicitCommand = command;
-        implicitRelative = isRelative;
-      }
     }
-
-    // 暗黙的なコマンドの処理（現時点では使用しない）
-    void implicitCommand;
-    void implicitRelative;
 
     return commands;
   },
@@ -127,7 +111,6 @@ export const PathParser = {
     command: string,
     numbers: number[],
     relative: boolean,
-    _lastCommand: string,
   ): PathCommandType[] {
     const commands: PathCommandType[] = [];
 

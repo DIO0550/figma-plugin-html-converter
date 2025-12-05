@@ -73,7 +73,7 @@ export const PathParser = {
       return commands;
     }
 
-    // コマンドセグメントを正規表現で分割
+    // 複数コマンドが連結されたパスデータを個別のコマンド単位に分解
     const segments = this.splitIntoCommandSegments(trimmed);
 
     for (const segment of segments) {

@@ -45,7 +45,7 @@ interface CommandProcessResult {
 }
 
 /**
- * パスデータが空または解析不能な場合のデフォルト境界ボックス
+ * 空のパスデータでもFigmaノード作成を継続するためのデフォルト境界ボックス
  */
 const DEFAULT_BOUNDING_BOX: BoundingBox = {
   minX: 0,
@@ -312,6 +312,7 @@ export interface PathElement {
   type: "element";
   tagName: "path";
   attributes: PathAttributes;
+  /** SVG仕様によりpath要素は子要素を持たない */
   children?: never;
 }
 
@@ -364,9 +365,6 @@ export const PathElement = {
 
   /**
    * 単一のパスコマンドを処理して座標と収集した点を返す
-   *
-   * 各コマンドタイプに応じて適切なヘルパー関数に処理を委譲し、
-   * 現在座標を更新して境界計算に必要な点を収集します。
    */
   processCommand(
     command: PathCommandType,
@@ -401,8 +399,7 @@ export const PathElement = {
       return processArcCommand(command, currentX, currentY);
     }
 
-    // ClosePathCommand（Z）は現在位置を開始点に戻すだけで新しい座標を追加しないため、
-    // 境界計算には影響しない
+    // ClosePathは境界計算に影響しないため空配列を返す
     return { points: [], currentX, currentY };
   },
 
@@ -432,8 +429,7 @@ export const PathElement = {
   /**
    * パスの境界ボックスを計算
    *
-   * パスコマンドを順に処理し、全ての点を含む境界ボックスを計算します。
-   * ベジェ曲線の場合は制御点も含めて計算します（近似）。
+   * ベジェ曲線の正確な境界計算は複雑なため、制御点を含めた近似手法を採用
    */
   calculateBoundingBox(element: PathElement): BoundingBox {
     const commands = this.parsePathData(element);
@@ -459,13 +455,9 @@ export const PathElement = {
   /**
    * PathElementをFigmaのFRAMEノードに変換
    *
-   * 設計判断: FigmaのVECTORノードは複雑なvectorNetworkの設定が必要なため、
-   * このコンバーターではパスの境界ボックスを計算してFRAMEノードで表現します。
-   * これにより、パスの位置とサイズは正確に変換されますが、
-   * パスの形状自体は表現されません。将来的にVECTORノードへの変換を検討します。
-   *
-   * @param element 変換するPath要素
-   * @returns FigmaノードConfig（FRAMEタイプ）
+   * FigmaのVECTORノードは複雑なvectorNetworkの設定が必要なため、
+   * 境界ボックスを計算してFRAMEノードで表現する設計を採用。
+   * 将来的にVECTORノードへの変換を検討。
    */
   toFigmaNode(element: PathElement): FigmaNodeConfig {
     const bounds = this.calculateBoundingBox(element);

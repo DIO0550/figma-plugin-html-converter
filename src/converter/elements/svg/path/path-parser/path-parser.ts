@@ -73,7 +73,6 @@ export const PathParser = {
       return commands;
     }
 
-    // 複数コマンドが連結されたパスデータを個別のコマンド単位に分解
     const segments = this.splitIntoCommandSegments(trimmed);
 
     for (const segment of segments) {
@@ -84,7 +83,6 @@ export const PathParser = {
       const command = commandChar.toUpperCase();
       const isRelative = commandChar === commandChar.toLowerCase();
 
-      // Zコマンドはパラメータを持たないため、早期に処理して継続
       if (command === "Z") {
         commands.push(ClosePathCommand.create());
         continue;
@@ -175,9 +173,7 @@ export const PathParser = {
       case "A":
         commands.push(...this.createArcCommands(numbers, relative));
         break;
-      case "Z":
-        commands.push(ClosePathCommand.create());
-        break;
+      // Zコマンドは87-90行目で早期処理されるため、ここには到達しない
     }
 
     return commands;
@@ -196,13 +192,13 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.MOVE_TO;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       if (i === 0) {
         commands.push(
           MoveToCommand.create(numbers[i], numbers[i + 1], relative),
         );
       } else {
-        // SVG仕様: 最初の座標ペア以降はLineToとして解釈される
+        // SVG仕様: Mコマンドの2番目以降の座標ペアはLineToとして扱われる
         commands.push(
           LineToCommand.create(numbers[i], numbers[i + 1], relative),
         );
@@ -222,7 +218,7 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.LINE_TO;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       commands.push(LineToCommand.create(numbers[i], numbers[i + 1], relative));
     }
 
@@ -259,7 +255,7 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.CUBIC_BEZIER;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       commands.push(
         CubicBezierCommand.create(
           numbers[i],
@@ -286,7 +282,7 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.SMOOTH_CUBIC_BEZIER;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       commands.push(
         SmoothCubicBezierCommand.create(
           numbers[i],
@@ -311,7 +307,7 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.QUADRATIC_BEZIER;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       commands.push(
         QuadraticBezierCommand.create(
           numbers[i],
@@ -336,7 +332,7 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.SMOOTH_QUADRATIC_BEZIER;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       commands.push(
         SmoothQuadraticBezierCommand.create(
           numbers[i],
@@ -356,8 +352,7 @@ export const PathParser = {
     const commands: PathCommandType[] = [];
     const paramCount = COMMAND_PARAM_COUNTS.ARC;
 
-    for (let i = 0; i + paramCount - 1 < numbers.length; i += paramCount) {
-      // 配列分割で各パラメータを明示的に抽出（可読性向上）
+    for (let i = 0; i + paramCount <= numbers.length; i += paramCount) {
       const [rx, ry, xAxisRotation, largeArcFlagNum, sweepFlagNum, x, y] =
         numbers.slice(i, i + paramCount);
 

@@ -55,6 +55,257 @@ const DEFAULT_BOUNDING_BOX: BoundingBox = {
 };
 
 /**
+ * MoveToコマンドを処理
+ */
+function processMoveToCommand(
+  command: MoveToCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  if (command.relative) {
+    currentX += command.x;
+    currentY += command.y;
+  } else {
+    currentX = command.x;
+    currentY = command.y;
+  }
+  return {
+    points: [{ x: currentX, y: currentY }],
+    currentX,
+    currentY,
+  };
+}
+
+/**
+ * LineToコマンドを処理
+ */
+function processLineToCommand(
+  command: LineToCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  if (command.relative) {
+    currentX += command.x;
+    currentY += command.y;
+  } else {
+    currentX = command.x;
+    currentY = command.y;
+  }
+  return {
+    points: [{ x: currentX, y: currentY }],
+    currentX,
+    currentY,
+  };
+}
+
+/**
+ * HorizontalLineToコマンドを処理
+ */
+function processHorizontalLineToCommand(
+  command: HorizontalLineToCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  if (command.relative) {
+    currentX += command.x;
+  } else {
+    currentX = command.x;
+  }
+  return {
+    points: [{ x: currentX, y: currentY }],
+    currentX,
+    currentY,
+  };
+}
+
+/**
+ * VerticalLineToコマンドを処理
+ */
+function processVerticalLineToCommand(
+  command: VerticalLineToCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  if (command.relative) {
+    currentY += command.y;
+  } else {
+    currentY = command.y;
+  }
+  return {
+    points: [{ x: currentX, y: currentY }],
+    currentX,
+    currentY,
+  };
+}
+
+/**
+ * CubicBezierコマンドを処理
+ *
+ * ベジェ曲線は必ず制御点で囲まれた凸包内に収まるため、
+ * 制御点を境界計算に含めることで安全な近似が得られる
+ */
+function processCubicBezierCommand(
+  command: CubicBezierCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  let x1: number, y1: number;
+  let x2: number, y2: number;
+  let x: number, y: number;
+
+  if (command.relative) {
+    x1 = currentX + command.x1;
+    y1 = currentY + command.y1;
+    x2 = currentX + command.x2;
+    y2 = currentY + command.y2;
+    x = currentX + command.x;
+    y = currentY + command.y;
+  } else {
+    x1 = command.x1;
+    y1 = command.y1;
+    x2 = command.x2;
+    y2 = command.y2;
+    x = command.x;
+    y = command.y;
+  }
+
+  return {
+    points: [
+      { x: x1, y: y1 },
+      { x: x2, y: y2 },
+      { x, y },
+    ],
+    currentX: x,
+    currentY: y,
+  };
+}
+
+/**
+ * SmoothCubicBezierコマンドを処理
+ *
+ * 制御点1は前コマンドから反射されるため、制御点2と終点のみ処理
+ */
+function processSmoothCubicBezierCommand(
+  command: SmoothCubicBezierCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  let x2: number, y2: number;
+  let x: number, y: number;
+
+  if (command.relative) {
+    x2 = currentX + command.x2;
+    y2 = currentY + command.y2;
+    x = currentX + command.x;
+    y = currentY + command.y;
+  } else {
+    x2 = command.x2;
+    y2 = command.y2;
+    x = command.x;
+    y = command.y;
+  }
+
+  return {
+    points: [
+      { x: x2, y: y2 },
+      { x, y },
+    ],
+    currentX: x,
+    currentY: y,
+  };
+}
+
+/**
+ * QuadraticBezierコマンドを処理
+ */
+function processQuadraticBezierCommand(
+  command: QuadraticBezierCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  let x1: number, y1: number;
+  let x: number, y: number;
+
+  if (command.relative) {
+    x1 = currentX + command.x1;
+    y1 = currentY + command.y1;
+    x = currentX + command.x;
+    y = currentY + command.y;
+  } else {
+    x1 = command.x1;
+    y1 = command.y1;
+    x = command.x;
+    y = command.y;
+  }
+
+  return {
+    points: [
+      { x: x1, y: y1 },
+      { x, y },
+    ],
+    currentX: x,
+    currentY: y,
+  };
+}
+
+/**
+ * SmoothQuadraticBezierコマンドを処理
+ */
+function processSmoothQuadraticBezierCommand(
+  command: SmoothQuadraticBezierCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  let x: number, y: number;
+
+  if (command.relative) {
+    x = currentX + command.x;
+    y = currentY + command.y;
+  } else {
+    x = command.x;
+    y = command.y;
+  }
+
+  return {
+    points: [{ x, y }],
+    currentX: x,
+    currentY: y,
+  };
+}
+
+/**
+ * Arcコマンドを処理
+ *
+ * 楕円弧の正確な境界計算は回転角度とフラグの組み合わせにより複雑なため、
+ * 楕円の外接矩形（始点±半径）と終点を含めることで安全な近似を行う
+ */
+function processArcCommand(
+  command: ArcCommand,
+  currentX: number,
+  currentY: number,
+): CommandProcessResult {
+  let x: number, y: number;
+
+  if (command.relative) {
+    x = currentX + command.x;
+    y = currentY + command.y;
+  } else {
+    x = command.x;
+    y = command.y;
+  }
+
+  return {
+    points: [
+      { x: currentX - command.rx, y: currentY - command.ry },
+      { x: currentX + command.rx, y: currentY + command.ry },
+      { x, y },
+    ],
+    currentX: x,
+    currentY: y,
+  };
+}
+
+/**
  * SVG path要素の型定義
  */
 export interface PathElement {
@@ -114,148 +365,45 @@ export const PathElement = {
   /**
    * 単一のパスコマンドを処理して座標と収集した点を返す
    *
-   * 各コマンドタイプに応じて現在座標を更新し、
-   * 境界計算に必要な点を収集します。
+   * 各コマンドタイプに応じて適切なヘルパー関数に処理を委譲し、
+   * 現在座標を更新して境界計算に必要な点を収集します。
    */
   processCommand(
     command: PathCommandType,
     currentX: number,
     currentY: number,
   ): CommandProcessResult {
-    const points: Point[] = [];
-
     if (MoveToCommand.isMoveToCommand(command)) {
-      if (command.relative) {
-        currentX += command.x;
-        currentY += command.y;
-      } else {
-        currentX = command.x;
-        currentY = command.y;
-      }
-      points.push({ x: currentX, y: currentY });
-    } else if (LineToCommand.isLineToCommand(command)) {
-      if (command.relative) {
-        currentX += command.x;
-        currentY += command.y;
-      } else {
-        currentX = command.x;
-        currentY = command.y;
-      }
-      points.push({ x: currentX, y: currentY });
-    } else if (HorizontalLineToCommand.isHorizontalLineToCommand(command)) {
-      if (command.relative) {
-        currentX += command.x;
-      } else {
-        currentX = command.x;
-      }
-      points.push({ x: currentX, y: currentY });
-    } else if (VerticalLineToCommand.isVerticalLineToCommand(command)) {
-      if (command.relative) {
-        currentY += command.y;
-      } else {
-        currentY = command.y;
-      }
-      points.push({ x: currentX, y: currentY });
-    } else if (CubicBezierCommand.isCubicBezierCommand(command)) {
-      // 制御点1 (x1, y1)、制御点2 (x2, y2)、終点 (x, y)
-      let x1: number, y1: number;
-      let x2: number, y2: number;
-      let x: number, y: number;
-      if (command.relative) {
-        x1 = currentX + command.x1;
-        y1 = currentY + command.y1;
-        x2 = currentX + command.x2;
-        y2 = currentY + command.y2;
-        x = currentX + command.x;
-        y = currentY + command.y;
-      } else {
-        x1 = command.x1;
-        y1 = command.y1;
-        x2 = command.x2;
-        y2 = command.y2;
-        x = command.x;
-        y = command.y;
-      }
-      // ベジェ曲線は必ず制御点で囲まれた凸包内に収まるため、
-      // 制御点を境界計算に含めることで安全な近似が得られる
-      points.push({ x: x1, y: y1 });
-      points.push({ x: x2, y: y2 });
-      points.push({ x, y });
-      currentX = x;
-      currentY = y;
-    } else if (SmoothCubicBezierCommand.isSmoothCubicBezierCommand(command)) {
-      // 制御点2 (x2, y2)、終点 (x, y) ※制御点1は前コマンドから反射
-      let x2: number, y2: number;
-      let x: number, y: number;
-      if (command.relative) {
-        x2 = currentX + command.x2;
-        y2 = currentY + command.y2;
-        x = currentX + command.x;
-        y = currentY + command.y;
-      } else {
-        x2 = command.x2;
-        y2 = command.y2;
-        x = command.x;
-        y = command.y;
-      }
-      points.push({ x: x2, y: y2 });
-      points.push({ x, y });
-      currentX = x;
-      currentY = y;
-    } else if (QuadraticBezierCommand.isQuadraticBezierCommand(command)) {
-      // 制御点 (x1, y1)、終点 (x, y)
-      let x1: number, y1: number;
-      let x: number, y: number;
-      if (command.relative) {
-        x1 = currentX + command.x1;
-        y1 = currentY + command.y1;
-        x = currentX + command.x;
-        y = currentY + command.y;
-      } else {
-        x1 = command.x1;
-        y1 = command.y1;
-        x = command.x;
-        y = command.y;
-      }
-      points.push({ x: x1, y: y1 });
-      points.push({ x, y });
-      currentX = x;
-      currentY = y;
-    } else if (
-      SmoothQuadraticBezierCommand.isSmoothQuadraticBezierCommand(command)
-    ) {
-      let x: number, y: number;
-      if (command.relative) {
-        x = currentX + command.x;
-        y = currentY + command.y;
-      } else {
-        x = command.x;
-        y = command.y;
-      }
-      points.push({ x, y });
-      currentX = x;
-      currentY = y;
-    } else if (ArcCommand.isArcCommand(command)) {
-      let x: number, y: number;
-      if (command.relative) {
-        x = currentX + command.x;
-        y = currentY + command.y;
-      } else {
-        x = command.x;
-        y = command.y;
-      }
-      // 楕円弧の正確な境界計算は回転角度とフラグの組み合わせにより複雑なため、
-      // 楕円の外接矩形（始点±半径）と終点を含めることで安全な近似を行う
-      points.push({ x: currentX - command.rx, y: currentY - command.ry });
-      points.push({ x: currentX + command.rx, y: currentY + command.ry });
-      points.push({ x, y });
-      currentX = x;
-      currentY = y;
+      return processMoveToCommand(command, currentX, currentY);
     }
+    if (LineToCommand.isLineToCommand(command)) {
+      return processLineToCommand(command, currentX, currentY);
+    }
+    if (HorizontalLineToCommand.isHorizontalLineToCommand(command)) {
+      return processHorizontalLineToCommand(command, currentX, currentY);
+    }
+    if (VerticalLineToCommand.isVerticalLineToCommand(command)) {
+      return processVerticalLineToCommand(command, currentX, currentY);
+    }
+    if (CubicBezierCommand.isCubicBezierCommand(command)) {
+      return processCubicBezierCommand(command, currentX, currentY);
+    }
+    if (SmoothCubicBezierCommand.isSmoothCubicBezierCommand(command)) {
+      return processSmoothCubicBezierCommand(command, currentX, currentY);
+    }
+    if (QuadraticBezierCommand.isQuadraticBezierCommand(command)) {
+      return processQuadraticBezierCommand(command, currentX, currentY);
+    }
+    if (SmoothQuadraticBezierCommand.isSmoothQuadraticBezierCommand(command)) {
+      return processSmoothQuadraticBezierCommand(command, currentX, currentY);
+    }
+    if (ArcCommand.isArcCommand(command)) {
+      return processArcCommand(command, currentX, currentY);
+    }
+
     // ClosePathCommand（Z）は現在位置を開始点に戻すだけで新しい座標を追加しないため、
     // 境界計算には影響しない
-
-    return { points, currentX, currentY };
+    return { points: [], currentX, currentY };
   },
 
   /**

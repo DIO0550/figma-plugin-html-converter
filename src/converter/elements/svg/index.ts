@@ -24,3 +24,7 @@ export type { LineAttributes } from "./line";
 
 export { EllipseElement } from "./ellipse";
 export type { EllipseAttributes } from "./ellipse";
+
+// パス要素
+export { PathElement, PathParser, PathCommand } from "./path";
+export type { PathAttributes, PathCommandType } from "./path";

@@ -174,7 +174,6 @@ export const PathParser = {
       case "A":
         commands.push(...this.createArcCommands(numbers, relative));
         break;
-      // Zコマンドは87-90行目で早期処理されるため、ここには到達しない
     }
 
     return commands;
@@ -199,7 +198,6 @@ export const PathParser = {
           MoveToCommand.create(numbers[i], numbers[i + 1], relative),
         );
       } else {
-        // SVG仕様: Mコマンドの2番目以降の座標ペアはLineToとして扱われる
         commands.push(
           LineToCommand.create(numbers[i], numbers[i + 1], relative),
         );

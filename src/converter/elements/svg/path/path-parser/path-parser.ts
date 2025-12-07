@@ -104,7 +104,8 @@ export const PathParser = {
   ): Array<{ command: string; args: string }> {
     const segments: Array<{ command: string; args: string }> = [];
 
-    // 正規表現をリセット
+    // グローバルフラグ付き正規表現は前回のマッチ位置を保持するため、
+    // 複数回呼び出しでも正しく動作するようにリセット
     COMMAND_SEGMENT_PATTERN.lastIndex = 0;
 
     let match;

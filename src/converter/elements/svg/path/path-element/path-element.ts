@@ -381,7 +381,7 @@ export const PathElement = {
       return processArcCommand(command, currentX, currentY);
     }
 
-    // ClosePathは境界計算に影響しないため空配列を返す
+    // ClosePathは始点に戻るだけで新しい点を追加しないため、境界計算に影響しない
     return { points: [], currentX, currentY };
   },
 

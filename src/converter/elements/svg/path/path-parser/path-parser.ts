@@ -20,7 +20,7 @@ import {
 
 /**
  * 数値の正規表現パターン
- * 整数、小数、指数表記に対応
+ * 整数、小数、負の値、指数表記に対応
  */
 const NUMBER_PATTERN = /-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/g;
 
@@ -98,6 +98,9 @@ export const PathParser = {
 
   /**
    * パスデータをコマンドセグメントに分割
+   *
+   * SVG仕様では複数コマンドが改行なしで連結されるため、
+   * パース前にコマンド単位で分解する必要がある
    */
   splitIntoCommandSegments(
     pathData: string,

@@ -54,9 +54,6 @@ const DEFAULT_BOUNDING_BOX: BoundingBox = {
   maxY: 0,
 };
 
-/**
- * MoveToコマンドを処理
- */
 function processMoveToCommand(
   command: MoveToCommand,
   currentX: number,
@@ -76,9 +73,6 @@ function processMoveToCommand(
   };
 }
 
-/**
- * LineToコマンドを処理
- */
 function processLineToCommand(
   command: LineToCommand,
   currentX: number,
@@ -98,9 +92,6 @@ function processLineToCommand(
   };
 }
 
-/**
- * HorizontalLineToコマンドを処理
- */
 function processHorizontalLineToCommand(
   command: HorizontalLineToCommand,
   currentX: number,
@@ -118,9 +109,6 @@ function processHorizontalLineToCommand(
   };
 }
 
-/**
- * VerticalLineToコマンドを処理
- */
 function processVerticalLineToCommand(
   command: VerticalLineToCommand,
   currentX: number,
@@ -215,9 +203,6 @@ function processSmoothCubicBezierCommand(
   };
 }
 
-/**
- * QuadraticBezierコマンドを処理
- */
 function processQuadraticBezierCommand(
   command: QuadraticBezierCommand,
   currentX: number,
@@ -248,9 +233,6 @@ function processQuadraticBezierCommand(
   };
 }
 
-/**
- * SmoothQuadraticBezierコマンドを処理
- */
 function processSmoothQuadraticBezierCommand(
   command: SmoothQuadraticBezierCommand,
   currentX: number,

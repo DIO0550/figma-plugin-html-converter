@@ -1,6 +1,5 @@
 export type { PathAttributes } from "./path-attributes";
 export { PathElement } from "./path-element";
-export type { PathElementType } from "./path-element";
 export {
   PathCommand,
   PathParser,

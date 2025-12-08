@@ -10,6 +10,7 @@ export { SvgPaintUtils } from "./utils/svg-paint-utils";
 export {
   SvgCoordinateUtils,
   type BoundingBox,
+  type Point,
 } from "./utils/svg-coordinate-utils";
 
 // 基本図形要素
@@ -28,3 +29,10 @@ export type { EllipseAttributes } from "./ellipse";
 // パス要素
 export { PathElement, PathParser, PathCommand } from "./path";
 export type { PathAttributes, PathCommandType } from "./path";
+
+// ポリゴン・ポリライン要素
+export { PolygonElement } from "./polygon";
+export type { PolygonAttributes } from "./polygon";
+
+export { PolylineElement } from "./polyline";
+export type { PolylineAttributes } from "./polyline";

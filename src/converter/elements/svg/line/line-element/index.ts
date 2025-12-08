@@ -1,4 +1,1 @@
-export {
-  LineElement,
-  type LineElement as LineElementType,
-} from "./line-element";
+export { LineElement } from "./line-element";

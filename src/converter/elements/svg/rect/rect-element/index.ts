@@ -1,4 +1,1 @@
-export {
-  RectElement,
-  type RectElement as RectElementType,
-} from "./rect-element";
+export { RectElement } from "./rect-element";

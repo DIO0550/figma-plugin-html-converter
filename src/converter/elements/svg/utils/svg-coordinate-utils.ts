@@ -11,6 +11,14 @@ export interface BoundingBox {
   height: number;
 }
 
+/**
+ * 点座標の型
+ */
+export interface Point {
+  x: number;
+  y: number;
+}
+
 export const SvgCoordinateUtils = {
   /**
    * 属性値を数値にパースする
@@ -119,6 +127,64 @@ export const SvgCoordinateUtils = {
       y,
       width,
       height,
+    };
+  },
+
+  /**
+   * SVG points属性をパースして点の配列を返す
+   *
+   * SVG仕様に従い、カンマまたはスペースで区切られた座標ペアを解析します。
+   * 形式: "x1,y1 x2,y2 ..." または "x1 y1 x2 y2 ..."
+   *
+   * @param points points属性値
+   * @returns 点の配列
+   */
+  parsePoints(points: string | undefined): Point[] {
+    if (!points || points.trim() === "") {
+      return [];
+    }
+
+    const numbers = points
+      .trim()
+      .split(/[\s,]+/)
+      .map((s) => parseFloat(s))
+      .filter((n) => !isNaN(n));
+
+    const result: Point[] = [];
+    for (let i = 0; i + 1 < numbers.length; i += 2) {
+      result.push({ x: numbers[i], y: numbers[i + 1] });
+    }
+
+    return result;
+  },
+
+  /**
+   * 点の配列から境界ボックスを計算
+   * @param points 点の配列
+   * @returns 境界ボックス
+   */
+  calculatePointsBounds(points: Point[]): BoundingBox {
+    if (points.length === 0) {
+      return { x: 0, y: 0, width: 0, height: 0 };
+    }
+
+    let minX = points[0].x;
+    let minY = points[0].y;
+    let maxX = points[0].x;
+    let maxY = points[0].y;
+
+    for (const point of points) {
+      minX = Math.min(minX, point.x);
+      minY = Math.min(minY, point.y);
+      maxX = Math.max(maxX, point.x);
+      maxY = Math.max(maxY, point.y);
+    }
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
     };
   },
 };

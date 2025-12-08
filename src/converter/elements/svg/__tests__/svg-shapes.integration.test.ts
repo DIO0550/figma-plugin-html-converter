@@ -5,6 +5,8 @@ import {
   LineElement,
   EllipseElement,
   PathElement,
+  PolygonElement,
+  PolylineElement,
 } from "../index";
 
 // 複数図形の同時変換
@@ -411,4 +413,157 @@ test("SVG図形統合テスト - 複雑なパスデータ - ベジェ曲線を�
   expect(pathConfig.width).toBeGreaterThan(0);
   expect(pathConfig.height).toBeGreaterThan(0);
   expect(pathConfig.fills?.length).toBe(1);
+});
+
+// Polygon/Polyline統合テスト
+test("SVG図形統合テスト - polygon, polylineを同時に変換 - 全要素が正しいノードタイプで変換される", () => {
+  // Arrange
+  const polygon = PolygonElement.create({
+    points: "100,10 40,198 190,78 10,78 160,198",
+    fill: "#ff0000",
+  });
+
+  const polyline = PolylineElement.create({
+    points: "0,40 40,40 40,80 80,80",
+    stroke: "#0000ff",
+    "stroke-width": 2,
+    fill: "none",
+  });
+
+  // Act
+  const polygonConfig = PolygonElement.toFigmaNode(polygon);
+  const polylineConfig = PolylineElement.toFigmaNode(polyline);
+
+  // Assert
+  expect(polygonConfig.name).toBe("polygon");
+  expect(polygonConfig.type).toBe("FRAME");
+  expect(polylineConfig.name).toBe("polyline");
+  expect(polylineConfig.type).toBe("FRAME");
+});
+
+test("SVG図形統合テスト - polygonの星形 - 正しい境界ボックスが計算される", () => {
+  // Arrange (5点星形)
+  const polygon = PolygonElement.create({
+    points: "100,10 40,198 190,78 10,78 160,198",
+    fill: "#ffff00",
+  });
+
+  // Act
+  const polygonConfig = PolygonElement.toFigmaNode(polygon);
+
+  // Assert
+  expect(polygonConfig.x).toBe(10);
+  expect(polygonConfig.y).toBe(10);
+  expect(polygonConfig.width).toBe(180);
+  expect(polygonConfig.height).toBe(188);
+  expect(polygonConfig.fills?.length).toBe(1);
+});
+
+test("SVG図形統合テスト - polylineの階段パターン - 正しい境界ボックスが計算される", () => {
+  // Arrange
+  const polyline = PolylineElement.create({
+    points: "0,40 40,40 40,80 80,80 80,120 120,120",
+    stroke: "#000000",
+    "stroke-width": 2,
+    fill: "none",
+  });
+
+  // Act
+  const polylineConfig = PolylineElement.toFigmaNode(polyline);
+
+  // Assert
+  expect(polylineConfig.x).toBe(0);
+  expect(polylineConfig.y).toBe(40);
+  expect(polylineConfig.width).toBe(120);
+  expect(polylineConfig.height).toBe(80);
+  expect(polylineConfig.fills).toEqual([]);
+  expect(polylineConfig.strokes?.length).toBe(1);
+});
+
+test("SVG図形統合テスト - polygon/polylineのHTMLNodeライクなオブジェクトをマッピング - 正しく変換される", () => {
+  // Arrange
+  const polygonNode = {
+    type: "element",
+    tagName: "polygon",
+    attributes: { points: "100,10 40,198 190,78" },
+  };
+
+  const polylineNode = {
+    type: "element",
+    tagName: "polyline",
+    attributes: { points: "0,40 40,40 40,80 80,80" },
+  };
+
+  // Act
+  const polygonResult = PolygonElement.mapToFigma(polygonNode);
+  const polygonFromPolyline = PolygonElement.mapToFigma(polylineNode);
+  const polylineResult = PolylineElement.mapToFigma(polylineNode);
+  const polylineFromPolygon = PolylineElement.mapToFigma(polygonNode);
+
+  // Assert
+  expect(polygonResult).not.toBeNull();
+  expect(polygonFromPolyline).toBeNull();
+  expect(polylineResult).not.toBeNull();
+  expect(polylineFromPolygon).toBeNull();
+});
+
+test("SVG図形統合テスト - 全図形にstrokeを設定 - polygon/polyline含め全図形でstrokeが適用される", () => {
+  // Arrange
+  const strokeColor = "#0000ff";
+  const strokeWidth = 3;
+
+  const polygon = PolygonElement.create({
+    points: "100,10 40,198 190,78",
+    fill: "none",
+    stroke: strokeColor,
+    "stroke-width": strokeWidth,
+  });
+
+  const polyline = PolylineElement.create({
+    points: "0,40 40,40 40,80 80,80",
+    fill: "none",
+    stroke: strokeColor,
+    "stroke-width": strokeWidth,
+  });
+
+  const circle = CircleElement.create({
+    cx: 50,
+    cy: 50,
+    r: 25,
+    fill: "none",
+    stroke: strokeColor,
+    "stroke-width": strokeWidth,
+  });
+
+  // Act
+  const polygonConfig = PolygonElement.toFigmaNode(polygon);
+  const polylineConfig = PolylineElement.toFigmaNode(polyline);
+  const circleConfig = CircleElement.toFigmaNode(circle);
+
+  // Assert
+  expect(polygonConfig.strokes?.length).toBe(1);
+  expect(polygonConfig.strokeWeight).toBe(strokeWidth);
+
+  expect(polylineConfig.strokes?.length).toBe(1);
+  expect(polylineConfig.strokeWeight).toBe(strokeWidth);
+
+  expect(circleConfig.strokes?.length).toBe(1);
+  expect(circleConfig.strokeWeight).toBe(strokeWidth);
+});
+
+test("SVG図形統合テスト - 複雑なpolygon座標 - 負の座標を含む場合も正しく計算される", () => {
+  // Arrange
+  const polygon = PolygonElement.create({
+    points: "-50,-50 50,-50 50,50 -50,50",
+    fill: "#ff0000",
+  });
+
+  // Act
+  const polygonConfig = PolygonElement.toFigmaNode(polygon);
+
+  // Assert
+  expect(polygonConfig.x).toBe(-50);
+  expect(polygonConfig.y).toBe(-50);
+  expect(polygonConfig.width).toBe(100);
+  expect(polygonConfig.height).toBe(100);
 });

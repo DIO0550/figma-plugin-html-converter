@@ -12,6 +12,17 @@ export {
   type BoundingBox,
   type Point,
 } from "./utils/svg-coordinate-utils";
+export {
+  SvgTransformUtils,
+  type TransformCommand,
+  type TranslateCommand,
+  type RotateCommand,
+  type ScaleCommand,
+  type SkewXCommand,
+  type SkewYCommand,
+  type MatrixCommand,
+  type TransformedBounds,
+} from "./utils/svg-transform-utils";
 
 // 基本図形要素
 export { CircleElement } from "./circle";
@@ -36,3 +47,10 @@ export type { PolygonAttributes } from "./polygon";
 
 export { PolylineElement } from "./polyline";
 export type { PolylineAttributes } from "./polyline";
+
+// グループ・定義要素
+export { GroupElement, type SvgChildNode } from "./group";
+export type { GroupAttributes } from "./group";
+
+export { DefsElement } from "./defs";
+export type { DefsAttributes } from "./defs";

@@ -1,53 +1,80 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { GroupElement } from "../group-element";
 
-describe("GroupElement.isGroupElement", () => {
-  test("GroupElementの場合、trueを返す", () => {
-    const element = GroupElement.create();
+test("GroupElement.isGroupElement - GroupElement.createで作成した要素 - trueを返す", () => {
+  // Arrange
+  const element = GroupElement.create();
 
-    expect(GroupElement.isGroupElement(element)).toBe(true);
-  });
+  // Act
+  const result = GroupElement.isGroupElement(element);
 
-  test("tagNameがgで、typeがelementの場合、trueを返す", () => {
-    const node = {
-      type: "element" as const,
-      tagName: "g",
-      attributes: {},
-    };
+  // Assert
+  expect(result).toBe(true);
+});
 
-    expect(GroupElement.isGroupElement(node)).toBe(true);
-  });
+test("GroupElement.isGroupElement - tagName=g, type=elementのオブジェクト - trueを返す", () => {
+  // Arrange
+  const node = {
+    type: "element" as const,
+    tagName: "g",
+    attributes: {},
+  };
 
-  test("tagNameがg以外の場合、falseを返す", () => {
-    const node = {
-      type: "element" as const,
-      tagName: "rect",
-      attributes: {},
-    };
+  // Act
+  const result = GroupElement.isGroupElement(node);
 
-    expect(GroupElement.isGroupElement(node)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(true);
+});
 
-  test("typeがelement以外の場合、falseを返す", () => {
-    const node = {
-      type: "text" as const,
-      tagName: "g",
-      attributes: {},
-    };
+test("GroupElement.isGroupElement - tagNameがg以外 - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "element" as const,
+    tagName: "rect",
+    attributes: {},
+  };
 
-    expect(GroupElement.isGroupElement(node)).toBe(false);
-  });
+  // Act
+  const result = GroupElement.isGroupElement(node);
 
-  test("nullの場合、falseを返す", () => {
-    expect(GroupElement.isGroupElement(null)).toBe(false);
-  });
+  // Assert
+  expect(result).toBe(false);
+});
 
-  test("undefinedの場合、falseを返す", () => {
-    expect(GroupElement.isGroupElement(undefined)).toBe(false);
-  });
+test("GroupElement.isGroupElement - typeがelement以外 - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "text" as const,
+    tagName: "g",
+    attributes: {},
+  };
 
-  test("オブジェクトでない場合、falseを返す", () => {
-    expect(GroupElement.isGroupElement("g")).toBe(false);
-    expect(GroupElement.isGroupElement(123)).toBe(false);
-  });
+  // Act
+  const result = GroupElement.isGroupElement(node);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("GroupElement.isGroupElement - null - falseを返す", () => {
+  // Arrange & Act
+  const result = GroupElement.isGroupElement(null);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("GroupElement.isGroupElement - undefined - falseを返す", () => {
+  // Arrange & Act
+  const result = GroupElement.isGroupElement(undefined);
+
+  // Assert
+  expect(result).toBe(false);
+});
+
+test("GroupElement.isGroupElement - オブジェクトでない値 - falseを返す", () => {
+  // Arrange & Act & Assert
+  expect(GroupElement.isGroupElement("g")).toBe(false);
+  expect(GroupElement.isGroupElement(123)).toBe(false);
 });

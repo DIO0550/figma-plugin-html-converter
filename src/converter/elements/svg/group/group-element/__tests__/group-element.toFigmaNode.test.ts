@@ -1,78 +1,96 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { GroupElement } from "../group-element";
 
-describe("GroupElement.toFigmaNode", () => {
-  test("基本的なg要素をGROUPノードに変換する", () => {
-    const element = GroupElement.create();
+test("GroupElement.toFigmaNode - 基本的なg要素 - type=GROUP, name=gのノードを返す", () => {
+  // Arrange
+  const element = GroupElement.create();
 
-    const config = GroupElement.toFigmaNode(element);
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    expect(config.type).toBe("GROUP");
-    expect(config.name).toBe("g");
+  // Assert
+  expect(config.type).toBe("GROUP");
+  expect(config.name).toBe("g");
+});
+
+test("GroupElement.toFigmaNode - id属性あり - nameにidが反映される", () => {
+  // Arrange
+  const element = GroupElement.create({
+    id: "my-group",
   });
 
-  test("id属性がある場合、nameに反映する", () => {
-    const element = GroupElement.create({
-      id: "my-group",
-    });
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    const config = GroupElement.toFigmaNode(element);
+  // Assert
+  expect(config.name).toBe("my-group");
+});
 
-    expect(config.name).toBe("my-group");
+test("GroupElement.toFigmaNode - translate変換を含むtransform属性 - x, yに位置が設定される", () => {
+  // Arrange
+  const element = GroupElement.create({
+    transform: "translate(10, 20)",
   });
 
-  test("transform属性のtranslateを適用する", () => {
-    const element = GroupElement.create({
-      transform: "translate(10, 20)",
-    });
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    const config = GroupElement.toFigmaNode(element);
+  // Assert
+  expect(config.x).toBe(10);
+  expect(config.y).toBe(20);
+});
 
-    expect(config.x).toBe(10);
-    expect(config.y).toBe(20);
+test("GroupElement.toFigmaNode - 複数のtranslate変換 - 移動量が累積される", () => {
+  // Arrange
+  const element = GroupElement.create({
+    transform: "translate(10, 20) translate(5, 10)",
   });
 
-  test("transform属性の複数translateを累積する", () => {
-    const element = GroupElement.create({
-      transform: "translate(10, 20) translate(5, 10)",
-    });
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    const config = GroupElement.toFigmaNode(element);
+  // Assert
+  expect(config.x).toBe(15);
+  expect(config.y).toBe(30);
+});
 
-    expect(config.x).toBe(15);
-    expect(config.y).toBe(30);
+test("GroupElement.toFigmaNode - opacity属性 - opacityが設定される", () => {
+  // Arrange
+  const element = GroupElement.create({
+    opacity: "0.5",
   });
 
-  test("opacity属性を適用する", () => {
-    const element = GroupElement.create({
-      opacity: "0.5",
-    });
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    const config = GroupElement.toFigmaNode(element);
+  // Assert
+  expect(config.opacity).toBe(0.5);
+});
 
-    expect(config.opacity).toBe(0.5);
-  });
+test("GroupElement.toFigmaNode - 子要素なし - childrenは空配列", () => {
+  // Arrange
+  const element = GroupElement.create();
 
-  test("子要素がない場合、childrenは空配列", () => {
-    const element = GroupElement.create();
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    const config = GroupElement.toFigmaNode(element);
+  // Assert
+  expect(config.children).toEqual([]);
+});
 
-    expect(config.children).toEqual([]);
-  });
+test("GroupElement.toFigmaNode - 子要素あり - 子要素は変換されず空配列を返す（変換は呼び出し側の責任）", () => {
+  // Arrange
+  const element = GroupElement.create({}, [
+    {
+      type: "element",
+      tagName: "rect",
+      attributes: { x: 0, y: 0, width: 100, height: 50 },
+    },
+  ]);
 
-  test("子要素は処理されずそのまま返す（子要素の変換は呼び出し側の責任）", () => {
-    const element = GroupElement.create({}, [
-      {
-        type: "element",
-        tagName: "rect",
-        attributes: { x: 0, y: 0, width: 100, height: 50 },
-      },
-    ]);
+  // Act
+  const config = GroupElement.toFigmaNode(element);
 
-    const config = GroupElement.toFigmaNode(element);
-
-    // 子要素の変換は行わず、空配列を返す（マッパー側で処理）
-    expect(config.children).toEqual([]);
-  });
+  // Assert
+  expect(config.children).toEqual([]);
 });

@@ -73,12 +73,8 @@ export const DefsElement = {
    * defs要素は直接描画されないため、常にnullを返す
    * 将来的には定義を保持し、参照時に解決する実装に拡張可能
    */
-  mapToFigma(node: unknown): FigmaNodeConfig | null {
+  mapToFigma(_node: unknown): FigmaNodeConfig | null {
     // defs要素は描画されないため常にnullを返す
-    if (this.isDefsElement(node)) {
-      return null;
-    }
-
     return null;
   },
 };

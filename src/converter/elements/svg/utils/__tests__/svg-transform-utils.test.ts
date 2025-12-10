@@ -345,6 +345,59 @@ test("SvgTransformUtils.calculateTransformedBounds - 空のコマンド配列 - 
   expect(result).toEqual(bounds);
 });
 
+// calculateTransformedBounds - 簡易実装のコマンド（境界をそのまま返す）
+test("SvgTransformUtils.calculateTransformedBounds - rotateコマンド - 簡易実装のため境界をそのまま返す", () => {
+  // Arrange
+  const bounds = { x: 10, y: 20, width: 100, height: 50 };
+  const commands: TransformCommand[] = [
+    { type: "rotate", angle: 45, cx: 0, cy: 0 },
+  ];
+
+  // Act
+  const result = SvgTransformUtils.calculateTransformedBounds(bounds, commands);
+
+  // Assert
+  expect(result).toEqual(bounds);
+});
+
+test("SvgTransformUtils.calculateTransformedBounds - skewXコマンド - 簡易実装のため境界をそのまま返す", () => {
+  // Arrange
+  const bounds = { x: 10, y: 20, width: 100, height: 50 };
+  const commands: TransformCommand[] = [{ type: "skewX", angle: 30 }];
+
+  // Act
+  const result = SvgTransformUtils.calculateTransformedBounds(bounds, commands);
+
+  // Assert
+  expect(result).toEqual(bounds);
+});
+
+test("SvgTransformUtils.calculateTransformedBounds - skewYコマンド - 簡易実装のため境界をそのまま返す", () => {
+  // Arrange
+  const bounds = { x: 10, y: 20, width: 100, height: 50 };
+  const commands: TransformCommand[] = [{ type: "skewY", angle: 30 }];
+
+  // Act
+  const result = SvgTransformUtils.calculateTransformedBounds(bounds, commands);
+
+  // Assert
+  expect(result).toEqual(bounds);
+});
+
+test("SvgTransformUtils.calculateTransformedBounds - matrixコマンド - 簡易実装のため境界をそのまま返す", () => {
+  // Arrange
+  const bounds = { x: 10, y: 20, width: 100, height: 50 };
+  const commands: TransformCommand[] = [
+    { type: "matrix", a: 1, b: 0, c: 0, d: 1, e: 10, f: 20 },
+  ];
+
+  // Act
+  const result = SvgTransformUtils.calculateTransformedBounds(bounds, commands);
+
+  // Assert
+  expect(result).toEqual(bounds);
+});
+
 // extractTranslation
 test("SvgTransformUtils.extractTranslation - 単一のtranslateコマンド - 移動量を抽出する", () => {
   // Arrange

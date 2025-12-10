@@ -63,8 +63,9 @@ export const SvgTransformUtils = {
    * transform属性文字列を解析してコマンド配列に変換する
    *
    * - 未知のコマンドは無視される（配列に含まれない）
-   * - 正規表現 `/(\\w+)\\s*\\(([^)]*)\\)/g` にマッチする部分のみを抽出
+   * - 正規表現 `/(\w+)\s*\(([^)]*)\)/g` にマッチする部分のみを抽出
    * - 厳密な構文チェックは行わない
+   * - 不正な引数（数値変換できない値）はNaNとしてフィルタリングされる
    *
    * @param transform SVGのtransform属性文字列
    * @returns 解析されたTransformCommandの配列
@@ -94,12 +95,19 @@ export const SvgTransformUtils = {
 
   /**
    * 引数文字列を数値配列に変換する
+   *
+   * 空白とカンマの両方を区切り文字として扱います。
+   * 不正な値（NaNとなる文字列）はフィルタリングされます。
+   *
+   * @param argsString 変換する引数文字列（例: "10, 20" または "10 20"）
+   * @returns パースされた数値の配列（NaNは除外）
    */
   parseArgs(argsString: string): number[] {
     return argsString
       .split(/[\s,]+/)
       .filter((s) => s.trim() !== "")
-      .map((s) => parseFloat(s));
+      .map((s) => parseFloat(s))
+      .filter((n) => !isNaN(n));
   },
 
   /**
@@ -200,6 +208,8 @@ export const SvgTransformUtils = {
         };
 
       case "scale":
+        // 注意: 原点(0,0)を基準としたスケーリングを想定
+        // SVGのtransform-origin属性には未対応
         return {
           x: bounds.x * command.sx,
           y: bounds.y * command.sy,

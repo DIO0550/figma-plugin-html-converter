@@ -23,6 +23,8 @@ test("統合: GroupElement + DefsElement - defs要素を子に持つg要素 - �
 
   // Assert
   expect(group.children).toHaveLength(2);
+  expect(group.children?.[0].tagName).toBe("defs");
+  expect(group.children?.[1].tagName).toBe("rect");
   expect(config.type).toBe("GROUP");
 });
 

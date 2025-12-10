@@ -108,7 +108,7 @@ export const GroupElement = {
       config.opacity = opacity;
     }
 
-    // 子要素は空配列で初期化（変換は呼び出し側で行う）
+    // 子要素配列を初期化（変換は呼び出し側で行う）
     config.children = [];
 
     return config;

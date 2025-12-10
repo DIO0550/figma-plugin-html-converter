@@ -74,22 +74,8 @@ export const DefsElement = {
    * 将来的には定義を保持し、参照時に解決する実装に拡張可能
    */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    // defs要素かどうかを確認
+    // defs要素は描画されないため常にnullを返す
     if (this.isDefsElement(node)) {
-      // defs要素は描画されないためnullを返す
-      return null;
-    }
-
-    // HTMLNodeからの変換チェック
-    if (
-      node !== null &&
-      typeof node === "object" &&
-      "type" in node &&
-      "tagName" in node &&
-      node.type === "element" &&
-      node.tagName === "defs"
-    ) {
-      // defs要素は描画されないためnullを返す
       return null;
     }
 

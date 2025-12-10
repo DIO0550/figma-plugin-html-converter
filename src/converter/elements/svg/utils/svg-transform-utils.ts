@@ -61,6 +61,13 @@ export interface TransformedBounds {
 export const SvgTransformUtils = {
   /**
    * transform属性文字列を解析してコマンド配列に変換する
+   *
+   * - 未知のコマンドは無視される（配列に含まれない）
+   * - 正規表現 `/(\\w+)\\s*\\(([^)]*)\\)/g` にマッチする部分のみを抽出
+   * - 厳密な構文チェックは行わない
+   *
+   * @param transform SVGのtransform属性文字列
+   * @returns 解析されたTransformCommandの配列
    */
   parseTransform(transform: string | undefined): TransformCommand[] {
     if (!transform || transform.trim() === "") {
@@ -175,6 +182,10 @@ export const SvgTransformUtils = {
 
   /**
    * 単一のコマンドを境界ボックスに適用する
+   *
+   * 注意: rotate, skewX, skewY, matrixは簡易実装のため、
+   * 境界ボックスの変形計算は行わず、そのまま返します。
+   * 完全な実装には行列演算による4隅の座標変換が必要です。
    */
   applyCommand(
     bounds: TransformedBounds,

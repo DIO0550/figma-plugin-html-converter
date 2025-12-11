@@ -445,3 +445,70 @@ test("SvgTransformUtils.extractTranslation - 空配列 - {x: 0, y: 0}を返す",
   // Assert
   expect(result).toEqual({ x: 0, y: 0 });
 });
+
+// parseArgs - エッジケース
+test("SvgTransformUtils.parseArgs - 複数の連続空白 - 正しく数値配列に変換する", () => {
+  // Arrange
+  const input = "10  20";
+
+  // Act
+  const result = SvgTransformUtils.parseArgs(input);
+
+  // Assert
+  expect(result).toEqual([10, 20]);
+});
+
+test("SvgTransformUtils.parseArgs - カンマと空白の混在 - 正しく数値配列に変換する", () => {
+  // Arrange
+  const input = "10, 20  ,  30";
+
+  // Act
+  const result = SvgTransformUtils.parseArgs(input);
+
+  // Assert
+  expect(result).toEqual([10, 20, 30]);
+});
+
+test("SvgTransformUtils.parseArgs - 前後の空白 - 正しく数値配列に変換する", () => {
+  // Arrange
+  const input = "  10,20  ";
+
+  // Act
+  const result = SvgTransformUtils.parseArgs(input);
+
+  // Assert
+  expect(result).toEqual([10, 20]);
+});
+
+test("SvgTransformUtils.parseArgs - 不正な値を含む - NaNはフィルタリングされる", () => {
+  // Arrange
+  const input = "10,abc,20";
+
+  // Act
+  const result = SvgTransformUtils.parseArgs(input);
+
+  // Assert
+  expect(result).toEqual([10, 20]);
+});
+
+test("SvgTransformUtils.parseArgs - 空文字列 - 空配列を返す", () => {
+  // Arrange
+  const input = "";
+
+  // Act
+  const result = SvgTransformUtils.parseArgs(input);
+
+  // Assert
+  expect(result).toEqual([]);
+});
+
+test("SvgTransformUtils.parseArgs - 空白のみ - 空配列を返す", () => {
+  // Arrange
+  const input = "   ";
+
+  // Act
+  const result = SvgTransformUtils.parseArgs(input);
+
+  // Assert
+  expect(result).toEqual([]);
+});

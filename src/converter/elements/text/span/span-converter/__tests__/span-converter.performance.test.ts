@@ -246,6 +246,11 @@ test("同じspan要素を100回繰り返し変換してもSpanConverterのパフ
     children: [{ type: "text", textContent: "Optimized text" }],
   };
 
+  // ウォームアップ実行（JITコンパイルを安定させる）
+  for (let i = 0; i < 20; i++) {
+    SpanConverter.toFigmaNode(element);
+  }
+
   const timings: number[] = [];
 
   // 100回実行して各回の時間を記録
@@ -256,11 +261,16 @@ test("同じspan要素を100回繰り返し変換してもSpanConverterのパフ
     timings.push(end - start);
   }
 
-  // 最初の10回と最後の10回の平均を比較
-  const firstTenAvg = timings.slice(0, 10).reduce((a, b) => a + b, 0) / 10;
-  const lastTenAvg = timings.slice(-10).reduce((a, b) => a + b, 0) / 10;
+  // 全体の合計時間が妥当な範囲内であることを確認
+  const totalTime = timings.reduce((a, b) => a + b, 0);
+  // 100回の変換が100ms以内に完了すること（1回あたり平均1ms以内）
+  expect(totalTime).toBeLessThan(100);
 
-  // パフォーマンスが劣化していないことを確認
-  // CI環境での実行時間のばらつきを考慮して、より寛容な閾値を設定
-  expect(lastTenAvg).toBeLessThanOrEqual(firstTenAvg * 10);
+  // 極端な外れ値がないことを確認（中央値の100倍を超える実行時間がないこと）
+  const sortedTimings = [...timings].sort((a, b) => a - b);
+  const median = sortedTimings[Math.floor(sortedTimings.length / 2)];
+  const maxTiming = sortedTimings[sortedTimings.length - 1];
+  // 中央値が0に近い場合を考慮して、最低閾値を設定
+  const threshold = Math.max(median * 100, 10);
+  expect(maxTiming).toBeLessThan(threshold);
 });

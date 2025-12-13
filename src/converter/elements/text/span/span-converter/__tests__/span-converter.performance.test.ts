@@ -237,6 +237,13 @@ test("100個のspan要素の並行変換をSpanConverterは50ms以内に完了�
 });
 
 test("同じspan要素を100回繰り返し変換してもSpanConverterのパフォーマンスは安定する", () => {
+  // パフォーマンステストの閾値定義
+  const MAX_ITERATIONS = 100;
+  const MAX_TOTAL_TIME_MS = 100;
+  const MAX_MEDIAN_MULTIPLIER = 100;
+  const MINIMUM_THRESHOLD_MS = 10;
+  const WARMUP_ITERATIONS = 20;
+
   const element: SpanElement = {
     type: "element",
     tagName: "span",
@@ -246,31 +253,30 @@ test("同じspan要素を100回繰り返し変換してもSpanConverterのパフ
     children: [{ type: "text", textContent: "Optimized text" }],
   };
 
-  // ウォームアップ実行（JITコンパイルを安定させる）
-  for (let i = 0; i < 20; i++) {
+  // JITコンパイルの最適化を安定させるため、事前にウォームアップ実行を行う
+  // これにより、計測対象の実行時間がコンパイルオーバーヘッドの影響を受けなくなる
+  for (let i = 0; i < WARMUP_ITERATIONS; i++) {
     SpanConverter.toFigmaNode(element);
   }
 
   const timings: number[] = [];
 
-  // 100回実行して各回の時間を記録
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
     const start = performance.now();
     SpanConverter.toFigmaNode(element);
     const end = performance.now();
     timings.push(end - start);
   }
 
-  // 全体の合計時間が妥当な範囲内であることを確認
   const totalTime = timings.reduce((a, b) => a + b, 0);
-  // 100回の変換が100ms以内に完了すること（1回あたり平均1ms以内）
-  expect(totalTime).toBeLessThan(100);
+  expect(totalTime).toBeLessThan(MAX_TOTAL_TIME_MS);
 
-  // 極端な外れ値がないことを確認（中央値の100倍を超える実行時間がないこと）
   const sortedTimings = [...timings].sort((a, b) => a - b);
   const median = sortedTimings[Math.floor(sortedTimings.length / 2)];
   const maxTiming = sortedTimings[sortedTimings.length - 1];
-  // 中央値が0に近い場合を考慮して、最低閾値を設定
-  const threshold = Math.max(median * 100, 10);
+  const threshold = Math.max(
+    median * MAX_MEDIAN_MULTIPLIER,
+    MINIMUM_THRESHOLD_MS,
+  );
   expect(maxTiming).toBeLessThan(threshold);
 });

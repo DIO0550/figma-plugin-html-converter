@@ -237,7 +237,6 @@ export const SvgTransformUtils = {
       case "skewX":
       case "skewY":
       case "matrix":
-        // 回転・スキュー・行列変換は簡易実装（境界ボックスをそのまま返す）
         return bounds;
 
       default:

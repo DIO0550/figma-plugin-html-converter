@@ -63,7 +63,10 @@ export const SvgTransformUtils = {
    * transform属性文字列を解析してコマンド配列に変換する
    *
    * - 未知のコマンドは無視される（配列に含まれない）
+   *   - SVG仕様には他の変換コマンドも存在するが、現在の実装では基本的な
+   *     変換（translate, rotate, scale, skewX, skewY, matrix）のみをサポート
    * - 正規表現 `/(\w+)\s*\(([^)]*)\)/g` にマッチする部分のみを抽出
+   *   - 注意: ネストされた括弧には対応していない（transform属性では不要）
    * - 厳密な構文チェックは行わない
    * - 不正な引数（数値変換できない値）はNaNとしてフィルタリングされる
    *
@@ -112,6 +115,17 @@ export const SvgTransformUtils = {
 
   /**
    * コマンドタイプと引数からTransformCommandを作成する
+   *
+   * SVG仕様に基づくデフォルト値:
+   * - translate: ty省略時は0
+   * - rotate: cx, cy省略時は0（原点を中心とした回転）
+   * - scale: sy省略時はsxと同じ値（均等スケール）、引数なしは1
+   * - skewX/skewY: angle省略時は0
+   * - matrix: SVG単位行列のデフォルト値
+   *
+   * @param commandType コマンドタイプ文字列（小文字化済み）
+   * @param args 解析された数値引数の配列
+   * @returns TransformCommand、または未知のコマンドの場合はnull
    */
   createCommand(commandType: string, args: number[]): TransformCommand | null {
     switch (commandType) {
@@ -210,6 +224,9 @@ export const SvgTransformUtils = {
       case "scale":
         // 注意: 原点(0,0)を基準としたスケーリングを想定
         // SVGのtransform-origin属性には未対応
+        // 負のスケール値（反転）の場合、結果が負の値になる可能性がある
+        // Figmaでは負のwidth/heightは許容されないため、呼び出し側で
+        // 絶対値を取るか別の方法で反転を表現する必要がある
         return {
           x: bounds.x * command.sx,
           y: bounds.y * command.sy,

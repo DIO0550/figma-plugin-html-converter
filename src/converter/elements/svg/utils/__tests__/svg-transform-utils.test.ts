@@ -89,6 +89,22 @@ test("SvgTransformUtils.parseTransform - translate(10.5, 20.75) - 小数点を�
   });
 });
 
+test("SvgTransformUtils.parseTransform - translate(0, 0) - ゼロ値の移動を正しく解析する", () => {
+  // Arrange
+  const input = "translate(0, 0)";
+
+  // Act
+  const result = SvgTransformUtils.parseTransform(input);
+
+  // Assert
+  expect(result).toHaveLength(1);
+  expect(result[0]).toEqual({
+    type: "translate",
+    tx: 0,
+    ty: 0,
+  });
+});
+
 // parseTransform - rotate
 test("SvgTransformUtils.parseTransform - rotate(45) - angle=45, cx=0, cy=0のrotateコマンドを返す", () => {
   // Arrange
@@ -187,6 +203,38 @@ test("SvgTransformUtils.parseTransform - scale(0.5) - 小数のスケールを�
     type: "scale",
     sx: 0.5,
     sy: 0.5,
+  });
+});
+
+test("SvgTransformUtils.parseTransform - scale(-1, 1) - 負のスケール値（水平反転）を正しく解析する", () => {
+  // Arrange
+  const input = "scale(-1, 1)";
+
+  // Act
+  const result = SvgTransformUtils.parseTransform(input);
+
+  // Assert
+  expect(result).toHaveLength(1);
+  expect(result[0]).toEqual({
+    type: "scale",
+    sx: -1,
+    sy: 1,
+  });
+});
+
+test("SvgTransformUtils.parseTransform - scale(1, -1) - 負のスケール値（垂直反転）を正しく解析する", () => {
+  // Arrange
+  const input = "scale(1, -1)";
+
+  // Act
+  const result = SvgTransformUtils.parseTransform(input);
+
+  // Assert
+  expect(result).toHaveLength(1);
+  expect(result[0]).toEqual({
+    type: "scale",
+    sx: 1,
+    sy: -1,
   });
 });
 
@@ -343,6 +391,23 @@ test("SvgTransformUtils.calculateTransformedBounds - 空のコマンド配列 - 
 
   // Assert
   expect(result).toEqual(bounds);
+});
+
+test("SvgTransformUtils.calculateTransformedBounds - 負のscaleコマンド - 負の値が計算される（呼び出し側で処理が必要）", () => {
+  // Arrange
+  const bounds = { x: 10, y: 20, width: 100, height: 50 };
+  const commands: TransformCommand[] = [{ type: "scale", sx: -1, sy: 1 }];
+
+  // Act
+  const result = SvgTransformUtils.calculateTransformedBounds(bounds, commands);
+
+  // Assert
+  // 負のスケールは反転を意味し、結果が負の値になる
+  // Figmaでは負のwidth/heightは許容されないため、呼び出し側で処理が必要
+  expect(result.x).toBe(-10);
+  expect(result.y).toBe(20);
+  expect(result.width).toBe(-100);
+  expect(result.height).toBe(50);
 });
 
 // calculateTransformedBounds - 簡易実装のコマンド（境界をそのまま返す）

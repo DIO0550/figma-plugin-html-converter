@@ -224,14 +224,13 @@ export const SvgTransformUtils = {
       case "scale":
         // 注意: 原点(0,0)を基準としたスケーリングを想定
         // SVGのtransform-origin属性には未対応
-        // 負のスケール値（反転）の場合、結果が負の値になる可能性がある
-        // Figmaでは負のwidth/heightは許容されないため、呼び出し側で
-        // 絶対値を取るか別の方法で反転を表現する必要がある
+        // 負のスケール値（反転）の場合、Figmaでは負のwidth/heightは
+        // 許容されないため、絶対値を使用する
         return {
           x: bounds.x * command.sx,
           y: bounds.y * command.sy,
-          width: bounds.width * command.sx,
-          height: bounds.height * command.sy,
+          width: Math.abs(bounds.width * command.sx),
+          height: Math.abs(bounds.height * command.sy),
         };
 
       case "rotate":

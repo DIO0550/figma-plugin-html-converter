@@ -47,13 +47,13 @@ export const GroupElement = {
    * ファクトリーメソッド
    */
   create(
-    attributes: Partial<GroupAttributes> = {},
+    attributes: GroupAttributes = {},
     children?: SvgChildNode[],
   ): GroupElement {
     return {
       type: "element",
       tagName: "g",
-      attributes: attributes as GroupAttributes,
+      attributes,
       children,
     };
   },

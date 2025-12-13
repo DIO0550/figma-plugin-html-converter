@@ -393,7 +393,7 @@ test("SvgTransformUtils.calculateTransformedBounds - 空のコマンド配列 - 
   expect(result).toEqual(bounds);
 });
 
-test("SvgTransformUtils.calculateTransformedBounds - 負のscaleコマンド - 負の値が計算される（呼び出し側で処理が必要）", () => {
+test("SvgTransformUtils.calculateTransformedBounds - 負のscaleコマンド - width/heightは絶対値になる", () => {
   // Arrange
   const bounds = { x: 10, y: 20, width: 100, height: 50 };
   const commands: TransformCommand[] = [{ type: "scale", sx: -1, sy: 1 }];
@@ -402,11 +402,11 @@ test("SvgTransformUtils.calculateTransformedBounds - 負のscaleコマンド - �
   const result = SvgTransformUtils.calculateTransformedBounds(bounds, commands);
 
   // Assert
-  // 負のスケールは反転を意味し、結果が負の値になる
-  // Figmaでは負のwidth/heightは許容されないため、呼び出し側で処理が必要
+  // 負のスケールは反転を意味するが、Figmaでは負のwidth/heightは許容されないため
+  // 絶対値を使用する（x, yは負の値のままだが、位置座標なので問題ない）
   expect(result.x).toBe(-10);
   expect(result.y).toBe(20);
-  expect(result.width).toBe(-100);
+  expect(result.width).toBe(100); // Math.absにより正の値
   expect(result.height).toBe(50);
 });
 

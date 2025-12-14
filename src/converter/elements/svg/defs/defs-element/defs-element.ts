@@ -86,10 +86,11 @@ export const DefsElement = {
    * defs要素は直接描画されないため、常にnullを返す。
    * 将来的には定義を保持し、参照時に解決する実装に拡張可能。
    *
-   * @param _node - マッピング対象のノード（DefsElementの場合は無視される）
+   * @param _node - マッピング対象のノード（未使用、シグネチャ互換性のため）
    * @returns 常にnull（defs要素は描画されないため）
    */
   mapToFigma(_node: unknown): FigmaNodeConfig | null {
+    // defs要素は描画されないため常にnullを返す
     return null;
   },
 };

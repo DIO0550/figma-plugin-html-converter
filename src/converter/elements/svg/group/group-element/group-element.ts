@@ -98,10 +98,8 @@ export const GroupElement = {
   /**
    * GroupElementをFigmaのGROUPノードに変換
    *
-   * 子要素の変換は呼び出し側（マッパー）の責任となる
-   *
    * @param element 変換するGroup要素
-   * @returns FigmaノードConfig
+   * @returns FigmaノードConfig（子要素配列は空で初期化）
    */
   toFigmaNode(element: GroupElement): FigmaNodeConfig {
     const id = this.getId(element);
@@ -133,17 +131,8 @@ export const GroupElement = {
   /**
    * 任意のノードをGroupElementとしてFigmaノード設定にマッピング
    *
-   * 型ガード、ファクトリー、変換関数を組み合わせた汎用マッピングパターンを使用。
-   * ノードがg要素でない場合はnullを返す。
-   *
-   * @param node - マッピング対象のノード（unknown型を受け入れ、内部で型チェック）
+   * @param node - マッピング対象のノード
    * @returns FigmaNodeConfig（g要素の場合）、またはnull（g要素でない場合）
-   *
-   * @example
-   * const config = GroupElement.mapToFigma(htmlNode);
-   * if (config) {
-   *   // g要素として正常に変換された
-   * }
    */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     return mapToFigmaWith(

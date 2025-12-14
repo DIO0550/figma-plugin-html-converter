@@ -30,7 +30,10 @@ export interface GroupElement {
  */
 export const GroupElement = {
   /**
-   * 型ガード
+   * GroupElement型ガード
+   *
+   * @param node - 判定対象のノード
+   * @returns nodeがGroupElementの場合true
    */
   isGroupElement(node: unknown): node is GroupElement {
     return (
@@ -44,7 +47,11 @@ export const GroupElement = {
   },
 
   /**
-   * ファクトリーメソッド
+   * GroupElementファクトリーメソッド
+   *
+   * @param attributes - g要素の属性（デフォルト: 空オブジェクト）
+   * @param children - 子要素の配列
+   * @returns 新しいGroupElementインスタンス
    */
   create(
     attributes: GroupAttributes = {},
@@ -60,6 +67,9 @@ export const GroupElement = {
 
   /**
    * transform属性を取得
+   *
+   * @param element - 対象のGroupElement
+   * @returns transform属性の値、未設定の場合はundefined
    */
   getTransform(element: GroupElement): string | undefined {
     return SvgAttributes.getTransform(element.attributes);
@@ -67,6 +77,9 @@ export const GroupElement = {
 
   /**
    * id属性を取得
+   *
+   * @param element - 対象のGroupElement
+   * @returns id属性の値、未設定の場合はundefined
    */
   getId(element: GroupElement): string | undefined {
     return element.attributes.id;
@@ -74,6 +87,9 @@ export const GroupElement = {
 
   /**
    * opacity属性を取得
+   *
+   * @param element - 対象のGroupElement
+   * @returns opacity属性の値、未設定の場合はundefined
    */
   getOpacity(element: GroupElement): number | undefined {
     return SvgAttributes.getOpacity(element.attributes);
@@ -115,7 +131,19 @@ export const GroupElement = {
   },
 
   /**
-   * マッピング関数
+   * 任意のノードをGroupElementとしてFigmaノード設定にマッピング
+   *
+   * 型ガード、ファクトリー、変換関数を組み合わせた汎用マッピングパターンを使用。
+   * ノードがg要素でない場合はnullを返す。
+   *
+   * @param node - マッピング対象のノード（unknown型を受け入れ、内部で型チェック）
+   * @returns FigmaNodeConfig（g要素の場合）、またはnull（g要素でない場合）
+   *
+   * @example
+   * const config = GroupElement.mapToFigma(htmlNode);
+   * if (config) {
+   *   // g要素として正常に変換された
+   * }
    */
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     return mapToFigmaWith(

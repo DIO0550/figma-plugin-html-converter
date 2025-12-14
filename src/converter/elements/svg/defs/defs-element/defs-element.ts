@@ -25,7 +25,10 @@ export interface DefsElement {
  */
 export const DefsElement = {
   /**
-   * 型ガード
+   * DefsElement型ガード
+   *
+   * @param node - 判定対象のノード
+   * @returns nodeがDefsElementの場合true
    */
   isDefsElement(node: unknown): node is DefsElement {
     return (
@@ -39,7 +42,11 @@ export const DefsElement = {
   },
 
   /**
-   * ファクトリーメソッド
+   * DefsElementファクトリーメソッド
+   *
+   * @param attributes - defs要素の属性（デフォルト: 空オブジェクト）
+   * @param children - 子要素（定義要素）の配列
+   * @returns 新しいDefsElementインスタンス
    */
   create(
     attributes: Partial<DefsAttributes> = {},
@@ -55,6 +62,9 @@ export const DefsElement = {
 
   /**
    * id属性を取得
+   *
+   * @param element - 対象のDefsElement
+   * @returns id属性の値、未設定の場合はundefined
    */
   getId(element: DefsElement): string | undefined {
     return element.attributes.id;
@@ -62,19 +72,24 @@ export const DefsElement = {
 
   /**
    * defs要素の子要素（定義）を取得
+   *
+   * @param element - 対象のDefsElement
+   * @returns 子要素の配列、子要素が存在しない場合は空配列
    */
   getDefinitions(element: DefsElement): SvgChildNode[] {
     return element.children ?? [];
   },
 
   /**
-   * マッピング関数
+   * DefsElementをFigmaノード設定にマッピング
    *
-   * defs要素は直接描画されないため、常にnullを返す
-   * 将来的には定義を保持し、参照時に解決する実装に拡張可能
+   * defs要素は直接描画されないため、常にnullを返す。
+   * 将来的には定義を保持し、参照時に解決する実装に拡張可能。
+   *
+   * @param _node - マッピング対象のノード（DefsElementの場合は無視される）
+   * @returns 常にnull（defs要素は描画されないため）
    */
   mapToFigma(_node: unknown): FigmaNodeConfig | null {
-    // defs要素は描画されないため常にnullを返す
     return null;
   },
 };

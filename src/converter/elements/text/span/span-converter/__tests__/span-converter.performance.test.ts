@@ -4,6 +4,16 @@ import type { SpanElement } from "../../span-element";
 import type { HTMLNode } from "../../../../../models/html-node";
 import type { TextNodeConfig } from "../../../../../models/figma-node/text-node-config";
 
+/**
+ * パフォーマンステストの閾値定義
+ * 複数のテストで共通して使用される定数を一元管理
+ */
+const MAX_ITERATIONS = 100;
+const MAX_TOTAL_TIME_MS = 100;
+const MAX_MEDIAN_MULTIPLIER = 100;
+const MINIMUM_THRESHOLD_MS = 10;
+const WARMUP_ITERATIONS = 20;
+
 let startTime: number;
 let endTime: number;
 
@@ -237,13 +247,6 @@ test("100個のspan要素の並行変換をSpanConverterは50ms以内に完了�
 });
 
 test("同じspan要素を100回繰り返し変換してもSpanConverterのパフォーマンスは安定する", () => {
-  // パフォーマンステストの閾値定義
-  const MAX_ITERATIONS = 100;
-  const MAX_TOTAL_TIME_MS = 100;
-  const MAX_MEDIAN_MULTIPLIER = 100;
-  const MINIMUM_THRESHOLD_MS = 10;
-  const WARMUP_ITERATIONS = 20;
-
   const element: SpanElement = {
     type: "element",
     tagName: "span",

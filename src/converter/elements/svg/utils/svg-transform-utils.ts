@@ -184,6 +184,10 @@ export const SvgTransformUtils = {
 
   /**
    * 境界ボックスに変換コマンドを適用した結果を計算する
+   *
+   * @param bounds - 変換対象の境界ボックス
+   * @param commands - 適用する変換コマンドの配列
+   * @returns 変換後の境界ボックス
    */
   calculateTransformedBounds(
     bounds: TransformedBounds,
@@ -193,21 +197,30 @@ export const SvgTransformUtils = {
       return bounds;
     }
 
-    let result = { ...bounds };
+    let transformedBounds = { ...bounds };
 
     for (const command of commands) {
-      result = this.applyCommand(result, command);
+      transformedBounds = this.applyCommand(transformedBounds, command);
     }
 
-    return result;
+    return transformedBounds;
   },
 
   /**
    * 単一のコマンドを境界ボックスに適用する
    *
-   * 注意: rotate, skewX, skewY, matrixは簡易実装のため、
-   * 境界ボックスの変形計算は行わず、そのまま返します。
-   * 完全な実装には行列演算による4隅の座標変換が必要です。
+   * @param bounds - 適用対象の境界ボックス
+   * @param command - 適用する変換コマンド
+   * @returns 変換後の境界ボックス
+   *
+   * 制限事項:
+   * - rotate, skewX, skewY, matrixは完全な実装には4隅の座標を変換行列で
+   *   計算し、新しい境界ボックスを算出する必要があるため、現在は境界ボックスを
+   *   そのまま返す
+   * - scaleは原点(0,0)を基準としたスケーリングを想定。
+   *   SVGのtransform-origin属性には未対応
+   * - 負のスケール値（反転）の場合、Figmaでは負のwidth/heightは
+   *   許容されないため、絶対値を使用する
    */
   applyCommand(
     bounds: TransformedBounds,
@@ -222,10 +235,6 @@ export const SvgTransformUtils = {
         };
 
       case "scale":
-        // 注意: 原点(0,0)を基準としたスケーリングを想定
-        // SVGのtransform-origin属性には未対応
-        // 負のスケール値（反転）の場合、Figmaでは負のwidth/heightは
-        // 許容されないため、絶対値を使用する
         return {
           x: bounds.x * command.sx,
           y: bounds.y * command.sy,
@@ -245,7 +254,17 @@ export const SvgTransformUtils = {
   },
 
   /**
-   * コマンド配列から累積移動量を抽出する
+   * コマンド配列から累積移動量（translateのみ）を抽出する
+   *
+   * @param commands - 解析対象の変換コマンド配列
+   * @returns コマンド全体の累積移動量（x, y）
+   *
+   * 設計意図:
+   * 本関数はSVGのtransform属性に含まれる「translate」コマンドのみを抽出し、
+   * 他の変換（rotate, skewX, skewY, matrix, scale）は無視する。
+   * これは、移動量のみを必要とするユースケース（例: Figma座標系への単純な位置変換）
+   * を想定しているため。回転や歪み、行列変換を正確に反映するには、より高度な
+   * 行列演算が必要となり、単純なx/y移動量として表現できないため対象外としている。
    */
   extractTranslation(commands: TransformCommand[]): { x: number; y: number } {
     let x = 0;

@@ -2,7 +2,7 @@ import { test, expect } from "vitest";
 import { GroupElement, RectElement, CircleElement } from "../index";
 
 // グループ構造の再現
-test("統合: GroupElement.create + toFigmaNode - 単一のg要素 - GROUPノードに変換される", () => {
+test("GroupElement.create + toFigmaNode - 単一のg要素 - GROUPノードに変換される", () => {
   // Arrange
   const group = GroupElement.create({
     id: "main-group",
@@ -16,7 +16,7 @@ test("統合: GroupElement.create + toFigmaNode - 単一のg要素 - GROUPノー
   expect(config.name).toBe("main-group");
 });
 
-test("統合: GroupElement.create + toFigmaNode - transform属性を持つg要素 - 位置が設定される", () => {
+test("GroupElement.create + toFigmaNode - transform属性を持つg要素 - 位置が設定される", () => {
   // Arrange
   const group = GroupElement.create({
     id: "transformed-group",
@@ -32,7 +32,7 @@ test("統合: GroupElement.create + toFigmaNode - transform属性を持つg要�
   expect(config.y).toBe(50);
 });
 
-test("統合: GroupElement.create + toFigmaNode - 複数のtranslate - 移動量が合算される", () => {
+test("GroupElement.create + toFigmaNode - 複数のtranslate - 移動量が合算される", () => {
   // Arrange
   const group = GroupElement.create({
     transform: "translate(10, 20) translate(30, 40)",
@@ -46,7 +46,7 @@ test("統合: GroupElement.create + toFigmaNode - 複数のtranslate - 移動量
   expect(config.y).toBe(60);
 });
 
-test("統合: GroupElement.create + toFigmaNode - opacity属性 - 不透明度が設定される", () => {
+test("GroupElement.create + toFigmaNode - opacity属性 - 不透明度が設定される", () => {
   // Arrange
   const group = GroupElement.create({
     opacity: "0.75",
@@ -60,7 +60,7 @@ test("統合: GroupElement.create + toFigmaNode - opacity属性 - 不透明度�
 });
 
 // ネストされたグループ構造
-test("統合: GroupElement.create - ネストされたグループ - 子要素として保持される", () => {
+test("GroupElement.create - ネストされたグループ - 子要素として保持される", () => {
   // Arrange
   const innerGroup = GroupElement.create({
     id: "inner-group",
@@ -81,7 +81,7 @@ test("統合: GroupElement.create - ネストされたグループ - 子要素�
   expect(outerGroup.children?.[0].tagName).toBe("g");
 });
 
-test("統合: GroupElement.create - グループ内の図形要素 - 子要素として保持される", () => {
+test("GroupElement.create - グループ内の図形要素 - 子要素として保持される", () => {
   // Arrange & Act
   const group = GroupElement.create(
     {
@@ -108,7 +108,7 @@ test("統合: GroupElement.create - グループ内の図形要素 - 子要素�
 });
 
 // 型ガードのテスト
-test("統合: GroupElement.isGroupElement - 他のSVG要素 - falseを返す", () => {
+test("GroupElement.isGroupElement - 他のSVG要素 - falseを返す", () => {
   // Arrange
   const rect = RectElement.create({ x: 0, y: 0, width: 100, height: 50 });
   const circle = CircleElement.create({ cx: 50, cy: 50, r: 25 });
@@ -119,7 +119,7 @@ test("統合: GroupElement.isGroupElement - 他のSVG要素 - falseを返す", (
 });
 
 // mapToFigmaのテスト
-test("統合: GroupElement.mapToFigma - HTMLNode形式のg要素 - GROUPノードに変換される", () => {
+test("GroupElement.mapToFigma - HTMLNode形式のg要素 - GROUPノードに変換される", () => {
   // Arrange
   const htmlNode = {
     type: "element" as const,

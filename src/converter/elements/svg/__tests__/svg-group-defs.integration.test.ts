@@ -2,7 +2,7 @@ import { test, expect } from "vitest";
 import { GroupElement, DefsElement } from "../index";
 
 // グループとdefs要素の組み合わせ
-test("統合: GroupElement + DefsElement - defs要素を子に持つg要素 - グループは変換されdefs要素は子として保持される", () => {
+test("GroupElement + DefsElement - defs要素を子に持つg要素 - グループは変換されdefs要素は子として保持される", () => {
   // Arrange
   const group = GroupElement.create(
     {
@@ -29,7 +29,7 @@ test("統合: GroupElement + DefsElement - defs要素を子に持つg要素 - �
 });
 
 // 型ガードの統合テスト
-test("統合: 型ガード - GroupElementとDefsElement - 相互に区別できる", () => {
+test("型ガード - GroupElementとDefsElement - 相互に区別できる", () => {
   // Arrange
   const group = GroupElement.create();
   const defs = DefsElement.create();

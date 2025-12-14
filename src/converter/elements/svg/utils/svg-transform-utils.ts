@@ -222,6 +222,12 @@ export const SvgTransformUtils = {
    *   SVGのtransform-origin属性には未対応
    * - 負のスケール値（反転）の場合、Figmaでは負のwidth/heightは
    *   許容されないため、絶対値を使用する
+   *
+   * @remarks
+   * scale変換について:
+   * - 位置座標(x, y)もスケール値に応じて変換される（原点からの距離が変わる）
+   * - これはSVGの仕様に準拠した動作で、transform-originが指定されていない場合の
+   *   デフォルト動作（原点基準）を再現している
    */
   applyCommand(
     bounds: TransformedBounds,

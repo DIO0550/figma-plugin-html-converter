@@ -2,7 +2,7 @@ import { test, expect, describe } from "vitest";
 import { SvgTransformUtils, TransformCommand } from "../svg-transform-utils";
 
 describe("SvgTransformUtils.parseTransform", () => {
-  describe("基本ケース", () => {
+  describe("無効な入力", () => {
     test("空文字列 - 空配列を返す", () => {
       const input = "";
       const result = SvgTransformUtils.parseTransform(input);
@@ -244,7 +244,7 @@ describe("SvgTransformUtils.parseTransform", () => {
 });
 
 describe("SvgTransformUtils.calculateTransformedBounds", () => {
-  describe("基本的な変換", () => {
+  describe("translate・scaleコマンドの適用", () => {
     test("translateコマンド - 位置が移動しサイズは維持される", () => {
       const bounds = { x: 0, y: 0, width: 100, height: 50 };
       const commands: TransformCommand[] = [

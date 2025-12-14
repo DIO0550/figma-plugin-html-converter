@@ -60,18 +60,17 @@ export interface TransformedBounds {
  */
 export const SvgTransformUtils = {
   /**
-   * transform属性文字列を解析してコマンド配列に変換する
+   * SVGのtransform属性文字列を解析し、対応する変換コマンドの配列に変換する
    *
-   * - 未知のコマンドは無視される（配列に含まれない）
-   *   - SVG仕様には他の変換コマンドも存在するが、現在の実装では基本的な
-   *     変換（translate, rotate, scale, skewX, skewY, matrix）のみをサポート
-   * - 正規表現 `/(\w+)\s*\(([^)]*)\)/g` にマッチする部分のみを抽出
-   *   - 注意: ネストされた括弧には対応していない（transform属性では不要）
+   * サポートしているコマンド: translate, rotate, scale, skewX, skewY, matrix
+   *
+   * @param transform - SVGのtransform属性文字列
+   * @returns 解析されたTransformCommandの配列。未知のコマンドは無視され、配列に含まれない。
+   *
+   * @remarks
    * - 厳密な構文チェックは行わない
+   * - ネストされた括弧やSVG仕様外の複雑な構文には対応していない
    * - 不正な引数（数値変換できない値）はNaNとしてフィルタリングされる
-   *
-   * @param transform SVGのtransform属性文字列
-   * @returns 解析されたTransformCommandの配列
    */
   parseTransform(transform: string | undefined): TransformCommand[] {
     if (!transform || transform.trim() === "") {
@@ -185,9 +184,11 @@ export const SvgTransformUtils = {
   /**
    * 境界ボックスに変換コマンドを適用した結果を計算する
    *
+   * 元の境界ボックスは変更せず、新しいオブジェクトを返す。
+   *
    * @param bounds - 変換対象の境界ボックス
    * @param commands - 適用する変換コマンドの配列
-   * @returns 変換後の境界ボックス
+   * @returns 変換後の境界ボックス。コマンド配列が空の場合は元の境界ボックスをそのまま返す。
    */
   calculateTransformedBounds(
     bounds: TransformedBounds,

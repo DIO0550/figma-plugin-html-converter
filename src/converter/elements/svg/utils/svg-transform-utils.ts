@@ -115,13 +115,6 @@ export const SvgTransformUtils = {
   /**
    * コマンドタイプと引数からTransformCommandを作成する
    *
-   * SVG仕様に基づくデフォルト値:
-   * - translate: ty省略時は0
-   * - rotate: cx, cy省略時は0（原点を中心とした回転）
-   * - scale: sy省略時はsxと同じ値（均等スケール）、引数なしは1
-   * - skewX/skewY: angle省略時は0
-   * - matrix: SVG単位行列のデフォルト値
-   *
    * @param commandType コマンドタイプ文字列（小文字化済み）
    * @param args 解析された数値引数の配列
    * @returns TransformCommand、または未知のコマンドの場合はnull
@@ -213,21 +206,6 @@ export const SvgTransformUtils = {
    * @param bounds - 適用対象の境界ボックス
    * @param command - 適用する変換コマンド
    * @returns 変換後の境界ボックス
-   *
-   * 制限事項:
-   * - rotate, skewX, skewY, matrixは完全な実装には4隅の座標を変換行列で
-   *   計算し、新しい境界ボックスを算出する必要があるため、現在は境界ボックスを
-   *   そのまま返す
-   * - scaleは原点(0,0)を基準としたスケーリングを想定。
-   *   SVGのtransform-origin属性には未対応
-   * - 負のスケール値（反転）の場合、Figmaでは負のwidth/heightは
-   *   許容されないため、絶対値を使用する
-   *
-   * @remarks
-   * scale変換について:
-   * - 位置座標(x, y)もスケール値に応じて変換される（原点からの距離が変わる）
-   * - これはSVGの仕様に準拠した動作で、transform-originが指定されていない場合の
-   *   デフォルト動作（原点基準）を再現している
    */
   applyCommand(
     bounds: TransformedBounds,
@@ -265,13 +243,6 @@ export const SvgTransformUtils = {
    *
    * @param commands - 解析対象の変換コマンド配列
    * @returns コマンド全体の累積移動量（x, y）
-   *
-   * 設計意図:
-   * 本関数はSVGのtransform属性に含まれる「translate」コマンドのみを抽出し、
-   * 他の変換（rotate, skewX, skewY, matrix, scale）は無視する。
-   * これは、移動量のみを必要とするユースケース（例: Figma座標系への単純な位置変換）
-   * を想定しているため。回転や歪み、行列変換を正確に反映するには、より高度な
-   * 行列演算が必要となり、単純なx/y移動量として表現できないため対象外としている。
    */
   extractTranslation(commands: TransformCommand[]): { x: number; y: number } {
     let x = 0;

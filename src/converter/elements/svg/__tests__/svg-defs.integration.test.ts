@@ -2,7 +2,7 @@ import { test, expect } from "vitest";
 import { DefsElement, RectElement, CircleElement } from "../index";
 
 // defs要素の処理
-test("統合: DefsElement.mapToFigma - defs要素 - nullを返す（描画されない）", () => {
+test("DefsElement.mapToFigma - defs要素 - nullを返す（描画されない）", () => {
   // Arrange
   const defs = DefsElement.create({
     id: "definitions",
@@ -15,7 +15,7 @@ test("統合: DefsElement.mapToFigma - defs要素 - nullを返す（描画され
   expect(config).toBeNull();
 });
 
-test("統合: DefsElement.mapToFigma - グラデーション定義を含むdefs要素 - nullを返し定義は保持される", () => {
+test("DefsElement.mapToFigma - グラデーション定義を含むdefs要素 - nullを返し定義は保持される", () => {
   // Arrange
   const defs = DefsElement.create({}, [
     {
@@ -33,7 +33,7 @@ test("統合: DefsElement.mapToFigma - グラデーション定義を含むdefs�
   expect(DefsElement.getDefinitions(defs)).toHaveLength(1);
 });
 
-test("統合: DefsElement.getDefinitions - 複数の定義を含むdefs要素 - 全ての定義が取得できる", () => {
+test("DefsElement.getDefinitions - 複数の定義を含むdefs要素 - 全ての定義が取得できる", () => {
   // Arrange
   const defs = DefsElement.create({}, [
     {
@@ -57,7 +57,7 @@ test("統合: DefsElement.getDefinitions - 複数の定義を含むdefs要素 - 
 });
 
 // 型ガードのテスト
-test("統合: DefsElement.isDefsElement - 他のSVG要素 - falseを返す", () => {
+test("DefsElement.isDefsElement - 他のSVG要素 - falseを返す", () => {
   // Arrange
   const rect = RectElement.create({ x: 0, y: 0, width: 100, height: 50 });
   const circle = CircleElement.create({ cx: 50, cy: 50, r: 25 });
@@ -68,7 +68,7 @@ test("統合: DefsElement.isDefsElement - 他のSVG要素 - falseを返す", () 
 });
 
 // mapToFigmaのテスト
-test("統合: DefsElement.mapToFigma - HTMLNode形式のdefs要素 - nullを返す", () => {
+test("DefsElement.mapToFigma - HTMLNode形式のdefs要素 - nullを返す", () => {
   // Arrange
   const htmlNode = {
     type: "element" as const,

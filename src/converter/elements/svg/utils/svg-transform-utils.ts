@@ -206,6 +206,11 @@ export const SvgTransformUtils = {
    * @param bounds - 適用対象の境界ボックス
    * @param command - 適用する変換コマンド
    * @returns 変換後の境界ボックス
+   *
+   * @remarks
+   * - scale: 原点(0,0)を基準としたスケーリングを行う。SVGのtransform-origin属性には未対応。
+   * - rotate, skewX, skewY, matrix: 簡易実装のため境界ボックスの変形計算は行わず、そのまま返す。
+   *   完全な実装には行列演算による4隅の座標変換が必要。
    */
   applyCommand(
     bounds: TransformedBounds,

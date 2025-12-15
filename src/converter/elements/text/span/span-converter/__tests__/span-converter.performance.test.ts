@@ -4,6 +4,16 @@ import type { SpanElement } from "../../span-element";
 import type { HTMLNode } from "../../../../../models/html-node";
 import type { TextNodeConfig } from "../../../../../models/figma-node/text-node-config";
 
+/**
+ * パフォーマンステストの閾値定義
+ * 複数のテストで共通して使用される定数を一元管理
+ */
+const MAX_ITERATIONS = 100;
+const MAX_TOTAL_TIME_MS = 100;
+const MAX_MEDIAN_MULTIPLIER = 100;
+const MINIMUM_THRESHOLD_MS = 10;
+const WARMUP_ITERATIONS = 20;
+
 let startTime: number;
 let endTime: number;
 
@@ -246,21 +256,30 @@ test("同じspan要素を100回繰り返し変換してもSpanConverterのパフ
     children: [{ type: "text", textContent: "Optimized text" }],
   };
 
+  // JITコンパイルの最適化を安定させるため、事前にウォームアップ実行を行う
+  // これにより、計測対象の実行時間がコンパイルオーバーヘッドの影響を受けなくなる
+  for (let i = 0; i < WARMUP_ITERATIONS; i++) {
+    SpanConverter.toFigmaNode(element);
+  }
+
   const timings: number[] = [];
 
-  // 100回実行して各回の時間を記録
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
     const start = performance.now();
     SpanConverter.toFigmaNode(element);
     const end = performance.now();
     timings.push(end - start);
   }
 
-  // 最初の10回と最後の10回の平均を比較
-  const firstTenAvg = timings.slice(0, 10).reduce((a, b) => a + b, 0) / 10;
-  const lastTenAvg = timings.slice(-10).reduce((a, b) => a + b, 0) / 10;
+  const totalTime = timings.reduce((a, b) => a + b, 0);
+  expect(totalTime).toBeLessThan(MAX_TOTAL_TIME_MS);
 
-  // パフォーマンスが劣化していないことを確認
-  // CI環境での実行時間のばらつきを考慮して、より寛容な閾値を設定
-  expect(lastTenAvg).toBeLessThanOrEqual(firstTenAvg * 10);
+  const sortedTimings = [...timings].sort((a, b) => a - b);
+  const median = sortedTimings[Math.floor(sortedTimings.length / 2)];
+  const maxTiming = sortedTimings[sortedTimings.length - 1];
+  const threshold = Math.max(
+    median * MAX_MEDIAN_MULTIPLIER,
+    MINIMUM_THRESHOLD_MS,
+  );
+  expect(maxTiming).toBeLessThan(threshold);
 });

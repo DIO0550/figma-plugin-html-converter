@@ -1,118 +1,118 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { UseElement } from "../use-element";
 
-describe("UseElement.isUseElement", () => {
-  test("正しいuse要素構造 - trueを返す", () => {
-    // Arrange
-    const node = {
-      type: "element",
-      tagName: "use",
-      attributes: { href: "#rect1" },
-    };
+// UseElement.isUseElement - 型ガードのテスト
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(true);
-  });
+test("UseElement.isUseElement - 正しいuse要素構造 - trueを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "use",
+    attributes: { href: "#rect1" },
+  };
 
-  test("属性が空のuse要素 - trueを返す", () => {
-    // Arrange
-    const node = {
-      type: "element",
-      tagName: "use",
-      attributes: {},
-    };
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(true);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(true);
-  });
+test("UseElement.isUseElement - 属性が空のuse要素 - trueを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "use",
+    attributes: {},
+  };
 
-  test("nullの場合 - falseを返す", () => {
-    // Act & Assert
-    expect(UseElement.isUseElement(null)).toBe(false);
-  });
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(true);
+});
 
-  test("undefinedの場合 - falseを返す", () => {
-    // Act & Assert
-    expect(UseElement.isUseElement(undefined)).toBe(false);
-  });
+test("UseElement.isUseElement - null - falseを返す", () => {
+  // Act & Assert
+  expect(UseElement.isUseElement(null)).toBe(false);
+});
 
-  test("文字列の場合 - falseを返す", () => {
-    // Act & Assert
-    expect(UseElement.isUseElement("use")).toBe(false);
-  });
+test("UseElement.isUseElement - undefined - falseを返す", () => {
+  // Act & Assert
+  expect(UseElement.isUseElement(undefined)).toBe(false);
+});
 
-  test("数値の場合 - falseを返す", () => {
-    // Act & Assert
-    expect(UseElement.isUseElement(123)).toBe(false);
-  });
+test("UseElement.isUseElement - 文字列 - falseを返す", () => {
+  // Act & Assert
+  expect(UseElement.isUseElement("use")).toBe(false);
+});
 
-  test("typeが異なる場合 - falseを返す", () => {
-    // Arrange
-    const node = {
-      type: "text",
-      tagName: "use",
-      attributes: {},
-    };
+test("UseElement.isUseElement - 数値 - falseを返す", () => {
+  // Act & Assert
+  expect(UseElement.isUseElement(123)).toBe(false);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(false);
-  });
+test("UseElement.isUseElement - typeが異なる - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "text",
+    tagName: "use",
+    attributes: {},
+  };
 
-  test("tagNameが異なる場合 - falseを返す", () => {
-    // Arrange
-    const node = {
-      type: "element",
-      tagName: "rect",
-      attributes: {},
-    };
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(false);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(false);
-  });
+test("UseElement.isUseElement - tagNameが異なる - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "rect",
+    attributes: {},
+  };
 
-  test("typeプロパティがない場合 - falseを返す", () => {
-    // Arrange
-    const node = {
-      tagName: "use",
-      attributes: {},
-    };
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(false);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(false);
-  });
+test("UseElement.isUseElement - typeプロパティなし - falseを返す", () => {
+  // Arrange
+  const node = {
+    tagName: "use",
+    attributes: {},
+  };
 
-  test("tagNameプロパティがない場合 - falseを返す", () => {
-    // Arrange
-    const node = {
-      type: "element",
-      attributes: {},
-    };
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(false);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(false);
-  });
+test("UseElement.isUseElement - tagNameプロパティなし - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    attributes: {},
+  };
 
-  test("他のSVG要素（g要素）- falseを返す", () => {
-    // Arrange
-    const node = {
-      type: "element",
-      tagName: "g",
-      attributes: {},
-    };
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(false);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(false);
-  });
+test("UseElement.isUseElement - 他のSVG要素（g要素） - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "g",
+    attributes: {},
+  };
 
-  test("他のSVG要素（defs要素）- falseを返す", () => {
-    // Arrange
-    const node = {
-      type: "element",
-      tagName: "defs",
-      attributes: {},
-    };
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(false);
+});
 
-    // Act & Assert
-    expect(UseElement.isUseElement(node)).toBe(false);
-  });
+test("UseElement.isUseElement - 他のSVG要素（defs要素） - falseを返す", () => {
+  // Arrange
+  const node = {
+    type: "element",
+    tagName: "defs",
+    attributes: {},
+  };
+
+  // Act & Assert
+  expect(UseElement.isUseElement(node)).toBe(false);
 });

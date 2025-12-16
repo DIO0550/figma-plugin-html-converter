@@ -1,86 +1,86 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { UseElement } from "../use-element";
 
-describe("UseElement.mapToFigma", () => {
-  test("UseElementをFigmaノード設定に変換できる", () => {
-    // Arrange
-    const element = UseElement.create({ href: "#rect1" });
+// UseElement.mapToFigma - マッピングのテスト
 
-    // Act
-    const config = UseElement.mapToFigma(element);
+test("UseElement.mapToFigma - UseElement - Figmaノード設定に変換できる", () => {
+  // Arrange
+  const element = UseElement.create({ href: "#rect1" });
 
-    // Assert
-    expect(config).not.toBeNull();
-    expect(config?.type).toBe("GROUP");
-  });
+  // Act
+  const config = UseElement.mapToFigma(element);
 
-  test("HTMLNode形式のuse要素を変換できる", () => {
-    // Arrange
-    const htmlNode = {
-      type: "element" as const,
-      tagName: "use",
-      attributes: { href: "#shape1" },
-    };
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.type).toBe("GROUP");
+});
 
-    // Act
-    const config = UseElement.mapToFigma(htmlNode);
+test("UseElement.mapToFigma - HTMLNode形式のuse要素 - Figmaノード設定に変換できる", () => {
+  // Arrange
+  const htmlNode = {
+    type: "element" as const,
+    tagName: "use",
+    attributes: { href: "#shape1" },
+  };
 
-    // Assert
-    expect(config).not.toBeNull();
-    expect(config?.type).toBe("GROUP");
-  });
+  // Act
+  const config = UseElement.mapToFigma(htmlNode);
 
-  test("use要素以外の場合、nullを返す", () => {
-    // Arrange
-    const node = {
-      type: "element" as const,
-      tagName: "rect",
-      attributes: {},
-    };
+  // Assert
+  expect(config).not.toBeNull();
+  expect(config?.type).toBe("GROUP");
+});
 
-    // Act
-    const config = UseElement.mapToFigma(node);
+test("UseElement.mapToFigma - use要素以外 - nullを返す", () => {
+  // Arrange
+  const node = {
+    type: "element" as const,
+    tagName: "rect",
+    attributes: {},
+  };
 
-    // Assert
-    expect(config).toBeNull();
-  });
+  // Act
+  const config = UseElement.mapToFigma(node);
 
-  test("nullの場合、nullを返す", () => {
-    // Act
-    const config = UseElement.mapToFigma(null);
+  // Assert
+  expect(config).toBeNull();
+});
 
-    // Assert
-    expect(config).toBeNull();
-  });
+test("UseElement.mapToFigma - null - nullを返す", () => {
+  // Act
+  const config = UseElement.mapToFigma(null);
 
-  test("id属性がある場合、ノード名として使用", () => {
-    // Arrange
-    const htmlNode = {
-      type: "element" as const,
-      tagName: "use",
-      attributes: { id: "myUse", href: "#symbol1" },
-    };
+  // Assert
+  expect(config).toBeNull();
+});
 
-    // Act
-    const config = UseElement.mapToFigma(htmlNode);
+test("UseElement.mapToFigma - id属性あり - ノード名としてid値が使用される", () => {
+  // Arrange
+  const htmlNode = {
+    type: "element" as const,
+    tagName: "use",
+    attributes: { id: "myUse", href: "#symbol1" },
+  };
 
-    // Assert
-    expect(config?.name).toBe("myUse");
-  });
+  // Act
+  const config = UseElement.mapToFigma(htmlNode);
 
-  test("位置属性がある場合、適用される", () => {
-    // Arrange
-    const htmlNode = {
-      type: "element" as const,
-      tagName: "use",
-      attributes: { href: "#shape", x: 100, y: 50 },
-    };
+  // Assert
+  expect(config?.name).toBe("myUse");
+});
 
-    // Act
-    const config = UseElement.mapToFigma(htmlNode);
+test("UseElement.mapToFigma - 位置属性あり - x, yが適用される", () => {
+  // Arrange
+  const htmlNode = {
+    type: "element" as const,
+    tagName: "use",
+    attributes: { href: "#shape", x: 100, y: 50 },
+  };
 
-    // Assert
-    expect(config?.x).toBe(100);
-    expect(config?.y).toBe(50);
-  });
+  // Act
+  const config = UseElement.mapToFigma(htmlNode);
+
+  // Assert
+  expect(config?.x).toBe(100);
+  expect(config?.y).toBe(50);
 });

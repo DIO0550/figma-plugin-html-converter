@@ -1,154 +1,154 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { ClipPathElement } from "../clip-path-element";
 
-describe("ClipPathElement.mapToFigma", () => {
-  test("clipPath要素 - nullを返す（描画されない）", () => {
-    // Arrange
-    const element = ClipPathElement.create({ id: "clip1" });
+// ClipPathElement.mapToFigma - マッピングのテスト
 
-    // Act
-    const config = ClipPathElement.mapToFigma(element);
+test("ClipPathElement.mapToFigma - clipPath要素 - nullを返す（描画されない）", () => {
+  // Arrange
+  const element = ClipPathElement.create({ id: "clip1" });
 
-    // Assert
-    expect(config).toBeNull();
-  });
+  // Act
+  const config = ClipPathElement.mapToFigma(element);
 
-  test("HTMLNode形式のclipPath要素 - nullを返す", () => {
-    // Arrange
-    const htmlNode = {
+  // Assert
+  expect(config).toBeNull();
+});
+
+test("ClipPathElement.mapToFigma - HTMLNode形式のclipPath要素 - nullを返す", () => {
+  // Arrange
+  const htmlNode = {
+    type: "element" as const,
+    tagName: "clipPath",
+    attributes: { id: "clip1" },
+  };
+
+  // Act
+  const config = ClipPathElement.mapToFigma(htmlNode);
+
+  // Assert
+  expect(config).toBeNull();
+});
+
+test("ClipPathElement.mapToFigma - 子要素を持つclipPath要素 - nullを返し子要素は保持される", () => {
+  // Arrange
+  const children = [
+    {
       type: "element" as const,
-      tagName: "clipPath",
-      attributes: { id: "clip1" },
-    };
+      tagName: "rect",
+      attributes: { x: 0, y: 0, width: 100, height: 100 },
+    },
+  ];
+  const element = ClipPathElement.create({ id: "clip2" }, children);
 
-    // Act
-    const config = ClipPathElement.mapToFigma(htmlNode);
+  // Act
+  const config = ClipPathElement.mapToFigma(element);
 
-    // Assert
-    expect(config).toBeNull();
-  });
-
-  test("子要素を持つclipPath要素 - nullを返し子要素は保持される", () => {
-    // Arrange
-    const children = [
-      {
-        type: "element" as const,
-        tagName: "rect",
-        attributes: { x: 0, y: 0, width: 100, height: 100 },
-      },
-    ];
-    const element = ClipPathElement.create({ id: "clip2" }, children);
-
-    // Act
-    const config = ClipPathElement.mapToFigma(element);
-
-    // Assert
-    expect(config).toBeNull();
-    expect(ClipPathElement.getClipShapes(element)).toHaveLength(1);
-  });
+  // Assert
+  expect(config).toBeNull();
+  expect(ClipPathElement.getClipShapes(element)).toHaveLength(1);
 });
 
-describe("ClipPathElement.getId", () => {
-  test("id属性を取得できる", () => {
-    // Arrange
-    const element = ClipPathElement.create({ id: "myClip" });
+// ClipPathElement.getId - id属性取得のテスト
 
-    // Act & Assert
-    expect(ClipPathElement.getId(element)).toBe("myClip");
-  });
+test("ClipPathElement.getId - id属性あり - id値を返す", () => {
+  // Arrange
+  const element = ClipPathElement.create({ id: "myClip" });
 
-  test("id属性がない場合、undefinedを返す", () => {
-    // Arrange
-    const element = ClipPathElement.create({});
-
-    // Act & Assert
-    expect(ClipPathElement.getId(element)).toBeUndefined();
-  });
+  // Act & Assert
+  expect(ClipPathElement.getId(element)).toBe("myClip");
 });
 
-describe("ClipPathElement.getClipPathUnits", () => {
-  test("clipPathUnitsがuserSpaceOnUseの場合", () => {
-    // Arrange
-    const element = ClipPathElement.create({
-      id: "clip1",
-      clipPathUnits: "userSpaceOnUse",
-    });
+test("ClipPathElement.getId - id属性なし - undefinedを返す", () => {
+  // Arrange
+  const element = ClipPathElement.create({});
 
-    // Act & Assert
-    expect(ClipPathElement.getClipPathUnits(element)).toBe("userSpaceOnUse");
-  });
-
-  test("clipPathUnitsがobjectBoundingBoxの場合", () => {
-    // Arrange
-    const element = ClipPathElement.create({
-      id: "clip2",
-      clipPathUnits: "objectBoundingBox",
-    });
-
-    // Act & Assert
-    expect(ClipPathElement.getClipPathUnits(element)).toBe("objectBoundingBox");
-  });
-
-  test("clipPathUnitsが未設定の場合、userSpaceOnUseを返す", () => {
-    // Arrange
-    const element = ClipPathElement.create({ id: "clip3" });
-
-    // Act & Assert
-    expect(ClipPathElement.getClipPathUnits(element)).toBe("userSpaceOnUse");
-  });
+  // Act & Assert
+  expect(ClipPathElement.getId(element)).toBeUndefined();
 });
 
-describe("ClipPathElement.getClipShapes", () => {
-  test("子要素を取得できる", () => {
-    // Arrange
-    const children = [
-      {
-        type: "element" as const,
-        tagName: "circle",
-        attributes: { cx: 50, cy: 50, r: 25 },
-      },
-    ];
-    const element = ClipPathElement.create({ id: "clip1" }, children);
+// ClipPathElement.getClipPathUnits - clipPathUnits属性取得のテスト
 
-    // Act
-    const shapes = ClipPathElement.getClipShapes(element);
-
-    // Assert
-    expect(shapes).toHaveLength(1);
-    expect(shapes[0].tagName).toBe("circle");
+test("ClipPathElement.getClipPathUnits - clipPathUnits='userSpaceOnUse' - 設定値を返す", () => {
+  // Arrange
+  const element = ClipPathElement.create({
+    id: "clip1",
+    clipPathUnits: "userSpaceOnUse",
   });
 
-  test("複数の子要素を取得できる", () => {
-    // Arrange
-    const children = [
-      {
-        type: "element" as const,
-        tagName: "circle",
-        attributes: { cx: 50, cy: 50, r: 25 },
-      },
-      {
-        type: "element" as const,
-        tagName: "rect",
-        attributes: { x: 0, y: 0, width: 50, height: 50 },
-      },
-    ];
-    const element = ClipPathElement.create({ id: "clip2" }, children);
+  // Act & Assert
+  expect(ClipPathElement.getClipPathUnits(element)).toBe("userSpaceOnUse");
+});
 
-    // Act
-    const shapes = ClipPathElement.getClipShapes(element);
-
-    // Assert
-    expect(shapes).toHaveLength(2);
+test("ClipPathElement.getClipPathUnits - clipPathUnits='objectBoundingBox' - 設定値を返す", () => {
+  // Arrange
+  const element = ClipPathElement.create({
+    id: "clip2",
+    clipPathUnits: "objectBoundingBox",
   });
 
-  test("子要素がない場合、空配列を返す", () => {
-    // Arrange
-    const element = ClipPathElement.create({ id: "emptyClip" });
+  // Act & Assert
+  expect(ClipPathElement.getClipPathUnits(element)).toBe("objectBoundingBox");
+});
 
-    // Act
-    const shapes = ClipPathElement.getClipShapes(element);
+test("ClipPathElement.getClipPathUnits - clipPathUnits未設定 - デフォルト値'userSpaceOnUse'を返す", () => {
+  // Arrange
+  const element = ClipPathElement.create({ id: "clip3" });
 
-    // Assert
-    expect(shapes).toEqual([]);
-  });
+  // Act & Assert
+  expect(ClipPathElement.getClipPathUnits(element)).toBe("userSpaceOnUse");
+});
+
+// ClipPathElement.getClipShapes - 子要素取得のテスト
+
+test("ClipPathElement.getClipShapes - 子要素あり - 子要素配列を返す", () => {
+  // Arrange
+  const children = [
+    {
+      type: "element" as const,
+      tagName: "circle",
+      attributes: { cx: 50, cy: 50, r: 25 },
+    },
+  ];
+  const element = ClipPathElement.create({ id: "clip1" }, children);
+
+  // Act
+  const shapes = ClipPathElement.getClipShapes(element);
+
+  // Assert
+  expect(shapes).toHaveLength(1);
+  expect(shapes[0].tagName).toBe("circle");
+});
+
+test("ClipPathElement.getClipShapes - 複数の子要素あり - 全ての子要素を返す", () => {
+  // Arrange
+  const children = [
+    {
+      type: "element" as const,
+      tagName: "circle",
+      attributes: { cx: 50, cy: 50, r: 25 },
+    },
+    {
+      type: "element" as const,
+      tagName: "rect",
+      attributes: { x: 0, y: 0, width: 50, height: 50 },
+    },
+  ];
+  const element = ClipPathElement.create({ id: "clip2" }, children);
+
+  // Act
+  const shapes = ClipPathElement.getClipShapes(element);
+
+  // Assert
+  expect(shapes).toHaveLength(2);
+});
+
+test("ClipPathElement.getClipShapes - 子要素なし - 空配列を返す", () => {
+  // Arrange
+  const element = ClipPathElement.create({ id: "emptyClip" });
+
+  // Act
+  const shapes = ClipPathElement.getClipShapes(element);
+
+  // Assert
+  expect(shapes).toEqual([]);
 });

@@ -318,3 +318,75 @@ test("UseElement.getId - id属性なし - undefinedを返す", () => {
   // Act & Assert
   expect(UseElement.getId(element)).toBeUndefined();
 });
+
+// UseElement.getOpacity - opacity属性取得のテスト
+
+test("UseElement.getOpacity - opacity属性あり（数値） - 数値をそのまま返す", () => {
+  // Arrange
+  const element = UseElement.create({ opacity: 0.5 });
+
+  // Act & Assert
+  expect(UseElement.getOpacity(element)).toBe(0.5);
+});
+
+test("UseElement.getOpacity - opacity属性あり（文字列） - 数値にパースして返す", () => {
+  // Arrange
+  const element = UseElement.create({ opacity: "0.75" as unknown as number });
+
+  // Act & Assert
+  expect(UseElement.getOpacity(element)).toBe(0.75);
+});
+
+test("UseElement.getOpacity - opacity属性なし - undefinedを返す", () => {
+  // Arrange
+  const element = UseElement.create({});
+
+  // Act & Assert
+  expect(UseElement.getOpacity(element)).toBeUndefined();
+});
+
+test("UseElement.getOpacity - opacity属性が0 - 0を返す", () => {
+  // Arrange
+  const element = UseElement.create({ opacity: 0 });
+
+  // Act & Assert
+  expect(UseElement.getOpacity(element)).toBe(0);
+});
+
+test("UseElement.getOpacity - opacity属性が1 - 1を返す", () => {
+  // Arrange
+  const element = UseElement.create({ opacity: 1 });
+
+  // Act & Assert
+  expect(UseElement.getOpacity(element)).toBe(1);
+});
+
+// UseElement.getTransform - transform属性取得のテスト
+
+test("UseElement.getTransform - transform属性あり - transform値を返す", () => {
+  // Arrange
+  const element = UseElement.create({ transform: "translate(10, 20)" });
+
+  // Act & Assert
+  expect(UseElement.getTransform(element)).toBe("translate(10, 20)");
+});
+
+test("UseElement.getTransform - transform属性なし - undefinedを返す", () => {
+  // Arrange
+  const element = UseElement.create({});
+
+  // Act & Assert
+  expect(UseElement.getTransform(element)).toBeUndefined();
+});
+
+test("UseElement.getTransform - 複数の変換を含むtransform属性 - そのまま返す", () => {
+  // Arrange
+  const element = UseElement.create({
+    transform: "translate(10, 20) scale(2) rotate(45)",
+  });
+
+  // Act & Assert
+  expect(UseElement.getTransform(element)).toBe(
+    "translate(10, 20) scale(2) rotate(45)",
+  );
+});

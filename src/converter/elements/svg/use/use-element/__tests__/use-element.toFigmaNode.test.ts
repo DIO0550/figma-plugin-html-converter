@@ -106,6 +106,24 @@ test("UseElement.toFigmaNode - x, yとtransform両方あり - 両方の値が加
   expect(config.y).toBe(60); // 20 + 40
 });
 
+test("UseElement.toFigmaNode - x, yとtransformが相殺されて0になる場合 - 位置は0として設定される", () => {
+  // Arrange
+  const element = UseElement.create({
+    href: "#shape",
+    x: 10,
+    y: 10,
+    transform: "translate(-10, -10)",
+  });
+
+  // Act
+  const config = UseElement.toFigmaNode(element);
+
+  // Assert
+  // x/y属性があるので位置は設定される（合計が0でも）
+  expect(config.x).toBe(0);
+  expect(config.y).toBe(0);
+});
+
 // UseElement.getHref - href属性取得のテスト
 
 test("UseElement.getHref - href属性あり - href値を返す", () => {

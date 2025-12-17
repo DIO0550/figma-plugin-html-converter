@@ -158,22 +158,27 @@ export const UseElement = {
     const config = FigmaNode.createGroup(name);
 
     // x, y属性から位置を取得
-    let x = this.getX(element);
-    let y = this.getY(element);
+    const x = this.getX(element);
+    const y = this.getY(element);
 
-    // transform属性からの位置オフセットを加算
+    // transform属性からの位置オフセットを取得
     const transform = this.getTransform(element);
+    let translationX = 0;
+    let translationY = 0;
     if (transform) {
       const commands = SvgTransformUtils.parseTransform(transform);
       const translation = SvgTransformUtils.extractTranslation(commands);
-      x += translation.x;
-      y += translation.y;
+      translationX = translation.x;
+      translationY = translation.y;
     }
 
-    // 位置が0以外の場合のみ設定
-    if (x !== 0 || y !== 0) {
-      config.x = x;
-      config.y = y;
+    // x/y属性またはtransformのオフセットが0以外の場合のみ設定
+    // (use要素固有: x/y属性はtranslateと同等の効果を持つ)
+    const hasPosition = x !== 0 || y !== 0;
+    const hasTransform = translationX !== 0 || translationY !== 0;
+    if (hasPosition || hasTransform) {
+      config.x = x + translationX;
+      config.y = y + translationY;
     }
 
     // opacity属性の適用

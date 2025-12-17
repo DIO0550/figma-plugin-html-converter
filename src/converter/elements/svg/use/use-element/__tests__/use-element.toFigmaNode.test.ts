@@ -211,6 +211,46 @@ test("UseElement.getY - y属性なし - 0を返す", () => {
   expect(UseElement.getY(element)).toBe(0);
 });
 
+test("UseElement.getX - x属性が不正な文字列（'abc'） - 0を返す（parseFloatがNaNを返すため）", () => {
+  // Arrange
+  const element = UseElement.create({ x: "abc" as unknown as number });
+
+  // Act & Assert
+  expect(UseElement.getX(element)).toBe(0);
+});
+
+test("UseElement.getX - x属性が単位付き文字列（'10px'） - 数値部分（10）を返す（parseFloatの動作）", () => {
+  // Arrange
+  const element = UseElement.create({ x: "10px" as unknown as number });
+
+  // Act & Assert
+  expect(UseElement.getX(element)).toBe(10);
+});
+
+test("UseElement.getY - y属性が不正な文字列（'invalid'） - 0を返す（parseFloatがNaNを返すため）", () => {
+  // Arrange
+  const element = UseElement.create({ y: "invalid" as unknown as number });
+
+  // Act & Assert
+  expect(UseElement.getY(element)).toBe(0);
+});
+
+test("UseElement.getWidth - width属性が不正な文字列 - undefinedを返す", () => {
+  // Arrange
+  const element = UseElement.create({ width: "abc" as unknown as number });
+
+  // Act & Assert
+  expect(UseElement.getWidth(element)).toBeUndefined();
+});
+
+test("UseElement.getHeight - height属性が単位付き文字列（'50%'） - 数値部分（50）を返す", () => {
+  // Arrange
+  const element = UseElement.create({ height: "50%" as unknown as number });
+
+  // Act & Assert
+  expect(UseElement.getHeight(element)).toBe(50);
+});
+
 // UseElement.getWidth / getHeight - サイズ属性取得のテスト
 
 test("UseElement.getWidth - width属性あり（数値） - 数値をそのまま返す", () => {

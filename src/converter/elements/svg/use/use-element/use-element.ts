@@ -170,11 +170,12 @@ export const UseElement = {
       translationY = translation.y;
     }
 
-    // x/y属性またはtransformのオフセットが0以外の場合のみ設定
+    // x/y属性またはtransform属性が存在する場合に位置を設定
     // (use要素固有: x/y属性はtranslateと同等の効果を持つ)
-    const hasPosition = x !== 0 || y !== 0;
-    const hasTransform = translationX !== 0 || translationY !== 0;
-    if (hasPosition || hasTransform) {
+    const hasPositionAttr =
+      element.attributes.x !== undefined || element.attributes.y !== undefined;
+    const hasTransformAttr = !!transform;
+    if (hasPositionAttr || hasTransformAttr) {
       config.x = x + translationX;
       config.y = y + translationY;
     }

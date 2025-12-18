@@ -51,7 +51,7 @@ test("UseElement.toFigmaNode - x, yが文字列 - 数値に変換される", () 
   expect(config.y).toBe(150);
 });
 
-test("UseElement.toFigmaNode - x, yが0 - 位置は設定されない", () => {
+test("UseElement.toFigmaNode - x, yが明示的に0 - 属性が存在するため位置が設定される", () => {
   // Arrange
   const element = UseElement.create({ href: "#shape", x: 0, y: 0 });
 
@@ -59,8 +59,9 @@ test("UseElement.toFigmaNode - x, yが0 - 位置は設定されない", () => {
   const config = UseElement.toFigmaNode(element);
 
   // Assert
-  expect(config.x).toBeUndefined();
-  expect(config.y).toBeUndefined();
+  // x/y属性が明示的に設定されている場合は、値が0でも位置として設定される
+  expect(config.x).toBe(0);
+  expect(config.y).toBe(0);
 });
 
 test("UseElement.toFigmaNode - opacity属性あり - 不透明度として適用される", () => {
@@ -119,7 +120,7 @@ test("UseElement.toFigmaNode - x, yとtransformが相殺されて0になる場�
   const config = UseElement.toFigmaNode(element);
 
   // Assert
-  // x/y属性があるので位置は設定される（合計が0でも）
+  // x/y属性が存在するので位置は設定される（transformと相殺されて合計が0でも）
   expect(config.x).toBe(0);
   expect(config.y).toBe(0);
 });

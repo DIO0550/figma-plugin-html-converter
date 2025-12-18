@@ -142,8 +142,9 @@ export const UseElement = {
   /**
    * UseElementをFigmaのGROUPノードに変換
    *
-   * 参照先の要素解決は呼び出し側で行う想定
-   * use要素自体はGROUPとして変換し、x/y属性を位置として適用
+   * 設計判断: use要素自体はGROUPとして変換し、x/y属性を位置として適用します。
+   * 参照先の要素解決（defs内の要素を実際に複製する機能）は呼び出し側で行う想定です。
+   * これにより、参照解決のロジックと要素変換のロジックを分離しています。
    *
    * @param element - 変換するUse要素
    * @returns FigmaノードConfig

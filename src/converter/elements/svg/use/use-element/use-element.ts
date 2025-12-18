@@ -18,9 +18,6 @@ export interface UseElement {
   children?: SvgChildNode[];
 }
 
-/**
- * 数値をパースするヘルパー関数
- */
 function parseNumber(value: string | number | undefined): number | undefined {
   if (value === undefined) return undefined;
   const parsed = typeof value === "number" ? value : parseFloat(value);

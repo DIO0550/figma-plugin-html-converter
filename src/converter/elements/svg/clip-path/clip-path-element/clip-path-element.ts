@@ -93,11 +93,10 @@ export const ClipPathElement = {
    * clipPath要素は直接描画されないため、常にnullを返す。
    * クリッピングの適用は、参照する側の要素で行う。
    *
-   * @param _node - マッピング対象のノード（未使用、シグネチャ互換性のため）
-   * @returns 常にnull（clipPath要素は描画されないため）
+   * @param _node - マッピング対象のノード
+   * @returns 常にnull
    */
   mapToFigma(_node: unknown): FigmaNodeConfig | null {
-    // clipPath要素は描画されないため常にnullを返す
     return null;
   },
 };

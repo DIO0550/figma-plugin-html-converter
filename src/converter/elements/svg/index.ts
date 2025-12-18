@@ -54,3 +54,10 @@ export type { GroupAttributes } from "./group";
 
 export { DefsElement } from "./defs";
 export type { DefsAttributes } from "./defs";
+
+// 再利用・クリッピング要素
+export { UseElement } from "./use";
+export type { UseAttributes } from "./use";
+
+export { ClipPathElement } from "./clip-path";
+export type { ClipPathAttributes } from "./clip-path";

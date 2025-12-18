@@ -155,11 +155,9 @@ export const UseElement = {
 
     const config = FigmaNode.createGroup(name);
 
-    // x, y属性から位置を取得
     const x = this.getX(element);
     const y = this.getY(element);
 
-    // transform属性からの位置オフセットを取得
     const transform = this.getTransform(element);
     let translationX = 0;
     let translationY = 0;
@@ -180,13 +178,11 @@ export const UseElement = {
       config.y = y + translationY;
     }
 
-    // opacity属性の適用
     const opacity = this.getOpacity(element);
     if (opacity !== undefined) {
       config.opacity = opacity;
     }
 
-    // 子要素配列を初期化（参照解決は呼び出し側で行う）
     config.children = [];
 
     return config;

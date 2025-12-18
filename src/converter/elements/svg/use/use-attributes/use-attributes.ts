@@ -15,7 +15,7 @@ export interface UseAttributes extends SvgBaseAttributes {
 
   /**
    * 参照先要素のID（xlink名前空間、レガシー互換性のため）
-   * @deprecated SVG2ではhref属性を推奨
+   * @deprecated SVG2以降はhref属性を推奨。SVG1.1互換性のために残されています。
    */
   "xlink:href"?: string;
 

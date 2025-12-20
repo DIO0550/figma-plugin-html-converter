@@ -5,6 +5,13 @@ import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
+ * summary要素のレイアウト定数
+ */
+const SUMMARY_LAYOUT = {
+  ITEM_SPACING: 8,
+} as const;
+
+/**
  * summary要素の型定義
  * details要素の要約を表示するセマンティック要素
  * @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/summary
@@ -66,7 +73,7 @@ export const SummaryElement = {
         const layoutConfig: FigmaNodeConfig = {
           ...baseConfig,
           layoutMode: "HORIZONTAL",
-          itemSpacing: 8,
+          itemSpacing: SUMMARY_LAYOUT.ITEM_SPACING,
           counterAxisAlignItems: "CENTER",
         };
 

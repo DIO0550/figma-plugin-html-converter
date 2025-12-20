@@ -57,8 +57,7 @@ export const DetailsElement = {
   },
 
   /**
-   * DetailsElementをFigmaNodeConfigに変換
-   * open属性に応じた視覚的表現を適用
+   * DetailsElementをFigmaNodeConfigに変換（details要素は常に表示される）
    */
   toFigmaNode(element: DetailsElement): FigmaNodeConfig {
     return toFigmaNodeWith(

@@ -6,6 +6,15 @@ import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
+ * details要素のレイアウト定数
+ */
+const DETAILS_LAYOUT = {
+  PADDING_VERTICAL: 8,
+  PADDING_HORIZONTAL: 12,
+  ITEM_SPACING: 8,
+} as const;
+
+/**
  * details要素の型定義
  * 詳細開示ウィジェットを表すセマンティック要素
  * @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/details
@@ -72,11 +81,11 @@ export const DetailsElement = {
           strokes: [Paint.solid({ r: 0.8, g: 0.8, b: 0.8 })],
           strokeWeight: 1,
           // デフォルトのパディング
-          paddingTop: 8,
-          paddingBottom: 8,
-          paddingLeft: 12,
-          paddingRight: 12,
-          itemSpacing: 8,
+          paddingTop: DETAILS_LAYOUT.PADDING_VERTICAL,
+          paddingBottom: DETAILS_LAYOUT.PADDING_VERTICAL,
+          paddingLeft: DETAILS_LAYOUT.PADDING_HORIZONTAL,
+          paddingRight: DETAILS_LAYOUT.PADDING_HORIZONTAL,
+          itemSpacing: DETAILS_LAYOUT.ITEM_SPACING,
         };
 
         return detailsConfig;

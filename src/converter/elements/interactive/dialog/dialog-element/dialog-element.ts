@@ -6,6 +6,16 @@ import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { toFigmaNodeWith } from "../../../../utils/to-figma-node-with";
 
 /**
+ * dialog要素のレイアウト定数
+ */
+const DIALOG_LAYOUT = {
+  PADDING_VERTICAL: 16,
+  PADDING_HORIZONTAL: 24,
+  ITEM_SPACING: 12,
+  CORNER_RADIUS: 8,
+} as const;
+
+/**
  * dialog要素の型定義
  * モーダルまたは非モーダルダイアログボックスを表すセマンティック要素
  * @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/dialog
@@ -74,13 +84,13 @@ export const DialogElement = {
           strokes: [Paint.solid({ r: 0.8, g: 0.8, b: 0.8 })],
           strokeWeight: 1,
           // 角丸（モーダルらしい外観）
-          cornerRadius: 8,
+          cornerRadius: DIALOG_LAYOUT.CORNER_RADIUS,
           // パディング
-          paddingTop: 16,
-          paddingBottom: 16,
-          paddingLeft: 24,
-          paddingRight: 24,
-          itemSpacing: 12,
+          paddingTop: DIALOG_LAYOUT.PADDING_VERTICAL,
+          paddingBottom: DIALOG_LAYOUT.PADDING_VERTICAL,
+          paddingLeft: DIALOG_LAYOUT.PADDING_HORIZONTAL,
+          paddingRight: DIALOG_LAYOUT.PADDING_HORIZONTAL,
+          itemSpacing: DIALOG_LAYOUT.ITEM_SPACING,
         };
 
         return dialogConfig;

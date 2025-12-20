@@ -8,6 +8,11 @@ import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
 import { mapToFigma as mapPToFigma } from "./elements/text/p";
 import { AConverter } from "./elements/text/a";
+import {
+  SummaryElement,
+  DetailsElement,
+  DialogElement,
+} from "./elements/interactive";
 
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
@@ -68,6 +73,28 @@ export function mapHTMLNodeToFigma(
     const aConfig = AConverter.mapToFigma(htmlNode);
     if (aConfig) {
       return aConfig;
+    }
+  }
+
+  // interactive要素の処理
+  if (tagName === "summary") {
+    const summaryConfig = SummaryElement.mapToFigma(htmlNode);
+    if (summaryConfig) {
+      return summaryConfig;
+    }
+  }
+
+  if (tagName === "details") {
+    const detailsConfig = DetailsElement.mapToFigma(htmlNode);
+    if (detailsConfig) {
+      return detailsConfig;
+    }
+  }
+
+  if (tagName === "dialog") {
+    const dialogConfig = DialogElement.mapToFigma(htmlNode);
+    if (dialogConfig) {
+      return dialogConfig;
     }
   }
 

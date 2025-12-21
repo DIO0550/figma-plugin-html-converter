@@ -45,7 +45,9 @@ test("toFigmaNode: id/classからノード名を付与する", () => {
 });
 
 test("toFigmaNode: styleのwidth/heightを反映する", () => {
-  const element = ProgressElement.create({ style: "width: 300px; height: 8px;" });
+  const element = ProgressElement.create({
+    style: "width: 300px; height: 8px;",
+  });
   const config = toFigmaNode(element);
 
   const [track, fill] = config.children!;
@@ -54,6 +56,23 @@ test("toFigmaNode: styleのwidth/heightを反映する", () => {
   expect(track.width).toBe(300);
   expect(track.height).toBe(8);
   expect(fill.height).toBe(8);
+});
+
+test("toFigmaNode: value未設定（indeterminate状態）ではfill幅が0になる", () => {
+  // value属性なし = indeterminate状態
+  const element = ProgressElement.create({ max: "100" });
+  const config = toFigmaNode(element);
+
+  const fill = config.children?.[1];
+  expect(fill?.width).toBe(0);
+});
+
+test("toFigmaNode: value=undefinedでもindeterminate状態として処理される", () => {
+  const element = ProgressElement.create({});
+  const config = toFigmaNode(element);
+
+  const fill = config.children?.[1];
+  expect(fill?.width).toBe(0);
 });
 
 test("mapToFigma: progress要素を変換し、その他はnullを返す", () => {

@@ -4,9 +4,13 @@
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import { FigmaNode } from "../../../../models/figma-node";
-import { Styles } from "../../../../models/styles";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
-import type { ProgressAttributes } from "../progress-attributes";
+import { buildNodeName } from "../../../../utils/node-name-builder";
+import {
+  clamp,
+  parseNumericWithFallback,
+} from "../../../../utils/numeric-helpers";
+import { resolveSize } from "../../../../utils/size-helpers";
 import { ProgressElement } from "../progress-element";
 
 const DEFAULT_WIDTH = 200;
@@ -15,72 +19,31 @@ const TRACK_COLOR = { r: 0.92, g: 0.92, b: 0.92 };
 const FILL_COLOR = { r: 0.2, g: 0.6, b: 1 };
 
 /**
- * 数値属性をパースするヘルパー
+ * ゼロ除算を防ぐための最小max値
+ * max属性が0以下の場合にこの値を使用して計算を安全に行う
  */
-function parseNumeric(value: unknown, fallback: number): number {
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : fallback;
-  }
-  if (typeof value === "string") {
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : fallback;
-  }
-  return fallback;
-}
-
-/**
- * 値を指定範囲にクランプする
- */
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-/**
- * style属性から幅・高さを解決する
- */
-function resolveSize(attributes?: ProgressAttributes): {
-  width: number;
-  height: number;
-} {
-  const style = attributes?.style;
-  if (!style) {
-    return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
-  }
-
-  const styles = Styles.parse(style);
-  const width = Styles.getWidth(styles);
-  const height = Styles.getHeight(styles);
-
-  return {
-    width: typeof width === "number" ? width : DEFAULT_WIDTH,
-    height: typeof height === "number" ? height : DEFAULT_HEIGHT,
-  };
-}
-
-/**
- * ノード名をid/classから生成する
- */
-function getNodeName(attributes?: ProgressAttributes): string {
-  if (attributes?.id) {
-    return `progress#${attributes.id}`;
-  }
-  if (attributes?.class) {
-    const className = attributes.class.split(" ")[0];
-    return `progress.${className}`;
-  }
-  return "progress";
-}
+const MIN_MAX_VALUE = 0.0001;
 
 /**
  * progress要素をFigmaノードに変換
  */
 export function toFigmaNode(element: ProgressElement): FigmaNodeConfig {
-  const max = Math.max(parseNumeric(element.attributes?.max, 1), 0.0001);
-  const value = clamp(parseNumeric(element.attributes?.value, 0), 0, max);
+  const max = Math.max(
+    parseNumericWithFallback(element.attributes?.max, 1),
+    MIN_MAX_VALUE,
+  );
+  const value = clamp(
+    parseNumericWithFallback(element.attributes?.value, 0),
+    0,
+    max,
+  );
   const ratio = clamp(value / max, 0, 1);
-  const size = resolveSize(element.attributes);
+  const size = resolveSize(element.attributes, {
+    defaultWidth: DEFAULT_WIDTH,
+    defaultHeight: DEFAULT_HEIGHT,
+  });
 
-  const config = FigmaNode.createFrame(getNodeName(element.attributes));
+  const config = FigmaNode.createFrame(buildNodeName(element));
   config.layoutMode = "NONE";
   config.width = size.width;
   config.height = size.height;

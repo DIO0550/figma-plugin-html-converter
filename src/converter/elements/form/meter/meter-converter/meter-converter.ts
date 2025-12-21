@@ -14,6 +14,10 @@ import { FigmaNode } from "../../../../models/figma-node";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
 import { buildNodeName } from "../../../../utils/node-name-builder";
 import { clamp, parseNumericOrNull } from "../../../../utils/numeric-helpers";
+import {
+  METER_STATUS_COLORS,
+  PROGRESS_METER_TRACK_COLOR,
+} from "../../../../utils/progress-meter-colors";
 import { resolveSize } from "../../../../utils/size-helpers";
 import type { MeterAttributes } from "../meter-attributes";
 import { MeterElement } from "../meter-element";
@@ -23,23 +27,6 @@ const DEFAULT_WIDTH = 200;
 
 /** meter要素のデフォルト高さ（px）- ブラウザ標準に近似 */
 const DEFAULT_HEIGHT = 12;
-
-/** トラック（背景）の色 - ライトグレー（#EBEBEB相当） */
-const TRACK_COLOR = { r: 0.92, g: 0.92, b: 0.92 };
-
-/**
- * meter要素の状態に応じた色定義
- *
- * ブラウザのデフォルトスタイルに近い色を採用:
- * - good: グリーン（#33B333相当）- 最適値に近い状態
- * - caution: イエロー/オレンジ（#F2C233相当）- 注意が必要な状態
- * - danger: レッド（#E64D4D相当）- 警告が必要な状態
- */
-const STATUS_COLORS = {
-  good: { r: 0.2, g: 0.7, b: 0.2 },
-  caution: { r: 0.95, g: 0.76, b: 0.2 },
-  danger: { r: 0.9, g: 0.3, b: 0.3 },
-} as const;
 
 /**
  * low属性のデフォルト比率（範囲の25%地点）
@@ -57,7 +44,7 @@ const DEFAULT_LOW_RATIO = 0.25;
  */
 const DEFAULT_HIGH_RATIO = 0.75;
 
-type MeterStatus = keyof typeof STATUS_COLORS;
+type MeterStatus = keyof typeof METER_STATUS_COLORS;
 
 interface MeterState {
   min: number;
@@ -109,6 +96,13 @@ function resolveMeterState(attributes?: MeterAttributes): MeterState {
 
 /**
  * meterの色状態を決定する
+ *
+ * HTML仕様に基づき、optimum属性の位置によって3つのケースに分岐します：
+ * - ケース1: optimumがhigh以上 → 高い値がgood（例：バッテリー残量）
+ * - ケース2: optimumがlow以下 → 低い値がgood（例：エラー率）
+ * - ケース3: optimumがlowとhighの間 → 中間値がgood（例：体温）
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
  */
 function determineMeterStatus(
   value: number,
@@ -123,24 +117,32 @@ function determineMeterStatus(
   const { low, high, optimum } = info;
 
   if (optimum !== null) {
+    // ケース1: optimumがhigh以上 - 高い値が望ましい
+    // 例: バッテリー残量（高いほど良い）
     if (optimum >= high) {
       if (value >= high) return "good";
       if (value >= low) return "caution";
       return "danger";
     }
 
+    // ケース2: optimumがlow以下 - 低い値が望ましい
+    // 例: エラー率、レイテンシ（低いほど良い）
     if (optimum <= low) {
       if (value <= low) return "good";
       if (value <= high) return "caution";
       return "danger";
     }
 
+    // ケース3: optimumがlowとhighの間 - 中間値が望ましい
+    // 例: 体温、pH値（適正範囲内が良い）
     if (value >= low && value <= high) {
       return "good";
     }
     return "danger";
   }
 
+  // optimum未指定時のデフォルト動作
+  // 高い値をgoodとして扱う
   if (value >= high) return "good";
   if (value >= low) return "caution";
   return "danger";
@@ -165,13 +167,13 @@ export function toFigmaNode(element: MeterElement): FigmaNodeConfig {
   track.width = size.width;
   track.height = size.height;
   track.cornerRadius = size.height / 2;
-  track.fills = [{ type: "SOLID", color: TRACK_COLOR }];
+  track.fills = [{ type: "SOLID", color: PROGRESS_METER_TRACK_COLOR }];
 
   const fill = FigmaNode.createRectangle("meter-fill");
   fill.width = size.width * state.ratio;
   fill.height = size.height;
   fill.cornerRadius = size.height / 2;
-  fill.fills = [{ type: "SOLID", color: STATUS_COLORS[state.status] }];
+  fill.fills = [{ type: "SOLID", color: METER_STATUS_COLORS[state.status] }];
 
   config.children = [track, fill];
 

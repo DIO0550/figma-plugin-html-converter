@@ -16,6 +16,10 @@ import {
   clamp,
   parseNumericWithFallback,
 } from "../../../../utils/numeric-helpers";
+import {
+  PROGRESS_FILL_COLOR,
+  PROGRESS_METER_TRACK_COLOR,
+} from "../../../../utils/progress-meter-colors";
 import { resolveSize } from "../../../../utils/size-helpers";
 import { ProgressElement } from "../progress-element";
 
@@ -24,12 +28,6 @@ const DEFAULT_WIDTH = 200;
 
 /** progress要素のデフォルト高さ（px）- ブラウザ標準に近似 */
 const DEFAULT_HEIGHT = 12;
-
-/** トラック（背景）の色 - ライトグレー（#EBEBEB相当） */
-const TRACK_COLOR = { r: 0.92, g: 0.92, b: 0.92 };
-
-/** フィル（進捗部分）の色 - ブルー（#3399FF相当）*/
-const FILL_COLOR = { r: 0.2, g: 0.6, b: 1 };
 
 /**
  * ゼロ除算を防ぐための最小max値（イプシロン）
@@ -67,13 +65,13 @@ export function toFigmaNode(element: ProgressElement): FigmaNodeConfig {
   track.width = size.width;
   track.height = size.height;
   track.cornerRadius = size.height / 2;
-  track.fills = [{ type: "SOLID", color: TRACK_COLOR }];
+  track.fills = [{ type: "SOLID", color: PROGRESS_METER_TRACK_COLOR }];
 
   const fill = FigmaNode.createRectangle("progress-fill");
   fill.width = size.width * ratio;
   fill.height = size.height;
   fill.cornerRadius = size.height / 2;
-  fill.fills = [{ type: "SOLID", color: FILL_COLOR }];
+  fill.fills = [{ type: "SOLID", color: PROGRESS_FILL_COLOR }];
 
   config.children = [track, fill];
 

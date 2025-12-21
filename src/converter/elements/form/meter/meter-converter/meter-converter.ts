@@ -104,16 +104,8 @@ function resolveMeterState(attributes?: MeterAttributes): MeterState {
   const defaultLow = min + range * 0.25;
   const defaultHigh = min + range * 0.75;
 
-  const low = clamp(
-    parseNumeric(attributes?.low) ?? defaultLow,
-    min,
-    max,
-  );
-  const high = clamp(
-    parseNumeric(attributes?.high) ?? defaultHigh,
-    low,
-    max,
-  );
+  const low = clamp(parseNumeric(attributes?.low) ?? defaultLow, min, max);
+  const high = clamp(parseNumeric(attributes?.high) ?? defaultHigh, low, max);
 
   const optimumParsed = parseNumeric(attributes?.optimum);
   const optimum =
@@ -204,17 +196,4 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
     MeterElement.create,
     toFigmaNode,
   );
-}
-
-/**
- * meter要素のコンバータークラス
- */
-export class MeterConverter {
-  toFigmaNode(element: MeterElement): FigmaNodeConfig {
-    return toFigmaNode(element);
-  }
-
-  mapToFigma(node: unknown): FigmaNodeConfig | null {
-    return mapToFigma(node);
-  }
 }

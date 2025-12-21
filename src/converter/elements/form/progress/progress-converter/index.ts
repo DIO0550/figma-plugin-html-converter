@@ -2,8 +2,4 @@
  * @fileoverview progress-converter のエクスポート
  */
 
-export {
-  toFigmaNode,
-  mapToFigma,
-  ProgressConverter,
-} from "./progress-converter";
+export { toFigmaNode, mapToFigma } from "./progress-converter";

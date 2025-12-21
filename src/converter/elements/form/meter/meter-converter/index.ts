@@ -2,4 +2,4 @@
  * @fileoverview meter-converter のエクスポート
  */
 
-export { toFigmaNode, mapToFigma, MeterConverter } from "./meter-converter";
+export { toFigmaNode, mapToFigma } from "./meter-converter";

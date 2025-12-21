@@ -5,4 +5,4 @@
 export type { MeterAttributes } from "./meter-attributes";
 export type { MeterElement } from "./meter-element";
 export { MeterElement as MeterElementCompanion } from "./meter-element";
-export { toFigmaNode, mapToFigma, MeterConverter } from "./meter-converter";
+export { toFigmaNode, mapToFigma } from "./meter-converter";

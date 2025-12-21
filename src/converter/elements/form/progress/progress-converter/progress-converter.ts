@@ -114,16 +114,3 @@ export function mapToFigma(node: unknown): FigmaNodeConfig | null {
     toFigmaNode,
   );
 }
-
-/**
- * progress要素のコンバータークラス
- */
-export class ProgressConverter {
-  toFigmaNode(element: ProgressElement): FigmaNodeConfig {
-    return toFigmaNode(element);
-  }
-
-  mapToFigma(node: unknown): FigmaNodeConfig | null {
-    return mapToFigma(node);
-  }
-}

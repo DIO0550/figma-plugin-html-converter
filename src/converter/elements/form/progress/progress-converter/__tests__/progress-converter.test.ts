@@ -41,7 +41,7 @@ test("toFigmaNode: id/classからノード名を付与する", () => {
   expect(toFigmaNode(withId).name).toBe("progress#download");
 
   const withClass = ProgressElement.create({ class: "primary loading" });
-  expect(toFigmaNode(withClass).name).toBe("progress.primary");
+  expect(toFigmaNode(withClass).name).toBe("progress.primary.loading");
 });
 
 test("toFigmaNode: styleのwidth/heightを反映する", () => {

@@ -1,5 +1,11 @@
 /**
  * @fileoverview progress要素のFigma変換ロジック
+ *
+ * HTML `<progress>` 要素をFigmaのフレームノードに変換します。
+ * トラック（背景）とフィル（進捗部分）の2つの矩形で構成され、
+ * value/max属性に基づいて進捗率を視覚化します。
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
@@ -13,14 +19,23 @@ import {
 import { resolveSize } from "../../../../utils/size-helpers";
 import { ProgressElement } from "../progress-element";
 
+/** progress要素のデフォルト幅（px）- ブラウザ標準に近似 */
 const DEFAULT_WIDTH = 200;
+
+/** progress要素のデフォルト高さ（px）- ブラウザ標準に近似 */
 const DEFAULT_HEIGHT = 12;
+
+/** トラック（背景）の色 - ライトグレー（#EBEBEB相当） */
 const TRACK_COLOR = { r: 0.92, g: 0.92, b: 0.92 };
+
+/** フィル（進捗部分）の色 - ブルー（#3399FF相当）*/
 const FILL_COLOR = { r: 0.2, g: 0.6, b: 1 };
 
 /**
- * ゼロ除算を防ぐための最小max値
- * max属性が0以下の場合にこの値を使用して計算を安全に行う
+ * ゼロ除算を防ぐための最小max値（イプシロン）
+ *
+ * max属性が0以下の場合でも安全に比率計算を行うために使用。
+ * IEEE 754浮動小数点の精度を考慮した十分小さな正の値。
  */
 const MIN_MAX_VALUE = 0.0001;
 

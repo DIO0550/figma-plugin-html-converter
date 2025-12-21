@@ -75,6 +75,15 @@ test("toFigmaNode: value=undefinedでもindeterminate状態として処理され
   expect(fill?.width).toBe(0);
 });
 
+test("toFigmaNode: cornerRadiusは高さの半分になる", () => {
+  const element = ProgressElement.create({ style: "height: 20px;" });
+  const config = toFigmaNode(element);
+
+  const [track, fill] = config.children!;
+  expect(track.cornerRadius).toBe(10);
+  expect(fill.cornerRadius).toBe(10);
+});
+
 test("mapToFigma: progress要素を変換し、その他はnullを返す", () => {
   const node = {
     type: "element" as const,

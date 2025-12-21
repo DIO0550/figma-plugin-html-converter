@@ -43,6 +43,14 @@ describe("parseNumericWithFallback", () => {
   test("Infinityはフォールバックを返す", () => {
     expect(parseNumericWithFallback(Infinity, 5)).toBe(5);
   });
+
+  test("NaNはフォールバックを返す", () => {
+    expect(parseNumericWithFallback(NaN, 7)).toBe(7);
+  });
+
+  test("-Infinityはフォールバックを返す", () => {
+    expect(parseNumericWithFallback(-Infinity, 3)).toBe(3);
+  });
 });
 
 describe("parseNumericOrNull", () => {
@@ -64,5 +72,13 @@ describe("parseNumericOrNull", () => {
 
   test("Infinityはnullを返す", () => {
     expect(parseNumericOrNull(Infinity)).toBeNull();
+  });
+
+  test("NaNはnullを返す", () => {
+    expect(parseNumericOrNull(NaN)).toBeNull();
+  });
+
+  test("-Infinityはnullを返す", () => {
+    expect(parseNumericOrNull(-Infinity)).toBeNull();
   });
 });

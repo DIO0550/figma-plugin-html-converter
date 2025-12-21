@@ -134,6 +134,27 @@ test("toFigmaNode: max <= minの場合はmax = min + 1に補正される", () =>
   expect(fill?.width).toBe(0);
 });
 
+test("toFigmaNode: cornerRadiusは高さの半分になる", () => {
+  const element = MeterElement.create({
+    value: 50,
+    max: 100,
+    style: "height: 16px;",
+  });
+  const config = toFigmaNode(element);
+
+  const [track, fill] = config.children!;
+  expect(track.cornerRadius).toBe(8);
+  expect(fill.cornerRadius).toBe(8);
+});
+
+test("toFigmaNode: value省略時はminにフォールバックしfill幅が0になる", () => {
+  const element = MeterElement.create({ min: 0, max: 100 });
+  const config = toFigmaNode(element);
+
+  const fill = config.children?.[1];
+  expect(fill?.width).toBe(0);
+});
+
 test("mapToFigma: meter要素を変換し、その他はnullを返す", () => {
   const node = {
     type: "element" as const,

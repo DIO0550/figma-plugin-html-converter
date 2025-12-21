@@ -1,5 +1,12 @@
 /**
  * @fileoverview meter要素のFigma変換ロジック
+ *
+ * HTML `<meter>` 要素をFigmaのフレームノードに変換します。
+ * トラック（背景）とフィル（現在値部分）の2つの矩形で構成され、
+ * value/min/max/low/high/optimum属性に基づいて状態を視覚化します。
+ * 状態に応じてフィルの色がgood（緑）/caution（黄）/danger（赤）に変化します。
+ *
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
  */
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
@@ -11,9 +18,23 @@ import { resolveSize } from "../../../../utils/size-helpers";
 import type { MeterAttributes } from "../meter-attributes";
 import { MeterElement } from "../meter-element";
 
+/** meter要素のデフォルト幅（px）- ブラウザ標準に近似 */
 const DEFAULT_WIDTH = 200;
+
+/** meter要素のデフォルト高さ（px）- ブラウザ標準に近似 */
 const DEFAULT_HEIGHT = 12;
+
+/** トラック（背景）の色 - ライトグレー（#EBEBEB相当） */
 const TRACK_COLOR = { r: 0.92, g: 0.92, b: 0.92 };
+
+/**
+ * meter要素の状態に応じた色定義
+ *
+ * ブラウザのデフォルトスタイルに近い色を採用:
+ * - good: グリーン（#33B333相当）- 最適値に近い状態
+ * - caution: イエロー/オレンジ（#F2C233相当）- 注意が必要な状態
+ * - danger: レッド（#E64D4D相当）- 警告が必要な状態
+ */
 const STATUS_COLORS = {
   good: { r: 0.2, g: 0.7, b: 0.2 },
   caution: { r: 0.95, g: 0.76, b: 0.2 },
@@ -21,10 +42,19 @@ const STATUS_COLORS = {
 } as const;
 
 /**
- * low/highしきい値のデフォルト比率
- * low: 範囲の25%地点、high: 範囲の75%地点
+ * low属性のデフォルト比率（範囲の25%地点）
+ *
+ * HTML仕様に基づくデフォルト計算: low未指定時は min + (max - min) * 0.25
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
  */
 const DEFAULT_LOW_RATIO = 0.25;
+
+/**
+ * high属性のデフォルト比率（範囲の75%地点）
+ *
+ * HTML仕様に基づくデフォルト計算: high未指定時は min + (max - min) * 0.75
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element
+ */
 const DEFAULT_HIGH_RATIO = 0.75;
 
 type MeterStatus = keyof typeof STATUS_COLORS;

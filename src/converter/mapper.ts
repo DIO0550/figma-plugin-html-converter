@@ -13,6 +13,8 @@ import {
   DetailsElement,
   DialogElement,
 } from "./elements/interactive";
+import { mapToFigma as mapProgressToFigma } from "./elements/form/progress";
+import { mapToFigma as mapMeterToFigma } from "./elements/form/meter";
 
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
@@ -95,6 +97,21 @@ export function mapHTMLNodeToFigma(
     const dialogConfig = DialogElement.mapToFigma(htmlNode);
     if (dialogConfig) {
       return dialogConfig;
+    }
+  }
+
+  // 進捗・メーター要素の処理
+  if (tagName === "progress") {
+    const progressConfig = mapProgressToFigma(htmlNode);
+    if (progressConfig) {
+      return progressConfig;
+    }
+  }
+
+  if (tagName === "meter") {
+    const meterConfig = mapMeterToFigma(htmlNode);
+    if (meterConfig) {
+      return meterConfig;
     }
   }
 

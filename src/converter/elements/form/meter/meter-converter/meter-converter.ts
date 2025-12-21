@@ -4,8 +4,10 @@
 
 import type { FigmaNodeConfig } from "../../../../models/figma-node";
 import { FigmaNode } from "../../../../models/figma-node";
-import { Styles } from "../../../../models/styles";
 import { mapToFigmaWith } from "../../../../utils/element-utils";
+import { buildNodeName } from "../../../../utils/node-name-builder";
+import { clamp, parseNumericOrNull } from "../../../../utils/numeric-helpers";
+import { resolveSize } from "../../../../utils/size-helpers";
 import type { MeterAttributes } from "../meter-attributes";
 import { MeterElement } from "../meter-element";
 
@@ -17,6 +19,13 @@ const STATUS_COLORS = {
   caution: { r: 0.95, g: 0.76, b: 0.2 },
   danger: { r: 0.9, g: 0.3, b: 0.3 },
 } as const;
+
+/**
+ * low/highしきい値のデフォルト比率
+ * low: 範囲の25%地点、high: 範囲の75%地点
+ */
+const DEFAULT_LOW_RATIO = 0.25;
+const DEFAULT_HIGH_RATIO = 0.75;
 
 type MeterStatus = keyof typeof STATUS_COLORS;
 
@@ -32,82 +41,33 @@ interface MeterState {
 }
 
 /**
- * 数値属性をパースするヘルパー
- */
-function parseNumeric(value: unknown): number | null {
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : null;
-  }
-  if (typeof value === "string") {
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-
-/**
- * 値を指定範囲にクランプする
- */
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-/**
- * style属性から幅・高さを解決する
- */
-function resolveSize(attributes?: MeterAttributes): {
-  width: number;
-  height: number;
-} {
-  const style = attributes?.style;
-  if (!style) {
-    return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
-  }
-
-  const styles = Styles.parse(style);
-  const width = Styles.getWidth(styles);
-  const height = Styles.getHeight(styles);
-
-  return {
-    width: typeof width === "number" ? width : DEFAULT_WIDTH,
-    height: typeof height === "number" ? height : DEFAULT_HEIGHT,
-  };
-}
-
-/**
- * ノード名をid/classから生成する
- */
-function getNodeName(attributes?: MeterAttributes): string {
-  if (attributes?.id) {
-    return `meter#${attributes.id}`;
-  }
-  if (attributes?.class) {
-    const className = attributes.class.split(" ")[0];
-    return `meter.${className}`;
-  }
-  return "meter";
-}
-
-/**
  * meterの状態（範囲・しきい値・色）を計算する
  */
 function resolveMeterState(attributes?: MeterAttributes): MeterState {
-  const min = parseNumeric(attributes?.min) ?? 0;
-  let max = parseNumeric(attributes?.max) ?? 1;
+  const min = parseNumericOrNull(attributes?.min) ?? 0;
+  let max = parseNumericOrNull(attributes?.max) ?? 1;
   if (max <= min) {
     max = min + 1;
   }
 
-  const value = clamp(parseNumeric(attributes?.value) ?? min, min, max);
+  const value = clamp(parseNumericOrNull(attributes?.value) ?? min, min, max);
   const range = max - min;
 
-  const defaultLow = min + range * 0.25;
-  const defaultHigh = min + range * 0.75;
+  const defaultLow = min + range * DEFAULT_LOW_RATIO;
+  const defaultHigh = min + range * DEFAULT_HIGH_RATIO;
 
-  const low = clamp(parseNumeric(attributes?.low) ?? defaultLow, min, max);
-  const high = clamp(parseNumeric(attributes?.high) ?? defaultHigh, low, max);
+  const low = clamp(
+    parseNumericOrNull(attributes?.low) ?? defaultLow,
+    min,
+    max,
+  );
+  const high = clamp(
+    parseNumericOrNull(attributes?.high) ?? defaultHigh,
+    low,
+    max,
+  );
 
-  const optimumParsed = parseNumeric(attributes?.optimum);
+  const optimumParsed = parseNumericOrNull(attributes?.optimum);
   const optimum =
     optimumParsed === null ? null : clamp(optimumParsed, min, max);
 
@@ -160,10 +120,13 @@ function determineMeterStatus(
  * meter要素をFigmaノードに変換
  */
 export function toFigmaNode(element: MeterElement): FigmaNodeConfig {
-  const size = resolveSize(element.attributes);
+  const size = resolveSize(element.attributes, {
+    defaultWidth: DEFAULT_WIDTH,
+    defaultHeight: DEFAULT_HEIGHT,
+  });
   const state = resolveMeterState(element.attributes);
 
-  const config = FigmaNode.createFrame(getNodeName(element.attributes));
+  const config = FigmaNode.createFrame(buildNodeName(element));
   config.layoutMode = "NONE";
   config.width = size.width;
   config.height = size.height;

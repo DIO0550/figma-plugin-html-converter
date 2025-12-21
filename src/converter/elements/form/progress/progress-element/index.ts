@@ -2,8 +2,5 @@
  * @fileoverview progress-element のエクスポート
  */
 
-export type { ProgressElement } from "./progress-element";
-export {
-  ProgressElement,
-  ProgressElement as ProgressElementCompanion,
-} from "./progress-element";
+export { ProgressElement } from "./progress-element";
+export type { ProgressElement as ProgressElementType } from "./progress-element";

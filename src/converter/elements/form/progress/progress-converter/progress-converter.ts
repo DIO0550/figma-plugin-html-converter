@@ -35,7 +35,7 @@ const DEFAULT_HEIGHT = 12;
  * max属性が0以下の場合でも安全に比率計算を行うために使用。
  * IEEE 754浮動小数点の精度を考慮した十分小さな正の値。
  */
-const MIN_MAX_VALUE = 0.0001;
+const MIN_SAFE_MAX_VALUE = 0.0001;
 
 /**
  * progress要素をFigmaノードに変換
@@ -43,7 +43,7 @@ const MIN_MAX_VALUE = 0.0001;
 export function toFigmaNode(element: ProgressElement): FigmaNodeConfig {
   const max = Math.max(
     parseNumericWithFallback(element.attributes?.max, 1),
-    MIN_MAX_VALUE,
+    MIN_SAFE_MAX_VALUE,
   );
   const value = clamp(
     parseNumericWithFallback(element.attributes?.value, 0),

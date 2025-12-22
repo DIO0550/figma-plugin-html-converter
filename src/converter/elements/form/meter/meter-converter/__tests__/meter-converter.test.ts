@@ -3,6 +3,7 @@
  */
 
 import { expect, test } from "vitest";
+import { METER_STATUS_COLORS } from "../../../../../utils/progress-meter-colors";
 import { MeterElement } from "../../meter-element";
 import { mapToFigma, toFigmaNode } from "../meter-converter";
 
@@ -15,8 +16,8 @@ test("toFigmaNode: 基本的なmeterを生成し、比率で幅を決定する",
 
   const [track, fill] = config.children!;
   expect(track.width).toBe(200);
-  expect(fill.width).toBeCloseTo(100); // 50%
-  expect(fill.fills?.[0]?.color.r).toBeCloseTo(0.95); // cautionカラー
+  expect(fill.width).toBeCloseTo(100);
+  expect(fill.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.caution);
 });
 
 test("toFigmaNode: 低い値はdangerカラーになる", () => {
@@ -31,8 +32,7 @@ test("toFigmaNode: 低い値はdangerカラーになる", () => {
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.9);
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.3);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.danger);
 });
 
 test("toFigmaNode: optimumがlow以下の場合は低い値がgoodカラーになる", () => {
@@ -47,7 +47,7 @@ test("toFigmaNode: optimumがlow以下の場合は低い値がgoodカラーに�
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.7);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.good);
 });
 
 test("toFigmaNode: maxを超える値はクランプされる", () => {
@@ -70,8 +70,7 @@ test("toFigmaNode: optimumがlowとhighの間にある場合、範囲内はgood"
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  // optimumが中間にある場合、low〜high範囲内はgood
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.7);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.good);
 });
 
 test("toFigmaNode: optimumがlowとhighの間で範囲外はdanger", () => {
@@ -86,9 +85,7 @@ test("toFigmaNode: optimumがlowとhighの間で範囲外はdanger", () => {
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  // optimumが中間にある場合、low〜high範囲外はdanger
-  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.9);
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.3);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.danger);
 });
 
 test("toFigmaNode: optimum未指定でvalue >= highはgood", () => {
@@ -102,7 +99,7 @@ test("toFigmaNode: optimum未指定でvalue >= highはgood", () => {
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.7);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.good);
 });
 
 test("toFigmaNode: optimum未指定でlow <= value < highはcaution", () => {
@@ -116,8 +113,7 @@ test("toFigmaNode: optimum未指定でlow <= value < highはcaution", () => {
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.95);
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.76);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.caution);
 });
 
 test("toFigmaNode: optimum未指定でvalue < lowはdanger", () => {
@@ -131,9 +127,7 @@ test("toFigmaNode: optimum未指定でvalue < lowはdanger", () => {
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  // optimum未指定でvalue < lowはdanger
-  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.9);
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.3);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.danger);
 });
 
 test("toFigmaNode: optimum >= highでlow <= value < highはcaution", () => {
@@ -148,9 +142,7 @@ test("toFigmaNode: optimum >= highでlow <= value < highはcaution", () => {
   const config = toFigmaNode(element);
 
   const fill = config.children?.[1];
-  // optimumがhigh以上でvalue < highはcaution
-  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.95);
-  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.76);
+  expect(fill?.fills?.[0]?.color).toEqual(METER_STATUS_COLORS.caution);
 });
 
 test("toFigmaNode: max <= minの場合はmax = min + 1に補正される", () => {
@@ -161,8 +153,6 @@ test("toFigmaNode: max <= minの場合はmax = min + 1に補正される", () =>
   });
   const config = toFigmaNode(element);
 
-  // max = min + 1 = 11 に補正され、value = 10（min）にクランプ
-  // ratio = 0
   const fill = config.children?.[1];
   expect(fill?.width).toBe(0);
 });

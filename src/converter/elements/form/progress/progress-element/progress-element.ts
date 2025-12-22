@@ -1,5 +1,5 @@
 /**
- * @fileoverview progress要素の定義とコンパニオンオブジェクト
+ * @fileoverview progress要素の型定義、型ガード、ファクトリー関数を提供
  */
 
 import type { HTMLNode } from "../../../../models/html-node";
@@ -11,8 +11,10 @@ import type { ProgressAttributes } from "../progress-attributes";
  *
  * 進捗を表現するHTMLのprogress要素を表す。
  */
-export interface ProgressElement
-  extends BaseElement<"progress", ProgressAttributes> {
+export interface ProgressElement extends BaseElement<
+  "progress",
+  ProgressAttributes
+> {
   children?: HTMLNode[];
 }
 

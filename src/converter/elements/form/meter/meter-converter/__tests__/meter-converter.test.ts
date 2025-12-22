@@ -120,6 +120,39 @@ test("toFigmaNode: optimum未指定でlow <= value < highはcaution", () => {
   expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.76);
 });
 
+test("toFigmaNode: optimum未指定でvalue < lowはdanger", () => {
+  const element = MeterElement.create({
+    value: 10,
+    min: 0,
+    max: 100,
+    low: 25,
+    high: 75,
+  });
+  const config = toFigmaNode(element);
+
+  const fill = config.children?.[1];
+  // optimum未指定でvalue < lowはdanger
+  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.9);
+  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.3);
+});
+
+test("toFigmaNode: optimum >= highでlow <= value < highはcaution", () => {
+  const element = MeterElement.create({
+    value: 50,
+    min: 0,
+    max: 100,
+    low: 25,
+    high: 75,
+    optimum: 100,
+  });
+  const config = toFigmaNode(element);
+
+  const fill = config.children?.[1];
+  // optimumがhigh以上でvalue < highはcaution
+  expect(fill?.fills?.[0]?.color.r).toBeCloseTo(0.95);
+  expect(fill?.fills?.[0]?.color.g).toBeCloseTo(0.76);
+});
+
 test("toFigmaNode: max <= minの場合はmax = min + 1に補正される", () => {
   const element = MeterElement.create({
     value: 5,

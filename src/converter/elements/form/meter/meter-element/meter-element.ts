@@ -1,5 +1,5 @@
 /**
- * @fileoverview meter要素の定義とコンパニオンオブジェクト
+ * @fileoverview meter要素の型定義、型ガード、ファクトリー関数を提供
  */
 
 import type { HTMLNode } from "../../../../models/html-node";

@@ -117,32 +117,24 @@ function determineMeterStatus(
   const { low, high, optimum } = info;
 
   if (optimum !== null) {
-    // ケース1: optimumがhigh以上 - 高い値が望ましい
-    // 例: バッテリー残量（高いほど良い）
     if (optimum >= high) {
       if (value >= high) return "good";
       if (value >= low) return "caution";
       return "danger";
     }
 
-    // ケース2: optimumがlow以下 - 低い値が望ましい
-    // 例: エラー率、レイテンシ（低いほど良い）
     if (optimum <= low) {
       if (value <= low) return "good";
       if (value <= high) return "caution";
       return "danger";
     }
 
-    // ケース3: optimumがlowとhighの間 - 中間値が望ましい
-    // 例: 体温、pH値（適正範囲内が良い）
     if (value >= low && value <= high) {
       return "good";
     }
     return "danger";
   }
 
-  // optimum未指定時のデフォルト動作
-  // 高い値をgoodとして扱う
   if (value >= high) return "good";
   if (value >= low) return "caution";
   return "danger";

@@ -16,17 +16,13 @@ import { buildNodeName } from "../../../../utils/node-name-builder";
 import { clamp, parseNumericOrNull } from "../../../../utils/numeric-helpers";
 import {
   METER_STATUS_COLORS,
+  PROGRESS_METER_DEFAULT_HEIGHT,
+  PROGRESS_METER_DEFAULT_WIDTH,
   PROGRESS_METER_TRACK_COLOR,
 } from "../../../../utils/progress-meter-colors";
 import { resolveSize } from "../../../../utils/size-helpers";
 import type { MeterAttributes } from "../meter-attributes";
 import { MeterElement } from "../meter-element";
-
-/** meter要素のデフォルト幅（px）- ブラウザ標準に近似 */
-const DEFAULT_WIDTH = 200;
-
-/** meter要素のデフォルト高さ（px）- ブラウザ標準に近似 */
-const DEFAULT_HEIGHT = 12;
 
 /**
  * low属性のデフォルト比率（範囲の25%地点）
@@ -145,8 +141,8 @@ function determineMeterStatus(
  */
 export function toFigmaNode(element: MeterElement): FigmaNodeConfig {
   const size = resolveSize(element.attributes, {
-    defaultWidth: DEFAULT_WIDTH,
-    defaultHeight: DEFAULT_HEIGHT,
+    defaultWidth: PROGRESS_METER_DEFAULT_WIDTH,
+    defaultHeight: PROGRESS_METER_DEFAULT_HEIGHT,
   });
   const state = resolveMeterState(element.attributes);
 

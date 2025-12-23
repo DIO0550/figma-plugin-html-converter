@@ -47,3 +47,17 @@ export const METER_STATUS_COLORS = {
   caution: { r: 0.95, g: 0.76, b: 0.2 },
   danger: { r: 0.9, g: 0.3, b: 0.3 },
 } as const;
+
+/**
+ * progress/meter要素のデフォルト幅（px）
+ *
+ * ブラウザのデフォルトスタイルに近い値を採用。
+ */
+export const PROGRESS_METER_DEFAULT_WIDTH = 200;
+
+/**
+ * progress/meter要素のデフォルト高さ（px）
+ *
+ * ブラウザのデフォルトスタイルに近い値を採用。
+ */
+export const PROGRESS_METER_DEFAULT_HEIGHT = 12;

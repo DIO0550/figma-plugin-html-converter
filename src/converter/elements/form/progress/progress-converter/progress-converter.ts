@@ -18,16 +18,12 @@ import {
 } from "../../../../utils/numeric-helpers";
 import {
   PROGRESS_FILL_COLOR,
+  PROGRESS_METER_DEFAULT_HEIGHT,
+  PROGRESS_METER_DEFAULT_WIDTH,
   PROGRESS_METER_TRACK_COLOR,
 } from "../../../../utils/progress-meter-colors";
 import { resolveSize } from "../../../../utils/size-helpers";
 import { ProgressElement } from "../progress-element";
-
-/** progress要素のデフォルト幅（px）- ブラウザ標準に近似 */
-const DEFAULT_WIDTH = 200;
-
-/** progress要素のデフォルト高さ（px）- ブラウザ標準に近似 */
-const DEFAULT_HEIGHT = 12;
 
 /**
  * ゼロ除算を防ぐための最小max値（イプシロン）
@@ -52,8 +48,8 @@ export function toFigmaNode(element: ProgressElement): FigmaNodeConfig {
   );
   const ratio = clamp(value / max, 0, 1);
   const size = resolveSize(element.attributes, {
-    defaultWidth: DEFAULT_WIDTH,
-    defaultHeight: DEFAULT_HEIGHT,
+    defaultWidth: PROGRESS_METER_DEFAULT_WIDTH,
+    defaultHeight: PROGRESS_METER_DEFAULT_HEIGHT,
   });
 
   const config = FigmaNode.createFrame(buildNodeName(element));

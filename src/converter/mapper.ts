@@ -15,6 +15,13 @@ import {
 } from "./elements/interactive";
 import { mapToFigma as mapProgressToFigma } from "./elements/form/progress";
 import { mapToFigma as mapMeterToFigma } from "./elements/form/meter";
+import { TimeConverter } from "./elements/text/time";
+import { AbbrConverter } from "./elements/text/abbr";
+import { CiteConverter } from "./elements/text/cite";
+import { QConverter } from "./elements/text/q";
+import { KbdConverter } from "./elements/text/kbd";
+import { SampConverter } from "./elements/text/samp";
+import { VarConverter } from "./elements/text/var";
 
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
@@ -112,6 +119,56 @@ export function mapHTMLNodeToFigma(
     const meterConfig = mapMeterToFigma(htmlNode);
     if (meterConfig) {
       return meterConfig;
+    }
+  }
+
+  // インラインセマンティック要素の処理
+  if (tagName === "time") {
+    const timeConfig = TimeConverter.mapToFigma(htmlNode);
+    if (timeConfig) {
+      return timeConfig;
+    }
+  }
+
+  if (tagName === "abbr") {
+    const abbrConfig = AbbrConverter.mapToFigma(htmlNode);
+    if (abbrConfig) {
+      return abbrConfig;
+    }
+  }
+
+  if (tagName === "cite") {
+    const citeConfig = CiteConverter.mapToFigma(htmlNode);
+    if (citeConfig) {
+      return citeConfig;
+    }
+  }
+
+  if (tagName === "q") {
+    const qConfig = QConverter.mapToFigma(htmlNode);
+    if (qConfig) {
+      return qConfig;
+    }
+  }
+
+  if (tagName === "kbd") {
+    const kbdConfig = KbdConverter.mapToFigma(htmlNode);
+    if (kbdConfig) {
+      return kbdConfig;
+    }
+  }
+
+  if (tagName === "samp") {
+    const sampConfig = SampConverter.mapToFigma(htmlNode);
+    if (sampConfig) {
+      return sampConfig;
+    }
+  }
+
+  if (tagName === "var") {
+    const varConfig = VarConverter.mapToFigma(htmlNode);
+    if (varConfig) {
+      return varConfig;
     }
   }
 

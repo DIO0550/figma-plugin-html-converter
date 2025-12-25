@@ -200,16 +200,34 @@ describe("TextDecoration", () => {
       expect(result.style.textDecoration).toBe("STRIKETHROUGH");
     });
 
-    it("should handle none value correctly", () => {
+    it("should handle none value correctly with removeFromConfig", () => {
       const style: StyleObject = { textDecoration: "none" };
       const config = {
         style: { textDecoration: "UNDERLINE" },
       } as TextNodeConfig;
 
       const decoration = TextDecoration.extractStyle(style);
-      const result = TextDecoration.applyToConfig(config, decoration);
+      // extractStyleがundefinedを返した場合、noneかどうかを別途チェックして
+      // removeFromConfigを呼び出す必要がある（Typographyモジュールで行う）
+      expect(decoration).toBeUndefined();
 
+      // removeFromConfigで明示的に削除
+      const result = TextDecoration.removeFromConfig(config);
       expect(result.style.textDecoration).toBeUndefined();
+    });
+
+    it("should preserve existing decoration when extractStyle returns undefined for non-none values", () => {
+      const style: StyleObject = { textDecoration: "overline" }; // サポートされていない値
+      const config = {
+        style: { textDecoration: "UNDERLINE" },
+      } as TextNodeConfig;
+
+      const decoration = TextDecoration.extractStyle(style);
+      expect(decoration).toBeUndefined();
+
+      // applyToConfigはundefinedの場合に既存の設定を維持
+      const result = TextDecoration.applyToConfig(config, decoration);
+      expect(result.style.textDecoration).toBe("UNDERLINE");
     });
   });
 });

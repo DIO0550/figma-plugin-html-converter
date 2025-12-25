@@ -72,11 +72,11 @@ export const FontStyle = {
     }
 
     const fontStyle = this.parse(value);
-    if (!fontStyle || fontStyle === "normal") {
+    if (!fontStyle) {
       return config;
     }
 
-    // 斜体の場合のみfontStyleプロパティを設定
+    // 斜体の場合はfontStyleプロパティを設定
     if (fontStyle === "italic") {
       return {
         ...config,
@@ -87,7 +87,11 @@ export const FontStyle = {
       };
     }
 
-    // 通常スタイルの場合はfontStyleプロパティを含めない
-    return config;
+    // 通常スタイル（normal）の場合はfontStyleプロパティを削除
+    const { fontStyle: _removed, ...restStyle } = config.style;
+    return {
+      ...config,
+      style: restStyle,
+    };
   },
 } as const;

@@ -110,13 +110,18 @@ export const TextDecoration = {
   /**
    * Apply text decoration to a TextNodeConfig.
    * @param config Config object to modify
-   * @param decoration TextDecoration to apply (or undefined to remove)
+   * @param decoration TextDecoration to apply, undefined means no change, "NONE" to remove
    * @returns The same config object (modified)
    */
   applyToConfig(
     config: TextNodeConfig,
     decoration: TextDecoration | undefined,
   ): TextNodeConfig {
+    // undefinedの場合は既存の設定を維持（スタイル指定なし）
+    if (decoration === undefined) {
+      return config;
+    }
+
     if (!config.style) {
       // Initialize with proper TextStyle type
       config.style = {
@@ -130,10 +135,18 @@ export const TextDecoration = {
       } as TextStyle;
     }
 
-    if (decoration) {
-      config.style.textDecoration = decoration;
-    } else {
-      // Explicitly remove decoration if undefined is passed
+    config.style.textDecoration = decoration;
+    return config;
+  },
+
+  /**
+   * Remove text decoration from a TextNodeConfig.
+   * Used when text-decoration: none is explicitly specified.
+   * @param config Config object to modify
+   * @returns The same config object (modified)
+   */
+  removeFromConfig(config: TextNodeConfig): TextNodeConfig {
+    if (config.style) {
       delete config.style.textDecoration;
     }
     return config;

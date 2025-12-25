@@ -10,7 +10,7 @@ import { HTMLNode } from "../../../../models/html-node/html-node";
 import { Typography } from "../../styles/typography/typography";
 
 /**
- * VarConverterクラス
+ * VarConverter
  * var要素をFigmaのTEXTノードに変換します
  */
 export const VarConverter = {

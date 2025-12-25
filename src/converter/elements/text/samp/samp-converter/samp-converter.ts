@@ -10,7 +10,7 @@ import { HTMLNode } from "../../../../models/html-node/html-node";
 import { Typography } from "../../styles/typography/typography";
 
 /**
- * SampConverterクラス
+ * SampConverter
  * samp要素をFigmaのTEXTノードに変換します
  */
 export const SampConverter = {

@@ -42,8 +42,7 @@ export const VarConverter = {
     config = Typography.applyToTextNode(config, styles, "var");
 
     // var要素のデフォルトスタイル（イタリック）を維持（スタイルで明示的に指定されていない場合）
-    const rawStyles = element.attributes?.style || "";
-    if (!rawStyles.includes("font-style") && config.style) {
+    if (!styles["font-style"] && config.style) {
       config = {
         ...config,
         style: {

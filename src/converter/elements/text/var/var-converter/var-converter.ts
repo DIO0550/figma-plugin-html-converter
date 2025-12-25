@@ -22,7 +22,7 @@ export const VarConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ベースのテキストノード
+    // ベースのテキストノード（var要素のデフォルトはイタリック）
     let config: TextNodeConfig = {
       type: "TEXT",
       name: buildNodeName(element),
@@ -31,6 +31,7 @@ export const VarConverter = {
         fontFamily: "Inter",
         fontSize: 16,
         fontWeight: 400,
+        fontStyle: "italic",
         lineHeight: { unit: "PIXELS", value: 24 },
         letterSpacing: 0,
         textAlign: "LEFT",
@@ -38,19 +39,8 @@ export const VarConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用
+    // Typographyを利用して統一的に適用（スタイル指定があれば上書きされる）
     config = Typography.applyToTextNode(config, styles, "var");
-
-    // var要素のデフォルトスタイル（イタリック）を維持（スタイルで明示的に指定されていない場合）
-    if (!styles["font-style"] && config.style) {
-      config = {
-        ...config,
-        style: {
-          ...config.style,
-          fontStyle: "italic",
-        },
-      };
-    }
 
     return config;
   },

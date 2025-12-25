@@ -22,7 +22,7 @@ export const SampConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ベースのテキストノード（モノスペースフォントがデフォルト）
+    // ベースのテキストノード（samp要素のデフォルトはモノスペースフォント）
     let config: TextNodeConfig = {
       type: "TEXT",
       name: buildNodeName(element),
@@ -38,19 +38,8 @@ export const SampConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用
+    // Typographyを利用して統一的に適用（スタイル指定があれば上書きされる）
     config = Typography.applyToTextNode(config, styles, "samp");
-
-    // samp要素のデフォルトフォントを維持（スタイルで明示的に指定されていない場合）
-    if (!styles["font-family"] && config.style) {
-      config = {
-        ...config,
-        style: {
-          ...config.style,
-          fontFamily: "monospace",
-        },
-      };
-    }
 
     return config;
   },

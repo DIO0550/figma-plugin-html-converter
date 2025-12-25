@@ -29,7 +29,7 @@ export const AbbrConverter = {
       nodeName = `${nodeName} [${title}]`;
     }
 
-    // ベースのテキストノード（下線がデフォルト）
+    // ベースのテキストノード（abbr要素のデフォルトは下線）
     let config: TextNodeConfig = {
       type: "TEXT",
       name: nodeName,
@@ -46,19 +46,8 @@ export const AbbrConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用
+    // Typographyを利用して統一的に適用（スタイル指定があれば上書きされる）
     config = Typography.applyToTextNode(config, styles, "abbr");
-
-    // abbr要素のデフォルト装飾を維持（スタイルで明示的に指定されていない場合）
-    if (!styles["text-decoration"] && config.style) {
-      config = {
-        ...config,
-        style: {
-          ...config.style,
-          textDecoration: "UNDERLINE",
-        },
-      };
-    }
 
     return config;
   },

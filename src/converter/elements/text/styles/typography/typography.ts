@@ -69,9 +69,23 @@ export const Typography = {
     // テキストカラーを適用（要素タグに関わらずデフォルトなし）
     const withTextColor = TextColor.applyToConfig(withFontFamily, styles);
 
-    // テキスト装飾を適用（存在時のみ）
-    const decoration = TextDecoration.extractStyle(styles);
-    const finalConfig = TextDecoration.applyToConfig(withTextColor, decoration);
+    // テキスト装飾を適用
+    const decorationRaw = styles["text-decoration"];
+    let finalConfig = withTextColor;
+
+    if (decorationRaw !== undefined) {
+      // 明示的にtext-decorationが指定されている場合
+      const decoration = TextDecoration.parse(decorationRaw);
+      if (decoration) {
+        // underlineやline-throughの場合
+        finalConfig = TextDecoration.applyToConfig(withTextColor, decoration);
+      } else if (decorationRaw.toLowerCase().includes("none")) {
+        // text-decoration: noneの場合は明示的に削除
+        finalConfig = TextDecoration.removeFromConfig(withTextColor);
+      }
+      // それ以外（parseがundefinedでnoneでもない場合）は既存の設定を維持
+    }
+    // decorationRawがundefinedの場合（スタイル指定なし）は既存の設定を維持
 
     return finalConfig;
   },

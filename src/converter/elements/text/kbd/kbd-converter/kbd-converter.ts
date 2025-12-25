@@ -10,7 +10,7 @@ import { HTMLNode } from "../../../../models/html-node/html-node";
 import { Typography } from "../../styles/typography/typography";
 
 /**
- * KbdConverterクラス
+ * KbdConverter
  * kbd要素をFigmaのTEXTノードに変換します
  */
 export const KbdConverter = {

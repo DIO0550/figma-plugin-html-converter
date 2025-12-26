@@ -31,7 +31,7 @@ export const CiteConverter = {
         fontFamily: "Inter",
         fontSize: 16,
         fontWeight: 400,
-        fontStyle: "italic",
+        fontStyle: "ITALIC",
         lineHeight: { unit: "PIXELS", value: 24 },
         letterSpacing: 0,
         textAlign: "LEFT",

@@ -16,7 +16,7 @@ describe("VarConverter.toFigmaNode", () => {
     expect(result.type).toBe("TEXT");
     expect(result.name).toBe("var");
     expect(result.content).toBe("");
-    expect(result.style?.fontStyle).toBe("italic");
+    expect(result.style?.fontStyle).toBe("ITALIC");
   });
 
   test("テキストコンテンツを持つvar要素を正しく変換する", () => {

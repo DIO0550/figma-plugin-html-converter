@@ -16,7 +16,7 @@ describe("CiteConverter.toFigmaNode", () => {
     expect(result.type).toBe("TEXT");
     expect(result.name).toBe("cite");
     expect(result.content).toBe("");
-    expect(result.style?.fontStyle).toBe("italic");
+    expect(result.style?.fontStyle).toBe("ITALIC");
   });
 
   test("テキストコンテンツを持つcite要素を正しく変換する", () => {

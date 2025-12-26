@@ -8,6 +8,7 @@ import { KbdElement as KbdElementHelper } from "../kbd-element";
 import { buildNodeName } from "../../../../utils/node-name-builder";
 import { HTMLNode } from "../../../../models/html-node/html-node";
 import { Typography } from "../../styles/typography/typography";
+import { MONOSPACE_FONT_CONFIG } from "../../../../constants/typography-constants";
 
 /**
  * KbdConverter
@@ -28,10 +29,10 @@ export const KbdConverter = {
       name: buildNodeName(element),
       content: HTMLNode.extractTextFromNodes(element.children || []),
       style: {
-        fontFamily: "monospace",
-        fontSize: 14,
+        fontFamily: MONOSPACE_FONT_CONFIG.fontFamily,
+        fontSize: MONOSPACE_FONT_CONFIG.fontSize,
         fontWeight: 400,
-        lineHeight: { unit: "PIXELS", value: 21 },
+        lineHeight: { unit: "PIXELS", value: MONOSPACE_FONT_CONFIG.lineHeight },
         letterSpacing: 0,
         textAlign: "LEFT",
         verticalAlign: "TOP",

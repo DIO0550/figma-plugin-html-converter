@@ -149,7 +149,8 @@ describe("TextDecoration", () => {
       const result = TextDecoration.applyToConfig(config, decoration);
 
       expect(result.style.textDecoration).toBe("UNDERLINE");
-      expect(result).toBe(config); // should return same object
+      expect(result).not.toBe(config); // should return new object (immutable)
+      expect(config.style.textDecoration).toBeUndefined(); // original should not be modified
     });
 
     it("should apply STRIKETHROUGH to config", () => {

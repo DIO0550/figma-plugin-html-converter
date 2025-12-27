@@ -88,10 +88,13 @@ export const FontStyle = {
     }
 
     // 通常スタイル（normal）の場合はfontStyleプロパティを削除
-    const { fontStyle: _removed, ...restStyle } = config.style;
-    return {
-      ...config,
-      style: restStyle,
-    };
+    if (config.style) {
+      const { fontStyle: _removed, ...restStyle } = config.style;
+      return {
+        ...config,
+        style: restStyle,
+      };
+    }
+    return config;
   },
 } as const;

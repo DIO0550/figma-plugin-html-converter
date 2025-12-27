@@ -22,14 +22,12 @@ export const AbbrConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ノード名を構築（title属性がある場合は追加）
     let nodeName = buildNodeName(element);
     const title = AbbrElementHelper.getTitle(element);
     if (title) {
       nodeName = `${nodeName} [${title}]`;
     }
 
-    // ベースのテキストノード（abbr要素のデフォルトは下線）
     let config: TextNodeConfig = {
       type: "TEXT",
       name: nodeName,
@@ -46,7 +44,6 @@ export const AbbrConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用（スタイル指定があれば上書きされる）
     config = Typography.applyToTextNode(config, styles, "abbr");
 
     return config;

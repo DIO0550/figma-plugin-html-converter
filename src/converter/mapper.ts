@@ -23,7 +23,6 @@ import { KbdConverter } from "./elements/text/kbd";
 import { SampConverter } from "./elements/text/samp";
 import { VarConverter } from "./elements/text/var";
 
-// インラインセマンティック要素のコンバーターマップ
 const inlineSemanticConverters = {
   time: TimeConverter,
   abbr: AbbrConverter,
@@ -133,7 +132,6 @@ export function mapHTMLNodeToFigma(
     }
   }
 
-  // インラインセマンティック要素の処理
   const inlineSemanticConverter =
     inlineSemanticConverters[tagName as keyof typeof inlineSemanticConverters];
   if (inlineSemanticConverter) {

@@ -22,7 +22,6 @@ export const VarConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ベースのテキストノード（var要素のデフォルトはイタリック）
     let config: TextNodeConfig = {
       type: "TEXT",
       name: buildNodeName(element),
@@ -39,7 +38,6 @@ export const VarConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用（スタイル指定があれば上書きされる）
     config = Typography.applyToTextNode(config, styles, "var");
 
     return config;

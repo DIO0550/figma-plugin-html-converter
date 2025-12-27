@@ -23,7 +23,6 @@ export const SampConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ベースのテキストノード（samp要素のデフォルトはモノスペースフォント）
     let config: TextNodeConfig = {
       type: "TEXT",
       name: buildNodeName(element),
@@ -39,7 +38,6 @@ export const SampConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用（スタイル指定があれば上書きされる）
     config = Typography.applyToTextNode(config, styles, "samp");
 
     return config;

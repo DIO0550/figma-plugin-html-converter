@@ -22,14 +22,12 @@ export const TimeConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ノード名を構築（datetime属性がある場合は追加）
     let nodeName = buildNodeName(element);
     const datetime = TimeElementHelper.getDatetime(element);
     if (datetime) {
       nodeName = `${nodeName} [${datetime}]`;
     }
 
-    // ベースのテキストノード
     let config: TextNodeConfig = {
       type: "TEXT",
       name: nodeName,
@@ -45,7 +43,6 @@ export const TimeConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用
     config = Typography.applyToTextNode(config, styles, "time");
 
     return config;

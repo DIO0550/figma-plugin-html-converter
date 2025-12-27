@@ -22,18 +22,15 @@ export const QConverter = {
       ? Styles.parse(element.attributes.style)
       : Styles.empty();
 
-    // ノード名を構築（cite属性がある場合は追加）
     let nodeName = buildNodeName(element);
     const cite = QElementHelper.getCite(element);
     if (cite) {
       nodeName = `${nodeName} [${cite}]`;
     }
 
-    // テキストコンテンツを取得し、引用符で囲む
     const textContent = HTMLNode.extractTextFromNodes(element.children || []);
     const quotedContent = `"${textContent}"`;
 
-    // ベースのテキストノード
     let config: TextNodeConfig = {
       type: "TEXT",
       name: nodeName,
@@ -49,7 +46,6 @@ export const QConverter = {
       },
     };
 
-    // Typographyを利用して統一的に適用
     config = Typography.applyToTextNode(config, styles, "q");
 
     return config;

@@ -87,13 +87,28 @@ describe("AbbrConverter.toFigmaNode", () => {
     const element: AbbrElement = {
       type: "element",
       tagName: "abbr",
-      attributes: { style: "text-decoration: underline" },
+      attributes: { style: "text-decoration: line-through" },
       children: [],
     };
 
     const result = AbbrConverter.toFigmaNode(element);
 
-    expect(result.style?.textDecoration).toBe("UNDERLINE");
+    // デフォルトのUNDERLINEがline-through（STRIKETHROUGH）でオーバーライドされることを確認
+    expect(result.style?.textDecoration).toBe("STRIKETHROUGH");
+  });
+
+  test("スタイル属性でtext-decoration: noneを指定するとデフォルトの下線が削除される", () => {
+    const element: AbbrElement = {
+      type: "element",
+      tagName: "abbr",
+      attributes: { style: "text-decoration: none" },
+      children: [],
+    };
+
+    const result = AbbrConverter.toFigmaNode(element);
+
+    // デフォルトのUNDERLINEがnoneで削除されることを確認
+    expect(result.style?.textDecoration).toBeUndefined();
   });
 });
 

@@ -23,6 +23,17 @@ import { KbdConverter } from "./elements/text/kbd";
 import { SampConverter } from "./elements/text/samp";
 import { VarConverter } from "./elements/text/var";
 
+// インラインセマンティック要素のコンバーターマップ
+const inlineSemanticConverters = {
+  time: TimeConverter,
+  abbr: AbbrConverter,
+  cite: CiteConverter,
+  q: QConverter,
+  kbd: KbdConverter,
+  samp: SampConverter,
+  var: VarConverter,
+} as const;
+
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
   DEFAULT_SPACING: 8,
@@ -123,52 +134,12 @@ export function mapHTMLNodeToFigma(
   }
 
   // インラインセマンティック要素の処理
-  if (tagName === "time") {
-    const timeConfig = TimeConverter.mapToFigma(htmlNode);
-    if (timeConfig) {
-      return timeConfig;
-    }
-  }
-
-  if (tagName === "abbr") {
-    const abbrConfig = AbbrConverter.mapToFigma(htmlNode);
-    if (abbrConfig) {
-      return abbrConfig;
-    }
-  }
-
-  if (tagName === "cite") {
-    const citeConfig = CiteConverter.mapToFigma(htmlNode);
-    if (citeConfig) {
-      return citeConfig;
-    }
-  }
-
-  if (tagName === "q") {
-    const qConfig = QConverter.mapToFigma(htmlNode);
-    if (qConfig) {
-      return qConfig;
-    }
-  }
-
-  if (tagName === "kbd") {
-    const kbdConfig = KbdConverter.mapToFigma(htmlNode);
-    if (kbdConfig) {
-      return kbdConfig;
-    }
-  }
-
-  if (tagName === "samp") {
-    const sampConfig = SampConverter.mapToFigma(htmlNode);
-    if (sampConfig) {
-      return sampConfig;
-    }
-  }
-
-  if (tagName === "var") {
-    const varConfig = VarConverter.mapToFigma(htmlNode);
-    if (varConfig) {
-      return varConfig;
+  const inlineSemanticConverter =
+    inlineSemanticConverters[tagName as keyof typeof inlineSemanticConverters];
+  if (inlineSemanticConverter) {
+    const config = inlineSemanticConverter.mapToFigma(htmlNode);
+    if (config) {
+      return config;
     }
   }
 

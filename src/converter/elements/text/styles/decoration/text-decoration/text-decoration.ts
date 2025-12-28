@@ -1,8 +1,5 @@
 import type { Brand } from "../../../../../../types";
-import type {
-  TextNodeConfig,
-  TextStyle,
-} from "../../../../../models/figma-node";
+import type { TextNodeConfig } from "../../../../../models/figma-node";
 
 // Figmaがサポートするテキスト装飾
 export type FigmaTextDecoration = "UNDERLINE" | "STRIKETHROUGH";
@@ -109,32 +106,51 @@ export const TextDecoration = {
 
   /**
    * Apply text decoration to a TextNodeConfig.
-   * @param config Config object to modify
-   * @param decoration TextDecoration to apply (or undefined to remove)
-   * @returns The same config object (modified)
+   * @param config Config object (not modified, returns new object)
+   * @param decoration TextDecoration to apply, undefined means no change (preserve existing), use removeFromConfig to remove
+   * @returns New config object with decoration applied
    */
   applyToConfig(
     config: TextNodeConfig,
     decoration: TextDecoration | undefined,
   ): TextNodeConfig {
-    if (!config.style) {
-      // Initialize with proper TextStyle type
-      config.style = {
-        fontFamily: "Inter",
-        fontSize: 16,
-        fontWeight: 400,
-        lineHeight: { unit: "PIXELS", value: 24 },
-        letterSpacing: 0,
-        textAlign: "LEFT",
-        verticalAlign: "TOP",
-      } as TextStyle;
+    // undefinedの場合は既存の設定を維持（スタイル指定なし）
+    if (decoration === undefined) {
+      return config;
     }
 
-    if (decoration) {
-      config.style.textDecoration = decoration;
-    } else {
-      // Explicitly remove decoration if undefined is passed
-      delete config.style.textDecoration;
+    const currentStyle = config.style ?? {
+      fontFamily: "Inter",
+      fontSize: 16,
+      fontWeight: 400,
+      lineHeight: { unit: "PIXELS", value: 24 },
+      letterSpacing: 0,
+      textAlign: "LEFT",
+      verticalAlign: "TOP",
+    };
+
+    return {
+      ...config,
+      style: {
+        ...currentStyle,
+        textDecoration: decoration,
+      },
+    };
+  },
+
+  /**
+   * Remove text decoration from a TextNodeConfig.
+   * Used when text-decoration: none is explicitly specified.
+   * @param config Config object (not modified, returns new object)
+   * @returns New config object with decoration removed
+   */
+  removeFromConfig(config: TextNodeConfig): TextNodeConfig {
+    if (config.style) {
+      const { textDecoration: _removed, ...restStyle } = config.style;
+      return {
+        ...config,
+        style: restStyle,
+      };
     }
     return config;
   },

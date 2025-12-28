@@ -15,6 +15,23 @@ import {
 } from "./elements/interactive";
 import { mapToFigma as mapProgressToFigma } from "./elements/form/progress";
 import { mapToFigma as mapMeterToFigma } from "./elements/form/meter";
+import { TimeConverter } from "./elements/text/time";
+import { AbbrConverter } from "./elements/text/abbr";
+import { CiteConverter } from "./elements/text/cite";
+import { QConverter } from "./elements/text/q";
+import { KbdConverter } from "./elements/text/kbd";
+import { SampConverter } from "./elements/text/samp";
+import { VarConverter } from "./elements/text/var";
+
+const inlineSemanticConverters = {
+  time: TimeConverter,
+  abbr: AbbrConverter,
+  cite: CiteConverter,
+  q: QConverter,
+  kbd: KbdConverter,
+  samp: SampConverter,
+  var: VarConverter,
+} as const;
 
 // レイアウト関連の定数
 const LAYOUT_CONFIG = {
@@ -112,6 +129,15 @@ export function mapHTMLNodeToFigma(
     const meterConfig = mapMeterToFigma(htmlNode);
     if (meterConfig) {
       return meterConfig;
+    }
+  }
+
+  const inlineSemanticConverter =
+    inlineSemanticConverters[tagName as keyof typeof inlineSemanticConverters];
+  if (inlineSemanticConverter) {
+    const config = inlineSemanticConverter.mapToFigma(htmlNode);
+    if (config) {
+      return config;
     }
   }
 

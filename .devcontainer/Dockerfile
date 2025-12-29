@@ -53,7 +53,8 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN npm config set ignore-scripts true
 RUN npm install -g pnpm \
-    && pnpm config set minimum-release-age 7200
+    && pnpm config set minimum-release-age 7200 \
+    && pnpm config set ignore-scripts true
 
 # Create node user with sudo privileges (for development)
 RUN useradd -ms /bin/bash node \

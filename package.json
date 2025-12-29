@@ -5,6 +5,7 @@
   "main": "dist/code.js",
   "type": "module",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "vite build --mode development --watch",
     "build": "vite build",
     "test": "vitest --no-watch",

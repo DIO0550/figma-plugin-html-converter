@@ -47,6 +47,7 @@ src/
 ### Prerequisites
 
 - Node.js >= 18.0.0
+- pnpm >= 10.0.0
 - TypeScript
 - Figma Desktop App（プラグイン実行用）
 
@@ -54,28 +55,28 @@ src/
 
 ```bash
 # 依存関係のインストール
-npm install
+pnpm install
 
 # 開発モード（ファイル監視）
-npm run dev
+pnpm run dev
 
 # プロダクションビルド
-npm run build
+pnpm run build
 
 # テスト実行
-npm test
+pnpm test
 
 # テスト UI モード
-npm run test:ui
+pnpm run test:ui
 
 # カバレッジレポート
-npm run coverage
+pnpm run coverage
 
 # リンティング
-npm run lint
+pnpm run lint
 
 # 型チェック
-npm run type-check
+pnpm run type-check
 ```
 
 ## Architecture Notes
@@ -357,6 +358,8 @@ and which tasks and kinds of interactions are expected of you.
 - TypeScript 5.4.3 (strict mode有効) (149-tr-element-implementation)
 - N/A (Figmaプラグイン、ローカルストレージのみ) (149-tr-element-implementation)
 - TypeScript 5.4.3 (strict mode有効) + Figma Plugin API、Vitest 3.2.4 (150-table-element-implementation)
+- TypeScript 5.4.3 (strict mode有効) + Vitest 3.2.4, Vite 5.2.6, ESLint 9.33.0 (151-pnpm-support)
+- N/A（Figmaプラグイン、ローカルストレージのみ） (151-pnpm-support)
 
 ## Recent Changes
 - 149-tr-element-implementation: Added TypeScript 5.4.3 (strict mode有効)

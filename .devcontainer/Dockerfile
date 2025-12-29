@@ -46,6 +46,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+# Install pnpm globally and configure settings
+ENV PNPM_HOME="/home/node/.local/share/pnpm"
+ENV PNPM_STORE_DIR="/home/node/.pnpm-store"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN npm config set ignore-scripts true
+RUN npm install -g pnpm \
+    && pnpm config set minimum-release-age 7200 \
+    && pnpm config set ignore-scripts true
+
 # Create node user with sudo privileges (for development)
 RUN useradd -ms /bin/bash node \
     && usermod -aG sudo node \
@@ -72,6 +82,10 @@ RUN chmod +x /usr/local/bin/github-mcp-server \
 # Switch back to node user
 USER node
 WORKDIR /home/node
+
+# Ensure pnpm dirs are writable for the node user
+RUN mkdir -p "$PNPM_HOME" "$PNPM_STORE_DIR"
+RUN pnpm config set store-dir "$PNPM_STORE_DIR"
 
 # Install uv (Python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh

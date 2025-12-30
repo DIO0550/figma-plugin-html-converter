@@ -137,3 +137,68 @@ test("mapToFigma: video要素以外のノードはnullを返す", () => {
 
   expect(figmaNode).toBeNull();
 });
+
+test("mapToFigma: source子要素を持つHTMLNodeからファイル名を取得してノード名に使用する", () => {
+  const node = {
+    type: "element",
+    tagName: "video",
+    attributes: {},
+    children: [
+      {
+        type: "element",
+        tagName: "source",
+        attributes: {
+          src: "https://example.com/my-video.mp4",
+          type: "video/mp4",
+        },
+      },
+    ],
+  };
+  const figmaNode = VideoElement.mapToFigma(node);
+
+  expect(figmaNode).not.toBeNull();
+  expect(figmaNode!.name).toBe("video: my-video.mp4");
+});
+
+test("mapToFigma: 複数のsource子要素がある場合は最初のsrcを使用する", () => {
+  const node = {
+    type: "element",
+    tagName: "video",
+    attributes: {},
+    children: [
+      {
+        type: "element",
+        tagName: "source",
+        attributes: { src: "first-video.mp4", type: "video/mp4" },
+      },
+      {
+        type: "element",
+        tagName: "source",
+        attributes: { src: "second-video.webm", type: "video/webm" },
+      },
+    ],
+  };
+  const figmaNode = VideoElement.mapToFigma(node);
+
+  expect(figmaNode).not.toBeNull();
+  expect(figmaNode!.name).toBe("video: first-video.mp4");
+});
+
+test("mapToFigma: src属性がsource子要素より優先される", () => {
+  const node = {
+    type: "element",
+    tagName: "video",
+    attributes: { src: "main-video.mp4" },
+    children: [
+      {
+        type: "element",
+        tagName: "source",
+        attributes: { src: "fallback-video.mp4", type: "video/mp4" },
+      },
+    ],
+  };
+  const figmaNode = VideoElement.mapToFigma(node);
+
+  expect(figmaNode).not.toBeNull();
+  expect(figmaNode!.name).toBe("video: main-video.mp4");
+});

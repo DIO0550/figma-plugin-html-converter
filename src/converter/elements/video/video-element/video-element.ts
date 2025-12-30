@@ -2,7 +2,6 @@ import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { FigmaNode } from "../../../models/figma-node";
 import { Paint } from "../../../models/paint";
 import { VideoAttributes } from "../video-attributes";
-import { mapToFigmaWith } from "../../../utils/element-utils";
 
 // プレースホルダーの背景色（ダークグレー、動画プレーヤー風）
 const DEFAULT_PLACEHOLDER_COLOR = { r: 0.1, g: 0.1, b: 0.1 };
@@ -224,40 +223,32 @@ export const VideoElement = {
     return config;
   },
 
-  // 汎用的なHTMLNodeからの変換（後方互換性のため）
-  fromHTMLNode(node: unknown): VideoElement | null {
-    if (!this.isVideoElement(node)) {
-      // HTMLNodeのような構造から変換を試みる
-      if (
-        node !== null &&
-        typeof node === "object" &&
-        "type" in node &&
-        "tagName" in node &&
-        "attributes" in node &&
-        node.type === "element" &&
-        node.tagName === "video" &&
-        typeof node.attributes === "object" &&
-        node.attributes !== null
-      ) {
-        const children =
-          "children" in node && Array.isArray(node.children)
-            ? (node.children as VideoChildElement[])
-            : [];
-        return this.create(node.attributes as Record<string, string>, children);
-      }
-      return null;
-    }
-    return node;
-  },
-
   // マッピング関数（mapperから呼ばれる）
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    return mapToFigmaWith(
-      node,
-      "video",
-      this.isVideoElement,
-      (attrs) => this.create(attrs as Partial<VideoAttributes>),
-      (element) => this.toFigmaNode(element),
-    );
+    if (this.isVideoElement(node)) {
+      return this.toFigmaNode(node);
+    }
+
+    if (
+      node !== null &&
+      typeof node === "object" &&
+      "type" in node &&
+      "tagName" in node &&
+      node.type === "element" &&
+      node.tagName === "video"
+    ) {
+      const attributes =
+        "attributes" in node && typeof node.attributes === "object"
+          ? (node.attributes as Partial<VideoAttributes>)
+          : {};
+      const children =
+        "children" in node && Array.isArray(node.children)
+          ? (node.children as VideoChildElement[])
+          : [];
+      const element = this.create(attributes, children);
+      return this.toFigmaNode(element);
+    }
+
+    return null;
   },
 };

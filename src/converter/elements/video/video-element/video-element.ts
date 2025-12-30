@@ -97,7 +97,6 @@ export const VideoElement = {
       return null;
     }
 
-    // source要素を探す
     for (const child of element.children) {
       if (child.tagName === "source" && child.attributes.src) {
         const src = child.attributes.src;
@@ -112,25 +111,21 @@ export const VideoElement = {
 
   // 動画ソースを取得（src属性またはsource子要素から）
   getVideoSource(element: VideoElement): string | null {
-    // src属性を優先
     const src = VideoAttributes.getVideoSrc(element.attributes);
     if (src) {
       return src;
     }
 
-    // source子要素から取得
     return this.getSourceFromChildren(element);
   },
 
   // ノード名の生成
   getNodeName(element: VideoElement): string {
-    // titleがあればそれを使用
     const title = element.attributes.title;
     if (title) {
       return `video: ${title}`;
     }
 
-    // 動画ソースからファイル名を抽出
     const src = this.getVideoSource(element);
     if (src) {
       const filename = src.split("/").pop();
@@ -146,24 +141,20 @@ export const VideoElement = {
   createFills(element: VideoElement): Paint[] {
     const poster = VideoAttributes.getPoster(element.attributes);
 
-    // poster属性がある場合は画像として表示
     if (poster) {
       return [Paint.image(poster)];
     }
 
-    // poster属性がない場合はダーク背景
     return [Paint.solid(DEFAULT_PLACEHOLDER_COLOR)];
   },
 
   // スタイルの適用
   applyStyles(config: FigmaNodeConfig, element: VideoElement): void {
-    // ボーダー
     const border = VideoAttributes.getBorder(element.attributes);
     if (border) {
       FigmaNode.setStrokes(config, [Paint.solid(border.color)], border.width);
     }
 
-    // 角丸
     const borderRadius = VideoAttributes.getBorderRadius(element.attributes);
     if (borderRadius !== null) {
       FigmaNode.setCornerRadius(config, borderRadius);
@@ -178,9 +169,7 @@ export const VideoElement = {
       width: PLAY_BUTTON_CONFIG.ICON_SIZE,
       height: PLAY_BUTTON_CONFIG.ICON_SIZE,
       fills: [Paint.solid(PLAY_BUTTON_CONFIG.ICON_COLOR)],
-      // 三角形は3点のポリゴン
       pointCount: 3,
-      // 90度回転して右向き三角形に
       rotation: 90,
     };
     return icon;
@@ -195,7 +184,6 @@ export const VideoElement = {
       name: "play-button",
       width: PLAY_BUTTON_CONFIG.SIZE,
       height: PLAY_BUTTON_CONFIG.SIZE,
-      // 円形にするため、サイズの半分の角丸
       cornerRadius: PLAY_BUTTON_CONFIG.SIZE / 2,
       fills: [
         {
@@ -203,7 +191,6 @@ export const VideoElement = {
           opacity: PLAY_BUTTON_CONFIG.BACKGROUND_OPACITY,
         },
       ],
-      // 子要素を中央揃え
       layoutMode: "HORIZONTAL",
       primaryAxisAlignItems: "CENTER",
       counterAxisAlignItems: "CENTER",
@@ -215,27 +202,20 @@ export const VideoElement = {
 
   // FigmaNodeConfigへの変換
   toFigmaNode(element: VideoElement): FigmaNodeConfig {
-    // FRAMEを使用（プレースホルダーとして子要素を持てるように）
     const config = FigmaNode.createFrame("video");
-
-    // 基本設定
     config.name = this.getNodeName(element);
     config.fills = this.createFills(element);
 
-    // サイズ設定
     const { width, height } = VideoAttributes.parseSize(element.attributes);
     config.width = width;
     config.height = height;
 
-    // スタイル適用
     this.applyStyles(config, element);
 
     // controls属性がある場合、再生ボタンを追加
     if (this.hasControls(element)) {
       const playButton = this.createPlayButton();
       config.children = [playButton];
-
-      // 子要素を中央に配置するためのレイアウト設定
       config.layoutMode = "HORIZONTAL";
       config.primaryAxisAlignItems = "CENTER";
       config.counterAxisAlignItems = "CENTER";

@@ -77,7 +77,6 @@ export const VideoAttributes = {
     let width = DEFAULT_WIDTH;
     let height = DEFAULT_HEIGHT;
 
-    // width/height属性から取得
     if (attributes.width) {
       const parsed = parseInt(attributes.width, 10);
       if (!isNaN(parsed)) {
@@ -92,7 +91,7 @@ export const VideoAttributes = {
       }
     }
 
-    // スタイル属性が優先
+    // CSS仕様: インラインスタイルがHTML属性より優先される
     if (attributes.style) {
       const styles = Styles.parse(attributes.style);
 
@@ -116,7 +115,6 @@ export const VideoAttributes = {
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
 
-    // 大文字小文字を統一して検証
     const lowerUrl = url.toLowerCase();
 
     // XSS攻撃の可能性があるパターンを先にチェック
@@ -144,7 +142,6 @@ export const VideoAttributes = {
     if (url.startsWith("/") || url.startsWith("./") || url.startsWith("../"))
       return true;
 
-    // その他の通常のパス（ファイル名など）
     return true;
   },
 
@@ -160,7 +157,6 @@ export const VideoAttributes = {
    * controls属性の確認
    */
   hasControls(attributes: VideoAttributes): boolean {
-    // HTML属性として存在する場合（空文字含む）はtrue
     if (attributes.controls === undefined) return false;
     if (attributes.controls === false) return false;
     return true;
@@ -200,12 +196,10 @@ export const VideoAttributes = {
     const styles = Styles.parse(attributes.style);
     const borderRadius = Styles.getBorderRadius(styles);
 
-    // 数値の場合はそのまま返す
     if (typeof borderRadius === "number") {
       return borderRadius;
     }
 
-    // オブジェクトの場合は最初の値を返す（簡略化）
     if (borderRadius && typeof borderRadius === "object") {
       const values = Object.values(borderRadius);
       if (values.length > 0 && typeof values[0] === "number") {

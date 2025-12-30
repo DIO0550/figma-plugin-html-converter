@@ -116,22 +116,29 @@ export const VideoAttributes = {
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
 
+    // 大文字小文字を統一して検証
+    const lowerUrl = url.toLowerCase();
+
     // XSS攻撃の可能性があるパターンを先にチェック
     if (url.includes("<") || url.includes(">")) return false;
-    if (url.toLowerCase().startsWith("javascript:")) return false;
+    if (lowerUrl.startsWith("javascript:")) return false;
     if (
-      url.toLowerCase().startsWith("data:") &&
-      !url.startsWith("data:image/") &&
-      !url.startsWith("data:video/")
+      lowerUrl.startsWith("data:") &&
+      !lowerUrl.startsWith("data:image/") &&
+      !lowerUrl.startsWith("data:video/")
     )
       return false;
 
     // データURL（画像・動画）
-    if (url.startsWith("data:image/") || url.startsWith("data:video/"))
+    if (
+      lowerUrl.startsWith("data:image/") ||
+      lowerUrl.startsWith("data:video/")
+    )
       return true;
 
     // 絶対URL
-    if (url.startsWith("http://") || url.startsWith("https://")) return true;
+    if (lowerUrl.startsWith("http://") || lowerUrl.startsWith("https://"))
+      return true;
 
     // 相対URL
     if (url.startsWith("/") || url.startsWith("./") || url.startsWith("../"))

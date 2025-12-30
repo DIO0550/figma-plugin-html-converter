@@ -113,6 +113,27 @@ test("isValidUrl: 不正なdata URLは無効", () => {
   ).toBe(false);
 });
 
+test.each(["Data:image/png;base64,AAAA", "DATA:VIDEO/mp4;base64,AAAA"])(
+  "isValidUrl: 大文字を含むdata URL '%s' も有効",
+  (url) => {
+    expect(VideoAttributes.isValidUrl(url)).toBe(true);
+  },
+);
+
+test.each(["Data:text/html,test", "DATA:TEXT/HTML,test"])(
+  "isValidUrl: 大文字を含む不正なdata URL '%s' は無効",
+  (url) => {
+    expect(VideoAttributes.isValidUrl(url)).toBe(false);
+  },
+);
+
+test.each(["HTTP://example.com/video.mp4", "HTTPS://example.com/video.mp4"])(
+  "isValidUrl: 大文字のプロトコル '%s' も有効",
+  (url) => {
+    expect(VideoAttributes.isValidUrl(url)).toBe(true);
+  },
+);
+
 // getPoster テスト
 test("getPoster: poster属性がない場合はnullを返す", () => {
   expect(VideoAttributes.getPoster({})).toBeNull();

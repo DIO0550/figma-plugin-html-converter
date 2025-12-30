@@ -6,6 +6,7 @@ import { Paint } from "./models/paint";
 import { ConversionOptions } from "./models/conversion-options";
 import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
+import { VideoElement } from "./elements/video";
 import { mapToFigma as mapPToFigma } from "./elements/text/p";
 import { AConverter } from "./elements/text/a";
 import {
@@ -145,6 +146,13 @@ export function mapHTMLNodeToFigma(
     const imageConfig = ImgElement.mapToFigma(htmlNode);
     if (imageConfig) {
       nodeConfig = imageConfig;
+    } else {
+      nodeConfig = FigmaNode.createFrame(tagName);
+    }
+  } else if (VideoElement.isVideoElement(htmlNode)) {
+    const videoConfig = VideoElement.mapToFigma(htmlNode);
+    if (videoConfig) {
+      nodeConfig = videoConfig;
     } else {
       nodeConfig = FigmaNode.createFrame(tagName);
     }

@@ -47,6 +47,9 @@ export interface FigmaNodeConfig {
   // テキストプロパティ
   fontSize?: number;
   characters?: string;
+  // Polygonプロパティ
+  pointCount?: number;
+  rotation?: number;
 }
 
 export interface AutoLayoutConfig {

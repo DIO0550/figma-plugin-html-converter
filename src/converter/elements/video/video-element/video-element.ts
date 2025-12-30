@@ -6,7 +6,13 @@ import { VideoAttributes } from "../video-attributes";
 // プレースホルダーの背景色（ダークグレー、動画プレーヤー風）
 const DEFAULT_PLACEHOLDER_COLOR = { r: 0.1, g: 0.1, b: 0.1 };
 
-// 再生ボタンの設定
+/**
+ * 再生ボタンの設定
+ * YouTube/Vimeo等の主要動画プレーヤーUIを参考に設計
+ * - SIZE: 64px - モバイル・デスクトップ両方でタップ/クリックしやすいサイズ
+ * - ICON_SIZE: 24px - ボタンサイズの約37.5%で視覚的バランスを確保
+ * - BACKGROUND_OPACITY: 0.6 - 背景を透過しつつアイコンの視認性を維持
+ */
 const PLAY_BUTTON_CONFIG = {
   SIZE: 64,
   BACKGROUND_COLOR: { r: 0.0, g: 0.0, b: 0.0 },
@@ -160,7 +166,11 @@ export const VideoElement = {
     }
   },
 
-  // 再生アイコン（三角形）の作成
+  /**
+   * 再生アイコン（三角形）の作成
+   * Figma POLYGONのデフォルト三角形は上向き（▲）のため、
+   * 90度回転させて右向き（▶）の再生アイコンにする
+   */
   createPlayIcon(): FigmaNodeConfig {
     const icon: FigmaNodeConfig = {
       type: "POLYGON",

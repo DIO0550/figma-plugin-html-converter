@@ -62,7 +62,11 @@ export interface VideoAttributes {
   [key: `aria-${string}`]: string | undefined;
 }
 
-// デフォルト値（HTML5 video要素のデフォルトアスペクト比 2:1）
+/**
+ * デフォルトサイズ
+ * HTML Living Standard仕様に準拠: video要素のデフォルトサイズは300x150px
+ * https://html.spec.whatwg.org/multipage/media.html#the-video-element
+ */
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 150;
 

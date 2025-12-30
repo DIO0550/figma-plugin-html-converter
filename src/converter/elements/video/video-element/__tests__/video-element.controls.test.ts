@@ -123,3 +123,33 @@ test("toFigmaNode: 再生アイコンは白色（r:1, g:1, b:1）", () => {
     }),
   );
 });
+
+test("toFigmaNode: 再生ボタンのレイアウト設定（中央揃え）が正しい", () => {
+  const element = VideoElement.create({
+    src: "https://example.com/video.mp4",
+    controls: true,
+  });
+  const figmaNode = VideoElement.toFigmaNode(element);
+
+  const playButton = figmaNode.children!.find(
+    (child) => child.name === "play-button",
+  );
+
+  expect(playButton!.layoutMode).toBe("HORIZONTAL");
+  expect(playButton!.primaryAxisAlignItems).toBe("CENTER");
+  expect(playButton!.counterAxisAlignItems).toBe("CENTER");
+});
+
+test("toFigmaNode: controls属性がある場合、親フレームのレイアウト設定（中央揃え）が正しい", () => {
+  const element = VideoElement.create({
+    src: "https://example.com/video.mp4",
+    controls: true,
+    width: "640",
+    height: "360",
+  });
+  const figmaNode = VideoElement.toFigmaNode(element);
+
+  expect(figmaNode.layoutMode).toBe("HORIZONTAL");
+  expect(figmaNode.primaryAxisAlignItems).toBe("CENTER");
+  expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
+});

@@ -1,0 +1,107 @@
+import { describe, it, expect } from "vitest";
+import { AudioElement } from "../audio-element";
+
+describe("AudioElement source要素", () => {
+  describe("getSourceFromChildren", () => {
+    it("source子要素からsrcを取得する", () => {
+      const element = AudioElement.create({}, [
+        {
+          type: "element",
+          tagName: "source",
+          attributes: {
+            src: "https://example.com/audio.mp3",
+            type: "audio/mpeg",
+          },
+        },
+      ]);
+
+      expect(AudioElement.getSourceFromChildren(element)).toBe(
+        "https://example.com/audio.mp3",
+      );
+    });
+
+    it("複数のsource子要素がある場合は最初の有効なsrcを返す", () => {
+      const element = AudioElement.create({}, [
+        {
+          type: "element",
+          tagName: "source",
+          attributes: { src: "audio.mp3", type: "audio/mpeg" },
+        },
+        {
+          type: "element",
+          tagName: "source",
+          attributes: { src: "audio.ogg", type: "audio/ogg" },
+        },
+      ]);
+
+      expect(AudioElement.getSourceFromChildren(element)).toBe("audio.mp3");
+    });
+
+    it("source子要素がない場合はnullを返す", () => {
+      const element = AudioElement.create({}, []);
+      expect(AudioElement.getSourceFromChildren(element)).toBeNull();
+    });
+
+    it("source以外の子要素は無視する", () => {
+      const element = AudioElement.create({}, [
+        {
+          type: "element",
+          tagName: "track",
+          attributes: { src: "subtitles.vtt" },
+        },
+      ]);
+
+      expect(AudioElement.getSourceFromChildren(element)).toBeNull();
+    });
+
+    it("無効なURLのsourceは無視する", () => {
+      const element = AudioElement.create({}, [
+        {
+          type: "element",
+          tagName: "source",
+          attributes: { src: "javascript:alert(1)" },
+        },
+        {
+          type: "element",
+          tagName: "source",
+          attributes: { src: "valid-audio.mp3" },
+        },
+      ]);
+
+      expect(AudioElement.getSourceFromChildren(element)).toBe(
+        "valid-audio.mp3",
+      );
+    });
+  });
+
+  describe("getAudioSource", () => {
+    it("src属性を優先して返す", () => {
+      const element = AudioElement.create({ src: "main-audio.mp3" }, [
+        {
+          type: "element",
+          tagName: "source",
+          attributes: { src: "fallback-audio.mp3" },
+        },
+      ]);
+
+      expect(AudioElement.getAudioSource(element)).toBe("main-audio.mp3");
+    });
+
+    it("src属性がない場合はsource子要素から取得する", () => {
+      const element = AudioElement.create({}, [
+        {
+          type: "element",
+          tagName: "source",
+          attributes: { src: "fallback-audio.mp3" },
+        },
+      ]);
+
+      expect(AudioElement.getAudioSource(element)).toBe("fallback-audio.mp3");
+    });
+
+    it("どちらもない場合はnullを返す", () => {
+      const element = AudioElement.create({}, []);
+      expect(AudioElement.getAudioSource(element)).toBeNull();
+    });
+  });
+});

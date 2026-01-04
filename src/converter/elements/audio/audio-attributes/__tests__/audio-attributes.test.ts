@@ -75,6 +75,10 @@ it("AudioAttributes.isValidUrl: data:audio URLの場合、trueを返す", () => 
   expect(AudioAttributes.isValidUrl("data:audio/mp3;base64,ABC")).toBe(true);
 });
 
+it("AudioAttributes.isValidUrl: data:image URLの場合、falseを返す（audio要素では音声のみ許可）", () => {
+  expect(AudioAttributes.isValidUrl("data:image/png;base64,ABC")).toBe(false);
+});
+
 it("AudioAttributes.isValidUrl: javascript: URLの場合、falseを返す", () => {
   expect(AudioAttributes.isValidUrl("javascript:alert(1)")).toBe(false);
 });

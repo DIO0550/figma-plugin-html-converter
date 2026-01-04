@@ -122,19 +122,12 @@ export const AudioAttributes = {
     // XSS攻撃の可能性があるパターンを先にチェック
     if (url.includes("<") || url.includes(">")) return false;
     if (lowerUrl.startsWith("javascript:")) return false;
-    if (
-      lowerUrl.startsWith("data:") &&
-      !lowerUrl.startsWith("data:audio/") &&
-      !lowerUrl.startsWith("data:image/")
-    )
+    // audio要素ではdata:audio/のみ許可（video要素と異なりposter属性がないため画像は不要）
+    if (lowerUrl.startsWith("data:") && !lowerUrl.startsWith("data:audio/"))
       return false;
 
-    // データURL（音声・画像）
-    if (
-      lowerUrl.startsWith("data:audio/") ||
-      lowerUrl.startsWith("data:image/")
-    )
-      return true;
+    // データURL（音声）
+    if (lowerUrl.startsWith("data:audio/")) return true;
 
     // 絶対URL
     if (lowerUrl.startsWith("http://") || lowerUrl.startsWith("https://"))

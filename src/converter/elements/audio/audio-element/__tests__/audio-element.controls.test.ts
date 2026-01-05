@@ -1,8 +1,8 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { AudioElement } from "../audio-element";
 
 // createPlayIcon
-it("AudioElement.createPlayIcon: 三角形の再生アイコン（POLYGON）を作成する", () => {
+test("AudioElement.createPlayIcon: 三角形の再生アイコン（POLYGON）を作成する", () => {
   const icon = AudioElement.createPlayIcon();
 
   expect(icon.type).toBe("POLYGON");
@@ -11,14 +11,14 @@ it("AudioElement.createPlayIcon: 三角形の再生アイコン（POLYGON）を�
   expect(icon.rotation).toBe(90);
 });
 
-it("AudioElement.createPlayIcon: アイコンサイズは16x16pxである", () => {
+test("AudioElement.createPlayIcon: アイコンサイズは16x16pxである", () => {
   const icon = AudioElement.createPlayIcon();
 
   expect(icon.width).toBe(16);
   expect(icon.height).toBe(16);
 });
 
-it("AudioElement.createPlayIcon: 白色のfillsを持つ", () => {
+test("AudioElement.createPlayIcon: 白色のfillsを持つ", () => {
   const icon = AudioElement.createPlayIcon();
 
   expect(icon.fills).toBeDefined();
@@ -26,7 +26,7 @@ it("AudioElement.createPlayIcon: 白色のfillsを持つ", () => {
 });
 
 // createPlayButton
-it("AudioElement.createPlayButton: 円形の再生ボタン（FRAME）を作成する", () => {
+test("AudioElement.createPlayButton: 円形の再生ボタン（FRAME）を作成する", () => {
   const button = AudioElement.createPlayButton();
 
   expect(button.type).toBe("FRAME");
@@ -34,14 +34,14 @@ it("AudioElement.createPlayButton: 円形の再生ボタン（FRAME）を作成�
   expect(button.cornerRadius).toBe(20);
 });
 
-it("AudioElement.createPlayButton: ボタンサイズは40x40pxである", () => {
+test("AudioElement.createPlayButton: ボタンサイズは40x40pxである", () => {
   const button = AudioElement.createPlayButton();
 
   expect(button.width).toBe(40);
   expect(button.height).toBe(40);
 });
 
-it("AudioElement.createPlayButton: 中央配置のレイアウトを持つ", () => {
+test("AudioElement.createPlayButton: 中央配置のレイアウトを持つ", () => {
   const button = AudioElement.createPlayButton();
 
   expect(button.layoutMode).toBe("HORIZONTAL");
@@ -49,7 +49,7 @@ it("AudioElement.createPlayButton: 中央配置のレイアウトを持つ", () 
   expect(button.counterAxisAlignItems).toBe("CENTER");
 });
 
-it("AudioElement.createPlayButton: 再生アイコンを子要素として持つ", () => {
+test("AudioElement.createPlayButton: 再生アイコンを子要素として持つ", () => {
   const button = AudioElement.createPlayButton();
 
   expect(button.children).toBeDefined();
@@ -58,7 +58,7 @@ it("AudioElement.createPlayButton: 再生アイコンを子要素として持つ
 });
 
 // toFigmaNode with controls
-it("AudioElement.toFigmaNode: controls属性がある場合、再生ボタンを子要素として含む", () => {
+test("AudioElement.toFigmaNode: controls属性がある場合、再生ボタンを子要素として含む", () => {
   const element = AudioElement.create({ controls: true });
   const config = AudioElement.toFigmaNode(element);
 
@@ -67,7 +67,7 @@ it("AudioElement.toFigmaNode: controls属性がある場合、再生ボタンを
   expect(config.children![0].name).toBe("play-button");
 });
 
-it("AudioElement.toFigmaNode: controls属性がない場合、子要素は含まない", () => {
+test("AudioElement.toFigmaNode: controls属性がない場合、子要素は含まない", () => {
   const element = AudioElement.create();
   const config = AudioElement.toFigmaNode(element);
 

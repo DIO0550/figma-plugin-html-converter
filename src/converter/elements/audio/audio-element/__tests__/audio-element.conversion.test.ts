@@ -1,15 +1,15 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { AudioElement } from "../audio-element";
 
 // toFigmaNode
-it("AudioElement.toFigmaNode: FRAMEタイプのノードを作成する", () => {
+test("AudioElement.toFigmaNode: FRAMEタイプのノードを作成する", () => {
   const element = AudioElement.create();
   const config = AudioElement.toFigmaNode(element);
 
   expect(config.type).toBe("FRAME");
 });
 
-it("AudioElement.toFigmaNode: デフォルトサイズ300x54pxを適用する", () => {
+test("AudioElement.toFigmaNode: デフォルトサイズ300x54pxを適用する", () => {
   const element = AudioElement.create();
   const config = AudioElement.toFigmaNode(element);
 
@@ -17,7 +17,7 @@ it("AudioElement.toFigmaNode: デフォルトサイズ300x54pxを適用する", 
   expect(config.height).toBe(54);
 });
 
-it("AudioElement.toFigmaNode: カスタムサイズを適用する", () => {
+test("AudioElement.toFigmaNode: カスタムサイズを適用する", () => {
   const element = AudioElement.create({ width: "400", height: "60" });
   const config = AudioElement.toFigmaNode(element);
 
@@ -25,7 +25,7 @@ it("AudioElement.toFigmaNode: カスタムサイズを適用する", () => {
   expect(config.height).toBe(60);
 });
 
-it("AudioElement.toFigmaNode: 背景色（ダークグレー）を適用する", () => {
+test("AudioElement.toFigmaNode: 背景色（ダークグレー）を適用する", () => {
   const element = AudioElement.create();
   const config = AudioElement.toFigmaNode(element);
 
@@ -33,7 +33,7 @@ it("AudioElement.toFigmaNode: 背景色（ダークグレー）を適用する",
   expect(config.fills).toHaveLength(1);
 });
 
-it("AudioElement.toFigmaNode: ボーダースタイルを適用する", () => {
+test("AudioElement.toFigmaNode: ボーダースタイルを適用する", () => {
   const element = AudioElement.create({
     style: "border: 2px solid #000000;",
   });
@@ -43,7 +43,7 @@ it("AudioElement.toFigmaNode: ボーダースタイルを適用する", () => {
   expect(config.strokeWeight).toBe(2);
 });
 
-it("AudioElement.toFigmaNode: 角丸スタイルを適用する", () => {
+test("AudioElement.toFigmaNode: 角丸スタイルを適用する", () => {
   const element = AudioElement.create({ style: "border-radius: 8px;" });
   const config = AudioElement.toFigmaNode(element);
 
@@ -51,7 +51,7 @@ it("AudioElement.toFigmaNode: 角丸スタイルを適用する", () => {
 });
 
 // createFills
-it("AudioElement.createFills: プレースホルダー色（SOLIDタイプのダークグレー）を返す", () => {
+test("AudioElement.createFills: プレースホルダー色（SOLIDタイプのダークグレー）を返す", () => {
   const element = AudioElement.create();
   const fills = AudioElement.createFills(element);
 
@@ -60,7 +60,7 @@ it("AudioElement.createFills: プレースホルダー色（SOLIDタイプのダ
 });
 
 // mapToFigma
-it("AudioElement.mapToFigma: AudioElementをFigmaNodeConfigに変換する", () => {
+test("AudioElement.mapToFigma: AudioElementをFigmaNodeConfigに変換する", () => {
   const element = AudioElement.create({
     src: "https://example.com/audio.mp3",
     controls: true,
@@ -71,7 +71,7 @@ it("AudioElement.mapToFigma: AudioElementをFigmaNodeConfigに変換する", () 
   expect(config!.type).toBe("FRAME");
 });
 
-it("AudioElement.mapToFigma: HTMLNodeライクなオブジェクトも変換できる", () => {
+test("AudioElement.mapToFigma: HTMLNodeライクなオブジェクトも変換できる", () => {
   const node = {
     type: "element",
     tagName: "audio",
@@ -84,7 +84,7 @@ it("AudioElement.mapToFigma: HTMLNodeライクなオブジェクトも変換で�
   expect(config!.type).toBe("FRAME");
 });
 
-it("AudioElement.mapToFigma: audio要素でない場合、nullを返す", () => {
+test("AudioElement.mapToFigma: audio要素でない場合、nullを返す", () => {
   const node = {
     type: "element",
     tagName: "video",
@@ -96,7 +96,7 @@ it("AudioElement.mapToFigma: audio要素でない場合、nullを返す", () => 
   expect(config).toBeNull();
 });
 
-it("AudioElement.mapToFigma: source子要素を含むHTMLNodeを変換し、ファイル名をnameに含める", () => {
+test("AudioElement.mapToFigma: source子要素を含むHTMLNodeを変換し、ファイル名をnameに含める", () => {
   const node = {
     type: "element",
     tagName: "audio",

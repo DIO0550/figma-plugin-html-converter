@@ -1,7 +1,7 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { AudioElement } from "../audio-element";
 
-it("AudioElement.create: 引数なしで呼び出すと、空の属性と子要素を持つAudioElementを作成する", () => {
+test("AudioElement.create: 引数なしで呼び出すと、空の属性と子要素を持つAudioElementを作成する", () => {
   const element = AudioElement.create();
 
   expect(element.type).toBe("element");
@@ -10,7 +10,7 @@ it("AudioElement.create: 引数なしで呼び出すと、空の属性と子要�
   expect(element.children).toEqual([]);
 });
 
-it("AudioElement.create: 属性を指定すると、その属性を持つAudioElementを作成する", () => {
+test("AudioElement.create: 属性を指定すると、その属性を持つAudioElementを作成する", () => {
   const element = AudioElement.create({
     src: "https://example.com/audio.mp3",
     controls: true,
@@ -20,7 +20,7 @@ it("AudioElement.create: 属性を指定すると、その属性を持つAudioEl
   expect(element.attributes.controls).toBe(true);
 });
 
-it("AudioElement.create: 子要素を指定すると、その子要素を持つAudioElementを作成する", () => {
+test("AudioElement.create: 子要素を指定すると、その子要素を持つAudioElementを作成する", () => {
   const children = [
     {
       type: "element" as const,

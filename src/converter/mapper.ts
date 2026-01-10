@@ -8,6 +8,7 @@ import { AutoLayoutProperties } from "./models/auto-layout";
 import { ImgElement } from "./elements/image";
 import { VideoElement } from "./elements/video";
 import { AudioElement } from "./elements/audio";
+import { IframeElement } from "./elements/iframe";
 import { mapToFigma as mapPToFigma } from "./elements/text/p";
 import { AConverter } from "./elements/text/a";
 import {
@@ -161,6 +162,10 @@ export function mapHTMLNodeToFigma(
     const audioConfig = AudioElement.mapToFigma(htmlNode);
     if (audioConfig) {
       nodeConfig = audioConfig;
+  } else if (IframeElement.isIframeElement(htmlNode)) {
+    const iframeConfig = IframeElement.mapToFigma(htmlNode);
+    if (iframeConfig) {
+      nodeConfig = iframeConfig;
     } else {
       nodeConfig = FigmaNode.createFrame(tagName);
     }

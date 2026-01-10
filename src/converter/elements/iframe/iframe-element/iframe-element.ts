@@ -60,7 +60,6 @@ export interface IframeElement {
  * IframeElementコンパニオンオブジェクト
  */
 export const IframeElement = {
-  // 型ガード（任意のオブジェクトから判定）
   isIframeElement(node: unknown): node is IframeElement {
     return (
       typeof node === "object" &&
@@ -72,7 +71,6 @@ export const IframeElement = {
     );
   },
 
-  // ファクトリーメソッド
   create(attributes: Partial<IframeAttributes> = {}): IframeElement {
     return {
       type: "element",
@@ -81,7 +79,6 @@ export const IframeElement = {
     };
   },
 
-  // 属性の取得（型安全）
   getSrc(element: IframeElement): string | undefined {
     return element.attributes.src;
   },
@@ -102,7 +99,6 @@ export const IframeElement = {
     return element.attributes.style;
   },
 
-  // ノード名の生成
   getNodeName(element: IframeElement): string {
     const title = element.attributes.title;
     if (title) {
@@ -115,7 +111,6 @@ export const IframeElement = {
         const url = new URL(src);
         return `iframe: ${url.hostname}`;
       } catch {
-        // 相対URLの場合はデフォルト名を返す
         return "iframe";
       }
     }
@@ -123,12 +118,10 @@ export const IframeElement = {
     return "iframe";
   },
 
-  // Fillsの作成
   createFills(): Paint[] {
     return [Paint.solid(DEFAULT_PLACEHOLDER_COLOR)];
   },
 
-  // スタイルの適用
   applyStyles(config: FigmaNodeConfig, element: IframeElement): void {
     const border = IframeAttributes.getBorder(element.attributes);
     if (border) {
@@ -145,7 +138,6 @@ export const IframeElement = {
    * iframeアイコン（ブラウザウィンドウ風）の作成
    */
   createPlaceholder(): FigmaNodeConfig {
-    // ブラウザウィンドウ風のアイコン
     const iconFrame: FigmaNodeConfig = {
       type: "FRAME",
       name: "iframe-icon",
@@ -159,7 +151,6 @@ export const IframeElement = {
       primaryAxisAlignItems: "CENTER",
       counterAxisAlignItems: "CENTER",
       children: [
-        // ヘッダーバー（ブラウザのタイトルバー風）
         {
           type: "FRAME",
           name: "header-bar",
@@ -193,7 +184,6 @@ export const IframeElement = {
     return label;
   },
 
-  // FigmaNodeConfigへの変換
   toFigmaNode(element: IframeElement): FigmaNodeConfig {
     const config = FigmaNode.createFrame("iframe");
     config.name = this.getNodeName(element);
@@ -205,14 +195,10 @@ export const IframeElement = {
 
     this.applyStyles(config, element);
 
-    // プレースホルダーコンテンツを追加
     const children: FigmaNodeConfig[] = [];
-
-    // iframeアイコン
     const placeholder = this.createPlaceholder();
     children.push(placeholder);
 
-    // src属性がある場合はURLラベルを追加
     const src = IframeAttributes.getSrc(element.attributes);
     if (src) {
       const urlLabel = this.createUrlLabel(src);
@@ -228,7 +214,6 @@ export const IframeElement = {
     return config;
   },
 
-  // マッピング関数（mapperから呼ばれる）
   mapToFigma(node: unknown): FigmaNodeConfig | null {
     if (this.isIframeElement(node)) {
       return this.toFigmaNode(node);

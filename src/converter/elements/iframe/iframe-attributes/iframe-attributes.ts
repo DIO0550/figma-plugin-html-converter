@@ -1,8 +1,7 @@
 import { Styles } from "../../../models/styles";
 
 /**
- * iframe要素の属性定義
- * HTML Living Standard準拠
+ * HTML Living Standard準拠の属性定義
  */
 export interface IframeAttributes {
   // ソース属性
@@ -77,9 +76,6 @@ const DEFAULT_HEIGHT = 150;
  * IframeAttributesコンパニオンオブジェクト
  */
 export const IframeAttributes = {
-  /**
-   * 属性からサイズを解析
-   */
   parseSize(attributes: IframeAttributes): { width: number; height: number } {
     let width = DEFAULT_WIDTH;
     let height = DEFAULT_HEIGHT;
@@ -117,10 +113,7 @@ export const IframeAttributes = {
   },
 
   /**
-   * URLの検証
-   * iframeはセキュリティ上、data: URLやjavascript: URLを許可しない
-   * 許可されるパターン: http(s)://、スラッシュで始まる相対URL、./や../で始まる相対URL
-   * それ以外のパターン（例: page.html）は明示的に拒否
+   * セキュリティ上、data: URLやjavascript: URLを許可しない
    */
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
@@ -140,24 +133,15 @@ export const IframeAttributes = {
     return false;
   },
 
-  /**
-   * src属性の取得（検証済み）
-   */
   getSrc(attributes: IframeAttributes): string | null {
     if (!attributes.src) return null;
     return this.isValidUrl(attributes.src) ? attributes.src : null;
   },
 
-  /**
-   * title属性の取得
-   */
   getTitle(attributes: IframeAttributes): string | null {
     return attributes.title ?? null;
   },
 
-  /**
-   * ボーダー情報の取得
-   */
   getBorder(attributes: IframeAttributes) {
     if (!attributes.style) return null;
 
@@ -165,9 +149,6 @@ export const IframeAttributes = {
     return Styles.getBorder(styles);
   },
 
-  /**
-   * 角丸の取得
-   */
   getBorderRadius(attributes: IframeAttributes): number | null {
     if (!attributes.style) return null;
 

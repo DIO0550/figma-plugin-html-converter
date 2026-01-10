@@ -4,9 +4,7 @@ import { Paint } from "../../../models/paint";
 import { IframeAttributes } from "../iframe-attributes";
 
 /**
- * プレースホルダーの背景色
- * - ライトグレー（#F0F0F0相当）: 埋め込みコンテンツの未読み込み状態を視覚的に表現
- * - Figmaの標準的なプレースホルダー色に準拠
+ * Figmaの標準的なプレースホルダー色に準拠し、埋め込みコンテンツの未読み込み状態を視覚的に表現
  */
 const DEFAULT_PLACEHOLDER_COLOR = { r: 0.94, g: 0.94, b: 0.94 };
 
@@ -47,8 +45,7 @@ const URL_LABEL_CONFIG = {
 } as const;
 
 /**
- * iframe要素の型定義
- * HTMLNodeから独立した専用の型
+ * HTMLNodeから独立した専用の型として定義し、iframe固有の属性に型安全にアクセス可能にする
  */
 export interface IframeElement {
   type: "element";
@@ -135,7 +132,7 @@ export const IframeElement = {
   },
 
   /**
-   * iframeアイコン（ブラウザウィンドウ風）の作成
+   * セキュリティ上iframe内のコンテンツを取得できないため、ブラウザウィンドウ風のプレースホルダーで視覚的に表現
    */
   createPlaceholder(): FigmaNodeConfig {
     const iconFrame: FigmaNodeConfig = {
@@ -165,7 +162,7 @@ export const IframeElement = {
   },
 
   /**
-   * URLラベルの作成
+   * 埋め込みコンテンツのソースを表示することで、デザイナーがどのURLを埋め込んでいるか把握可能にする
    */
   createUrlLabel(url: string): FigmaNodeConfig {
     let displayUrl = url;

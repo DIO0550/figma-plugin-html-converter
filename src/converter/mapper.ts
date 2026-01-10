@@ -162,6 +162,9 @@ export function mapHTMLNodeToFigma(
     const audioConfig = AudioElement.mapToFigma(htmlNode);
     if (audioConfig) {
       nodeConfig = audioConfig;
+    } else {
+      nodeConfig = FigmaNode.createFrame(tagName);
+    }
   } else if (IframeElement.isIframeElement(htmlNode)) {
     const iframeConfig = IframeElement.mapToFigma(htmlNode);
     if (iframeConfig) {

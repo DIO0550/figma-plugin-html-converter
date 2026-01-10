@@ -84,6 +84,11 @@ test("isValidUrl: 相対URLはtrueを返す", () => {
   expect(IframeAttributes.isValidUrl("../page.html")).toBe(true);
 });
 
+test("isValidUrl: 明示的なパス形式でない相対URLはfalseを返す", () => {
+  expect(IframeAttributes.isValidUrl("page.html")).toBe(false);
+  expect(IframeAttributes.isValidUrl("subdir/page.html")).toBe(false);
+});
+
 // getSrc テスト
 test("getSrc: src属性がない場合はnullを返す", () => {
   expect(IframeAttributes.getSrc({})).toBeNull();

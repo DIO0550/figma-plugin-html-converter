@@ -119,27 +119,25 @@ export const IframeAttributes = {
   /**
    * URLの検証
    * iframeはセキュリティ上、data: URLやjavascript: URLを許可しない
+   * 許可されるパターン: http(s)://、スラッシュで始まる相対URL、./や../で始まる相対URL
+   * それ以外のパターン（例: page.html）は明示的に拒否
    */
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
 
     const lowerUrl = url.toLowerCase();
 
-    // XSS攻撃の可能性があるパターンを先にチェック
     if (url.includes("<") || url.includes(">")) return false;
     if (lowerUrl.startsWith("javascript:")) return false;
-    // iframeではdata: URLを許可しない（セキュリティリスク）
     if (lowerUrl.startsWith("data:")) return false;
 
-    // 絶対URL
     if (lowerUrl.startsWith("http://") || lowerUrl.startsWith("https://"))
       return true;
 
-    // 相対URL
     if (url.startsWith("/") || url.startsWith("./") || url.startsWith("../"))
       return true;
 
-    return true;
+    return false;
   },
 
   /**

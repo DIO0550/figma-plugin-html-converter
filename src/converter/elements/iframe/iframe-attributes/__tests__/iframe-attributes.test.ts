@@ -44,6 +44,26 @@ test("parseSize: styleのwidth/heightが属性より優先される", () => {
   expect(result.height).toBe(768);
 });
 
+test("parseSize: width属性が0の場合はデフォルト値を返す", () => {
+  const result = IframeAttributes.parseSize({ width: "0" });
+  expect(result.width).toBe(300);
+});
+
+test("parseSize: height属性が0の場合はデフォルト値を返す", () => {
+  const result = IframeAttributes.parseSize({ height: "0" });
+  expect(result.height).toBe(150);
+});
+
+test("parseSize: width属性が負の値の場合はデフォルト値を返す", () => {
+  const result = IframeAttributes.parseSize({ width: "-100" });
+  expect(result.width).toBe(300);
+});
+
+test("parseSize: height属性が負の値の場合はデフォルト値を返す", () => {
+  const result = IframeAttributes.parseSize({ height: "-50" });
+  expect(result.height).toBe(150);
+});
+
 test("isValidUrl: undefinedはfalseを返す", () => {
   expect(IframeAttributes.isValidUrl(undefined)).toBe(false);
 });

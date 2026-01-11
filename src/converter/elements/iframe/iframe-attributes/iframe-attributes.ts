@@ -65,16 +65,12 @@ export interface IframeAttributes {
 }
 
 /**
- * デフォルトサイズ
- * HTML Living Standard仕様に準拠: iframe要素のデフォルトサイズは300x150px
+ * HTML Living Standard仕様に準拠
  * https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
  */
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 150;
 
-/**
- * IframeAttributesコンパニオンオブジェクト
- */
 export const IframeAttributes = {
   parseSize(attributes: IframeAttributes): { width: number; height: number } {
     let width = DEFAULT_WIDTH;
@@ -94,7 +90,6 @@ export const IframeAttributes = {
       }
     }
 
-    // CSS仕様: インラインスタイルがHTML属性より優先される
     if (attributes.style) {
       const styles = Styles.parse(attributes.style);
 
@@ -112,9 +107,6 @@ export const IframeAttributes = {
     return { width, height };
   },
 
-  /**
-   * セキュリティ上、data: URLやjavascript: URLを許可しない
-   */
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
 

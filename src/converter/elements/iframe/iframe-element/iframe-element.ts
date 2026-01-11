@@ -1,3 +1,9 @@
+/**
+ * iframe要素のFigma変換処理
+ * セキュリティ上の理由から実際のコンテンツは取得できないため、
+ * ブラウザウィンドウ風のアイコンとURLラベルでプレースホルダーとして表示
+ */
+
 import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { FigmaNode } from "../../../models/figma-node";
 import { Paint } from "../../../models/paint";

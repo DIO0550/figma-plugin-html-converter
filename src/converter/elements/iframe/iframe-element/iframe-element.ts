@@ -9,15 +9,7 @@ import { IframeAttributes } from "../iframe-attributes";
 const DEFAULT_PLACEHOLDER_COLOR = { r: 0.94, g: 0.94, b: 0.94 };
 
 /**
- * iframeアイコン（ブラウザウィンドウ風）の設定
- * Chrome/Safari等の主要ブラウザのウィンドウUIを参考に設計
- * - SIZE: 48px - プレースホルダー内で視認性を確保しつつ邪魔にならないサイズ
- * - BORDER_COLOR: ミディアムグレー - ウィンドウ枠を表現
- * - BORDER_WIDTH: 2px - 視認性と軽量感のバランス
- * - INNER_SIZE: 40px - アイコン内部のコンテンツ領域
- * - HEADER_HEIGHT: 10px - ブラウザのタイトルバー風の比率（約20%）
- * - HEADER_COLOR: ダークグレー - タイトルバーを視覚的に区別
- * - CORNER_RADIUS: 4px - モダンなウィンドウの角丸
+ * ブラウザUIとの視覚的整合性を確保するため、主要ブラウザのウィンドウデザインを参考に設計
  */
 const ICON_CONFIG = {
   SIZE: 48,
@@ -30,12 +22,7 @@ const ICON_CONFIG = {
 } as const;
 
 /**
- * URLラベルの設定
- * 埋め込みコンテンツのソースを表示するためのテキスト設定
- * - MAX_LENGTH: 47文字 - 一般的なURL長を考慮し、長すぎる場合は省略
- * - FONT_SIZE: 12px - 補助的な情報として読みやすいサイズ
- * - COLOR: ミディアムグレー - メインコンテンツより控えめに表示
- * - ITEM_SPACING: 8px - アイコンとラベル間の標準的な間隔
+ * 補助的な情報として控えめに表示するため、メインコンテンツより小さく淡い色で設計
  */
 const URL_LABEL_CONFIG = {
   MAX_LENGTH: 47,
@@ -44,18 +31,12 @@ const URL_LABEL_CONFIG = {
   ITEM_SPACING: 8,
 } as const;
 
-/**
- * HTMLNodeから独立した専用の型として定義し、iframe固有の属性に型安全にアクセス可能にする
- */
 export interface IframeElement {
   type: "element";
   tagName: "iframe";
   attributes: IframeAttributes;
 }
 
-/**
- * IframeElementコンパニオンオブジェクト
- */
 export const IframeElement = {
   isIframeElement(node: unknown): node is IframeElement {
     return (
@@ -131,9 +112,6 @@ export const IframeElement = {
     }
   },
 
-  /**
-   * セキュリティ上iframe内のコンテンツを取得できないため、ブラウザウィンドウ風のプレースホルダーで視覚的に表現
-   */
   createPlaceholder(): FigmaNodeConfig {
     const iconFrame: FigmaNodeConfig = {
       type: "FRAME",
@@ -161,9 +139,6 @@ export const IframeElement = {
     return iconFrame;
   },
 
-  /**
-   * 埋め込みコンテンツのソースを表示することで、デザイナーがどのURLを埋め込んでいるか把握可能にする
-   */
   createUrlLabel(url: string): FigmaNodeConfig {
     let displayUrl = url;
     if (url.length > URL_LABEL_CONFIG.MAX_LENGTH) {

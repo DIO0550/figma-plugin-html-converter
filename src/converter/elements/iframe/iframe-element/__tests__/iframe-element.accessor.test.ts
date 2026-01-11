@@ -1,7 +1,6 @@
 import { test, expect } from "vitest";
 import { IframeElement } from "../iframe-element";
 
-// getSrc テスト
 test("getSrc: src属性がある場合はその値を返す", () => {
   const element = IframeElement.create({ src: "https://example.com" });
   expect(IframeElement.getSrc(element)).toBe("https://example.com");
@@ -12,7 +11,6 @@ test("getSrc: src属性がない場合はundefinedを返す", () => {
   expect(IframeElement.getSrc(element)).toBeUndefined();
 });
 
-// getWidth テスト
 test("getWidth: width属性がある場合はその値を返す", () => {
   const element = IframeElement.create({ width: "640" });
   expect(IframeElement.getWidth(element)).toBe("640");
@@ -23,7 +21,6 @@ test("getWidth: width属性がない場合はundefinedを返す", () => {
   expect(IframeElement.getWidth(element)).toBeUndefined();
 });
 
-// getHeight テスト
 test("getHeight: height属性がある場合はその値を返す", () => {
   const element = IframeElement.create({ height: "480" });
   expect(IframeElement.getHeight(element)).toBe("480");
@@ -34,7 +31,6 @@ test("getHeight: height属性がない場合はundefinedを返す", () => {
   expect(IframeElement.getHeight(element)).toBeUndefined();
 });
 
-// getTitle テスト
 test("getTitle: title属性がある場合はその値を返す", () => {
   const element = IframeElement.create({ title: "Embedded Content" });
   expect(IframeElement.getTitle(element)).toBe("Embedded Content");
@@ -45,7 +41,6 @@ test("getTitle: title属性がない場合はundefinedを返す", () => {
   expect(IframeElement.getTitle(element)).toBeUndefined();
 });
 
-// getStyle テスト
 test("getStyle: style属性がある場合はその値を返す", () => {
   const element = IframeElement.create({ style: "border: none;" });
   expect(IframeElement.getStyle(element)).toBe("border: none;");
@@ -56,7 +51,6 @@ test("getStyle: style属性がない場合はundefinedを返す", () => {
   expect(IframeElement.getStyle(element)).toBeUndefined();
 });
 
-// getNodeName テスト
 test("getNodeName: title属性がある場合はそれを使用する", () => {
   const element = IframeElement.create({
     title: "YouTube Video",

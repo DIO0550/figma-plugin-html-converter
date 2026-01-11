@@ -90,14 +90,14 @@ export const IframeAttributes = {
 
     if (attributes.width) {
       const parsed = parseInt(attributes.width, 10);
-      if (!isNaN(parsed)) {
+      if (!isNaN(parsed) && parsed > 0) {
         width = parsed;
       }
     }
 
     if (attributes.height) {
       const parsed = parseInt(attributes.height, 10);
-      if (!isNaN(parsed)) {
+      if (!isNaN(parsed) && parsed > 0) {
         height = parsed;
       }
     }

@@ -101,10 +101,13 @@ test("isValidUrl: 大文字小文字混在のdata:はfalseを返す", () => {
   expect(IframeAttributes.isValidUrl("Data:text/html,test")).toBe(false);
 });
 
-test("isValidUrl: 先頭ホワイトスペース付きURLはfalseを返す", () => {
+test("isValidUrl: ホワイトスペースはトリミングされてから検証される", () => {
+  // 危険なURLはトリミング後も拒否
   expect(IframeAttributes.isValidUrl(" javascript:alert(1)")).toBe(false);
   expect(IframeAttributes.isValidUrl("\tjavascript:alert(1)")).toBe(false);
-  expect(IframeAttributes.isValidUrl(" https://example.com")).toBe(false);
+  // 有効なURLはトリミング後に許可
+  expect(IframeAttributes.isValidUrl(" https://example.com")).toBe(true);
+  expect(IframeAttributes.isValidUrl("  /page.html  ")).toBe(true);
 });
 
 test("isValidUrl: HTMLタグ文字を含むURLはfalseを返す", () => {

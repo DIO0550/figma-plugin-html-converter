@@ -122,16 +122,23 @@ export const IframeAttributes = {
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
 
-    const lowerUrl = url.toLowerCase();
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl) return false;
 
-    if (url.includes("<") || url.includes(">")) return false;
+    const lowerUrl = trimmedUrl.toLowerCase();
+
+    if (trimmedUrl.includes("<") || trimmedUrl.includes(">")) return false;
     if (lowerUrl.startsWith("javascript:")) return false;
     if (lowerUrl.startsWith("data:")) return false;
 
     if (lowerUrl.startsWith("http://") || lowerUrl.startsWith("https://"))
       return true;
 
-    if (url.startsWith("/") || url.startsWith("./") || url.startsWith("../"))
+    if (
+      trimmedUrl.startsWith("/") ||
+      trimmedUrl.startsWith("./") ||
+      trimmedUrl.startsWith("../")
+    )
       return true;
 
     return false;

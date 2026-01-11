@@ -35,6 +35,7 @@ const ICON_CONFIG = {
 export const URL_LABEL_CONFIG = {
   /** 一般的なURL（プロトコル + ドメイン + 短いパス）が切り捨てられずに表示できる長さ */
   MAX_LENGTH: 50,
+  ELLIPSIS: "...",
   FONT_SIZE: 12,
   COLOR: { r: 0.5, g: 0.5, b: 0.5 },
   ITEM_SPACING: 8,
@@ -156,7 +157,9 @@ export const IframeElement = {
   createUrlLabel(url: string): FigmaNodeConfig {
     let displayUrl = url;
     if (url.length > URL_LABEL_CONFIG.MAX_LENGTH) {
-      displayUrl = url.substring(0, URL_LABEL_CONFIG.MAX_LENGTH) + "...";
+      displayUrl =
+        url.substring(0, URL_LABEL_CONFIG.MAX_LENGTH) +
+        URL_LABEL_CONFIG.ELLIPSIS;
     }
 
     const label: FigmaNodeConfig = {

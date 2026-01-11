@@ -1,8 +1,6 @@
 import { test, expect } from "vitest";
 import { IframeElement, URL_LABEL_CONFIG } from "../iframe-element";
 
-const ELLIPSIS_LENGTH = 3;
-
 test("toFigmaNode: FRAME型のノードを作成する", () => {
   const element = IframeElement.create({ src: "https://example.com" });
   const config = IframeElement.toFigmaNode(element);
@@ -135,7 +133,7 @@ test("createUrlLabel: 長いURLは省略される", () => {
     "https://example.com/very/long/path/to/resource/that/is/too/long";
   const label = IframeElement.createUrlLabel(longUrl);
   expect(label.characters!.length).toBe(
-    URL_LABEL_CONFIG.MAX_LENGTH + ELLIPSIS_LENGTH,
+    URL_LABEL_CONFIG.MAX_LENGTH + URL_LABEL_CONFIG.ELLIPSIS.length,
   );
-  expect(label.characters!.endsWith("...")).toBe(true);
+  expect(label.characters!.endsWith(URL_LABEL_CONFIG.ELLIPSIS)).toBe(true);
 });

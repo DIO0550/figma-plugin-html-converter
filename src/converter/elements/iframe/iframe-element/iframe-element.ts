@@ -10,7 +10,7 @@ import { Paint } from "../../../models/paint";
 import { IframeAttributes } from "../iframe-attributes";
 
 /**
- * Figmaの標準的なプレースホルダー色に準拠し、埋め込みコンテンツの未読み込み状態を視覚的に表現
+ * Figmaの標準プレースホルダー色に合わせることで、他のFigma要素との視覚的一貫性を確保
  */
 const DEFAULT_PLACEHOLDER_COLOR = { r: 0.94, g: 0.94, b: 0.94 };
 

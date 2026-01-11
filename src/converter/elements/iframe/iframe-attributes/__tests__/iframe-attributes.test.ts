@@ -89,6 +89,31 @@ test("isValidUrl: 明示的なパス形式でない相対URLはfalseを返す", 
   expect(IframeAttributes.isValidUrl("subdir/page.html")).toBe(false);
 });
 
+// isValidUrl セキュリティエッジケース
+test("isValidUrl: 大文字小文字混在のjavascript:はfalseを返す", () => {
+  expect(IframeAttributes.isValidUrl("JavaScript:alert(1)")).toBe(false);
+  expect(IframeAttributes.isValidUrl("JAVASCRIPT:alert(1)")).toBe(false);
+  expect(IframeAttributes.isValidUrl("JaVaScRiPt:alert(1)")).toBe(false);
+});
+
+test("isValidUrl: 大文字小文字混在のdata:はfalseを返す", () => {
+  expect(IframeAttributes.isValidUrl("DATA:text/html,test")).toBe(false);
+  expect(IframeAttributes.isValidUrl("Data:text/html,test")).toBe(false);
+});
+
+test("isValidUrl: 先頭ホワイトスペース付きURLはfalseを返す", () => {
+  expect(IframeAttributes.isValidUrl(" javascript:alert(1)")).toBe(false);
+  expect(IframeAttributes.isValidUrl("\tjavascript:alert(1)")).toBe(false);
+  expect(IframeAttributes.isValidUrl(" https://example.com")).toBe(false);
+});
+
+test("isValidUrl: HTMLタグ文字を含むURLはfalseを返す", () => {
+  expect(IframeAttributes.isValidUrl("https://example.com?q=<script>")).toBe(
+    false,
+  );
+  expect(IframeAttributes.isValidUrl("https://example.com?q=>")).toBe(false);
+});
+
 // getSrc テスト
 test("getSrc: src属性がない場合はnullを返す", () => {
   expect(IframeAttributes.getSrc({})).toBeNull();

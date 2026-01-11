@@ -67,10 +67,15 @@ export interface IframeAttributes {
 }
 
 /**
- * HTML Living Standard仕様に準拠
- * https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
+ * HTML Living Standard仕様に準拠したデフォルト値
+ * @see https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
  */
 const DEFAULT_WIDTH = 300;
+
+/**
+ * HTML Living Standard仕様に準拠したデフォルト値
+ * @see https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
+ */
 const DEFAULT_HEIGHT = 150;
 
 export const IframeAttributes = {

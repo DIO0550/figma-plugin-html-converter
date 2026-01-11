@@ -9,6 +9,8 @@ import { ImgElement } from "./elements/image";
 import { VideoElement } from "./elements/video";
 import { AudioElement } from "./elements/audio";
 import { IframeElement } from "./elements/iframe";
+import { EmbedElement } from "./elements/embed";
+import { ObjectElement } from "./elements/object";
 import { mapToFigma as mapPToFigma } from "./elements/text/p";
 import { AConverter } from "./elements/text/a";
 import {
@@ -169,6 +171,20 @@ export function mapHTMLNodeToFigma(
     const iframeConfig = IframeElement.mapToFigma(htmlNode);
     if (iframeConfig) {
       nodeConfig = iframeConfig;
+    } else {
+      nodeConfig = FigmaNode.createFrame(tagName);
+    }
+  } else if (EmbedElement.isEmbedElement(htmlNode)) {
+    const embedConfig = EmbedElement.mapToFigma(htmlNode);
+    if (embedConfig) {
+      nodeConfig = embedConfig;
+    } else {
+      nodeConfig = FigmaNode.createFrame(tagName);
+    }
+  } else if (ObjectElement.isObjectElement(htmlNode)) {
+    const objectConfig = ObjectElement.mapToFigma(htmlNode);
+    if (objectConfig) {
+      nodeConfig = objectConfig;
     } else {
       nodeConfig = FigmaNode.createFrame(tagName);
     }

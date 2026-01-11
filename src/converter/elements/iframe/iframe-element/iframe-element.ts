@@ -19,6 +19,7 @@ const DEFAULT_PLACEHOLDER_COLOR = { r: 0.94, g: 0.94, b: 0.94 };
  */
 const ICON_CONFIG = {
   SIZE: 48,
+  BACKGROUND_COLOR: { r: 1, g: 1, b: 1 },
   BORDER_COLOR: { r: 0.6, g: 0.6, b: 0.6 },
   BORDER_WIDTH: 2,
   INNER_SIZE: 40,
@@ -124,7 +125,7 @@ export const IframeElement = {
       name: "iframe-icon",
       width: ICON_CONFIG.SIZE,
       height: ICON_CONFIG.SIZE,
-      fills: [Paint.solid({ r: 1, g: 1, b: 1 })],
+      fills: [Paint.solid(ICON_CONFIG.BACKGROUND_COLOR)],
       strokes: [Paint.solid(ICON_CONFIG.BORDER_COLOR)],
       strokeWeight: ICON_CONFIG.BORDER_WIDTH,
       cornerRadius: ICON_CONFIG.CORNER_RADIUS,

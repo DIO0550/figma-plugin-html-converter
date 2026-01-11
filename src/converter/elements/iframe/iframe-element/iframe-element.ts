@@ -32,7 +32,8 @@ const ICON_CONFIG = {
  * 補助的な情報として控えめに表示するため、メインコンテンツより小さく淡い色で設計
  */
 export const URL_LABEL_CONFIG = {
-  MAX_LENGTH: 47,
+  /** 一般的なURL（プロトコル + ドメイン + 短いパス）が切り捨てられずに表示できる長さ */
+  MAX_LENGTH: 50,
   FONT_SIZE: 12,
   COLOR: { r: 0.5, g: 0.5, b: 0.5 },
   ITEM_SPACING: 8,

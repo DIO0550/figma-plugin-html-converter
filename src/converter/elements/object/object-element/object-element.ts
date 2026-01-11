@@ -24,7 +24,6 @@ const ICON_CONFIG = {
   BORDER_WIDTH: 2,
   INNER_SIZE: 32,
   CORNER_RADIUS: 4,
-  /** オブジェクトアイコン用の色 */
   OBJECT_COLOR: { r: 0.4, g: 0.4, b: 0.6 },
 } as const;
 

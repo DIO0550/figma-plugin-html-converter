@@ -1,8 +1,6 @@
 import { test, expect } from "vitest";
-import { IframeElement } from "../iframe-element";
+import { IframeElement, URL_LABEL_CONFIG } from "../iframe-element";
 
-/** URL表示の最大文字数（iframe-element.tsのURL_LABEL_CONFIG.MAX_LENGTHと一致） */
-const URL_MAX_LENGTH = 47;
 /** 省略記号の文字数 */
 const ELLIPSIS_LENGTH = 3;
 
@@ -141,6 +139,8 @@ test("createUrlLabel: 長いURLは省略される", () => {
   const longUrl =
     "https://example.com/very/long/path/to/resource/that/is/too/long";
   const label = IframeElement.createUrlLabel(longUrl);
-  expect(label.characters!.length).toBe(URL_MAX_LENGTH + ELLIPSIS_LENGTH);
+  expect(label.characters!.length).toBe(
+    URL_LABEL_CONFIG.MAX_LENGTH + ELLIPSIS_LENGTH,
+  );
   expect(label.characters!.endsWith("...")).toBe(true);
 });

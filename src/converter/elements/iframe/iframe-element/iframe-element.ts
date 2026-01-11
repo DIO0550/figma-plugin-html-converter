@@ -30,7 +30,7 @@ const ICON_CONFIG = {
 /**
  * 補助的な情報として控えめに表示するため、メインコンテンツより小さく淡い色で設計
  */
-const URL_LABEL_CONFIG = {
+export const URL_LABEL_CONFIG = {
   MAX_LENGTH: 47,
   FONT_SIZE: 12,
   COLOR: { r: 0.5, g: 0.5, b: 0.5 },

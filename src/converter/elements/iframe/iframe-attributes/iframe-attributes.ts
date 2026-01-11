@@ -101,12 +101,12 @@ export const IframeAttributes = {
       const styles = Styles.parse(attributes.style);
 
       const styleWidth = Styles.getWidth(styles);
-      if (typeof styleWidth === "number") {
+      if (typeof styleWidth === "number" && styleWidth > 0) {
         width = styleWidth;
       }
 
       const styleHeight = Styles.getHeight(styles);
-      if (typeof styleHeight === "number") {
+      if (typeof styleHeight === "number" && styleHeight > 0) {
         height = styleHeight;
       }
     }

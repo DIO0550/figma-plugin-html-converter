@@ -6,6 +6,7 @@
 
 import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { FigmaNode } from "../../../models/figma-node";
+import type { HTMLNode } from "../../../models/html-node/html-node";
 import { Paint } from "../../../models/paint";
 import { IframeAttributes } from "../iframe-attributes";
 
@@ -43,6 +44,7 @@ export interface IframeElement {
   type: "element";
   tagName: "iframe";
   attributes: IframeAttributes;
+  children: HTMLNode[];
 }
 
 export const IframeElement = {
@@ -57,11 +59,15 @@ export const IframeElement = {
     );
   },
 
-  create(attributes: Partial<IframeAttributes> = {}): IframeElement {
+  create(
+    attributes: Partial<IframeAttributes> = {},
+    children: HTMLNode[] = [],
+  ): IframeElement {
     return {
       type: "element",
       tagName: "iframe",
       attributes: attributes as IframeAttributes,
+      children,
     };
   },
 
@@ -211,7 +217,11 @@ export const IframeElement = {
         "attributes" in node && typeof node.attributes === "object"
           ? (node.attributes as Partial<IframeAttributes>)
           : {};
-      const element = this.create(attributes);
+      const children =
+        "children" in node && Array.isArray(node.children)
+          ? (node.children as HTMLNode[])
+          : [];
+      const element = this.create(attributes, children);
       return this.toFigmaNode(element);
     }
 

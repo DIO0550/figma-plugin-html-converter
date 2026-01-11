@@ -45,9 +45,19 @@ const DEFAULT_HEIGHT = 150;
 
 export const EmbedAttributes = {
   /**
-   * embed要素のサイズを解析する
-   * @param attributes - embed要素の属性
-   * @returns 幅と高さのピクセル値。属性がない場合はデフォルト値（300x150）
+   * embed要素の幅・高さを解析し、最終的なピクセル値を決定する
+   *
+   * 幅・高さは次の優先順位で決定されます:
+   * 1. `width` / `height` 属性値（10進数の数値文字列かつ 0 より大きい値）
+   * 2. `style` 属性内の `width` / `height`（数値に解釈可能かつ 0 より大きい値）
+   * 3. デフォルト値（HTML Living Standard 準拠の 300x150）
+   *
+   * 無効な値（数値に変換できない、または 0 以下の値）の場合は、その値は無視され、
+   * 次の優先順位の値（style属性またはデフォルト値）が使用されます。
+   *
+   * @param attributes - `EmbedAttributes` 型のオブジェクト。`width` / `height` 属性および
+   *                     CSS テキスト形式の `style` 属性からサイズ情報を解析します。
+   * @returns 幅と高さのピクセル値。いずれにも有効な値が指定されていない場合はデフォルト値（300x150）
    */
   parseSize(attributes: EmbedAttributes): { width: number; height: number } {
     let width = DEFAULT_WIDTH;

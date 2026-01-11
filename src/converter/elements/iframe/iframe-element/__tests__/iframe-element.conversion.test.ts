@@ -1,10 +1,8 @@
 import { test, expect } from "vitest";
 import { IframeElement, URL_LABEL_CONFIG } from "../iframe-element";
 
-/** 省略記号の文字数 */
 const ELLIPSIS_LENGTH = 3;
 
-// toFigmaNode テスト
 test("toFigmaNode: FRAME型のノードを作成する", () => {
   const element = IframeElement.create({ src: "https://example.com" });
   const config = IframeElement.toFigmaNode(element);
@@ -82,7 +80,6 @@ test("toFigmaNode: スタイル属性から角丸を適用する", () => {
   expect(config.cornerRadius).toBe(8);
 });
 
-// mapToFigma テスト
 test("mapToFigma: 有効なIframeElementに対してFigmaNodeConfigを返す", () => {
   const element = IframeElement.create({ src: "https://example.com" });
   const config = IframeElement.mapToFigma(element);
@@ -113,7 +110,6 @@ test("mapToFigma: HTMLNodeライクなオブジェクトを変換できる", () 
   expect(config!.height).toBe(480);
 });
 
-// createPlaceholder テスト
 test("createPlaceholder: プレースホルダーフレームを作成する", () => {
   const placeholder = IframeElement.createPlaceholder();
   expect(placeholder.type).toBe("FRAME");
@@ -127,7 +123,6 @@ test("createPlaceholder: 中央配置用のレイアウト設定を持つ", () =
   expect(placeholder.counterAxisAlignItems).toBe("CENTER");
 });
 
-// createUrlLabel テスト
 test("createUrlLabel: URLラベルテキストノードを作成する", () => {
   const label = IframeElement.createUrlLabel("https://example.com");
   expect(label.type).toBe("TEXT");

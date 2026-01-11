@@ -1,8 +1,10 @@
+/**
+ * iframe要素の属性定義とバリデーション
+ * HTML Living Standard準拠の属性セットとセキュリティ検証ロジックを提供
+ */
+
 import { Styles } from "../../../models/styles";
 
-/**
- * HTML Living Standard準拠の属性定義
- */
 export interface IframeAttributes {
   // ソース属性
   src?: string;

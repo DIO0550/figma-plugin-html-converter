@@ -24,7 +24,6 @@ const ICON_CONFIG = {
   BORDER_WIDTH: 2,
   INNER_SIZE: 32,
   CORNER_RADIUS: 4,
-  /** プラグアイコン用の色 */
   PLUG_COLOR: { r: 0.5, g: 0.5, b: 0.5 },
 } as const;
 

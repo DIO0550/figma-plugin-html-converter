@@ -29,6 +29,13 @@ const ICON_CONFIG = {
 
 /**
  * ラベル表示設定
+ *
+ * 各値の意図:
+ * - MAX_LENGTH: URLの可読性を保ちながら長すぎる表示を防ぐための文字数上限
+ * - ELLIPSIS: 省略時に使用する標準的な省略記号
+ * - FONT_SIZE: Figmaの標準的なキャプションサイズに準拠
+ * - COLOR: グレー（50%）で控えめな表示、メインコンテンツより目立たない
+ * - ITEM_SPACING: Figmaの標準的な8pxグリッドシステムに準拠
  */
 export const LABEL_CONFIG = {
   MAX_LENGTH: 50,

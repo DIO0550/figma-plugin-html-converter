@@ -1,6 +1,11 @@
 import { test, expect } from "vitest";
 import { IframeElement } from "../iframe-element";
 
+/** URL表示の最大文字数（iframe-element.tsのURL_LABEL_CONFIG.MAX_LENGTHと一致） */
+const URL_MAX_LENGTH = 47;
+/** 省略記号の文字数 */
+const ELLIPSIS_LENGTH = 3;
+
 // toFigmaNode テスト
 test("toFigmaNode: FRAME型のノードを作成する", () => {
   const element = IframeElement.create({ src: "https://example.com" });
@@ -132,11 +137,10 @@ test("createUrlLabel: URLラベルテキストノードを作成する", () => {
   expect(label.characters).toBe("https://example.com");
 });
 
-test("createUrlLabel: 長いURLは省略される（MAX_LENGTH 47文字 + 省略記号 3文字 = 50文字）", () => {
+test("createUrlLabel: 長いURLは省略される", () => {
   const longUrl =
     "https://example.com/very/long/path/to/resource/that/is/too/long";
   const label = IframeElement.createUrlLabel(longUrl);
-  // URL_LABEL_CONFIG.MAX_LENGTH (47) + "..." (3) = 50文字
-  expect(label.characters!.length).toBe(47 + 3);
+  expect(label.characters!.length).toBe(URL_MAX_LENGTH + ELLIPSIS_LENGTH);
   expect(label.characters!.endsWith("...")).toBe(true);
 });

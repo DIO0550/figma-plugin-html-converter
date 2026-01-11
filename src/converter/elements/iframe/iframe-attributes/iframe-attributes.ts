@@ -74,6 +74,11 @@ const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 150;
 
 export const IframeAttributes = {
+  /**
+   * iframe要素のサイズを解析する
+   * @param attributes - iframe要素の属性
+   * @returns 幅と高さのピクセル値。属性がない場合はHTML Living Standard準拠のデフォルト値（300x150）
+   */
   parseSize(attributes: IframeAttributes): { width: number; height: number } {
     let width = DEFAULT_WIDTH;
     let height = DEFAULT_HEIGHT;
@@ -109,6 +114,11 @@ export const IframeAttributes = {
     return { width, height };
   },
 
+  /**
+   * URLのセキュリティ検証を行う
+   * @param url - 検証対象のURL
+   * @returns 安全なURLの場合true。javascript:、data:、HTMLタグを含むURLは拒否
+   */
   isValidUrl(url: string | undefined): boolean {
     if (!url) return false;
 
@@ -127,15 +137,30 @@ export const IframeAttributes = {
     return false;
   },
 
+  /**
+   * 検証済みのsrc属性を取得する
+   * @param attributes - iframe要素の属性
+   * @returns 有効なURLの場合はその値、無効または未設定の場合はnull
+   */
   getSrc(attributes: IframeAttributes): string | null {
     if (!attributes.src) return null;
     return this.isValidUrl(attributes.src) ? attributes.src : null;
   },
 
+  /**
+   * title属性を取得する
+   * @param attributes - iframe要素の属性
+   * @returns title属性の値、未設定の場合はnull
+   */
   getTitle(attributes: IframeAttributes): string | null {
     return attributes.title ?? null;
   },
 
+  /**
+   * スタイルからボーダー情報を取得する
+   * @param attributes - iframe要素の属性
+   * @returns ボーダー情報、スタイル未設定または未定義の場合はnull
+   */
   getBorder(attributes: IframeAttributes) {
     if (!attributes.style) return null;
 
@@ -143,6 +168,11 @@ export const IframeAttributes = {
     return Styles.getBorder(styles);
   },
 
+  /**
+   * スタイルから角丸の値を取得する
+   * @param attributes - iframe要素の属性
+   * @returns 角丸のピクセル値、未設定の場合はnull
+   */
   getBorderRadius(attributes: IframeAttributes): number | null {
     if (!attributes.style) return null;
 

@@ -132,10 +132,11 @@ test("createUrlLabel: URLラベルテキストノードを作成する", () => {
   expect(label.characters).toBe("https://example.com");
 });
 
-test("createUrlLabel: 長いURLは省略される", () => {
+test("createUrlLabel: 長いURLは省略される（MAX_LENGTH 47文字 + 省略記号 3文字 = 50文字）", () => {
   const longUrl =
     "https://example.com/very/long/path/to/resource/that/is/too/long";
   const label = IframeElement.createUrlLabel(longUrl);
-  expect(label.characters!.length).toBeLessThanOrEqual(50);
+  // URL_LABEL_CONFIG.MAX_LENGTH (47) + "..." (3) = 50文字
+  expect(label.characters!.length).toBe(47 + 3);
   expect(label.characters!.endsWith("...")).toBe(true);
 });

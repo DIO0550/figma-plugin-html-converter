@@ -83,3 +83,18 @@ test("getNodeName: 無効なURLの場合はデフォルト名を返す", () => {
   });
   expect(IframeElement.getNodeName(element)).toBe("iframe");
 });
+
+test("getNodeName: 相対URLの場合はデフォルト名を返す", () => {
+  const element = IframeElement.create({ src: "/embed/video" });
+  expect(IframeElement.getNodeName(element)).toBe("iframe");
+});
+
+test("getNodeName: ./で始まる相対URLの場合はデフォルト名を返す", () => {
+  const element = IframeElement.create({ src: "./embed/video" });
+  expect(IframeElement.getNodeName(element)).toBe("iframe");
+});
+
+test("getNodeName: ../で始まる相対URLの場合はデフォルト名を返す", () => {
+  const element = IframeElement.create({ src: "../embed/video" });
+  expect(IframeElement.getNodeName(element)).toBe("iframe");
+});

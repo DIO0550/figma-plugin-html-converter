@@ -1,7 +1,6 @@
 import { test, expect } from "vitest";
 import { IframeAttributes } from "../iframe-attributes";
 
-// parseSize テスト
 test("parseSize: デフォルトサイズは300x150を返す", () => {
   const result = IframeAttributes.parseSize({});
   expect(result.width).toBe(300);
@@ -45,7 +44,6 @@ test("parseSize: styleのwidth/heightが属性より優先される", () => {
   expect(result.height).toBe(768);
 });
 
-// isValidUrl テスト
 test("isValidUrl: undefinedはfalseを返す", () => {
   expect(IframeAttributes.isValidUrl(undefined)).toBe(false);
 });
@@ -89,7 +87,6 @@ test("isValidUrl: 明示的なパス形式でない相対URLはfalseを返す", 
   expect(IframeAttributes.isValidUrl("subdir/page.html")).toBe(false);
 });
 
-// isValidUrl セキュリティエッジケース
 test("isValidUrl: 大文字小文字混在のjavascript:はfalseを返す", () => {
   expect(IframeAttributes.isValidUrl("JavaScript:alert(1)")).toBe(false);
   expect(IframeAttributes.isValidUrl("JAVASCRIPT:alert(1)")).toBe(false);
@@ -102,10 +99,8 @@ test("isValidUrl: 大文字小文字混在のdata:はfalseを返す", () => {
 });
 
 test("isValidUrl: ホワイトスペースはトリミングされてから検証される", () => {
-  // 危険なURLはトリミング後も拒否
   expect(IframeAttributes.isValidUrl(" javascript:alert(1)")).toBe(false);
   expect(IframeAttributes.isValidUrl("\tjavascript:alert(1)")).toBe(false);
-  // 有効なURLはトリミング後に許可
   expect(IframeAttributes.isValidUrl(" https://example.com")).toBe(true);
   expect(IframeAttributes.isValidUrl("  /page.html  ")).toBe(true);
 });
@@ -117,7 +112,6 @@ test("isValidUrl: HTMLタグ文字を含むURLはfalseを返す", () => {
   expect(IframeAttributes.isValidUrl("https://example.com?q=>")).toBe(false);
 });
 
-// getSrc テスト
 test("getSrc: src属性がない場合はnullを返す", () => {
   expect(IframeAttributes.getSrc({})).toBeNull();
 });
@@ -132,7 +126,6 @@ test("getSrc: 無効なsrc属性がある場合はnullを返す", () => {
   expect(IframeAttributes.getSrc({ src: "javascript:alert(1)" })).toBeNull();
 });
 
-// getTitle テスト
 test("getTitle: title属性がない場合はnullを返す", () => {
   expect(IframeAttributes.getTitle({})).toBeNull();
 });
@@ -143,7 +136,6 @@ test("getTitle: title属性がある場合はその値を返す", () => {
   );
 });
 
-// getBorder テスト
 test("getBorder: style属性がない場合はnullを返す", () => {
   expect(IframeAttributes.getBorder({})).toBeNull();
 });
@@ -156,7 +148,6 @@ test("getBorder: styleにborderがある場合はその値を返す", () => {
   expect(result?.width).toBe(1);
 });
 
-// getBorderRadius テスト
 test("getBorderRadius: style属性がない場合はnullを返す", () => {
   expect(IframeAttributes.getBorderRadius({})).toBeNull();
 });

@@ -37,7 +37,7 @@ const ICON_CONFIG = {
  * - COLOR: グレー（50%）で控えめな表示、メインコンテンツより目立たない
  * - ITEM_SPACING: Figmaの標準的な8pxグリッドシステムに準拠
  */
-export const LABEL_CONFIG = {
+const LABEL_CONFIG = {
   MAX_LENGTH: 50,
   ELLIPSIS: "...",
   FONT_SIZE: 12,

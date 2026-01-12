@@ -3,7 +3,12 @@
  * HTML Living Standard準拠の属性セットとセキュリティ検証ロジックを提供
  */
 
-import { Styles } from "../../../models/styles";
+import {
+  parseSize as parseSizeCommon,
+  isValidUrl as isValidUrlCommon,
+  getBorder as getBorderCommon,
+  getBorderRadius as getBorderRadiusCommon,
+} from "../../common";
 
 export interface IframeAttributes {
   // ソース属性
@@ -66,18 +71,6 @@ export interface IframeAttributes {
   [key: `aria-${string}`]: string | undefined;
 }
 
-/**
- * HTML Living Standard仕様に準拠したデフォルト値
- * @see https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
- */
-const DEFAULT_WIDTH = 300;
-
-/**
- * HTML Living Standard仕様に準拠したデフォルト値
- * @see https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
- */
-const DEFAULT_HEIGHT = 150;
-
 export const IframeAttributes = {
   /**
    * iframe要素のサイズを解析する
@@ -85,38 +78,7 @@ export const IframeAttributes = {
    * @returns 幅と高さのピクセル値。属性がない場合はHTML Living Standard準拠のデフォルト値（300x150）
    */
   parseSize(attributes: IframeAttributes): { width: number; height: number } {
-    let width = DEFAULT_WIDTH;
-    let height = DEFAULT_HEIGHT;
-
-    if (attributes.width) {
-      const parsed = parseInt(attributes.width, 10);
-      if (!isNaN(parsed) && parsed > 0) {
-        width = parsed;
-      }
-    }
-
-    if (attributes.height) {
-      const parsed = parseInt(attributes.height, 10);
-      if (!isNaN(parsed) && parsed > 0) {
-        height = parsed;
-      }
-    }
-
-    if (attributes.style) {
-      const styles = Styles.parse(attributes.style);
-
-      const styleWidth = Styles.getWidth(styles);
-      if (typeof styleWidth === "number" && styleWidth > 0) {
-        width = styleWidth;
-      }
-
-      const styleHeight = Styles.getHeight(styles);
-      if (typeof styleHeight === "number" && styleHeight > 0) {
-        height = styleHeight;
-      }
-    }
-
-    return { width, height };
+    return parseSizeCommon(attributes);
   },
 
   /**
@@ -125,28 +87,7 @@ export const IframeAttributes = {
    * @returns 安全なURLの場合true。javascript:、data:、HTMLタグを含むURLは拒否
    */
   isValidUrl(url: string | undefined): boolean {
-    if (!url) return false;
-
-    const trimmedUrl = url.trim();
-    if (!trimmedUrl) return false;
-
-    const lowerUrl = trimmedUrl.toLowerCase();
-
-    if (trimmedUrl.includes("<") || trimmedUrl.includes(">")) return false;
-    if (lowerUrl.startsWith("javascript:")) return false;
-    if (lowerUrl.startsWith("data:")) return false;
-
-    if (lowerUrl.startsWith("http://") || lowerUrl.startsWith("https://"))
-      return true;
-
-    if (
-      trimmedUrl.startsWith("/") ||
-      trimmedUrl.startsWith("./") ||
-      trimmedUrl.startsWith("../")
-    )
-      return true;
-
-    return false;
+    return isValidUrlCommon(url);
   },
 
   /**
@@ -174,10 +115,7 @@ export const IframeAttributes = {
    * @returns ボーダー情報、スタイル未設定または未定義の場合はnull
    */
   getBorder(attributes: IframeAttributes) {
-    if (!attributes.style) return null;
-
-    const styles = Styles.parse(attributes.style);
-    return Styles.getBorder(styles);
+    return getBorderCommon(attributes);
   },
 
   /**
@@ -186,22 +124,6 @@ export const IframeAttributes = {
    * @returns 角丸のピクセル値、未設定の場合はnull
    */
   getBorderRadius(attributes: IframeAttributes): number | null {
-    if (!attributes.style) return null;
-
-    const styles = Styles.parse(attributes.style);
-    const borderRadius = Styles.getBorderRadius(styles);
-
-    if (typeof borderRadius === "number") {
-      return borderRadius;
-    }
-
-    if (borderRadius && typeof borderRadius === "object") {
-      const values = Object.values(borderRadius);
-      if (values.length > 0 && typeof values[0] === "number") {
-        return values[0];
-      }
-    }
-
-    return null;
+    return getBorderRadiusCommon(attributes);
   },
 };

@@ -1,7 +1,6 @@
 /**
- * iframe要素のFigma変換処理
- * セキュリティ上の理由から実際のコンテンツは取得できないため、
- * ブラウザウィンドウ風のアイコンとURLラベルでプレースホルダーとして表示
+ * object要素のFigma変換処理
+ * 外部コンテンツを埋め込むため、プレースホルダーとして表示
  */
 
 import type { FigmaNodeConfig } from "../../../models/figma-node";
@@ -9,112 +8,116 @@ import { FigmaNode } from "../../../models/figma-node";
 import type { HTMLNode } from "../../../models/html-node/html-node";
 import { Paint } from "../../../models/paint";
 import {
-  LABEL_CONFIG as URL_LABEL_CONFIG_COMMON,
+  LABEL_CONFIG,
   createPlaceholderFills,
   createUrlLabel as createUrlLabelCommon,
+  createTextLabel,
 } from "../../common";
-import { IframeAttributes } from "../iframe-attributes";
+import { ObjectAttributes } from "../object-attributes";
 
 /**
- * ブラウザUIとの視覚的整合性を確保するため、主要ブラウザのウィンドウデザインを参考に設計
+ * オブジェクト要素用アイコン設定
  */
 const ICON_CONFIG = {
   SIZE: 48,
   BACKGROUND_COLOR: { r: 1, g: 1, b: 1 },
   BORDER_COLOR: { r: 0.6, g: 0.6, b: 0.6 },
   BORDER_WIDTH: 2,
-  INNER_SIZE: 40,
-  HEADER_HEIGHT: 10,
-  HEADER_COLOR: { r: 0.7, g: 0.7, b: 0.7 },
+  INNER_SIZE: 32,
   CORNER_RADIUS: 4,
+  OBJECT_COLOR: { r: 0.4, g: 0.4, b: 0.6 },
 } as const;
 
-/**
- * テスト互換性のためにexport（共通LABEL_CONFIGの参照）
- */
-export const URL_LABEL_CONFIG = URL_LABEL_CONFIG_COMMON;
-
-export interface IframeElement {
+export interface ObjectElement {
   type: "element";
-  tagName: "iframe";
-  attributes: IframeAttributes;
+  tagName: "object";
+  attributes: ObjectAttributes;
   children: HTMLNode[];
 }
 
-export const IframeElement = {
-  isIframeElement(node: unknown): node is IframeElement {
+export const ObjectElement = {
+  isObjectElement(node: unknown): node is ObjectElement {
     return (
       typeof node === "object" &&
       node !== null &&
       "type" in node &&
       "tagName" in node &&
       node.type === "element" &&
-      node.tagName === "iframe"
+      node.tagName === "object"
     );
   },
 
   create(
-    attributes: Partial<IframeAttributes> = {},
+    attributes: Partial<ObjectAttributes> = {},
     children: HTMLNode[] = [],
-  ): IframeElement {
+  ): ObjectElement {
     return {
       type: "element",
-      tagName: "iframe",
-      attributes: attributes as IframeAttributes,
+      tagName: "object",
+      attributes: attributes as ObjectAttributes,
       children,
     };
   },
 
-  getSrc(element: IframeElement): string | undefined {
-    return element.attributes.src;
+  getData(element: ObjectElement): string | undefined {
+    return element.attributes.data;
   },
 
-  getWidth(element: IframeElement): string | undefined {
+  getWidth(element: ObjectElement): string | undefined {
     return element.attributes.width;
   },
 
-  getHeight(element: IframeElement): string | undefined {
+  getHeight(element: ObjectElement): string | undefined {
     return element.attributes.height;
   },
 
-  getTitle(element: IframeElement): string | undefined {
-    return element.attributes.title;
+  getType(element: ObjectElement): string | undefined {
+    return element.attributes.type;
   },
 
-  getStyle(element: IframeElement): string | undefined {
+  getName(element: ObjectElement): string | undefined {
+    return element.attributes.name;
+  },
+
+  getStyle(element: ObjectElement): string | undefined {
     return element.attributes.style;
   },
 
-  getNodeName(element: IframeElement): string {
-    const title = element.attributes.title;
-    if (title) {
-      return `iframe: ${title}`;
+  getNodeName(element: ObjectElement): string {
+    const name = element.attributes.name;
+    if (name) {
+      return `object: ${name}`;
     }
 
-    const src = IframeAttributes.getSrc(element.attributes);
-    if (src) {
+    const type = element.attributes.type;
+    if (type) {
+      return `object: ${type}`;
+    }
+
+    const data = ObjectAttributes.getData(element.attributes);
+    if (data) {
       try {
-        const url = new URL(src);
-        return `iframe: ${url.hostname}`;
+        const url = new URL(data);
+        return `object: ${url.hostname}`;
       } catch {
-        return "iframe";
+        return "object";
       }
     }
 
-    return "iframe";
+    return "object";
   },
 
   createFills(): Paint[] {
     return createPlaceholderFills();
   },
 
-  applyStyles(config: FigmaNodeConfig, element: IframeElement): void {
-    const border = IframeAttributes.getBorder(element.attributes);
+  applyStyles(config: FigmaNodeConfig, element: ObjectElement): void {
+    const border = ObjectAttributes.getBorder(element.attributes);
     if (border) {
       FigmaNode.setStrokes(config, [Paint.solid(border.color)], border.width);
     }
 
-    const borderRadius = IframeAttributes.getBorderRadius(element.attributes);
+    const borderRadius = ObjectAttributes.getBorderRadius(element.attributes);
     if (borderRadius !== null) {
       FigmaNode.setCornerRadius(config, borderRadius);
     }
@@ -123,7 +126,7 @@ export const IframeElement = {
   createPlaceholder(): FigmaNodeConfig {
     const iconFrame: FigmaNodeConfig = {
       type: "FRAME",
-      name: "iframe-icon",
+      name: "object-icon",
       width: ICON_CONFIG.SIZE,
       height: ICON_CONFIG.SIZE,
       fills: [Paint.solid(ICON_CONFIG.BACKGROUND_COLOR)],
@@ -136,10 +139,11 @@ export const IframeElement = {
       children: [
         {
           type: "FRAME",
-          name: "header-bar",
+          name: "object-inner-icon",
           width: ICON_CONFIG.INNER_SIZE,
-          height: ICON_CONFIG.HEADER_HEIGHT,
-          fills: [Paint.solid(ICON_CONFIG.HEADER_COLOR)],
+          height: ICON_CONFIG.INNER_SIZE,
+          fills: [Paint.solid(ICON_CONFIG.OBJECT_COLOR)],
+          cornerRadius: ICON_CONFIG.CORNER_RADIUS,
         },
       ],
     };
@@ -151,12 +155,16 @@ export const IframeElement = {
     return createUrlLabelCommon(url);
   },
 
-  toFigmaNode(element: IframeElement): FigmaNodeConfig {
-    const config = FigmaNode.createFrame("iframe");
+  createTypeLabel(type: string): FigmaNodeConfig {
+    return createTextLabel(type, "type-label");
+  },
+
+  toFigmaNode(element: ObjectElement): FigmaNodeConfig {
+    const config = FigmaNode.createFrame("object");
     config.name = this.getNodeName(element);
     config.fills = this.createFills();
 
-    const { width, height } = IframeAttributes.parseSize(element.attributes);
+    const { width, height } = ObjectAttributes.parseSize(element.attributes);
     config.width = width;
     config.height = height;
 
@@ -166,9 +174,15 @@ export const IframeElement = {
     const placeholder = this.createPlaceholder();
     children.push(placeholder);
 
-    const src = IframeAttributes.getSrc(element.attributes);
-    if (src) {
-      const urlLabel = this.createUrlLabel(src);
+    const type = ObjectAttributes.getType(element.attributes);
+    if (type) {
+      const typeLabel = this.createTypeLabel(type);
+      children.push(typeLabel);
+    }
+
+    const data = ObjectAttributes.getData(element.attributes);
+    if (data) {
+      const urlLabel = this.createUrlLabel(data);
       children.push(urlLabel);
     }
 
@@ -176,13 +190,13 @@ export const IframeElement = {
     config.layoutMode = "VERTICAL";
     config.primaryAxisAlignItems = "CENTER";
     config.counterAxisAlignItems = "CENTER";
-    config.itemSpacing = URL_LABEL_CONFIG.ITEM_SPACING;
+    config.itemSpacing = LABEL_CONFIG.ITEM_SPACING;
 
     return config;
   },
 
   mapToFigma(node: unknown): FigmaNodeConfig | null {
-    if (this.isIframeElement(node)) {
+    if (this.isObjectElement(node)) {
       return this.toFigmaNode(node);
     }
 
@@ -192,11 +206,11 @@ export const IframeElement = {
       "type" in node &&
       "tagName" in node &&
       node.type === "element" &&
-      node.tagName === "iframe"
+      node.tagName === "object"
     ) {
       const attributes =
         "attributes" in node && typeof node.attributes === "object"
-          ? (node.attributes as Partial<IframeAttributes>)
+          ? (node.attributes as Partial<ObjectAttributes>)
           : {};
       const children =
         "children" in node && Array.isArray(node.children)

@@ -8,12 +8,12 @@ import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { FigmaNode } from "../../../models/figma-node";
 import type { HTMLNode } from "../../../models/html-node/html-node";
 import { Paint } from "../../../models/paint";
+import {
+  LABEL_CONFIG as URL_LABEL_CONFIG_COMMON,
+  createPlaceholderFills,
+  createUrlLabel as createUrlLabelCommon,
+} from "../../common";
 import { IframeAttributes } from "../iframe-attributes";
-
-/**
- * Figmaの標準プレースホルダー色に合わせることで、他のFigma要素との視覚的一貫性を確保
- */
-const DEFAULT_PLACEHOLDER_COLOR = { r: 0.94, g: 0.94, b: 0.94 };
 
 /**
  * ブラウザUIとの視覚的整合性を確保するため、主要ブラウザのウィンドウデザインを参考に設計
@@ -30,16 +30,9 @@ const ICON_CONFIG = {
 } as const;
 
 /**
- * プレースホルダーのメインコンテンツを引き立てるため、補助情報は控えめに表示
+ * テスト互換性のためにexport（共通LABEL_CONFIGの参照）
  */
-export const URL_LABEL_CONFIG = {
-  /** 一般的なURL（プロトコル + ドメイン + 短いパス）が切り捨てられずに表示できる長さ */
-  MAX_LENGTH: 50,
-  ELLIPSIS: "...",
-  FONT_SIZE: 12,
-  COLOR: { r: 0.5, g: 0.5, b: 0.5 },
-  ITEM_SPACING: 8,
-} as const;
+export const URL_LABEL_CONFIG = URL_LABEL_CONFIG_COMMON;
 
 export interface IframeElement {
   type: "element";
@@ -112,7 +105,7 @@ export const IframeElement = {
   },
 
   createFills(): Paint[] {
-    return [Paint.solid(DEFAULT_PLACEHOLDER_COLOR)];
+    return createPlaceholderFills();
   },
 
   applyStyles(config: FigmaNodeConfig, element: IframeElement): void {
@@ -155,22 +148,7 @@ export const IframeElement = {
   },
 
   createUrlLabel(url: string): FigmaNodeConfig {
-    let displayUrl = url;
-    if (url.length > URL_LABEL_CONFIG.MAX_LENGTH) {
-      displayUrl =
-        url.substring(0, URL_LABEL_CONFIG.MAX_LENGTH) +
-        URL_LABEL_CONFIG.ELLIPSIS;
-    }
-
-    const label: FigmaNodeConfig = {
-      type: "TEXT",
-      name: "url-label",
-      characters: displayUrl,
-      fontSize: URL_LABEL_CONFIG.FONT_SIZE,
-      fills: [Paint.solid(URL_LABEL_CONFIG.COLOR)],
-    };
-
-    return label;
+    return createUrlLabelCommon(url);
   },
 
   toFigmaNode(element: IframeElement): FigmaNodeConfig {

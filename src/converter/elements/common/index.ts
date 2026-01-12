@@ -11,3 +11,11 @@ export {
   type SizeableAttributes,
   type StyleableAttributes,
 } from "./embedded-element-utils";
+
+export {
+  DEFAULT_PLACEHOLDER_COLOR,
+  LABEL_CONFIG,
+  createPlaceholderFills,
+  createUrlLabel,
+  createTextLabel,
+} from "./placeholder-utils";

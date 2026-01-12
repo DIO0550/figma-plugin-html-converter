@@ -7,12 +7,13 @@ import type { FigmaNodeConfig } from "../../../models/figma-node";
 import { FigmaNode } from "../../../models/figma-node";
 import type { HTMLNode } from "../../../models/html-node/html-node";
 import { Paint } from "../../../models/paint";
+import {
+  LABEL_CONFIG,
+  createPlaceholderFills,
+  createUrlLabel as createUrlLabelCommon,
+  createTextLabel,
+} from "../../common";
 import { EmbedAttributes } from "../embed-attributes";
-
-/**
- * Figmaの標準プレースホルダー色
- */
-const DEFAULT_PLACEHOLDER_COLOR = { r: 0.94, g: 0.94, b: 0.94 };
 
 /**
  * 埋め込みコンテンツ用アイコン設定
@@ -25,24 +26,6 @@ const ICON_CONFIG = {
   INNER_SIZE: 32,
   CORNER_RADIUS: 4,
   PLUG_COLOR: { r: 0.5, g: 0.5, b: 0.5 },
-} as const;
-
-/**
- * ラベル表示設定
- *
- * 各値の意図:
- * - MAX_LENGTH: URLの可読性を保ちながら長すぎる表示を防ぐための文字数上限
- * - ELLIPSIS: 省略時に使用する標準的な省略記号
- * - FONT_SIZE: Figmaの標準的なキャプションサイズに準拠
- * - COLOR: グレー（50%）で控えめな表示、メインコンテンツより目立たない
- * - ITEM_SPACING: Figmaの標準的な8pxグリッドシステムに準拠
- */
-const LABEL_CONFIG = {
-  MAX_LENGTH: 50,
-  ELLIPSIS: "...",
-  FONT_SIZE: 12,
-  COLOR: { r: 0.5, g: 0.5, b: 0.5 },
-  ITEM_SPACING: 8,
 } as const;
 
 export interface EmbedElement {
@@ -116,7 +99,7 @@ export const EmbedElement = {
   },
 
   createFills(): Paint[] {
-    return [Paint.solid(DEFAULT_PLACEHOLDER_COLOR)];
+    return createPlaceholderFills();
   },
 
   applyStyles(config: FigmaNodeConfig, element: EmbedElement): void {
@@ -160,33 +143,11 @@ export const EmbedElement = {
   },
 
   createUrlLabel(url: string): FigmaNodeConfig {
-    let displayUrl = url;
-    if (url.length > LABEL_CONFIG.MAX_LENGTH) {
-      displayUrl =
-        url.substring(0, LABEL_CONFIG.MAX_LENGTH) + LABEL_CONFIG.ELLIPSIS;
-    }
-
-    const label: FigmaNodeConfig = {
-      type: "TEXT",
-      name: "url-label",
-      characters: displayUrl,
-      fontSize: LABEL_CONFIG.FONT_SIZE,
-      fills: [Paint.solid(LABEL_CONFIG.COLOR)],
-    };
-
-    return label;
+    return createUrlLabelCommon(url);
   },
 
   createTypeLabel(type: string): FigmaNodeConfig {
-    const label: FigmaNodeConfig = {
-      type: "TEXT",
-      name: "type-label",
-      characters: type,
-      fontSize: LABEL_CONFIG.FONT_SIZE,
-      fills: [Paint.solid(LABEL_CONFIG.COLOR)],
-    };
-
-    return label;
+    return createTextLabel(type, "type-label");
   },
 
   toFigmaNode(element: EmbedElement): FigmaNodeConfig {

@@ -9,10 +9,10 @@ import { Styles } from "../../models/styles";
  * HTML Living Standard仕様に準拠したデフォルト値
  * @see https://html.spec.whatwg.org/multipage/iframe-embed-object.html
  */
-export const DEFAULT_EMBEDDED_SIZE = {
+export const DEFAULT_EMBEDDED_SIZE: { WIDTH: number; HEIGHT: number } = {
   WIDTH: 300,
   HEIGHT: 150,
-} as const;
+};
 
 /**
  * width/height/style属性を持つ要素の共通インターフェース

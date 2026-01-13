@@ -64,3 +64,25 @@ export const MCP_METHODS = {
  * デフォルトのサーバーURL（開発用）
  */
 export const DEFAULT_SERVER_URL = "http://localhost:3000" as const;
+
+/**
+ * メッセージID生成の定数
+ */
+export const MESSAGE_ID_CONFIG = {
+  /** 基数36（0-9, a-z）でエンコード */
+  BASE36_RADIX: 36,
+  /** ランダム部分の開始位置 */
+  RANDOM_ID_START: 2,
+  /** ランダム部分の終了位置 */
+  RANDOM_ID_END: 9,
+} as const;
+
+/**
+ * クライアント情報
+ */
+export const CLIENT_INFO = {
+  /** クライアント名 */
+  name: "figma-html-converter",
+  /** クライアントバージョン */
+  version: "1.0.0",
+} as const;

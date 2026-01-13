@@ -9,6 +9,8 @@ export {
   MCP_PROTOCOL_VERSION,
   MCP_METHODS,
   DEFAULT_SERVER_URL,
+  MESSAGE_ID_CONFIG,
+  CLIENT_INFO,
 } from "./mcp-constants";
 
 export { ERROR_MESSAGES, JSONRPC_ERROR_CODES } from "./error-codes";

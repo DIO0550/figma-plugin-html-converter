@@ -35,4 +35,6 @@ export const JSONRPC_ERROR_CODES = {
   SERVER_ERROR_START: -32099,
   /** サーバーエラー範囲の終了 */
   SERVER_ERROR_END: -32000,
+  /** 未知のエラーコード（デフォルト値） */
+  UNKNOWN: -1,
 } as const;

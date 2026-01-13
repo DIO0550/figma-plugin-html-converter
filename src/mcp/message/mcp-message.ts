@@ -10,14 +10,23 @@ import type {
   MCPResult,
   MCPError,
 } from "../types";
-import { JSONRPC_VERSION } from "../constants";
+import {
+  JSONRPC_VERSION,
+  MESSAGE_ID_CONFIG,
+  JSONRPC_ERROR_CODES,
+} from "../constants";
 
 /**
  * 一意なメッセージIDを生成する
  */
 const generateMessageId = (): MCPMessageId => {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 9);
+  const timestamp = Date.now().toString(MESSAGE_ID_CONFIG.BASE36_RADIX);
+  const random = Math.random()
+    .toString(MESSAGE_ID_CONFIG.BASE36_RADIX)
+    .substring(
+      MESSAGE_ID_CONFIG.RANDOM_ID_START,
+      MESSAGE_ID_CONFIG.RANDOM_ID_END,
+    );
   return `${timestamp}-${random}` as MCPMessageId;
 };
 
@@ -99,7 +108,10 @@ export const MCPMessage = {
     if ("error" in response && response.error !== null) {
       const errorObj = response.error as Record<string, unknown>;
       mcpResponse.error = {
-        code: typeof errorObj.code === "number" ? errorObj.code : -1,
+        code:
+          typeof errorObj.code === "number"
+            ? errorObj.code
+            : JSONRPC_ERROR_CODES.UNKNOWN,
         message:
           typeof errorObj.message === "string"
             ? errorObj.message

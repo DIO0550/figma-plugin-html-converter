@@ -90,10 +90,8 @@ export const HttpTransport = {
           };
         }
 
-        if (
-          error.message.includes("Invalid JSON") ||
-          error.message.includes("Unexpected")
-        ) {
+        // JSON.parse()が投げるSyntaxErrorを適切に判定
+        if (error instanceof SyntaxError) {
           return {
             success: false,
             error: createInvalidResponseError(error.message),

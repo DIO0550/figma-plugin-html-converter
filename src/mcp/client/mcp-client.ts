@@ -16,6 +16,7 @@ import {
   DEFAULT_TIMEOUT_MS,
   MCP_PROTOCOL_VERSION,
   MCP_METHODS,
+  CLIENT_INFO,
 } from "../constants";
 import { HttpTransport, type HttpTransportState } from "../transport";
 import { MCPMessage } from "../message";
@@ -97,10 +98,7 @@ export const MCPClient = {
     const request = MCPMessage.createRequest(MCP_METHODS.INITIALIZE, {
       protocolVersion: MCP_PROTOCOL_VERSION,
       capabilities: {},
-      clientInfo: {
-        name: "figma-html-converter",
-        version: "1.0.0",
-      },
+      clientInfo: CLIENT_INFO,
     });
 
     const result = await HttpTransport.send<InitializeResult>(

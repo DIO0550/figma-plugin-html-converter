@@ -82,10 +82,9 @@ export const RetryLogic = {
   /**
    * リトライ状態をリセットする
    *
-   * @param _state - 現在のリトライ状態（未使用）
    * @returns リセットされたリトライ状態
    */
-  reset(_state: RetryState): RetryState {
+  reset(): RetryState {
     return {
       attempts: 0,
       lastError: null,

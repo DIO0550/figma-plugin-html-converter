@@ -85,12 +85,7 @@ test("リトライ状態を更新できる", () => {
 });
 
 test("リトライ状態をリセットできる", () => {
-  const state = {
-    attempts: 3,
-    lastError: { code: "NETWORK_ERROR" as const, message: "Test error" },
-  };
-
-  const resetState = RetryLogic.reset(state);
+  const resetState = RetryLogic.reset();
 
   expect(resetState.attempts).toBe(0);
   expect(resetState.lastError).toBeNull();

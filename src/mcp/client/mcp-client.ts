@@ -128,7 +128,7 @@ export const MCPClient = {
     }
 
     client.connectionState = "connected";
-    client.retryState = RetryLogic.reset(client.retryState);
+    client.retryState = RetryLogic.reset();
 
     return {
       success: true,

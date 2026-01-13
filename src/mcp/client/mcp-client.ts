@@ -183,7 +183,10 @@ export const MCPClient = {
     params?: Record<string, unknown>,
   ): Promise<MCPResult<MCPResponse<T>>> {
     const retryConfig = client.config.retryConfig as RetryConfig;
-    let lastResult: MCPResult<MCPResponse<T>> | null = null;
+
+    // maxAttempts >= 1を前提とし、ループは少なくとも1回実行される
+    // そのためlastResultは常に設定される
+    let lastResult!: MCPResult<MCPResponse<T>>;
 
     for (let attempt = 1; attempt <= retryConfig.maxAttempts; attempt++) {
       lastResult = await MCPClient.request<T>(client, method, params);
@@ -200,12 +203,7 @@ export const MCPClient = {
       await RetryLogic.wait(delay);
     }
 
-    return (
-      lastResult ?? {
-        success: false,
-        error: createConnectionError("リクエストに失敗しました"),
-      }
-    );
+    return lastResult;
   },
 
   /**

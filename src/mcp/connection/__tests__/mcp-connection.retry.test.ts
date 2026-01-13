@@ -43,8 +43,27 @@ test("リトライ遅延は最大遅延を超えない", () => {
     backoffMultiplier: 2,
   };
 
-  const delay5 = RetryLogic.calculateDelay(5, config);
+  // 境界値テスト：最大遅延に到達する直前の試行（計算値が最大遅延未満）
+  // attempt=1: 10000 * 2^0 = 10000 < 30000
+  const delayBeforeMax = RetryLogic.calculateDelay(1, config);
+  expect(delayBeforeMax).toBe(10000);
+  expect(delayBeforeMax).toBeLessThan(config.maxDelayMs);
 
+  // 境界値テスト：最大遅延に到達した試行（計算値が最大遅延と等しい）
+  // attempt=2: 10000 * 2^1 = 20000 < 30000
+  const delayAtThreshold = RetryLogic.calculateDelay(2, config);
+  expect(delayAtThreshold).toBe(20000);
+  expect(delayAtThreshold).toBeLessThan(config.maxDelayMs);
+
+  // 境界値テスト：最大遅延を超える試行（計算値が最大遅延を超える）
+  // attempt=3: 10000 * 2^2 = 40000 > 30000 → キャップされて 30000
+  const delayExceedsMax = RetryLogic.calculateDelay(3, config);
+  expect(delayExceedsMax).toBe(config.maxDelayMs);
+
+  // 境界値テスト：さらに大きな試行回数でもキャップが維持される
+  // attempt=5: 10000 * 2^4 = 160000 > 30000 → キャップされて 30000
+  const delay5 = RetryLogic.calculateDelay(5, config);
+  expect(delay5).toBe(config.maxDelayMs);
   expect(delay5).toBeLessThanOrEqual(config.maxDelayMs);
 });
 

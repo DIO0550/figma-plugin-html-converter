@@ -22,11 +22,6 @@ export const DEFAULT_RETRY_CONFIG = {
 export const DEFAULT_TIMEOUT_MS = 30000;
 
 /**
- * 接続タイムアウト（ミリ秒）
- */
-export const CONNECTION_TIMEOUT_MS = 10000;
-
-/**
  * JSON-RPCバージョン
  */
 export const JSONRPC_VERSION = "2.0" as const;

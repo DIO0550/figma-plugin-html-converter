@@ -184,8 +184,11 @@ export const MCPClient = {
   ): Promise<MCPResult<MCPResponse<T>>> {
     const retryConfig = client.config.retryConfig as RetryConfig;
 
-    // maxAttempts >= 1を前提とし、ループは少なくとも1回実行される
-    // そのためlastResultは常に設定される
+    // リトライ設定が不正な場合は、リトライなしで1回だけリクエストを実行する
+    if (!retryConfig || retryConfig.maxAttempts < 1) {
+      return MCPClient.request<T>(client, method, params);
+    }
+
     let lastResult!: MCPResult<MCPResponse<T>>;
 
     for (let attempt = 1; attempt <= retryConfig.maxAttempts; attempt++) {

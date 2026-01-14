@@ -40,23 +40,6 @@ export const ConnectionState = {
   },
 
   /**
-   * 状態遷移を実行する（遷移可能な場合のみ）
-   *
-   * @param from - 現在の状態
-   * @param to - 遷移先の状態
-   * @returns 遷移後の状態（遷移不可の場合は現在の状態）
-   */
-  transition(
-    from: ConnectionStateType,
-    to: ConnectionStateType,
-  ): ConnectionStateType {
-    if (ConnectionState.canTransition(from, to)) {
-      return to;
-    }
-    return from;
-  },
-
-  /**
    * 接続済み状態かどうかを判定する
    *
    * @param state - 判定対象の状態
@@ -94,22 +77,5 @@ export const ConnectionState = {
    */
   isError(state: ConnectionStateType): boolean {
     return state === "error";
-  },
-
-  /**
-   * 状態の表示名を取得する
-   *
-   * @param state - 状態
-   * @returns 表示名
-   */
-  getDisplayName(state: ConnectionStateType): string {
-    const displayNames: Record<ConnectionStateType, string> = {
-      disconnected: "切断",
-      connecting: "接続中",
-      connected: "接続済み",
-      reconnecting: "再接続中",
-      error: "エラー",
-    };
-    return displayNames[state];
   },
 };

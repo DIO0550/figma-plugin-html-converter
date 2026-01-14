@@ -21,7 +21,6 @@ afterEach(() => {
  * 接続済みクライアントを作成するヘルパー
  */
 async function createConnectedClient() {
-  // Arrange（準備）
   mockFetch.mockResolvedValueOnce({
     ok: true,
     json: () =>

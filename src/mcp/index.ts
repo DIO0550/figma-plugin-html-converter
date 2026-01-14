@@ -38,7 +38,7 @@ export {
 export { MCPMessage, PluginBridge } from "./message";
 
 // トランスポート
-export { HttpTransport, TransportConfigUtils } from "./transport";
+export { HttpTransport } from "./transport";
 export type { HttpTransportState } from "./transport";
 
 // 接続管理

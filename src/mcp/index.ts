@@ -6,7 +6,6 @@
 
 // 型定義
 export type {
-  MCPSessionId,
   MCPMessageId,
   MCPServerUrl,
   ConnectionState as ConnectionStateType,

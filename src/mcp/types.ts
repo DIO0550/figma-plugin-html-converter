@@ -8,11 +8,6 @@ import type { Brand } from "../types/brand";
 // =============================================================================
 
 /**
- * MCPセッションID
- */
-export type MCPSessionId = Brand<string, "MCPSessionId">;
-
-/**
  * MCPメッセージID
  */
 export type MCPMessageId = Brand<string, "MCPMessageId">;

@@ -9,6 +9,6 @@
   "ui": "dist/ui.html",
   "networkAccess": {
     "allowedDomains": ["localhost:*"],
-    "reasoning": "MCP server communication for AI-assisted features"
+    "reasoning": "AI支援機能のためのMCPサーバー通信"
   }
 }

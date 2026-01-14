@@ -62,13 +62,16 @@ export const DEFAULT_SERVER_URL = "http://localhost:3000" as const;
 
 /**
  * メッセージID生成の定数
+ *
+ * Math.random().toString(36) は "0.xyz..." 形式の文字列を返すため、
+ * substring(2, 9) で先頭の "0." を除いた7文字のランダムな英数字を取得する
  */
 export const MESSAGE_ID_CONFIG = {
   /** 基数36（0-9, a-z）でエンコード */
   BASE36_RADIX: 36,
-  /** ランダム部分の開始位置 */
+  /** ランダム部分の開始位置（"0." をスキップするため2から開始） */
   RANDOM_ID_START: 2,
-  /** ランダム部分の終了位置 */
+  /** ランダム部分の終了位置（7文字のランダム文字列を取得） */
   RANDOM_ID_END: 9,
 } as const;
 

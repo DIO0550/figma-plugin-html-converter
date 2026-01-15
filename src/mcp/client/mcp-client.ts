@@ -189,21 +189,27 @@ export const MCPClient = {
       return MCPClient.request<T>(client, method, params);
     }
 
-    let lastResult!: MCPResult<MCPResponse<T>>;
+    // 初回リクエストを実行（lastResultの確実な初期化のため、ループ外で明示的に実行）
+    let lastResult: MCPResult<MCPResponse<T>> = await MCPClient.request<T>(
+      client,
+      method,
+      params,
+    );
 
-    for (let attempt = 1; attempt <= retryConfig.maxAttempts; attempt++) {
+    if (lastResult.success) {
+      return lastResult;
+    }
+
+    // リトライループ（2回目以降）
+    for (let attempt = 2; attempt <= retryConfig.maxAttempts; attempt++) {
+      const delay = RetryLogic.calculateDelay(attempt - 1, retryConfig);
+      await RetryLogic.wait(delay);
+
       lastResult = await MCPClient.request<T>(client, method, params);
 
       if (lastResult.success) {
         return lastResult;
       }
-
-      if (!RetryLogic.canRetry(attempt, retryConfig.maxAttempts)) {
-        break;
-      }
-
-      const delay = RetryLogic.calculateDelay(attempt, retryConfig);
-      await RetryLogic.wait(delay);
     }
 
     return lastResult;

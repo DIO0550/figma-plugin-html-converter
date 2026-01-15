@@ -92,6 +92,10 @@ export const FallbackHandler = {
   /**
    * フォールバック付きで処理を実行する
    *
+   * onlineActionがMCPResult形式のエラー（success: false）を返した場合、
+   * またはPromiseがrejectされた場合に、autoFallbackが有効であれば
+   * fallbackActionを実行する。
+   *
    * @param handler - フォールバックハンドラ状態
    * @param onlineAction - オンライン時の処理
    * @param fallbackAction - フォールバック処理
@@ -107,7 +111,20 @@ export const FallbackHandler = {
     }
 
     try {
-      return await onlineAction();
+      const result = await onlineAction();
+
+      // MCPResult形式のエラーレスポンスをチェック
+      if (!result.success) {
+        handler.lastError = result.error;
+
+        if (handler.autoFallback) {
+          return fallbackAction();
+        }
+
+        return result;
+      }
+
+      return result;
     } catch (error) {
       handler.lastError = {
         code: "NETWORK_ERROR",

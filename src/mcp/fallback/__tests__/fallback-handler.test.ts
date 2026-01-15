@@ -95,3 +95,51 @@ test("MCPが利用可能かどうかを判定できる", () => {
   FallbackHandler.setMode(handler, "degraded");
   expect(FallbackHandler.isMCPAvailable(handler)).toBe(true);
 });
+
+test("オンライン処理がMCPResult形式のエラーを返した場合にフォールバック処理が実行される", async () => {
+  // Arrange（準備）
+  const handler = FallbackHandler.create();
+  FallbackHandler.setMode(handler, "normal");
+  FallbackHandler.setAutoFallback(handler, true);
+
+  // Act（実行）
+  const result = await FallbackHandler.executeWithFallback(
+    handler,
+    async () => ({
+      success: false as const,
+      error: { code: "SERVER_ERROR", message: "Server unavailable" },
+    }),
+    () => ({ success: true as const, data: "fallback-result" }),
+  );
+
+  // Assert（検証）
+  expect(result).toEqual({ success: true, data: "fallback-result" });
+  expect(FallbackHandler.getLastError(handler)).toEqual({
+    code: "SERVER_ERROR",
+    message: "Server unavailable",
+  });
+});
+
+test("自動フォールバックが無効でMCPResult形式のエラーを返した場合はそのエラーを返す", async () => {
+  // Arrange（準備）
+  const handler = FallbackHandler.create();
+  FallbackHandler.setMode(handler, "normal");
+  FallbackHandler.setAutoFallback(handler, false);
+  const expectedError = { code: "SERVER_ERROR", message: "Server unavailable" };
+
+  // Act（実行）
+  const result = await FallbackHandler.executeWithFallback(
+    handler,
+    async () => ({
+      success: false as const,
+      error: expectedError,
+    }),
+    () => ({ success: true as const, data: "fallback-result" }),
+  );
+
+  // Assert（検証）
+  expect(result.success).toBe(false);
+  if (!result.success) {
+    expect(result.error).toEqual(expectedError);
+  }
+});

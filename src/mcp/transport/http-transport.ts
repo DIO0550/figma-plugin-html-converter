@@ -90,7 +90,6 @@ export const HttpTransport = {
           };
         }
 
-        // response.json() がパースエラー時に投げる SyntaxError を適切に判定
         if (error instanceof SyntaxError) {
           return {
             success: false,

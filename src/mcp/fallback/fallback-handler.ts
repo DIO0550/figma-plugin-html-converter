@@ -90,11 +90,7 @@ export const FallbackHandler = {
   },
 
   /**
-   * フォールバック付きで処理を実行する
-   *
-   * onlineActionがMCPResult形式のエラー（success: false）を返した場合、
-   * またはPromiseがrejectされた場合に、autoFallbackが有効であれば
-   * fallbackActionを実行する。
+   * MCP接続失敗時のフォールバック処理を実行する
    *
    * @param handler - フォールバックハンドラ状態
    * @param onlineAction - オンライン時の処理

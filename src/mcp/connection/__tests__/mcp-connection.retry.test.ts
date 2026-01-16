@@ -43,21 +43,17 @@ test("リトライ遅延は最大遅延を超えない", () => {
     backoffMultiplier: 2,
   };
 
-  // 最大遅延に到達する直前の試行
   const delayBeforeMax = RetryLogic.calculateDelay(1, config);
   expect(delayBeforeMax).toBe(10000);
   expect(delayBeforeMax).toBeLessThan(config.maxDelayMs);
 
-  // 最大遅延より小さい値の試行
   const delayAtThreshold = RetryLogic.calculateDelay(2, config);
   expect(delayAtThreshold).toBe(20000);
   expect(delayAtThreshold).toBeLessThan(config.maxDelayMs);
 
-  // 最大遅延を超える試行（キャップされる）
   const delayExceedsMax = RetryLogic.calculateDelay(3, config);
   expect(delayExceedsMax).toBe(config.maxDelayMs);
 
-  // さらに大きな試行回数でもキャップが維持される
   const delay5 = RetryLogic.calculateDelay(5, config);
   expect(delay5).toBe(config.maxDelayMs);
 });

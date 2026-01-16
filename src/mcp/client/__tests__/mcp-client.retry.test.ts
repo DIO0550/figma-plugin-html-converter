@@ -7,7 +7,7 @@ const mockFetch = vi.fn();
 
 beforeEach(() => {
   vi.stubGlobal("fetch", mockFetch);
-  // waitをモックして即座に解決するようにする
+  // テスト実行時間を短縮するため、待機処理をモックで即座に解決
   vi.spyOn(RetryLogic, "wait").mockResolvedValue(undefined);
 });
 

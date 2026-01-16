@@ -62,7 +62,6 @@ test("HTTPエラーステータス時にエラーを返す", async () => {
 });
 
 test("JSONパースエラー時にエラーを返す", async () => {
-  // response.json()は不正なJSONに対してSyntaxErrorを投げる
   mockFetch.mockResolvedValueOnce({
     ok: true,
     json: () => Promise.reject(new SyntaxError("Unexpected token")),

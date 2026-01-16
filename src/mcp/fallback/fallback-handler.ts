@@ -109,7 +109,6 @@ export const FallbackHandler = {
     try {
       const result = await onlineAction();
 
-      // MCPResult形式のエラーレスポンスをチェック
       if (!result.success) {
         handler.lastError = result.error;
 

@@ -189,7 +189,6 @@ export const MCPClient = {
       return MCPClient.request<T>(client, method, params);
     }
 
-    // 初回リクエストを実行（lastResultの確実な初期化のため、ループ外で明示的に実行）
     let lastResult: MCPResult<MCPResponse<T>> = await MCPClient.request<T>(
       client,
       method,
@@ -200,7 +199,6 @@ export const MCPClient = {
       return lastResult;
     }
 
-    // リトライループ（2回目以降）
     for (let attempt = 2; attempt <= retryConfig.maxAttempts; attempt++) {
       const delay = RetryLogic.calculateDelay(attempt - 1, retryConfig);
       await RetryLogic.wait(delay);

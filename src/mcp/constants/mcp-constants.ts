@@ -30,6 +30,14 @@ export const RETRY_START_ATTEMPT = 2;
 export const DEFAULT_TIMEOUT_MS = 30000;
 
 /**
+ * HTTPヘッダー関連の定数
+ */
+export const HTTP_HEADERS = {
+  /** JSON形式のContent-Type */
+  CONTENT_TYPE_JSON: "application/json",
+} as const;
+
+/**
  * JSON-RPCバージョン
  */
 export const JSONRPC_VERSION = "2.0" as const;

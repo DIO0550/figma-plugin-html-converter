@@ -11,7 +11,7 @@ import type {
   MCPError,
   MCPServerUrl,
 } from "../types";
-import { DEFAULT_TIMEOUT_MS } from "../constants";
+import { DEFAULT_TIMEOUT_MS, HTTP_HEADERS } from "../constants";
 import { MCPMessage } from "../message";
 
 /**
@@ -62,7 +62,7 @@ export const HttpTransport = {
       const response = await fetch(config.serverUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": HTTP_HEADERS.CONTENT_TYPE_JSON,
         },
         body: JSON.stringify(request),
         signal: controller.signal,

@@ -17,6 +17,7 @@ import {
   MCP_PROTOCOL_VERSION,
   MCP_METHODS,
   CLIENT_INFO,
+  RETRY_START_ATTEMPT,
 } from "../constants";
 import { HttpTransport, type HttpTransportState } from "../transport";
 import { MCPMessage } from "../message";
@@ -199,7 +200,11 @@ export const MCPClient = {
       return lastResult;
     }
 
-    for (let attempt = 2; attempt <= retryConfig.maxAttempts; attempt++) {
+    for (
+      let attempt = RETRY_START_ATTEMPT;
+      attempt <= retryConfig.maxAttempts;
+      attempt++
+    ) {
       const delay = RetryLogic.calculateDelay(attempt - 1, retryConfig);
       await RetryLogic.wait(delay);
 

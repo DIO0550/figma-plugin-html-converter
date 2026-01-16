@@ -21,12 +21,11 @@ import {
  */
 const generateMessageId = (): MCPMessageId => {
   const timestamp = Date.now().toString(MESSAGE_ID_CONFIG.BASE36_RADIX);
+  const randomEnd =
+    MESSAGE_ID_CONFIG.RANDOM_ID_START + MESSAGE_ID_CONFIG.RANDOM_ID_LENGTH;
   const random = Math.random()
     .toString(MESSAGE_ID_CONFIG.BASE36_RADIX)
-    .substring(
-      MESSAGE_ID_CONFIG.RANDOM_ID_START,
-      MESSAGE_ID_CONFIG.RANDOM_ID_END,
-    );
+    .substring(MESSAGE_ID_CONFIG.RANDOM_ID_START, randomEnd);
   return `${timestamp}-${random}` as MCPMessageId;
 };
 

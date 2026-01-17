@@ -3,6 +3,36 @@
  *
  * Figmaプラグイン用のMCP (Model Context Protocol) クライアント実装
  *
+ * ## 使用方法
+ *
+ * ```typescript
+ * import { MCPClient, DEFAULT_SERVER_URL } from "./mcp";
+ *
+ * // クライアント作成
+ * const client = MCPClient.create({
+ *   serverUrl: DEFAULT_SERVER_URL as MCPServerUrl,
+ * });
+ *
+ * // サーバーに接続
+ * const result = await MCPClient.connect(client);
+ * if (!result.success) {
+ *   console.error(result.error);
+ *   return;
+ * }
+ *
+ * // リクエスト送信（リトライ付き）
+ * const response = await MCPClient.requestWithRetry(client, "tools/list");
+ *
+ * // 切断
+ * MCPClient.disconnect(client);
+ * ```
+ *
+ * ## セットアップ
+ *
+ * 1. MCPサーバーをlocalhost:3000で起動
+ * 2. manifest.jsonのnetworkAccessでlocalhost:3000が許可されていることを確認
+ * 3. 上記の使用方法に従ってクライアントを初期化
+ *
  * TODO: 統合テスト（実際のMCPサーバーとの通信テスト）は、
  * ローカル開発環境でのマニュアルテストで実施する。
  * CIでの自動実行は、専用のテストサーバー環境構築後に対応予定。

@@ -11,7 +11,7 @@ import type {
   MCPError,
   MCPServerUrl,
 } from "../types";
-import { DEFAULT_TIMEOUT_MS, HTTP_HEADERS } from "../constants";
+import { DEFAULT_TIMEOUT_MS, HTTP_HEADERS, ERROR_MESSAGES } from "../constants";
 import { MCPMessage } from "../message";
 
 /**
@@ -127,7 +127,7 @@ export const HttpTransport = {
 function createNetworkError(message: string): MCPError {
   return {
     code: "NETWORK_ERROR",
-    message: `ネットワークエラー: ${message}`,
+    message: `${ERROR_MESSAGES.NETWORK_ERROR}: ${message}`,
   };
 }
 
@@ -137,7 +137,7 @@ function createNetworkError(message: string): MCPError {
 function createServerError(status: number, statusText: string): MCPError {
   return {
     code: "SERVER_ERROR",
-    message: `サーバーエラー: ${status} ${statusText}`,
+    message: `${ERROR_MESSAGES.SERVER_ERROR}: ${status} ${statusText}`,
     details: { status, statusText },
   };
 }
@@ -148,7 +148,7 @@ function createServerError(status: number, statusText: string): MCPError {
 function createTimeoutError(): MCPError {
   return {
     code: "REQUEST_TIMEOUT",
-    message: "リクエストがタイムアウトしました",
+    message: ERROR_MESSAGES.REQUEST_TIMEOUT,
   };
 }
 
@@ -158,6 +158,6 @@ function createTimeoutError(): MCPError {
 function createInvalidResponseError(message: string): MCPError {
   return {
     code: "INVALID_RESPONSE",
-    message: `無効なレスポンス: ${message}`,
+    message: `${ERROR_MESSAGES.INVALID_RESPONSE}: ${message}`,
   };
 }

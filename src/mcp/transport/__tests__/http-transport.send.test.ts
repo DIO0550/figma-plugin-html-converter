@@ -2,6 +2,10 @@ import { test, expect, vi, beforeEach, afterEach } from "vitest";
 import { HttpTransport } from "../http-transport";
 import type { MCPServerUrl, MCPMessageId } from "../../types";
 
+const TEST_TIMEOUT_MS = 5000;
+const TEST_MESSAGE_ID = "test-id" as MCPMessageId;
+const TEST_MESSAGE_ID_2 = "test-id-2" as MCPMessageId;
+
 const mockFetch = vi.fn();
 
 beforeEach(() => {
@@ -13,25 +17,25 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-test("リクエストを送信できる", async () => {
+test("有効なリクエストを送信すると、成功レスポンスが返される", async () => {
   mockFetch.mockResolvedValueOnce({
     ok: true,
     json: () =>
       Promise.resolve({
         jsonrpc: "2.0",
-        id: "test-id",
+        id: TEST_MESSAGE_ID,
         result: { success: true },
       }),
   });
 
   const transport = HttpTransport.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    timeout: 5000,
+    timeout: TEST_TIMEOUT_MS,
   });
 
   const request = {
     jsonrpc: "2.0" as const,
-    id: "test-id" as MCPMessageId,
+    id: TEST_MESSAGE_ID,
     method: "test",
   };
 
@@ -55,25 +59,25 @@ test("リクエストを送信できる", async () => {
   );
 });
 
-test("パラメータ付きリクエストを送信できる", async () => {
+test("パラメータを含むリクエストを送信すると、パラメータがJSON本文に含まれる", async () => {
   mockFetch.mockResolvedValueOnce({
     ok: true,
     json: () =>
       Promise.resolve({
         jsonrpc: "2.0",
-        id: "test-id-2",
+        id: TEST_MESSAGE_ID_2,
         result: { tools: [] },
       }),
   });
 
   const transport = HttpTransport.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    timeout: 5000,
+    timeout: TEST_TIMEOUT_MS,
   });
 
   const request = {
     jsonrpc: "2.0" as const,
-    id: "test-id-2" as MCPMessageId,
+    id: TEST_MESSAGE_ID_2,
     method: "tools/list",
     params: { cursor: "abc" },
   };

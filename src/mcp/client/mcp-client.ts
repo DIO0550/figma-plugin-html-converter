@@ -17,7 +17,6 @@ import {
   MCP_PROTOCOL_VERSION,
   MCP_METHODS,
   CLIENT_INFO,
-  RETRY_START_ATTEMPT,
 } from "../constants";
 import { HttpTransport, type HttpTransportState } from "../transport";
 import { MCPMessage } from "../message";
@@ -195,6 +194,7 @@ export const MCPClient = {
       return MCPClient.request<T>(client, method, params);
     }
 
+    // 初回リクエスト（リトライではない）
     let lastResult: MCPResult<MCPResponse<T>> = await MCPClient.request<T>(
       client,
       method,
@@ -205,14 +205,13 @@ export const MCPClient = {
       return lastResult;
     }
 
-    for (
-      let attempt = RETRY_START_ATTEMPT;
-      attempt <= retryConfig.maxAttempts;
-      attempt++
-    ) {
-      // calculateDelayは1ベースの試行回数を期待するため、attemptから1を引いて渡す
-      // （例: attempt=2のとき、1回目のリトライなので calculateDelay(1) を呼び出す）
-      const delay = RetryLogic.calculateDelay(attempt - 1, retryConfig);
+    // リトライ処理（初回失敗後に実行）
+    let retryCount = 1; // リトライ回数（初回リクエストを除く）
+    const maxRetries = retryConfig.maxAttempts - 1; // 最大リトライ回数
+
+    while (retryCount <= maxRetries) {
+      // 指数バックオフによる待機
+      const delay = RetryLogic.calculateDelay(retryCount, retryConfig);
       await RetryLogic.wait(delay);
 
       lastResult = await MCPClient.request<T>(client, method, params);
@@ -220,6 +219,8 @@ export const MCPClient = {
       if (lastResult.success) {
         return lastResult;
       }
+
+      retryCount++;
     }
 
     return lastResult;

@@ -11,27 +11,29 @@ test("フォールバックハンドラを作成できる", () => {
 test("オフラインモードに切り替えできる", () => {
   const handler = FallbackHandler.create();
 
-  FallbackHandler.setMode(handler, "offline");
+  const updatedHandler = FallbackHandler.setMode(handler, "offline");
 
-  expect(FallbackHandler.getMode(handler)).toBe("offline");
+  expect(FallbackHandler.getMode(updatedHandler)).toBe("offline");
+  // イミュータブル: 元のハンドラは変更されない
+  expect(FallbackHandler.getMode(handler)).toBe("normal");
 });
 
 test("オンラインに戻れる", () => {
   const handler = FallbackHandler.create();
 
-  FallbackHandler.setMode(handler, "offline");
-  expect(FallbackHandler.getMode(handler)).toBe("offline");
+  const offlineHandler = FallbackHandler.setMode(handler, "offline");
+  expect(FallbackHandler.getMode(offlineHandler)).toBe("offline");
 
-  FallbackHandler.setMode(handler, "normal");
-  expect(FallbackHandler.getMode(handler)).toBe("normal");
+  const normalHandler = FallbackHandler.setMode(offlineHandler, "normal");
+  expect(FallbackHandler.getMode(normalHandler)).toBe("normal");
 });
 
 test("オフライン時にフォールバック処理が実行される", async () => {
   const handler = FallbackHandler.create();
-  FallbackHandler.setMode(handler, "offline");
+  const offlineHandler = FallbackHandler.setMode(handler, "offline");
 
   const result = await FallbackHandler.executeWithFallback(
-    handler,
+    offlineHandler,
     async () => ({ success: true, data: "online-result" }),
     () => ({ success: true, data: "fallback-result" }),
   );
@@ -41,10 +43,10 @@ test("オフライン時にフォールバック処理が実行される", async
 
 test("オンライン時に通常処理が実行される", async () => {
   const handler = FallbackHandler.create();
-  FallbackHandler.setMode(handler, "normal");
+  const normalHandler = FallbackHandler.setMode(handler, "normal");
 
   const result = await FallbackHandler.executeWithFallback(
-    handler,
+    normalHandler,
     async () => ({ success: true, data: "online-result" }),
     () => ({ success: true, data: "fallback-result" }),
   );
@@ -53,9 +55,9 @@ test("オンライン時に通常処理が実行される", async () => {
 });
 
 test("オンライン処理が失敗した場合にフォールバック処理が実行される", async () => {
-  const handler = FallbackHandler.create();
-  FallbackHandler.setMode(handler, "normal");
-  FallbackHandler.setAutoFallback(handler, true);
+  let handler = FallbackHandler.create();
+  handler = FallbackHandler.setMode(handler, "normal");
+  handler = FallbackHandler.setAutoFallback(handler, true);
 
   const result = await FallbackHandler.executeWithFallback(
     handler,
@@ -69,9 +71,9 @@ test("オンライン処理が失敗した場合にフォールバック処理�
 });
 
 test("自動フォールバックが無効の場合はエラーを返す", async () => {
-  const handler = FallbackHandler.create();
-  FallbackHandler.setMode(handler, "normal");
-  FallbackHandler.setAutoFallback(handler, false);
+  let handler = FallbackHandler.create();
+  handler = FallbackHandler.setMode(handler, "normal");
+  handler = FallbackHandler.setAutoFallback(handler, false);
 
   const result = await FallbackHandler.executeWithFallback(
     handler,
@@ -89,20 +91,22 @@ test("MCPが利用可能かどうかを判定できる", () => {
 
   expect(FallbackHandler.isMCPAvailable(handler)).toBe(true);
 
-  FallbackHandler.setMode(handler, "offline");
-  expect(FallbackHandler.isMCPAvailable(handler)).toBe(false);
+  const offlineHandler = FallbackHandler.setMode(handler, "offline");
+  expect(FallbackHandler.isMCPAvailable(offlineHandler)).toBe(false);
 
-  FallbackHandler.setMode(handler, "degraded");
-  expect(FallbackHandler.isMCPAvailable(handler)).toBe(true);
+  const degradedHandler = FallbackHandler.setMode(offlineHandler, "degraded");
+  expect(FallbackHandler.isMCPAvailable(degradedHandler)).toBe(true);
 });
 
 test("オンライン処理がMCPResult形式のエラーを返した場合にフォールバック処理が実行される", async () => {
   // Arrange（準備）
-  const handler = FallbackHandler.create();
-  FallbackHandler.setMode(handler, "normal");
-  FallbackHandler.setAutoFallback(handler, true);
+  let handler = FallbackHandler.create();
+  handler = FallbackHandler.setMode(handler, "normal");
+  handler = FallbackHandler.setAutoFallback(handler, true);
 
   // Act（実行）
+  // 注: executeWithFallbackは内部でlastErrorをミュータブルに更新するため、
+  // その結果を確認するには同じhandler参照を使用する必要がある
   const result = await FallbackHandler.executeWithFallback(
     handler,
     async () => ({
@@ -122,9 +126,9 @@ test("オンライン処理がMCPResult形式のエラーを返した場合に�
 
 test("自動フォールバックが無効でMCPResult形式のエラーを返した場合はそのエラーを返す", async () => {
   // Arrange（準備）
-  const handler = FallbackHandler.create();
-  FallbackHandler.setMode(handler, "normal");
-  FallbackHandler.setAutoFallback(handler, false);
+  let handler = FallbackHandler.create();
+  handler = FallbackHandler.setMode(handler, "normal");
+  handler = FallbackHandler.setAutoFallback(handler, false);
   const expectedError = { code: "SERVER_ERROR", message: "Server unavailable" };
 
   // Act（実行）

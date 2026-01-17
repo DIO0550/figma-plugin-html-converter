@@ -50,23 +50,37 @@ export const FallbackHandler = {
   },
 
   /**
-   * モードを設定する
+   * モードを設定する（イミュータブル）
    *
    * @param handler - フォールバックハンドラ状態
    * @param mode - 新しいモード
+   * @returns 新しいフォールバックハンドラ状態
    */
-  setMode(handler: FallbackHandlerState, mode: FallbackMode): void {
-    handler.mode = mode;
+  setMode(
+    handler: FallbackHandlerState,
+    mode: FallbackMode,
+  ): FallbackHandlerState {
+    return {
+      ...handler,
+      mode,
+    };
   },
 
   /**
-   * 自動フォールバックを設定する
+   * 自動フォールバックを設定する（イミュータブル）
    *
    * @param handler - フォールバックハンドラ状態
    * @param enabled - 有効にするかどうか
+   * @returns 新しいフォールバックハンドラ状態
    */
-  setAutoFallback(handler: FallbackHandlerState, enabled: boolean): void {
-    handler.autoFallback = enabled;
+  setAutoFallback(
+    handler: FallbackHandlerState,
+    enabled: boolean,
+  ): FallbackHandlerState {
+    return {
+      ...handler,
+      autoFallback: enabled,
+    };
   },
 
   /**

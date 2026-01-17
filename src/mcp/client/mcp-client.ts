@@ -205,6 +205,8 @@ export const MCPClient = {
       attempt <= retryConfig.maxAttempts;
       attempt++
     ) {
+      // calculateDelayは1ベースの試行回数を期待するため、attemptから1を引いて渡す
+      // （例: attempt=2のとき、1回目のリトライなので calculateDelay(1) を呼び出す）
       const delay = RetryLogic.calculateDelay(attempt - 1, retryConfig);
       await RetryLogic.wait(delay);
 

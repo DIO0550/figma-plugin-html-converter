@@ -8,7 +8,7 @@
   "editorType": ["figma"],
   "ui": "dist/ui.html",
   "networkAccess": {
-    "allowedDomains": ["localhost:*"],
+    "allowedDomains": ["localhost:3000"],
     "reasoning": "AI支援機能のためのMCPサーバー通信"
   }
 }

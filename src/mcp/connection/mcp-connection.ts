@@ -43,12 +43,10 @@ export const RetryLogic = {
   /**
    * リトライ遅延を計算する（指数バックオフ）
    *
-   * 計算式: initialDelayMs * backoffMultiplier^(attempt-1)
-   * - attempt=1: initialDelayMs * 1 = initialDelayMs（1回目のリトライ）
-   * - attempt=2: initialDelayMs * backoffMultiplier（2回目のリトライ）
-   * - attempt=3: initialDelayMs * backoffMultiplier^2（3回目のリトライ）
+   * 標準的な指数バックオフアルゴリズムを使用することで、
+   * サーバー負荷を軽減しつつ、一時的な障害からの復旧を可能にする
    *
-   * @param attempt - 試行回数（1から開始、attempt-1は指数計算を0から始めるため）
+   * @param attempt - 試行回数（1から開始）
    * @param config - リトライ設定
    * @returns 遅延時間（ミリ秒）、maxDelayMsを超えない
    */

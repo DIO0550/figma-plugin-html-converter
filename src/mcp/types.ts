@@ -114,13 +114,9 @@ export type PluginBridgeMessage =
  * リトライ設定
  */
 export interface RetryConfig {
-  /** 最大リトライ回数 */
   maxAttempts: number;
-  /** 初回リトライまでの待機時間（ミリ秒） */
   initialDelayMs: number;
-  /** 最大待機時間（ミリ秒） */
   maxDelayMs: number;
-  /** バックオフ乗数 */
   backoffMultiplier: number;
 }
 

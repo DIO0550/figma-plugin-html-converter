@@ -186,7 +186,7 @@ export const MCPClient = {
     const retryConfig = client.config.retryConfig as RetryConfig;
 
     // リトライ設定が不正な場合は、リトライなしで1回だけリクエストを実行する
-    if (!retryConfig || retryConfig.maxAttempts < 1) {
+    if (!isValidRetryConfig(retryConfig)) {
       return MCPClient.request<T>(client, method, params);
     }
 
@@ -257,4 +257,22 @@ function createConnectionError(message: string): MCPError {
     code: "CONNECTION_FAILED",
     message,
   };
+}
+
+/**
+ * リトライ設定の妥当性を検証する
+ */
+function isValidRetryConfig(
+  config: RetryConfig | undefined,
+): config is RetryConfig {
+  if (!config) {
+    return false;
+  }
+
+  return (
+    config.maxAttempts >= 1 &&
+    config.initialDelayMs > 0 &&
+    config.maxDelayMs > 0 &&
+    config.backoffMultiplier > 0
+  );
 }

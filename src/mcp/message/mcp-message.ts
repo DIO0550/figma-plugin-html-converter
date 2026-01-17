@@ -18,6 +18,10 @@ import {
 
 /**
  * 一意なメッセージIDを生成する
+ *
+ * タイムスタンプとランダム値を組み合わせることで、
+ * 同一プロセス内での衝突を防ぎつつ、デバッグ時にリクエストの
+ * 発生時刻を推測できるようにしている
  */
 const generateMessageId = (): MCPMessageId => {
   const timestamp = Date.now().toString(MESSAGE_ID_CONFIG.BASE36_RADIX);

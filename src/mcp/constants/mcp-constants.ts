@@ -17,14 +17,6 @@ export const DEFAULT_RETRY_CONFIG = {
 } as const;
 
 /**
- * リトライ処理で最初のリクエストが失敗後、ループで開始する試行番号
- *
- * 初回リクエスト（attempt=1）は requestWithRetry メソッドの
- * ループ外で実行されるため、リトライループは2回目から開始する
- */
-export const RETRY_START_ATTEMPT = 2;
-
-/**
  * デフォルトのタイムアウト設定（ミリ秒）
  *
  * 30秒に設定した理由:

@@ -3,6 +3,17 @@ import { MCPClient } from "../mcp-client";
 import type { MCPServerUrl, MCPMessageId } from "../../types";
 import { RetryLogic } from "../../connection/mcp-connection";
 
+const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+const HTTP_STATUS_BAD_GATEWAY = 502;
+const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
+
+const TEST_RETRY_CONFIG = {
+  maxAttempts: 3,
+  initialDelayMs: 100,
+  maxDelayMs: 1000,
+  backoffMultiplier: 2,
+} as const;
+
 const mockFetch = vi.fn();
 
 beforeEach(() => {
@@ -37,12 +48,7 @@ async function createConnectedClient() {
 
   const client = MCPClient.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    retryConfig: {
-      maxAttempts: 3,
-      initialDelayMs: 100,
-      maxDelayMs: 1000,
-      backoffMultiplier: 2,
-    },
+    retryConfig: TEST_RETRY_CONFIG,
   });
 
   await MCPClient.connect(client);
@@ -56,7 +62,7 @@ test("リトライが成功するケース（最初は失敗、2回目で成功�
   // 1回目: 失敗
   mockFetch.mockResolvedValueOnce({
     ok: false,
-    status: 500,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     statusText: "Internal Server Error",
   });
 
@@ -91,17 +97,17 @@ test("最大リトライ回数に達しても全て失敗した場合、最後�
   mockFetch
     .mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
       statusText: "Internal Server Error",
     })
     .mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
       statusText: "Internal Server Error",
     })
     .mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
       statusText: "Internal Server Error",
     });
 
@@ -125,12 +131,12 @@ test("リトライ間の遅延が正しく適用されるケース", async () =>
   mockFetch
     .mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
       statusText: "Internal Server Error",
     })
     .mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
       statusText: "Internal Server Error",
     });
 
@@ -162,17 +168,17 @@ test("最大リトライ回数に達した場合の動作", async () => {
   mockFetch
     .mockResolvedValueOnce({
       ok: false,
-      status: 500,
+      status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
       statusText: "Internal Server Error",
     })
     .mockResolvedValueOnce({
       ok: false,
-      status: 502,
+      status: HTTP_STATUS_BAD_GATEWAY,
       statusText: "Bad Gateway",
     })
     .mockResolvedValueOnce({
       ok: false,
-      status: 503,
+      status: HTTP_STATUS_SERVICE_UNAVAILABLE,
       statusText: "Service Unavailable",
     });
 

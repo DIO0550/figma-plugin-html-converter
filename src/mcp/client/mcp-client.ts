@@ -203,12 +203,10 @@ export const MCPClient = {
   ): Promise<MCPResult<MCPResponse<T>>> {
     const retryConfig = client.config.retryConfig as RetryConfig;
 
-    // リトライ設定が不正な場合は、リトライなしで1回だけリクエストを実行する
     if (!isValidRetryConfig(retryConfig)) {
       return MCPClient.request<T>(client, method, params);
     }
 
-    // 初回リクエスト（リトライではない）
     let lastResult: MCPResult<MCPResponse<T>> = await MCPClient.request<T>(
       client,
       method,
@@ -219,12 +217,10 @@ export const MCPClient = {
       return lastResult;
     }
 
-    // リトライ処理（初回失敗後に実行）
-    let retryCount = 1; // リトライ回数（初回リクエストを除く）
-    const maxRetries = retryConfig.maxAttempts - 1; // 最大リトライ回数
+    let retryCount = 1;
+    const maxRetries = retryConfig.maxAttempts - 1;
 
     while (retryCount <= maxRetries) {
-      // 指数バックオフによる待機
       const delay = RetryLogic.calculateDelay(retryCount, retryConfig);
       await RetryLogic.wait(delay);
 

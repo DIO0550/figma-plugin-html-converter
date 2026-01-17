@@ -2,6 +2,11 @@ import { test, expect, vi, beforeEach, afterEach } from "vitest";
 import { HttpTransport } from "../http-transport";
 import type { MCPServerUrl, MCPMessageId } from "../../types";
 
+const TEST_TIMEOUT_MS = 5000;
+const SHORT_TIMEOUT_MS = 100;
+const TEST_MESSAGE_ID = "test-id" as MCPMessageId;
+const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+
 const mockFetch = vi.fn();
 
 beforeEach(() => {
@@ -18,12 +23,12 @@ test("ネットワークエラー時にエラーを返す", async () => {
 
   const transport = HttpTransport.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    timeout: 5000,
+    timeout: TEST_TIMEOUT_MS,
   });
 
   const request = {
     jsonrpc: "2.0" as const,
-    id: "test-id" as MCPMessageId,
+    id: TEST_MESSAGE_ID,
     method: "test",
   };
 
@@ -38,18 +43,18 @@ test("ネットワークエラー時にエラーを返す", async () => {
 test("HTTPエラーステータス時にエラーを返す", async () => {
   mockFetch.mockResolvedValueOnce({
     ok: false,
-    status: 500,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     statusText: "Internal Server Error",
   });
 
   const transport = HttpTransport.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    timeout: 5000,
+    timeout: TEST_TIMEOUT_MS,
   });
 
   const request = {
     jsonrpc: "2.0" as const,
-    id: "test-id" as MCPMessageId,
+    id: TEST_MESSAGE_ID,
     method: "test",
   };
 
@@ -69,12 +74,12 @@ test("JSONパースエラー時にエラーを返す", async () => {
 
   const transport = HttpTransport.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    timeout: 5000,
+    timeout: TEST_TIMEOUT_MS,
   });
 
   const request = {
     jsonrpc: "2.0" as const,
-    id: "test-id" as MCPMessageId,
+    id: TEST_MESSAGE_ID,
     method: "test",
   };
 
@@ -93,12 +98,12 @@ test("タイムアウト時にエラーを返す", async () => {
 
   const transport = HttpTransport.create({
     serverUrl: "http://localhost:3000" as MCPServerUrl,
-    timeout: 100,
+    timeout: SHORT_TIMEOUT_MS,
   });
 
   const request = {
     jsonrpc: "2.0" as const,
-    id: "test-id" as MCPMessageId,
+    id: TEST_MESSAGE_ID,
     method: "test",
   };
 

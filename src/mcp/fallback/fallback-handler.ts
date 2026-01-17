@@ -109,44 +109,51 @@ export const FallbackHandler = {
    * @param handler - フォールバックハンドラ状態
    * @param onlineAction - オンライン時の処理
    * @param fallbackAction - フォールバック処理
-   * @returns 処理結果
+   * @returns 処理結果と更新されたハンドラ状態
    */
   async executeWithFallback<T>(
     handler: FallbackHandlerState,
     onlineAction: () => Promise<MCPResult<T>>,
     fallbackAction: () => MCPResult<T>,
-  ): Promise<MCPResult<T>> {
+  ): Promise<{ result: MCPResult<T>; handler: FallbackHandlerState }> {
     if (handler.mode === "offline") {
-      return fallbackAction();
+      return { result: fallbackAction(), handler };
     }
 
     try {
       const result = await onlineAction();
 
       if (!result.success) {
-        handler.lastError = result.error;
+        const updatedHandler: FallbackHandlerState = {
+          ...handler,
+          lastError: result.error,
+        };
 
         if (handler.autoFallback) {
-          return fallbackAction();
+          return { result: fallbackAction(), handler: updatedHandler };
         }
 
-        return result;
+        return { result, handler: updatedHandler };
       }
 
-      return result;
+      return { result, handler };
     } catch (error) {
-      handler.lastError = {
+      const lastError: MCPError = {
         code: "NETWORK_ERROR",
         message: error instanceof Error ? error.message : "Unknown error",
       };
+      const updatedHandler: FallbackHandlerState = {
+        ...handler,
+        lastError,
+      };
 
       if (handler.autoFallback) {
-        return fallbackAction();
+        return { result: fallbackAction(), handler: updatedHandler };
       }
 
       return {
-        success: false,
-        error: handler.lastError,
+        result: { success: false, error: lastError },
+        handler: updatedHandler,
       };
     }
   },
@@ -162,11 +169,15 @@ export const FallbackHandler = {
   },
 
   /**
-   * エラーをクリアする
+   * エラーをクリアする（イミュータブル）
    *
    * @param handler - フォールバックハンドラ状態
+   * @returns 新しいフォールバックハンドラ状態
    */
-  clearError(handler: FallbackHandlerState): void {
-    handler.lastError = null;
+  clearError(handler: FallbackHandlerState): FallbackHandlerState {
+    return {
+      ...handler,
+      lastError: null,
+    };
   },
 };

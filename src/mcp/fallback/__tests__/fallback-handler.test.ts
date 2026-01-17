@@ -32,7 +32,7 @@ test("オフライン時にフォールバック処理が実行される", async
   const handler = FallbackHandler.create();
   const offlineHandler = FallbackHandler.setMode(handler, "offline");
 
-  const result = await FallbackHandler.executeWithFallback(
+  const { result } = await FallbackHandler.executeWithFallback(
     offlineHandler,
     async () => ({ success: true, data: "online-result" }),
     () => ({ success: true, data: "fallback-result" }),
@@ -45,7 +45,7 @@ test("オンライン時に通常処理が実行される", async () => {
   const handler = FallbackHandler.create();
   const normalHandler = FallbackHandler.setMode(handler, "normal");
 
-  const result = await FallbackHandler.executeWithFallback(
+  const { result } = await FallbackHandler.executeWithFallback(
     normalHandler,
     async () => ({ success: true, data: "online-result" }),
     () => ({ success: true, data: "fallback-result" }),
@@ -59,7 +59,7 @@ test("オンライン処理が失敗した場合にフォールバック処理�
   handler = FallbackHandler.setMode(handler, "normal");
   handler = FallbackHandler.setAutoFallback(handler, true);
 
-  const result = await FallbackHandler.executeWithFallback(
+  const { result } = await FallbackHandler.executeWithFallback(
     handler,
     async () => {
       throw new Error("Network error");
@@ -75,7 +75,7 @@ test("自動フォールバックが無効の場合はエラーを返す", async
   handler = FallbackHandler.setMode(handler, "normal");
   handler = FallbackHandler.setAutoFallback(handler, false);
 
-  const result = await FallbackHandler.executeWithFallback(
+  const { result } = await FallbackHandler.executeWithFallback(
     handler,
     async () => {
       throw new Error("Network error");
@@ -105,23 +105,24 @@ test("オンライン処理がMCPResult形式のエラーを返した場合に�
   handler = FallbackHandler.setAutoFallback(handler, true);
 
   // Act（実行）
-  // 注: executeWithFallbackは内部でlastErrorをミュータブルに更新するため、
-  // その結果を確認するには同じhandler参照を使用する必要がある
-  const result = await FallbackHandler.executeWithFallback(
-    handler,
-    async () => ({
-      success: false as const,
-      error: { code: "SERVER_ERROR", message: "Server unavailable" },
-    }),
-    () => ({ success: true as const, data: "fallback-result" }),
-  );
+  const { result, handler: updatedHandler } =
+    await FallbackHandler.executeWithFallback(
+      handler,
+      async () => ({
+        success: false as const,
+        error: { code: "SERVER_ERROR", message: "Server unavailable" },
+      }),
+      () => ({ success: true as const, data: "fallback-result" }),
+    );
 
   // Assert（検証）
   expect(result).toEqual({ success: true, data: "fallback-result" });
-  expect(FallbackHandler.getLastError(handler)).toEqual({
+  expect(FallbackHandler.getLastError(updatedHandler)).toEqual({
     code: "SERVER_ERROR",
     message: "Server unavailable",
   });
+  // イミュータブル: 元のハンドラは変更されない
+  expect(FallbackHandler.getLastError(handler)).toBeNull();
 });
 
 test("自動フォールバックが無効でMCPResult形式のエラーを返した場合はそのエラーを返す", async () => {
@@ -129,10 +130,13 @@ test("自動フォールバックが無効でMCPResult形式のエラーを返�
   let handler = FallbackHandler.create();
   handler = FallbackHandler.setMode(handler, "normal");
   handler = FallbackHandler.setAutoFallback(handler, false);
-  const expectedError = { code: "SERVER_ERROR", message: "Server unavailable" };
+  const expectedError = {
+    code: "SERVER_ERROR",
+    message: "Server unavailable",
+  };
 
   // Act（実行）
-  const result = await FallbackHandler.executeWithFallback(
+  const { result } = await FallbackHandler.executeWithFallback(
     handler,
     async () => ({
       success: false as const,
@@ -146,4 +150,24 @@ test("自動フォールバックが無効でMCPResult形式のエラーを返�
   if (!result.success) {
     expect(result.error).toEqual(expectedError);
   }
+});
+
+test("clearErrorがイミュータブルに動作する", () => {
+  // Arrange（準備）
+  const handler = FallbackHandler.create();
+  const handlerWithError: typeof handler = {
+    ...handler,
+    lastError: { code: "NETWORK_ERROR", message: "Test error" },
+  };
+
+  // Act（実行）
+  const clearedHandler = FallbackHandler.clearError(handlerWithError);
+
+  // Assert（検証）
+  expect(FallbackHandler.getLastError(clearedHandler)).toBeNull();
+  // イミュータブル: 元のハンドラは変更されない
+  expect(FallbackHandler.getLastError(handlerWithError)).toEqual({
+    code: "NETWORK_ERROR",
+    message: "Test error",
+  });
 });

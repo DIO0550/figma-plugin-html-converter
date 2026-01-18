@@ -124,9 +124,9 @@ describe("ProblemDetector", () => {
       expect(problem).toBeNull();
     });
 
-    test("gapとpaddingの一部が一致する場合は問題を検出しない", () => {
-      // gap: 10px, padding: 10px 20px → paddingの一部がgapと一致
-      // 値は2種類（10, 20）で、gapと最初のpaddingが一致
+    test("gapとpaddingの一部が一致しても不一致な値がある場合は問題を検出する", () => {
+      // gap: 10px, padding: 10px 20px → paddingの一部がgapと一致するが、
+      // 20pxはgap(10px)とも最初のpadding値(10px)とも異なる
       const styles = Styles.from({
         display: "flex",
         gap: "10px",
@@ -136,7 +136,7 @@ describe("ProblemDetector", () => {
 
       const problem = ProblemDetector.detectInconsistentSpacing(styles, path);
 
-      // 不一致ロジック: paddingの各値がgapとも最初のpadding値とも異なる場合のみ検出
+      // 不一致ロジック: paddingの各値がgapとも最初のpadding値とも異なる場合に検出
       // 20 !== 10 && 20 !== 10 → true なので不一致を検出する
       expect(problem).not.toBeNull();
     });

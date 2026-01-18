@@ -210,16 +210,18 @@ export const AIAnalysis = {
   /**
    * AI分析が有効かどうかを判定する
    *
+   * 現時点では安全側のデフォルトとして無効（false）を返します。
+   * 実運用では以下の制御方法を想定しています:
+   * - 環境変数 ENABLE_AI_ANALYSIS のチェック
+   * - SuggestionSettings.enabled との連携
+   * - MCPサーバーの接続状態のチェック
+   *
    * @returns AI分析が有効な場合はtrue
    */
   isEnabled(): boolean {
     // TODO: 環境変数やフラグで制御する実装を追加
-    // 以下のような実装を想定:
-    // - 環境変数 ENABLE_AI_ANALYSIS をチェック
-    // - SuggestionSettings.enabled との連携
-    // - MCPサーバーの接続状態をチェック
-    // 現時点ではデフォルトでtrueを返す（常にAI分析を有効化）
-    return true;
+    // 現時点では安全側のデフォルトとして無効を返す
+    return false;
   },
 
   /**

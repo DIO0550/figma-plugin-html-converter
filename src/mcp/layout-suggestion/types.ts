@@ -68,9 +68,18 @@ export interface LayoutSuggestion {
   problem: LayoutProblem;
   /** 提案内容（人間が読める説明） */
   suggestion: string;
-  /** 改善後のレイアウトプロパティ */
+  /**
+   * 改善後のレイアウトプロパティ（Figma AutoLayout用）
+   *
+   * 将来的にFigma AutoLayoutへの直接変換機能を実装する際に使用予定。
+   * 現時点では未使用だが、以下の用途を想定:
+   * - improvedStyles: CSS文字列ベースの提案（現在使用中）
+   * - improvedLayout: Figma AutoLayoutプロパティへの直接マッピング
+   *
+   * Phase 7以降でAutoLayout変換機能を実装する際に活用する。
+   */
   improvedLayout?: AutoLayoutProperties;
-  /** 改善後のスタイル */
+  /** 改善後のスタイル（CSSプロパティ） */
   improvedStyles?: Record<string, string>;
   /** AI信頼度（0-1） */
   confidence: number;

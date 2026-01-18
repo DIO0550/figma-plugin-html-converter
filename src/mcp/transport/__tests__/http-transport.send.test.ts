@@ -1,9 +1,12 @@
 import { test, expect, vi, beforeEach, afterEach } from "vitest";
 import { HttpTransport } from "../http-transport";
-import type { MCPServerUrl, MCPMessageId } from "../../types";
+import type { MCPMessageId } from "../../types";
+import {
+  TEST_TIMEOUT_MS,
+  TEST_SERVER_URL,
+  TEST_MESSAGE_ID,
+} from "../../__tests__/test-helpers";
 
-const TEST_TIMEOUT_MS = 5000;
-const TEST_MESSAGE_ID = "test-id" as MCPMessageId;
 const TEST_MESSAGE_ID_2 = "test-id-2" as MCPMessageId;
 
 const mockFetch = vi.fn();
@@ -29,7 +32,7 @@ test("有効なリクエストを送信すると、成功レスポンスが返�
   });
 
   const transport = HttpTransport.create({
-    serverUrl: "http://localhost:3000" as MCPServerUrl,
+    serverUrl: TEST_SERVER_URL,
     timeout: TEST_TIMEOUT_MS,
   });
 
@@ -48,7 +51,7 @@ test("有効なリクエストを送信すると、成功レスポンスが返�
 
   expect(mockFetch).toHaveBeenCalledTimes(1);
   expect(mockFetch).toHaveBeenCalledWith(
-    "http://localhost:3000",
+    TEST_SERVER_URL,
     expect.objectContaining({
       method: "POST",
       headers: {
@@ -71,7 +74,7 @@ test("パラメータを含むリクエストを送信すると、パラメー�
   });
 
   const transport = HttpTransport.create({
-    serverUrl: "http://localhost:3000" as MCPServerUrl,
+    serverUrl: TEST_SERVER_URL,
     timeout: TEST_TIMEOUT_MS,
   });
 
@@ -86,7 +89,7 @@ test("パラメータを含むリクエストを送信すると、パラメー�
 
   expect(result.success).toBe(true);
   expect(mockFetch).toHaveBeenCalledWith(
-    "http://localhost:3000",
+    TEST_SERVER_URL,
     expect.objectContaining({
       body: JSON.stringify(request),
     }),

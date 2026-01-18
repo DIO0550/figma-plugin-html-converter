@@ -1,11 +1,12 @@
 import { test, expect, vi, beforeEach, afterEach } from "vitest";
 import { HttpTransport } from "../http-transport";
-import type { MCPServerUrl, MCPMessageId } from "../../types";
-
-const TEST_TIMEOUT_MS = 5000;
-const SHORT_TIMEOUT_MS = 100;
-const TEST_MESSAGE_ID = "test-id" as MCPMessageId;
-const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+import {
+  HTTP_STATUS,
+  TEST_TIMEOUT_MS,
+  SHORT_TIMEOUT_MS,
+  TEST_SERVER_URL,
+  TEST_MESSAGE_ID,
+} from "../../__tests__/test-helpers";
 
 const mockFetch = vi.fn();
 
@@ -22,7 +23,7 @@ test("ネットワークエラー時にエラーを返す", async () => {
   mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
   const transport = HttpTransport.create({
-    serverUrl: "http://localhost:3000" as MCPServerUrl,
+    serverUrl: TEST_SERVER_URL,
     timeout: TEST_TIMEOUT_MS,
   });
 
@@ -43,12 +44,12 @@ test("ネットワークエラー時にエラーを返す", async () => {
 test("HTTPエラーステータス時にエラーを返す", async () => {
   mockFetch.mockResolvedValueOnce({
     ok: false,
-    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
     statusText: "Internal Server Error",
   });
 
   const transport = HttpTransport.create({
-    serverUrl: "http://localhost:3000" as MCPServerUrl,
+    serverUrl: TEST_SERVER_URL,
     timeout: TEST_TIMEOUT_MS,
   });
 
@@ -73,7 +74,7 @@ test("JSONパースエラー時にエラーを返す", async () => {
   });
 
   const transport = HttpTransport.create({
-    serverUrl: "http://localhost:3000" as MCPServerUrl,
+    serverUrl: TEST_SERVER_URL,
     timeout: TEST_TIMEOUT_MS,
   });
 
@@ -97,7 +98,7 @@ test("タイムアウト時にエラーを返す", async () => {
   mockFetch.mockRejectedValueOnce(abortError);
 
   const transport = HttpTransport.create({
-    serverUrl: "http://localhost:3000" as MCPServerUrl,
+    serverUrl: TEST_SERVER_URL,
     timeout: SHORT_TIMEOUT_MS,
   });
 

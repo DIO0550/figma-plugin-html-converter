@@ -106,7 +106,21 @@ export const ProblemDetector = {
     const paddingValues = ProblemDetector.parsePaddingValues(padding);
     const uniquePaddingValues = new Set(paddingValues);
 
-    // gapとpaddingの値が異なる場合、または padding 内の値が不一致の場合
+    /**
+     * スペーシングの不一致を検出するロジック:
+     *
+     * 条件1: gap > 0 && uniquePaddingValues.size > 1
+     *   - gapが設定されている（Flexboxでスペーシングを使用）
+     *   - かつ、paddingの各方向の値が異なる（例: padding: 10px 20px）
+     *
+     * 条件2: hasInconsistency
+     *   - paddingのいずれかの値がgapとも、padding最初の値とも異なる
+     *   - つまり、スペーシングに3種類以上の値が存在する状態
+     *   - 例: gap: 10px, padding: 10px 20px 30px → 10, 20, 30の3種類
+     *
+     * これにより「意図的に異なる値を使用している」のではなく、
+     * 「一貫性なく値がバラついている」状態を検出する
+     */
     if (gap > 0 && uniquePaddingValues.size > 1) {
       const hasInconsistency = paddingValues.some(
         (p) => p !== gap && p !== paddingValues[0],

@@ -13,6 +13,27 @@ import type {
 import { generateSuggestionId } from "../types";
 
 /**
+ * AI分析の設定定数
+ *
+ * これらの値はネットワーク環境やAIサービスの応答時間によって
+ * 調整が必要になる可能性があります。
+ * 将来的には環境変数や設定ファイルから取得することを検討してください。
+ */
+const AI_ANALYSIS_CONFIG = {
+  /**
+   * MCPメソッド名
+   * MCPサービスのAPI定義と一致している必要があります
+   */
+  MCP_METHOD: "layout/analyze",
+
+  /**
+   * リクエストタイムアウト（ミリ秒）
+   * AI分析の処理時間を考慮し、30秒に設定
+   */
+  REQUEST_TIMEOUT_MS: 30000,
+} as const;
+
+/**
  * recommendedStylesの型をバリデートする
  *
  * @param value - 検証対象の値
@@ -196,7 +217,7 @@ export const AIAnalysis = {
    * @returns MCPメソッド名
    */
   getMCPMethod(): string {
-    return "layout/analyze";
+    return AI_ANALYSIS_CONFIG.MCP_METHOD;
   },
 
   /**
@@ -205,6 +226,6 @@ export const AIAnalysis = {
    * @returns タイムアウト値
    */
   getTimeout(): number {
-    return 30000; // 30秒
+    return AI_ANALYSIS_CONFIG.REQUEST_TIMEOUT_MS;
   },
 };

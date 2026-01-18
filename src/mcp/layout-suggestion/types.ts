@@ -232,17 +232,22 @@ export function createNodePath(value: string): NodePath {
 /**
  * ユニークなSuggestionIdを生成する
  *
- * 注意: この実装はtimestamp + randomの組み合わせを使用しています。
- * 同じミリ秒内に複数回呼び出された場合、理論上は重複する可能性があります。
- * より堅牢なID生成が必要な場合は、以下の代替手段を検討してください:
- * - crypto.randomUUID() (Web Crypto API)
- * - nanoid ライブラリ
- * - ulid ライブラリ
- *
- * 現在の用途（レイアウト提案の一時的な識別）では、
- * 重複リスクは実用上問題ないレベルです。
+ * Web Crypto APIが利用可能な場合はcrypto.randomUUID()を使用し、
+ * より堅牢なID生成を行います。
+ * フォールバックとしてtimestamp + randomの組み合わせを使用します。
  */
 export function generateSuggestionId(): SuggestionId {
+  // Web Crypto APIが利用可能な場合（ブラウザ環境、Node.js 19+）
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return createSuggestionId(`suggestion-${crypto.randomUUID()}`);
+  }
+
+  // フォールバック: timestamp + random
+  // 注意: Math.random()は暗号学的に安全ではなく、
+  // 同一ミリ秒内での重複リスクがあります
   const timestamp = Date.now().toString(36);
   const random = Math.random().toString(36).substring(2, 8);
   return createSuggestionId(`suggestion-${timestamp}-${random}`);

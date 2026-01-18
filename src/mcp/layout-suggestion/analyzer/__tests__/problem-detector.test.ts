@@ -207,4 +207,67 @@ describe("ProblemDetector", () => {
       expect(problems.length).toBe(0);
     });
   });
+
+  describe("parseSpacingValue", () => {
+    test("px単位の値を正しくパースする", () => {
+      expect(ProblemDetector.parseSpacingValue("10px")).toBe(10);
+    });
+
+    test("小数点を含むpx値を正しくパースする", () => {
+      expect(ProblemDetector.parseSpacingValue("10.5px")).toBe(10.5);
+    });
+
+    test("単位なしの数値をパースする", () => {
+      expect(ProblemDetector.parseSpacingValue("10")).toBe(10);
+    });
+
+    test("無効な値は0を返す", () => {
+      expect(ProblemDetector.parseSpacingValue("invalid")).toBe(0);
+      expect(ProblemDetector.parseSpacingValue("10em")).toBe(0);
+      expect(ProblemDetector.parseSpacingValue("10%")).toBe(0);
+    });
+
+    test("undefinedは0を返す", () => {
+      expect(ProblemDetector.parseSpacingValue(undefined)).toBe(0);
+    });
+
+    test("空文字列は0を返す", () => {
+      expect(ProblemDetector.parseSpacingValue("")).toBe(0);
+    });
+  });
+
+  describe("parsePaddingValues", () => {
+    test("1値の場合、全方向に同じ値を適用する", () => {
+      const result = ProblemDetector.parsePaddingValues("10px");
+      expect(result).toEqual([10, 10, 10, 10]);
+    });
+
+    test("2値の場合、上下と左右に値を適用する", () => {
+      // CSS: padding: 10px 20px → 上下10px、左右20px
+      const result = ProblemDetector.parsePaddingValues("10px 20px");
+      expect(result).toEqual([10, 20, 10, 20]);
+    });
+
+    test("3値の場合、上、左右、下に値を適用する", () => {
+      // CSS: padding: 10px 20px 30px → 上10px、左右20px、下30px
+      const result = ProblemDetector.parsePaddingValues("10px 20px 30px");
+      expect(result).toEqual([10, 20, 30, 20]);
+    });
+
+    test("4値の場合、上右下左の順に値を適用する", () => {
+      // CSS: padding: 10px 20px 30px 40px → 上10px、右20px、下30px、左40px
+      const result = ProblemDetector.parsePaddingValues("10px 20px 30px 40px");
+      expect(result).toEqual([10, 20, 30, 40]);
+    });
+
+    test("空文字列の場合、全方向0を返す", () => {
+      const result = ProblemDetector.parsePaddingValues("");
+      expect(result).toEqual([0, 0, 0, 0]);
+    });
+
+    test("単位なしの数値もパースできる", () => {
+      const result = ProblemDetector.parsePaddingValues("10 20");
+      expect(result).toEqual([10, 20, 10, 20]);
+    });
+  });
 });

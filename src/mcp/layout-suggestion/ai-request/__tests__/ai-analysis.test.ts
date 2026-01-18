@@ -1,7 +1,7 @@
 /**
  * AIAnalysis のテスト
  */
-import { describe, test, expect, vi, beforeEach } from "vitest";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { AIAnalysis } from "../ai-analysis";
 import type {
   AIAnalysisRequest,
@@ -164,10 +164,45 @@ describe("AIAnalysis", () => {
   });
 
   describe("isEnabled", () => {
-    test("AI分析が有効かどうかを判定できる", () => {
-      // デフォルトではtrueを返す想定
+    const originalEnv = process.env;
+
+    beforeEach(() => {
+      // 各テスト前に環境変数をリセット
+      process.env = { ...originalEnv };
+      delete process.env.ENABLE_AI_ANALYSIS;
+    });
+
+    afterEach(() => {
+      // テスト後に環境変数を復元
+      process.env = originalEnv;
+    });
+
+    test("環境変数が未設定の場合はfalseを返す", () => {
       const isEnabled = AIAnalysis.isEnabled();
-      expect(typeof isEnabled).toBe("boolean");
+      expect(isEnabled).toBe(false);
+    });
+
+    test("ENABLE_AI_ANALYSIS=trueの場合はtrueを返す", () => {
+      process.env.ENABLE_AI_ANALYSIS = "true";
+      const isEnabled = AIAnalysis.isEnabled();
+      expect(isEnabled).toBe(true);
+    });
+
+    test("ENABLE_AI_ANALYSIS=falseの場合はfalseを返す", () => {
+      process.env.ENABLE_AI_ANALYSIS = "false";
+      const isEnabled = AIAnalysis.isEnabled();
+      expect(isEnabled).toBe(false);
+    });
+
+    test("ENABLE_AI_ANALYSISが他の値の場合はfalseを返す", () => {
+      process.env.ENABLE_AI_ANALYSIS = "1";
+      expect(AIAnalysis.isEnabled()).toBe(false);
+
+      process.env.ENABLE_AI_ANALYSIS = "yes";
+      expect(AIAnalysis.isEnabled()).toBe(false);
+
+      process.env.ENABLE_AI_ANALYSIS = "TRUE";
+      expect(AIAnalysis.isEnabled()).toBe(false);
     });
   });
 

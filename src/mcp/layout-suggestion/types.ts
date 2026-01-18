@@ -230,14 +230,23 @@ export function createNodePath(value: string): NodePath {
 }
 
 /**
+ * ID生成用のカウンター
+ *
+ * 同一ミリ秒内での重複を防ぐためのインクリメンタルカウンター。
+ * フォールバック時のみ使用されます。
+ */
+let suggestionIdCounter = 0;
+
+/**
  * ユニークなSuggestionIdを生成する
  *
- * Web Crypto APIが利用可能な場合はcrypto.randomUUID()を使用し、
- * より堅牢なID生成を行います。
- * フォールバックとしてtimestamp + randomの組み合わせを使用します。
+ * 優先順位:
+ * 1. crypto.randomUUID() - 最も堅牢（ブラウザ、Node.js 19+）
+ * 2. crypto.getRandomValues() - 暗号学的に安全（ほとんどの環境）
+ * 3. timestamp + counter + random - フォールバック（レガシー環境）
  */
 export function generateSuggestionId(): SuggestionId {
-  // Web Crypto APIが利用可能な場合（ブラウザ環境、Node.js 19+）
+  // 1. crypto.randomUUID()が利用可能な場合（最優先）
   if (
     typeof crypto !== "undefined" &&
     typeof crypto.randomUUID === "function"
@@ -245,10 +254,23 @@ export function generateSuggestionId(): SuggestionId {
     return createSuggestionId(`suggestion-${crypto.randomUUID()}`);
   }
 
-  // フォールバック: timestamp + random
-  // 注意: Math.random()は暗号学的に安全ではなく、
-  // 同一ミリ秒内での重複リスクがあります
+  // 2. crypto.getRandomValues()が利用可能な場合
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
+    const array = new Uint32Array(4);
+    crypto.getRandomValues(array);
+    const randomHex = Array.from(array)
+      .map((n) => n.toString(16).padStart(8, "0"))
+      .join("");
+    return createSuggestionId(`suggestion-${randomHex}`);
+  }
+
+  // 3. フォールバック: timestamp + counter + random
+  // カウンターを使用して同一ミリ秒内での重複リスクを軽減
   const timestamp = Date.now().toString(36);
+  const counter = (suggestionIdCounter++).toString(36);
   const random = Math.random().toString(36).substring(2, 8);
-  return createSuggestionId(`suggestion-${timestamp}-${random}`);
+  return createSuggestionId(`suggestion-${timestamp}-${counter}-${random}`);
 }

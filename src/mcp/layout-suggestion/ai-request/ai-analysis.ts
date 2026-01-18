@@ -194,8 +194,12 @@ export const AIAnalysis = {
    * @returns AI分析が有効な場合はtrue
    */
   isEnabled(): boolean {
-    // 環境変数やフラグで制御する想定
-    // 現時点ではデフォルトでtrueを返す
+    // TODO: 環境変数やフラグで制御する実装を追加
+    // 以下のような実装を想定:
+    // - 環境変数 ENABLE_AI_ANALYSIS をチェック
+    // - SuggestionSettings.enabled との連携
+    // - MCPサーバーの接続状態をチェック
+    // 現時点ではデフォルトでtrueを返す（常にAI分析を有効化）
     return true;
   },
 

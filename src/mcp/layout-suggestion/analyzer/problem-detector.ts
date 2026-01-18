@@ -285,12 +285,19 @@ export const ProblemDetector = {
   /**
    * スペーシング値をパースする
    *
-   * @param value - CSS値
-   * @returns 数値（px）
+   * 注: この関数は数値のみの入力（px省略）も受け入れます。
+   * CSSでは通常単位が必須ですが、以下の理由から数値のみも許容しています：
+   * - Figma APIやインラインスタイルでは単位なしの数値が使用されることがある
+   * - 内部処理での比較・計算を簡素化するため
+   * - em, rem, %などの他の単位は現在サポートしていません（pxのみ）
+   *
+   * @param value - CSS値（"10px", "10", "16.5px" など）
+   * @returns 数値（px単位）。パース失敗時は0
    */
   parseSpacingValue(value: string | undefined): number {
     if (!value) return 0;
 
+    // 数値 + オプショナルな "px" にマッチ
     const match = value.match(/^(\d+(?:\.\d+)?)(px)?$/);
     if (match) {
       return parseFloat(match[1]);

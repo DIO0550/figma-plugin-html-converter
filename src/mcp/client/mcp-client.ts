@@ -107,14 +107,25 @@ export const MCPClient = {
   /**
    * MCPサーバーに接続する
    *
+   * 並行処理の安全性:
+   * - connecting状態の場合は二重接続を防ぐためにエラーを返す
+   * - connected状態の場合も再接続を防ぐためにエラーを返す
+   * - disconnectedまたはerror状態からのみ接続を開始できる
+   *
    * @param client - MCPクライアント状態
    * @returns 接続結果
    */
   async connect(client: MCPClientState): Promise<MCPResult<InitializeResult>> {
     if (!ConnectionState.canTransition(client.connectionState, "connecting")) {
+      const errorMessage =
+        client.connectionState === "connecting"
+          ? "接続処理が進行中です"
+          : client.connectionState === "connected"
+            ? "既に接続されています"
+            : "接続を開始できる状態ではありません";
       return {
         success: false,
-        error: createConnectionError("接続を開始できる状態ではありません"),
+        error: createConnectionError(errorMessage),
       };
     }
 

@@ -13,6 +13,15 @@ import { generateSuggestionId } from "../types";
 
 /**
  * 問題タイプ別の提案テンプレート
+ *
+ * confidence値の設定根拠:
+ * - 0.9 (高): 明確なパターンで、ほぼ確実に改善となる提案
+ * - 0.7 (中高): 一般的に有効だが、ユーザーの意図によっては異なる選択肢もある
+ * - 0.6 (中): 改善の可能性が高いが、コンテキストによる判断が必要
+ * - 0.5 (低): 提案として価値があるが、慎重な検討が必要
+ *
+ * これらの値は経験則に基づく初期設定です。
+ * 将来的にはユーザーフィードバックや機械学習で動的に調整することを検討。
  */
 const SUGGESTION_TEMPLATES: Record<
   LayoutProblem["type"],
@@ -26,6 +35,7 @@ const SUGGESTION_TEMPLATES: Record<
   "missing-flex-container": {
     suggestion:
       "この要素に `display: flex` を追加することで、子要素のレイアウトを簡単に制御できます。`Flexbox` を使用すると、配置、間隔、方向の調整が容易になります。",
+    // 高信頼度: 複数子要素にFlexbox適用は明確に有効なパターン
     confidence: 0.9,
     autoApplicable: true,
     recommendedStyles: {
@@ -35,6 +45,7 @@ const SUGGESTION_TEMPLATES: Record<
   "missing-alignment": {
     suggestion:
       "`justify-content` と `align-items` を追加して、要素の配置を明示的に指定することをお勧めします。一般的な値: `center`（中央揃え）、`flex-start`（開始位置）、`space-between`（均等配置）",
+    // 中高信頼度: 配置指定は有効だが、推奨値はユーザーの意図次第
     confidence: 0.7,
     autoApplicable: true,
     recommendedStyles: {
@@ -45,12 +56,14 @@ const SUGGESTION_TEMPLATES: Record<
   "inconsistent-spacing": {
     suggestion:
       "デザインの一貫性のために、`gap` と `padding` に同じベース値（例: `8px`, `16px`, `24px`）を使用することを検討してください。デザインシステムのスペーシングスケールに従うと、より統一感のあるUIになります。",
+    // 中信頼度: 一貫性は重要だが、意図的な差異の可能性もある
     confidence: 0.6,
     autoApplicable: false,
   },
   "suboptimal-direction": {
     suggestion:
       "現在の横並び（`row`）から縦並び（`column`）に変更することを検討してください。コンテナの幅に対して子要素が多い場合、縦並びの方が見やすくなることがあります。",
+    // 低信頼度: デザイン意図が不明確なため、慎重な判断が必要
     confidence: 0.5,
     autoApplicable: true,
     recommendedStyles: {
@@ -60,6 +73,7 @@ const SUGGESTION_TEMPLATES: Record<
   "inefficient-nesting": {
     suggestion:
       "HTML構造を簡素化することを検討してください。不要なラッパー要素を削除し、`Flexbox` や `Grid` を活用することで、より効率的なマークアップが実現できます。",
+    // 低信頼度: 構造変更は影響範囲が大きく、慎重な検討が必要
     confidence: 0.5,
     autoApplicable: false,
   },

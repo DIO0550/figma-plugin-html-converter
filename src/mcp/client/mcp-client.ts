@@ -33,7 +33,13 @@ export interface MCPClientState {
   transport: HttpTransportState;
   /** 接続状態 */
   connectionState: ConnectionStateType;
-  /** リトライ状態 */
+  /**
+   * 接続リトライ状態
+   *
+   * connect()メソッド専用のリトライ状態を管理する。
+   * requestWithRetry()はリクエスト単位の一時的なリトライであり、
+   * この状態には反映されない（リクエストごとに独立してリトライを管理）。
+   */
   retryState: RetryState;
 }
 
@@ -191,6 +197,10 @@ export const MCPClient = {
 
   /**
    * リトライ付きでMCPリクエストを送信する
+   *
+   * リトライはリクエスト単位で独立して管理され、client.retryStateには反映されない。
+   * これは、リクエストのリトライが一時的な操作であり、接続状態とは独立しているため。
+   * 接続のリトライ状態はconnect()で管理される。
    *
    * @param client - MCPクライアント状態
    * @param method - メソッド名

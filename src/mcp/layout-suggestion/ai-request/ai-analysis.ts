@@ -13,6 +13,36 @@ import type {
 import { generateSuggestionId } from "../types";
 
 /**
+ * recommendedStylesの型をバリデートする
+ *
+ * @param value - 検証対象の値
+ * @returns Record<string, string> | undefined（不正な場合はundefined）
+ */
+function validateRecommendedStyles(
+  value: unknown,
+): Record<string, string> | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  if (typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+  const validated: Record<string, string> = {};
+
+  for (const [key, val] of Object.entries(record)) {
+    if (typeof key === "string" && typeof val === "string") {
+      validated[key] = val;
+    }
+  }
+
+  // 有効なプロパティがない場合はundefinedを返す
+  return Object.keys(validated).length > 0 ? validated : undefined;
+}
+
+/**
  * AIAnalysisのコンパニオンオブジェクト
  */
 export const AIAnalysis = {
@@ -73,9 +103,9 @@ export const AIAnalysis = {
             typeof suggestion.suggestion === "string"
               ? suggestion.suggestion
               : "",
-          recommendedStyles: suggestion.recommendedStyles as
-            | Record<string, string>
-            | undefined,
+          recommendedStyles: validateRecommendedStyles(
+            suggestion.recommendedStyles,
+          ),
           confidence:
             typeof suggestion.confidence === "number"
               ? suggestion.confidence

@@ -14,6 +14,31 @@ import type {
 import { createNodePath } from "../types";
 
 /**
+ * HTML5 void要素（閉じタグを必要としない要素）のリスト
+ *
+ * これらの要素は自己閉じタグとして扱われ、終了タグを持ちません。
+ * 参考: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+ *
+ * パフォーマンス最適化: 関数外に配置することで、
+ * countDirectChildren()の呼び出しごとの配列再生成を回避
+ */
+const VOID_ELEMENTS = [
+  "img",
+  "br",
+  "hr",
+  "input",
+  "meta",
+  "link",
+  "area",
+  "base",
+  "col",
+  "embed",
+  "source",
+  "track",
+  "wbr",
+] as const;
+
+/**
  * 分析サマリー
  */
 export interface AnalysisSummary {
@@ -263,35 +288,13 @@ export const LayoutAnalyzer = {
         continue;
       }
 
-      /**
-       * 自己閉じタグの検出
-       *
-       * 以下のパターンを自己閉じタグとして扱う:
-       * 1. 明示的な自己閉じ: `<img />`, `<br/>`, `<input / >`（スペース許容）
-       * 2. HTML5 void要素: `<img>`, `<br>`, `<hr>`, `<input>`, `<meta>`, `<link>`など
-       *    （閉じタグを必要としない要素）
-       *
-       * 注意: このリストはHTML5仕様のvoid要素の一部です。
-       * 完全なリストが必要な場合は拡張してください。
-       */
+      // 自己閉じタグの検出:
+      // 1. 明示的な自己閉じ: `<img />`, `<br/>`（スラッシュで終わる）
+      // 2. HTML5 void要素: VOID_ELEMENTS定数で定義（ファイル先頭参照）
       const tagName = match[1]?.toLowerCase();
-      const VOID_ELEMENTS = [
-        "img",
-        "br",
-        "hr",
-        "input",
-        "meta",
-        "link",
-        "area",
-        "base",
-        "col",
-        "embed",
-        "source",
-        "track",
-        "wbr",
-      ];
       const isSelfClosing =
-        /\/\s*>$/.test(fullMatch) || VOID_ELEMENTS.includes(tagName ?? "");
+        /\/\s*>$/.test(fullMatch) ||
+        VOID_ELEMENTS.includes(tagName as (typeof VOID_ELEMENTS)[number]);
 
       if (isSelfClosing) {
         // 自己閉じタグは現在の深さが 0 のときのみ直接の子要素としてカウント

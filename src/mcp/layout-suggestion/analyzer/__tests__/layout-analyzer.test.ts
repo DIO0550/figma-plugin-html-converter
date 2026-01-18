@@ -4,6 +4,7 @@
 import { describe, test, expect } from "vitest";
 import { LayoutAnalyzer } from "../layout-analyzer";
 import type { LayoutAnalysisContext, LayoutAnalysisResult } from "../../types";
+import { createNodePath } from "../../types";
 
 describe("LayoutAnalyzer", () => {
   describe("analyze", () => {
@@ -106,13 +107,13 @@ describe("LayoutAnalyzer", () => {
           {
             type: "missing-flex-container",
             severity: "medium",
-            location: "root > div" as any,
+            location: createNodePath("root > div"),
             description: "Flexコンテナがありません",
           },
           {
             type: "missing-alignment",
             severity: "low",
-            location: "root > div" as any,
+            location: createNodePath("root > div"),
             description: "配置指定がありません",
           },
         ],

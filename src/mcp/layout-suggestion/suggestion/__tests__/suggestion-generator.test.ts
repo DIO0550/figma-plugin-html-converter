@@ -4,7 +4,7 @@
 import { describe, test, expect } from "vitest";
 import { SuggestionGenerator } from "../suggestion-generator";
 import type { LayoutProblem, SuggestionResult } from "../../types";
-import { createNodePath } from "../../types";
+import { createNodePath, createSuggestionId } from "../../types";
 
 describe("SuggestionGenerator", () => {
   describe("generate", () => {
@@ -151,7 +151,7 @@ describe("SuggestionGenerator", () => {
       const result: SuggestionResult = {
         suggestions: [
           {
-            id: "1" as any,
+            id: createSuggestionId("test-1"),
             problem: {
               type: "missing-flex-container",
               severity: "medium",
@@ -163,7 +163,7 @@ describe("SuggestionGenerator", () => {
             autoApplicable: true,
           },
           {
-            id: "2" as any,
+            id: createSuggestionId("test-2"),
             problem: {
               type: "missing-alignment",
               severity: "low",
@@ -191,7 +191,7 @@ describe("SuggestionGenerator", () => {
       const result: SuggestionResult = {
         suggestions: [
           {
-            id: "1" as any,
+            id: createSuggestionId("test-1"),
             problem: {
               type: "missing-alignment",
               severity: "low",
@@ -203,7 +203,7 @@ describe("SuggestionGenerator", () => {
             autoApplicable: true,
           },
           {
-            id: "2" as any,
+            id: createSuggestionId("test-2"),
             problem: {
               type: "missing-flex-container",
               severity: "high",
@@ -215,7 +215,7 @@ describe("SuggestionGenerator", () => {
             autoApplicable: true,
           },
           {
-            id: "3" as any,
+            id: createSuggestionId("test-3"),
             problem: {
               type: "inefficient-nesting",
               severity: "medium",

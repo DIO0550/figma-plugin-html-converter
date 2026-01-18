@@ -6,5 +6,9 @@
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": ["figma"],
-  "ui": "dist/ui.html"
+  "ui": "dist/ui.html",
+  "networkAccess": {
+    "allowedDomains": ["localhost:3000"],
+    "reasoning": "AI支援機能のためのMCPサーバー通信"
+  }
 }

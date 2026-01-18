@@ -14,6 +14,7 @@ import {
   JSONRPC_VERSION,
   MESSAGE_ID_CONFIG,
   JSONRPC_ERROR_CODES,
+  ERROR_MESSAGES,
 } from "../constants";
 
 /**
@@ -68,18 +69,14 @@ export const MCPMessage = {
     if (data === null || data === undefined) {
       return {
         success: false,
-        error: createInvalidResponseError(
-          "レスポンスがnullまたはundefinedです",
-        ),
+        error: createInvalidResponseError("response is null or undefined"),
       };
     }
 
     if (typeof data !== "object") {
       return {
         success: false,
-        error: createInvalidResponseError(
-          "レスポンスがオブジェクトではありません",
-        ),
+        error: createInvalidResponseError("response is not an object"),
       };
     }
 
@@ -88,14 +85,14 @@ export const MCPMessage = {
     if (response.jsonrpc !== "2.0") {
       return {
         success: false,
-        error: createInvalidResponseError("jsonrpcバージョンが不正です"),
+        error: createInvalidResponseError("invalid jsonrpc version"),
       };
     }
 
     if (typeof response.id !== "string" || response.id === "") {
       return {
         success: false,
-        error: createInvalidResponseError("メッセージIDが不正です"),
+        error: createInvalidResponseError("invalid message id"),
       };
     }
 
@@ -154,10 +151,14 @@ export const MCPMessage = {
 
 /**
  * 無効なレスポンスエラーを作成する
+ *
+ * ユーザー向けメッセージはERROR_MESSAGESから取得し、
+ * 技術的な詳細情報はdetailsに含める
  */
-function createInvalidResponseError(message: string): MCPError {
+function createInvalidResponseError(detail: string): MCPError {
   return {
     code: "INVALID_RESPONSE",
-    message,
+    message: ERROR_MESSAGES.INVALID_RESPONSE,
+    details: detail,
   };
 }

@@ -25,7 +25,7 @@ const SUGGESTION_TEMPLATES: Record<
 > = {
   "missing-flex-container": {
     suggestion:
-      "この要素に `display: flex` を追加することで、子要素のレイアウトを簡単に制御できます。Flexboxを使用すると、配置、間隔、方向の調整が容易になります。",
+      "この要素に `display: flex` を追加することで、子要素のレイアウトを簡単に制御できます。`Flexbox` を使用すると、配置、間隔、方向の調整が容易になります。",
     confidence: 0.9,
     autoApplicable: true,
     recommendedStyles: {
@@ -44,13 +44,13 @@ const SUGGESTION_TEMPLATES: Record<
   },
   "inconsistent-spacing": {
     suggestion:
-      "デザインの一貫性のために、gap と padding に同じベース値（例: 8px, 16px, 24px）を使用することを検討してください。デザインシステムのスペーシングスケールに従うと、より統一感のあるUIになります。",
+      "デザインの一貫性のために、`gap` と `padding` に同じベース値（例: `8px`, `16px`, `24px`）を使用することを検討してください。デザインシステムのスペーシングスケールに従うと、より統一感のあるUIになります。",
     confidence: 0.6,
     autoApplicable: false,
   },
   "suboptimal-direction": {
     suggestion:
-      "現在の横並び（row）から縦並び（column）に変更することを検討してください。コンテナの幅に対して子要素が多い場合、縦並びの方が見やすくなることがあります。",
+      "現在の横並び（`row`）から縦並び（`column`）に変更することを検討してください。コンテナの幅に対して子要素が多い場合、縦並びの方が見やすくなることがあります。",
     confidence: 0.5,
     autoApplicable: true,
     recommendedStyles: {
@@ -59,7 +59,7 @@ const SUGGESTION_TEMPLATES: Record<
   },
   "inefficient-nesting": {
     suggestion:
-      "HTML構造を簡素化することを検討してください。不要なラッパー要素を削除し、Flexboxやグリッドを活用することで、より効率的なマークアップが実現できます。",
+      "HTML構造を簡素化することを検討してください。不要なラッパー要素を削除し、`Flexbox` や `Grid` を活用することで、より効率的なマークアップが実現できます。",
     confidence: 0.5,
     autoApplicable: false,
   },

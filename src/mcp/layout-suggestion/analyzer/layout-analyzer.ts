@@ -132,11 +132,20 @@ export const LayoutAnalyzer = {
   /**
    * HTMLをパースしてノード情報を抽出する
    *
+   * 制限事項:
+   * - この実装は正規表現ベースのシンプルなパーサーです
+   * - 自己閉じタグ（<img />, <br />など）は検出されません
+   * - 深くネストされた同名タグは正しく解析できない場合があります
+   * - より堅牢な解析が必要な場合は、DOMParser、jsdom、htmlparser2などの
+   *   ライブラリの使用を検討してください
+   *
    * @param html - HTML文字列
    * @returns ノード情報のリスト
    */
   parseHTML(html: string): NodeInfo[] {
     const nodes: NodeInfo[] = [];
+    // 注: この正規表現は開始タグと終了タグのペアを検出します
+    // 自己閉じタグには対応していません
     const tagRegex = /<(\w+)([^>]*)>([\s\S]*?)<\/\1>/g;
     let match: RegExpExecArray | null;
     let index = 0;

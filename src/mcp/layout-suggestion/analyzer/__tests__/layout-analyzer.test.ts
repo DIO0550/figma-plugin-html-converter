@@ -141,4 +141,56 @@ describe("LayoutAnalyzer", () => {
       expect(summary.totalProblems).toBe(0);
     });
   });
+
+  describe("countDirectChildren", () => {
+    test("通常の子要素をカウントする", () => {
+      const content = "<span>text1</span><span>text2</span>";
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(2);
+    });
+
+    test("自己閉じタグをカウントする（明示的なスラッシュ）", () => {
+      const content = "<img /><br /><span>text</span>";
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(3);
+    });
+
+    test("HTML5 void要素をカウントする（スラッシュなし）", () => {
+      // img, brはvoid要素なのでスラッシュなしでも自己閉じとして扱う
+      const content = "<img><br><span>text</span>";
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(3);
+    });
+
+    test("ネストされた要素は直接の子要素のみカウントする", () => {
+      const content = "<div><span>nested</span></div><span>direct child</span>";
+      // 直接の子要素は: div (1) + span (1) = 2
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(2);
+    });
+
+    test("深くネストされた要素を正しくカウントする", () => {
+      const content = "<div><div><div>deeply nested</div></div></div>";
+      // 直接の子要素は: div (1つのみ)
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(1);
+    });
+
+    test("同じタグ名が複数ネストされる場合も正しくカウントする", () => {
+      const content =
+        "<div>outer<div>inner<div>deep</div></div></div><div>sibling</div>";
+      // 直接の子要素は: div (1) + div (1) = 2
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(2);
+    });
+
+    test("空のコンテンツは0を返す", () => {
+      expect(LayoutAnalyzer.countDirectChildren("")).toBe(0);
+    });
+
+    test("テキストのみの場合は0を返す", () => {
+      expect(LayoutAnalyzer.countDirectChildren("just text")).toBe(0);
+    });
+
+    test("自己閉じタグとネストされた要素の混在", () => {
+      const content =
+        "<img /><div><span>text</span><br /></div><input /><span>direct</span>";
+      // 直接の子要素は: img (1) + div (1) + input (1) + span (1) = 4
+      expect(LayoutAnalyzer.countDirectChildren(content)).toBe(4);
+    });
+  });
 });

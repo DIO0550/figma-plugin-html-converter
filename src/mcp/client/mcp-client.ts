@@ -161,6 +161,7 @@ export const MCPClient = {
   disconnect(client: MCPClientState): void {
     if (ConnectionState.canTransition(client.connectionState, "disconnected")) {
       client.connectionState = "disconnected";
+      client.retryState = RetryLogic.reset();
     }
   },
 

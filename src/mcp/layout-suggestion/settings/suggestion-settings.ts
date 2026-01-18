@@ -35,6 +35,12 @@ export const SuggestionSettingsManager = {
   /**
    * 設定を検証する
    *
+   * 境界条件について:
+   * - minConfidence: 0.0〜1.0の範囲（両端を含む）
+   *   確率/信頼度を表すため、0%（0.0）から100%（1.0）まで有効
+   * - maxSuggestions: 1以上の正の整数
+   *   最低1つの提案を表示する必要があるため、0は無効
+   *
    * @param settings - 検証する設定
    * @returns 有効な場合はtrue
    */
@@ -46,10 +52,12 @@ export const SuggestionSettingsManager = {
       return false;
     }
 
+    // minConfidence: 0.0〜1.0（確率として両端を含む）
     if (settings.minConfidence < 0 || settings.minConfidence > 1) {
       return false;
     }
 
+    // maxSuggestions: 1以上（少なくとも1つの提案が必要）
     if (settings.maxSuggestions < 1) {
       return false;
     }

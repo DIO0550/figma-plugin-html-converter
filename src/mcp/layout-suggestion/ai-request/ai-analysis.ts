@@ -90,9 +90,12 @@ export const AIAnalysis = {
   /**
    * AIレスポンスをパースする
    *
+   * 部分的に不正なデータがある場合でも、有効な提案のみを返します。
+   * 完全に不正なレスポンス（オブジェクトでない、suggestionsが配列でない）の場合のみ例外をスローします。
+   *
    * @param rawResponse - 生のレスポンス
    * @returns パースされたレスポンス
-   * @throws レスポンスが不正な場合
+   * @throws レスポンスの構造が根本的に不正な場合
    */
   parseResponse(rawResponse: unknown): AIAnalysisResponse {
     if (!rawResponse || typeof rawResponse !== "object") {
@@ -109,15 +112,34 @@ export const AIAnalysis = {
       throw new Error("Invalid AI response: processingTimeMs is not a number");
     }
 
-    const suggestions: AIGeneratedSuggestion[] = response.suggestions.map(
-      (s: unknown) => {
+    // 部分的に不正なデータがあっても、有効な提案のみを返す
+    const suggestions: AIGeneratedSuggestion[] = (
+      response.suggestions as unknown[]
+    )
+      .map((s: unknown): AIGeneratedSuggestion | null => {
+        // 要素がオブジェクトでない場合はスキップ
         if (!s || typeof s !== "object") {
-          throw new Error("Invalid AI response: suggestion is not an object");
+          return null;
         }
         const suggestion = s as Record<string, unknown>;
+
+        // confidence値のバリデーション: 0-1の範囲内に収める
+        let confidence = 0.5; // デフォルト値
+        if (typeof suggestion.confidence === "number") {
+          if (
+            suggestion.confidence >= 0 &&
+            suggestion.confidence <= 1 &&
+            !Number.isNaN(suggestion.confidence)
+          ) {
+            confidence = suggestion.confidence;
+          }
+          // 範囲外の場合はデフォルト値を使用
+        }
+
         return {
           problemIndex:
-            typeof suggestion.problemIndex === "number"
+            typeof suggestion.problemIndex === "number" &&
+            !Number.isNaN(suggestion.problemIndex)
               ? suggestion.problemIndex
               : 0,
           suggestion:
@@ -127,13 +149,10 @@ export const AIAnalysis = {
           recommendedStyles: validateRecommendedStyles(
             suggestion.recommendedStyles,
           ),
-          confidence:
-            typeof suggestion.confidence === "number"
-              ? suggestion.confidence
-              : 0.5,
+          confidence,
         };
-      },
-    );
+      })
+      .filter((s): s is AIGeneratedSuggestion => s !== null);
 
     return {
       suggestions,

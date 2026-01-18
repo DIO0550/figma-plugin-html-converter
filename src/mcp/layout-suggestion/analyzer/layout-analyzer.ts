@@ -254,7 +254,6 @@ export const LayoutAnalyzer = {
     let match: RegExpExecArray | null;
     while ((match = tagRegex.exec(content)) !== null) {
       const fullMatch = match[0];
-      const attributes = match[2] ?? "";
 
       // 終了タグ
       if (fullMatch.startsWith("</")) {

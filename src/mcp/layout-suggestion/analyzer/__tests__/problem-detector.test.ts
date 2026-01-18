@@ -123,6 +123,63 @@ describe("ProblemDetector", () => {
 
       expect(problem).toBeNull();
     });
+
+    test("gapとpaddingの一部が一致する場合は問題を検出しない", () => {
+      // gap: 10px, padding: 10px 20px → paddingの一部がgapと一致
+      // 値は2種類（10, 20）で、gapと最初のpaddingが一致
+      const styles = Styles.from({
+        display: "flex",
+        gap: "10px",
+        padding: "10px 20px",
+      });
+      const path = createNodePath("root > div");
+
+      const problem = ProblemDetector.detectInconsistentSpacing(styles, path);
+
+      // 不一致ロジック: paddingの各値がgapとも最初のpadding値とも異なる場合のみ検出
+      // 20 !== 10 && 20 !== 10 → true なので不一致を検出する
+      expect(problem).not.toBeNull();
+    });
+
+    test("gapが0の場合は問題を検出しない", () => {
+      const styles = Styles.from({
+        display: "flex",
+        gap: "0px",
+        padding: "10px 20px",
+      });
+      const path = createNodePath("root > div");
+
+      const problem = ProblemDetector.detectInconsistentSpacing(styles, path);
+
+      expect(problem).toBeNull();
+    });
+
+    test("paddingがない場合は問題を検出しない", () => {
+      const styles = Styles.from({
+        display: "flex",
+        gap: "10px",
+      });
+      const path = createNodePath("root > div");
+
+      const problem = ProblemDetector.detectInconsistentSpacing(styles, path);
+
+      expect(problem).toBeNull();
+    });
+
+    test("3種類以上の値がある場合に問題を検出する", () => {
+      // gap: 10px, padding: 10px 20px 30px → 3種類の値が存在
+      const styles = Styles.from({
+        display: "flex",
+        gap: "10px",
+        padding: "10px 20px 30px",
+      });
+      const path = createNodePath("root > div");
+
+      const problem = ProblemDetector.detectInconsistentSpacing(styles, path);
+
+      expect(problem).not.toBeNull();
+      expect(problem?.type).toBe("inconsistent-spacing");
+    });
   });
 
   describe("detectSuboptimalDirection", () => {

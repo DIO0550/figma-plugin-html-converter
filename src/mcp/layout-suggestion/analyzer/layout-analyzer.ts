@@ -232,13 +232,49 @@ export const LayoutAnalyzer = {
   /**
    * 直接の子要素数をカウントする
    *
+   * タグを順に走査し、ネスト深度を追跡して直接の子要素のみをカウントする
+   *
    * @param content - HTML内容
    * @returns 子要素数
    */
   countDirectChildren(content: string): number {
-    const childTagRegex = /<(\w+)[^>]*>/g;
-    const matches = content.match(childTagRegex);
-    return matches ? matches.length : 0;
+    const tagRegex = /<\/?([a-zA-Z][\w-]*)([^>]*)>/g;
+    let depth = 0;
+    let count = 0;
+
+    let match: RegExpExecArray | null;
+    while ((match = tagRegex.exec(content)) !== null) {
+      const fullMatch = match[0];
+      const attributes = match[2] ?? "";
+
+      // 終了タグ
+      if (fullMatch.startsWith("</")) {
+        if (depth > 0) {
+          depth -= 1;
+        }
+        continue;
+      }
+
+      const isSelfClosing =
+        /\/\s*>$/.test(fullMatch) || attributes.trim().endsWith("/");
+
+      if (isSelfClosing) {
+        // 自己閉じタグは現在の深さが 0 のときのみ直接の子要素としてカウント
+        if (depth === 0) {
+          count += 1;
+        }
+        continue;
+      }
+
+      // 開始タグの場合、現在の深さが 0 のときのみ直接の子要素としてカウント
+      if (depth === 0) {
+        count += 1;
+      }
+
+      depth += 1;
+    }
+
+    return count;
   },
 
   /**

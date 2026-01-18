@@ -1,0 +1,271 @@
+/**
+ * レイアウト分析器
+ *
+ * HTML構造を分析し、レイアウトの問題点を検出する
+ */
+import type {
+  LayoutAnalysisContext,
+  LayoutAnalysisResult,
+  LayoutProblem,
+  LayoutProblemType,
+  ProblemSeverity,
+  NodePath,
+} from "../types";
+import { createNodePath } from "../types";
+
+/**
+ * 分析サマリー
+ */
+export interface AnalysisSummary {
+  /** 問題の総数 */
+  totalProblems: number;
+  /** 問題タイプ別の数 */
+  problemsByType: Partial<Record<LayoutProblemType, number>>;
+  /** 重大度別の数 */
+  problemsBySeverity: Partial<Record<ProblemSeverity, number>>;
+}
+
+/**
+ * スタイル解析結果
+ */
+interface ParsedStyles {
+  display?: string;
+  flexDirection?: string;
+  justifyContent?: string;
+  alignItems?: string;
+  gap?: string;
+  padding?: string;
+}
+
+/**
+ * ノード情報
+ */
+interface NodeInfo {
+  tagName: string;
+  styles: ParsedStyles;
+  childCount: number;
+  path: NodePath;
+}
+
+/**
+ * レイアウト分析器のコンパニオンオブジェクト
+ */
+export const LayoutAnalyzer = {
+  /**
+   * HTMLを分析してレイアウト問題を検出する
+   *
+   * @param context - 分析コンテキスト
+   * @returns 分析結果
+   */
+  analyze(context: LayoutAnalysisContext): LayoutAnalysisResult {
+    const { html } = context;
+
+    if (!html || html.trim() === "") {
+      return {
+        problems: [],
+        analyzedNodeCount: 0,
+        analyzedAt: new Date(),
+      };
+    }
+
+    const problems: LayoutProblem[] = [];
+    const nodes = LayoutAnalyzer.parseHTML(html);
+
+    for (const node of nodes) {
+      const nodeProblems = LayoutAnalyzer.analyzeNodeInfo(node);
+      problems.push(...nodeProblems);
+    }
+
+    return {
+      problems,
+      analyzedNodeCount: nodes.length,
+      analyzedAt: new Date(),
+    };
+  },
+
+  /**
+   * 単一ノードを分析する
+   *
+   * @param html - HTML文字列
+   * @param pathPrefix - パスのプレフィックス
+   * @returns 検出された問題のリスト
+   */
+  analyzeNode(html: string, pathPrefix: string): LayoutProblem[] {
+    const nodes = LayoutAnalyzer.parseHTML(html);
+    const problems: LayoutProblem[] = [];
+
+    for (const node of nodes) {
+      const updatedNode = {
+        ...node,
+        path: createNodePath(`${pathPrefix} > ${node.path}`),
+      };
+      const nodeProblems = LayoutAnalyzer.analyzeNodeInfo(updatedNode);
+      problems.push(...nodeProblems);
+    }
+
+    return problems;
+  },
+
+  /**
+   * 分析結果のサマリーを取得する
+   *
+   * @param result - 分析結果
+   * @returns サマリー
+   */
+  getAnalysisSummary(result: LayoutAnalysisResult): AnalysisSummary {
+    const problemsByType: Partial<Record<LayoutProblemType, number>> = {};
+    const problemsBySeverity: Partial<Record<ProblemSeverity, number>> = {};
+
+    for (const problem of result.problems) {
+      problemsByType[problem.type] = (problemsByType[problem.type] || 0) + 1;
+      problemsBySeverity[problem.severity] =
+        (problemsBySeverity[problem.severity] || 0) + 1;
+    }
+
+    return {
+      totalProblems: result.problems.length,
+      problemsByType,
+      problemsBySeverity,
+    };
+  },
+
+  /**
+   * HTMLをパースしてノード情報を抽出する
+   *
+   * @param html - HTML文字列
+   * @returns ノード情報のリスト
+   */
+  parseHTML(html: string): NodeInfo[] {
+    const nodes: NodeInfo[] = [];
+    const tagRegex = /<(\w+)([^>]*)>([\s\S]*?)<\/\1>/g;
+    let match: RegExpExecArray | null;
+    let index = 0;
+
+    while ((match = tagRegex.exec(html)) !== null) {
+      const tagName = match[1];
+      const attributes = match[2];
+      const content = match[3];
+
+      const styles = LayoutAnalyzer.parseStyleAttribute(attributes);
+      const childCount = LayoutAnalyzer.countDirectChildren(content);
+
+      nodes.push({
+        tagName,
+        styles,
+        childCount,
+        path: createNodePath(`root > ${tagName}[${index}]`),
+      });
+
+      // 子要素も再帰的にパース
+      if (content.includes("<")) {
+        const childNodes = LayoutAnalyzer.parseHTML(content);
+        for (const childNode of childNodes) {
+          nodes.push({
+            ...childNode,
+            path: createNodePath(
+              `root > ${tagName}[${index}] > ${childNode.tagName}`,
+            ),
+          });
+        }
+      }
+
+      index++;
+    }
+
+    return nodes;
+  },
+
+  /**
+   * style属性をパースする
+   *
+   * @param attributes - 属性文字列
+   * @returns パースされたスタイル
+   */
+  parseStyleAttribute(attributes: string): ParsedStyles {
+    const styleMatch = attributes.match(/style="([^"]*)"/);
+    if (!styleMatch) {
+      return {};
+    }
+
+    const styleString = styleMatch[1];
+    const styles: ParsedStyles = {};
+
+    const declarations = styleString.split(";").filter((s) => s.trim());
+    for (const declaration of declarations) {
+      const [property, value] = declaration.split(":").map((s) => s.trim());
+      if (!property || !value) continue;
+
+      switch (property) {
+        case "display":
+          styles.display = value;
+          break;
+        case "flex-direction":
+          styles.flexDirection = value;
+          break;
+        case "justify-content":
+          styles.justifyContent = value;
+          break;
+        case "align-items":
+          styles.alignItems = value;
+          break;
+        case "gap":
+          styles.gap = value;
+          break;
+        case "padding":
+          styles.padding = value;
+          break;
+      }
+    }
+
+    return styles;
+  },
+
+  /**
+   * 直接の子要素数をカウントする
+   *
+   * @param content - HTML内容
+   * @returns 子要素数
+   */
+  countDirectChildren(content: string): number {
+    const childTagRegex = /<(\w+)[^>]*>/g;
+    const matches = content.match(childTagRegex);
+    return matches ? matches.length : 0;
+  },
+
+  /**
+   * ノード情報を分析して問題を検出する
+   *
+   * @param node - ノード情報
+   * @returns 検出された問題のリスト
+   */
+  analyzeNodeInfo(node: NodeInfo): LayoutProblem[] {
+    const problems: LayoutProblem[] = [];
+
+    // 子要素が複数あるがFlexコンテナでない場合
+    if (node.childCount > 1 && node.styles.display !== "flex") {
+      problems.push({
+        type: "missing-flex-container",
+        severity: "medium",
+        location: node.path,
+        description: `${node.tagName}要素に${node.childCount}個の子要素がありますが、Flexコンテナではありません`,
+        currentValue: node.styles.display || "block",
+      });
+    }
+
+    // Flexコンテナだが配置指定がない場合
+    if (
+      node.styles.display === "flex" &&
+      !node.styles.justifyContent &&
+      !node.styles.alignItems
+    ) {
+      problems.push({
+        type: "missing-alignment",
+        severity: "low",
+        location: node.path,
+        description: `${node.tagName}要素はFlexコンテナですが、justify-contentとalign-itemsが指定されていません`,
+      });
+    }
+
+    return problems;
+  },
+};

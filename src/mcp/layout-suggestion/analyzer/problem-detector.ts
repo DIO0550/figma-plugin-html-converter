@@ -227,17 +227,32 @@ export const ProblemDetector = {
     /**
      * スペーシングの不一致を検出するロジック:
      *
-     * 条件1: gap > 0 && uniquePaddingValues.size > 1
-     *   - gapが設定されている（Flexboxでスペーシングを使用）
-     *   - かつ、paddingの各方向の値が異なる（例: padding: 10px 20px）
+     * 前提条件:
+     *   - gap > 0: gapが設定されている（Flexboxでスペーシングを使用）
+     *   - uniquePaddingValues.size > 1: paddingの各方向の値が異なる
      *
-     * 条件2: hasInconsistency
-     *   - paddingのいずれかの値がgapとも、padding最初の値とも異なる
-     *   - つまり、スペーシングに3種類以上の値が存在する状態
-     *   - 例: gap: 10px, padding: 10px 20px 30px → 10, 20, 30の3種類
+     * 検出条件（hasInconsistency）:
+     *   paddingのいずれかの値が「gapとも、padding最初の値とも異なる」場合
+     *   → スペーシングに3種類以上の値が存在することを意味する
      *
-     * これにより「意図的に異なる値を使用している」のではなく、
-     * 「一貫性なく値がバラついている」状態を検出する
+     * 具体例:
+     *   - gap: 10px, padding: 10px 20px
+     *     → paddingValues = [10, 20, 10, 20]
+     *     → hasInconsistency: 各値を検証 → 10はgapと同じ、20はpaddingValues[0]=10と異なるがgapとも違う？
+     *       20 !== gap(10) && 20 !== paddingValues[0](10) → true
+     *     → 検出される（gapとpaddingで10と20の2系統が混在）
+     *
+     *   - gap: 10px, padding: 10px 10px 20px
+     *     → paddingValues = [10, 10, 20, 10]
+     *     → 20 !== gap(10) && 20 !== paddingValues[0](10) → true
+     *     → 検出される
+     *
+     *   - gap: 10px, padding: 20px
+     *     → uniquePaddingValues.size = 1（全方向同じ）
+     *     → 前提条件を満たさず、検出されない（意図的な異なる値として許容）
+     *
+     * このロジックにより「意図的に異なる値を使用している」のではなく、
+     * 「一貫性なく値がバラついている」状態のみを検出する
      */
     if (gap > 0 && uniquePaddingValues.size > 1) {
       const hasInconsistency = paddingValues.some(

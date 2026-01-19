@@ -229,4 +229,98 @@ describe("SuggestionApplier", () => {
       expect(applicableSuggestions[0].autoApplicable).toBe(true);
     });
   });
+
+  describe("summarizeResults", () => {
+    test("全て成功した場合のサマリーを生成できる", () => {
+      const results = [
+        { success: true, appliedSuggestionId: createSuggestionId("test-1") },
+        { success: true, appliedSuggestionId: createSuggestionId("test-2") },
+        { success: true, appliedSuggestionId: createSuggestionId("test-3") },
+      ];
+
+      const summary = SuggestionApplier.summarizeResults(results);
+
+      expect(summary.total).toBe(3);
+      expect(summary.successful).toBe(3);
+      expect(summary.failed).toBe(0);
+      expect(summary.successIds).toHaveLength(3);
+      expect(summary.failedIds).toHaveLength(0);
+    });
+
+    test("全て失敗した場合のサマリーを生成できる", () => {
+      const results = [
+        {
+          success: false,
+          appliedSuggestionId: createSuggestionId("test-1"),
+          errorMessage: "エラー1",
+        },
+        {
+          success: false,
+          appliedSuggestionId: createSuggestionId("test-2"),
+          errorMessage: "エラー2",
+        },
+      ];
+
+      const summary = SuggestionApplier.summarizeResults(results);
+
+      expect(summary.total).toBe(2);
+      expect(summary.successful).toBe(0);
+      expect(summary.failed).toBe(2);
+      expect(summary.successIds).toHaveLength(0);
+      expect(summary.failedIds).toHaveLength(2);
+    });
+
+    test("成功と失敗が混在した場合のサマリーを生成できる", () => {
+      const id1 = createSuggestionId("test-1");
+      const id2 = createSuggestionId("test-2");
+      const id3 = createSuggestionId("test-3");
+
+      const results = [
+        { success: true, appliedSuggestionId: id1 },
+        { success: false, appliedSuggestionId: id2, errorMessage: "エラー" },
+        { success: true, appliedSuggestionId: id3 },
+      ];
+
+      const summary = SuggestionApplier.summarizeResults(results);
+
+      expect(summary.total).toBe(3);
+      expect(summary.successful).toBe(2);
+      expect(summary.failed).toBe(1);
+      expect(summary.successIds).toEqual([id1, id3]);
+      expect(summary.failedIds).toEqual([id2]);
+    });
+
+    test("空の結果リストのサマリーを生成できる", () => {
+      const results: ReturnType<typeof SuggestionApplier.apply>[] = [];
+
+      const summary = SuggestionApplier.summarizeResults(results);
+
+      expect(summary.total).toBe(0);
+      expect(summary.successful).toBe(0);
+      expect(summary.failed).toBe(0);
+      expect(summary.successIds).toEqual([]);
+      expect(summary.failedIds).toEqual([]);
+    });
+
+    test("IDが正しく分類される", () => {
+      const successId1 = createSuggestionId("success-1");
+      const successId2 = createSuggestionId("success-2");
+      const failedId1 = createSuggestionId("failed-1");
+      const failedId2 = createSuggestionId("failed-2");
+
+      const results = [
+        { success: true, appliedSuggestionId: successId1 },
+        { success: false, appliedSuggestionId: failedId1, errorMessage: "e1" },
+        { success: true, appliedSuggestionId: successId2 },
+        { success: false, appliedSuggestionId: failedId2, errorMessage: "e2" },
+      ];
+
+      const summary = SuggestionApplier.summarizeResults(results);
+
+      expect(summary.successIds).toContain(successId1);
+      expect(summary.successIds).toContain(successId2);
+      expect(summary.failedIds).toContain(failedId1);
+      expect(summary.failedIds).toContain(failedId2);
+    });
+  });
 });

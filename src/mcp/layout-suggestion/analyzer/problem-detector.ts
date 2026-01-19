@@ -8,40 +8,100 @@ import { Styles } from "../../../converter/models/styles";
 import { Flexbox } from "../../../converter/models/flexbox";
 
 /**
- * 検出閾値
+ * 検出閾値の型定義
  *
- * これらの値はデザインシステムやユーザー設定に応じて調整が必要になる可能性があります。
- * 将来的には SuggestionSettings に統合して設定可能にすることを検討してください。
+ * 将来的に SuggestionSettings などの設定オブジェクトから
+ * 値を注入する際の契約として利用します。
  */
-const DETECTION_THRESHOLDS = {
+export interface DetectionThresholds {
   /**
    * Flexコンテナを推奨する最小子要素数
    * 根拠: 2個以上の子要素がある場合、Flexboxによる配置が有用になる
    *       1個の場合はセンタリング等の目的以外ではFlexは不要
    */
-  MIN_CHILDREN_FOR_FLEX: 2,
+  minChildrenForFlex: number;
 
   /**
    * 非効率なネストと判断する深さ
    * 根拠: 一般的なベストプラクティスでは3-4レベルが推奨される
    *       4レベル以上は可読性・保守性の低下を示唆する
    */
-  INEFFICIENT_NESTING_DEPTH: 4,
+  inefficientNestingDepth: number;
 
   /**
    * 横並びで方向変更を推奨する最小子要素数
    * 根拠: 子要素が4個以上で狭いコンテナの場合、
    *       横並びだとオーバーフローしやすくなる
    */
-  MIN_CHILDREN_FOR_DIRECTION_CHECK: 4,
+  minChildrenForDirectionCheck: number;
 
   /**
    * 狭いコンテナと判断する幅（px）
    * 根拠: 300pxはモバイルビューポートの一般的な幅
    *       これより狭い場合、横並び要素は収まりにくい
    */
-  NARROW_CONTAINER_WIDTH: 300,
-} as const;
+  narrowContainerWidth: number;
+}
+
+/**
+ * 検出閾値（デフォルト値）
+ *
+ * これらの値はデザインシステムやユーザー設定に応じて調整が必要になる可能性があります。
+ * configureDetectionThresholds() を使用して部分的に上書きできます。
+ */
+const DETECTION_THRESHOLDS: DetectionThresholds = {
+  minChildrenForFlex: 2,
+  inefficientNestingDepth: 4,
+  minChildrenForDirectionCheck: 4,
+  narrowContainerWidth: 300,
+};
+
+/**
+ * 検出閾値を設定する
+ *
+ * 部分的な上書きをサポートします。指定されたプロパティのみが更新されます。
+ *
+ * @param overrides - 上書きしたい閾値
+ *
+ * @example
+ * ```ts
+ * // Flexコンテナの閾値のみを変更
+ * configureDetectionThresholds({ minChildrenForFlex: 3 });
+ *
+ * // 複数の閾値を一度に変更
+ * configureDetectionThresholds({
+ *   minChildrenForFlex: 3,
+ *   narrowContainerWidth: 400,
+ * });
+ * ```
+ */
+export function configureDetectionThresholds(
+  overrides: Partial<DetectionThresholds>,
+): void {
+  if (overrides.minChildrenForFlex !== undefined) {
+    DETECTION_THRESHOLDS.minChildrenForFlex = overrides.minChildrenForFlex;
+  }
+  if (overrides.inefficientNestingDepth !== undefined) {
+    DETECTION_THRESHOLDS.inefficientNestingDepth =
+      overrides.inefficientNestingDepth;
+  }
+  if (overrides.minChildrenForDirectionCheck !== undefined) {
+    DETECTION_THRESHOLDS.minChildrenForDirectionCheck =
+      overrides.minChildrenForDirectionCheck;
+  }
+  if (overrides.narrowContainerWidth !== undefined) {
+    DETECTION_THRESHOLDS.narrowContainerWidth = overrides.narrowContainerWidth;
+  }
+}
+
+/**
+ * 現在の検出閾値を取得する
+ *
+ * @returns 現在の検出閾値（読み取り専用のコピー）
+ */
+export function getDetectionThresholds(): Readonly<DetectionThresholds> {
+  return { ...DETECTION_THRESHOLDS };
+}
 
 /**
  * 問題点検出器のコンパニオンオブジェクト
@@ -60,7 +120,7 @@ export const ProblemDetector = {
     path: NodePath,
     childCount: number,
   ): LayoutProblem | null {
-    if (childCount < DETECTION_THRESHOLDS.MIN_CHILDREN_FOR_FLEX) {
+    if (childCount < DETECTION_THRESHOLDS.minChildrenForFlex) {
       return null;
     }
 
@@ -179,7 +239,7 @@ export const ProblemDetector = {
       return null;
     }
 
-    if (childCount < DETECTION_THRESHOLDS.MIN_CHILDREN_FOR_DIRECTION_CHECK) {
+    if (childCount < DETECTION_THRESHOLDS.minChildrenForDirectionCheck) {
       return null;
     }
 
@@ -192,7 +252,7 @@ export const ProblemDetector = {
     if (
       flexDirection === "row" &&
       width > 0 &&
-      width < DETECTION_THRESHOLDS.NARROW_CONTAINER_WIDTH
+      width < DETECTION_THRESHOLDS.narrowContainerWidth
     ) {
       return {
         type: "suboptimal-direction",
@@ -217,7 +277,7 @@ export const ProblemDetector = {
     path: NodePath,
     depth: number,
   ): LayoutProblem | null {
-    if (depth < DETECTION_THRESHOLDS.INEFFICIENT_NESTING_DEPTH) {
+    if (depth < DETECTION_THRESHOLDS.inefficientNestingDepth) {
       return null;
     }
 

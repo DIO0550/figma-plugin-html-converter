@@ -13,11 +13,40 @@ import type {
 import { generateSuggestionId } from "../types";
 
 /**
+ * デフォルトのリクエストタイムアウト（ミリ秒）
+ */
+const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
+
+/**
+ * 環境変数からタイムアウト値を取得する
+ *
+ * @returns タイムアウト値（ミリ秒）
+ */
+function getTimeoutFromEnv(): number {
+  // 環境変数が利用できない環境（ブラウザ等）への対応
+  if (typeof process === "undefined" || !process.env) {
+    return DEFAULT_REQUEST_TIMEOUT_MS;
+  }
+
+  const envValue = process.env.AI_ANALYSIS_TIMEOUT_MS;
+  if (!envValue) {
+    return DEFAULT_REQUEST_TIMEOUT_MS;
+  }
+
+  const parsed = parseInt(envValue, 10);
+  if (Number.isNaN(parsed) || parsed <= 0) {
+    return DEFAULT_REQUEST_TIMEOUT_MS;
+  }
+
+  return parsed;
+}
+
+/**
  * AI分析の設定定数
  *
  * これらの値はネットワーク環境やAIサービスの応答時間によって
  * 調整が必要になる可能性があります。
- * 将来的には環境変数や設定ファイルから取得することを検討してください。
+ * タイムアウト値は環境変数 AI_ANALYSIS_TIMEOUT_MS で設定可能です。
  */
 const AI_ANALYSIS_CONFIG = {
   /**
@@ -28,9 +57,11 @@ const AI_ANALYSIS_CONFIG = {
 
   /**
    * リクエストタイムアウト（ミリ秒）
-   * AI分析の処理時間を考慮し、30秒に設定
+   * 環境変数 AI_ANALYSIS_TIMEOUT_MS から取得し、未設定時は30秒をデフォルトとする
    */
-  REQUEST_TIMEOUT_MS: 30000,
+  get REQUEST_TIMEOUT_MS(): number {
+    return getTimeoutFromEnv();
+  },
 } as const;
 
 /**
@@ -210,9 +241,14 @@ export const AIAnalysis = {
   /**
    * AI分析が有効かどうかを判定する
    *
-   * 環境変数 ENABLE_AI_ANALYSIS で制御します。
+   * 以下の順序で設定を確認します:
+   * 1. ブラウザ環境: localStorage の ENABLE_AI_ANALYSIS
+   * 2. Node.js環境: 環境変数 ENABLE_AI_ANALYSIS
+   * 3. いずれも設定がない場合: 安全側のデフォルト（無効）
+   *
+   * 設定値:
    * - "true" の場合のみ有効
-   * - 未設定または他の値の場合は無効（安全側のデフォルト）
+   * - 未設定または他の値の場合は無効
    *
    * 将来的な拡張:
    * - SuggestionSettings.enabled との連携
@@ -221,11 +257,26 @@ export const AIAnalysis = {
    * @returns AI分析が有効な場合はtrue
    */
   isEnabled(): boolean {
-    // 環境変数が利用できない環境（ブラウザ等）への対応
-    if (typeof process === "undefined" || !process.env) {
-      return false;
+    // 1. ブラウザ環境（localStorage利用可能）の場合
+    if (typeof globalThis !== "undefined" && "localStorage" in globalThis) {
+      try {
+        const storage = globalThis.localStorage;
+        const storedValue = storage?.getItem("ENABLE_AI_ANALYSIS");
+        if (storedValue != null) {
+          return storedValue === "true";
+        }
+      } catch {
+        // localStorageアクセスがブロックされている場合（プライベートモード等）は無視
+      }
     }
-    return process.env.ENABLE_AI_ANALYSIS === "true";
+
+    // 2. Node.js環境（process.env利用可能）の場合
+    if (typeof process !== "undefined" && process.env) {
+      return process.env.ENABLE_AI_ANALYSIS === "true";
+    }
+
+    // 3. いずれの設定ソースも利用できない場合は安全側のデフォルト（無効）
+    return false;
   },
 
   /**

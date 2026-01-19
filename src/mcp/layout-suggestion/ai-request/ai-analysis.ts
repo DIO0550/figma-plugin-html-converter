@@ -266,7 +266,12 @@ export const AIAnalysis = {
           return storedValue === "true";
         }
       } catch {
-        // localStorageアクセスがブロックされている場合（プライベートモード等）は無視
+        // localStorageアクセスがブロックされるケース:
+        // - プライベートブラウジングモード（Safari等）
+        // - ブラウザのセキュリティ設定でストレージが無効化されている場合
+        // - iframe内でサードパーティCookieがブロックされている場合
+        // - Content Security Policy (CSP) による制限
+        // これらの場合は次の設定ソース（環境変数）にフォールスルーする
       }
     }
 

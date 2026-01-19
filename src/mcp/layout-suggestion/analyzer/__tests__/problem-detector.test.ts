@@ -1,8 +1,13 @@
 /**
  * ProblemDetector のテスト
  */
-import { describe, test, expect } from "vitest";
-import { ProblemDetector } from "../problem-detector";
+import { describe, test, expect, afterEach } from "vitest";
+import {
+  ProblemDetector,
+  configureDetectionThresholds,
+  getDetectionThresholds,
+  resetDetectionThresholds,
+} from "../problem-detector";
 import { Styles } from "../../../../converter/models/styles";
 import { createNodePath } from "../../types";
 
@@ -325,6 +330,133 @@ describe("ProblemDetector", () => {
     test("単位なしの数値もパースできる", () => {
       const result = ProblemDetector.parsePaddingValues("10 20");
       expect(result).toEqual([10, 20, 10, 20]);
+    });
+  });
+
+  describe("configureDetectionThresholds", () => {
+    afterEach(() => {
+      // 各テスト後にデフォルト値にリセット
+      resetDetectionThresholds();
+    });
+
+    test("単一のプロパティを設定できる", () => {
+      configureDetectionThresholds({ minChildrenForFlex: 5 });
+
+      const thresholds = getDetectionThresholds();
+      expect(thresholds.minChildrenForFlex).toBe(5);
+    });
+
+    test("複数のプロパティを同時に設定できる", () => {
+      configureDetectionThresholds({
+        minChildrenForFlex: 3,
+        narrowContainerWidth: 400,
+      });
+
+      const thresholds = getDetectionThresholds();
+      expect(thresholds.minChildrenForFlex).toBe(3);
+      expect(thresholds.narrowContainerWidth).toBe(400);
+    });
+
+    test("すべてのプロパティを設定できる", () => {
+      configureDetectionThresholds({
+        minChildrenForFlex: 3,
+        inefficientNestingDepth: 5,
+        minChildrenForDirectionCheck: 6,
+        narrowContainerWidth: 400,
+      });
+
+      const thresholds = getDetectionThresholds();
+      expect(thresholds.minChildrenForFlex).toBe(3);
+      expect(thresholds.inefficientNestingDepth).toBe(5);
+      expect(thresholds.minChildrenForDirectionCheck).toBe(6);
+      expect(thresholds.narrowContainerWidth).toBe(400);
+    });
+
+    test("設定した閾値が実際の検出に影響する", () => {
+      // デフォルトではminChildrenForFlex=2なので、2個で検出される
+      const styles = Styles.from({ display: "block" });
+      const path = createNodePath("root > div");
+
+      const problemBefore = ProblemDetector.detectMissingFlexContainer(
+        styles,
+        path,
+        2,
+      );
+      expect(problemBefore).not.toBeNull();
+
+      // 閾値を3に変更
+      configureDetectionThresholds({ minChildrenForFlex: 3 });
+
+      // 2個では検出されなくなる
+      const problemAfter = ProblemDetector.detectMissingFlexContainer(
+        styles,
+        path,
+        2,
+      );
+      expect(problemAfter).toBeNull();
+
+      // 3個以上で検出される
+      const problemWith3 = ProblemDetector.detectMissingFlexContainer(
+        styles,
+        path,
+        3,
+      );
+      expect(problemWith3).not.toBeNull();
+    });
+  });
+
+  describe("getDetectionThresholds", () => {
+    afterEach(() => {
+      resetDetectionThresholds();
+    });
+
+    test("デフォルト値を取得できる", () => {
+      const thresholds = getDetectionThresholds();
+
+      expect(thresholds.minChildrenForFlex).toBe(2);
+      expect(thresholds.inefficientNestingDepth).toBe(4);
+      expect(thresholds.minChildrenForDirectionCheck).toBe(4);
+      expect(thresholds.narrowContainerWidth).toBe(300);
+    });
+
+    test("読み取り専用のコピーを返す（元のオブジェクトに影響しない）", () => {
+      const thresholds1 = getDetectionThresholds();
+      // TypeScriptの型システムではReadonlyだが、実行時に変更を試みる
+      (thresholds1 as { minChildrenForFlex: number }).minChildrenForFlex = 999;
+
+      const thresholds2 = getDetectionThresholds();
+      expect(thresholds2.minChildrenForFlex).toBe(2); // 変更されていない
+    });
+  });
+
+  describe("resetDetectionThresholds", () => {
+    test("変更した閾値をデフォルト値にリセットできる", () => {
+      // 閾値を変更
+      configureDetectionThresholds({
+        minChildrenForFlex: 10,
+        inefficientNestingDepth: 20,
+        minChildrenForDirectionCheck: 30,
+        narrowContainerWidth: 1000,
+      });
+
+      // リセット
+      resetDetectionThresholds();
+
+      // デフォルト値に戻っていることを確認
+      const thresholds = getDetectionThresholds();
+      expect(thresholds.minChildrenForFlex).toBe(2);
+      expect(thresholds.inefficientNestingDepth).toBe(4);
+      expect(thresholds.minChildrenForDirectionCheck).toBe(4);
+      expect(thresholds.narrowContainerWidth).toBe(300);
+    });
+
+    test("リセット後も再度設定できる", () => {
+      configureDetectionThresholds({ minChildrenForFlex: 5 });
+      resetDetectionThresholds();
+      configureDetectionThresholds({ minChildrenForFlex: 7 });
+
+      const thresholds = getDetectionThresholds();
+      expect(thresholds.minChildrenForFlex).toBe(7);
     });
   });
 });

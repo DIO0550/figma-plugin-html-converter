@@ -56,6 +56,21 @@ export const CONFIDENCE_LEVELS = {
  * 問題タイプ別の提案テンプレート
  *
  * 各テンプレートのconfidence値はCONFIDENCE_LEVELSで定義された定数を使用しています。
+ *
+ * ## recommendedStylesについての注意
+ * 現在のrecommendedStyles値は汎用的なデフォルト値として固定されています:
+ * - missing-flex-container: display: flex（基本的なFlexコンテナ）
+ * - missing-alignment: justify-content: flex-start, align-items: center
+ *   （最も一般的な配置パターン。ユーザーの意図に応じて変更が必要な場合あり）
+ * - suboptimal-direction: flex-direction: column（横並びから縦並びへの変更）
+ *
+ * 将来の改善案:
+ * 1. 既存のスタイルや周辺コンテキストを分析して適応的な値を生成
+ * 2. AI分析機能と連携してより適切な値を提案
+ * 3. デザインシステムの設定から推奨値を取得
+ *
+ * これらの値は「開始点」として提供され、ユーザーが必要に応じて
+ * 調整することを想定しています。
  */
 const SUGGESTION_TEMPLATES: Record<
   LayoutProblem["type"],

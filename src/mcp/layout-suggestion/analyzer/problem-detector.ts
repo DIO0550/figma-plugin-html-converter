@@ -44,16 +44,26 @@ export interface DetectionThresholds {
 }
 
 /**
- * 検出閾値（デフォルト値）
+ * 検出閾値のデフォルト値
  *
- * これらの値はデザインシステムやユーザー設定に応じて調整が必要になる可能性があります。
- * configureDetectionThresholds() を使用して部分的に上書きできます。
+ * resetDetectionThresholds() で初期状態に戻す際に使用されます。
  */
-const DETECTION_THRESHOLDS: DetectionThresholds = {
+const DEFAULT_DETECTION_THRESHOLDS: Readonly<DetectionThresholds> = {
   minChildrenForFlex: 2,
   inefficientNestingDepth: 4,
   minChildrenForDirectionCheck: 4,
   narrowContainerWidth: 300,
+} as const;
+
+/**
+ * 検出閾値（現在の値）
+ *
+ * これらの値はデザインシステムやユーザー設定に応じて調整が必要になる可能性があります。
+ * configureDetectionThresholds() を使用して部分的に上書きできます。
+ * resetDetectionThresholds() を使用してデフォルト値に戻せます。
+ */
+const DETECTION_THRESHOLDS: DetectionThresholds = {
+  ...DEFAULT_DETECTION_THRESHOLDS,
 };
 
 /**
@@ -101,6 +111,32 @@ export function configureDetectionThresholds(
  */
 export function getDetectionThresholds(): Readonly<DetectionThresholds> {
   return { ...DETECTION_THRESHOLDS };
+}
+
+/**
+ * 検出閾値をデフォルト値にリセットする
+ *
+ * テストの独立性を保つために、各テストの afterEach で呼び出すことを推奨します。
+ *
+ * @example
+ * ```ts
+ * import { afterEach } from "vitest";
+ * import { resetDetectionThresholds } from "./problem-detector";
+ *
+ * afterEach(() => {
+ *   resetDetectionThresholds();
+ * });
+ * ```
+ */
+export function resetDetectionThresholds(): void {
+  DETECTION_THRESHOLDS.minChildrenForFlex =
+    DEFAULT_DETECTION_THRESHOLDS.minChildrenForFlex;
+  DETECTION_THRESHOLDS.inefficientNestingDepth =
+    DEFAULT_DETECTION_THRESHOLDS.inefficientNestingDepth;
+  DETECTION_THRESHOLDS.minChildrenForDirectionCheck =
+    DEFAULT_DETECTION_THRESHOLDS.minChildrenForDirectionCheck;
+  DETECTION_THRESHOLDS.narrowContainerWidth =
+    DEFAULT_DETECTION_THRESHOLDS.narrowContainerWidth;
 }
 
 /**

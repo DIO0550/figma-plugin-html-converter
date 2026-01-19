@@ -37,3 +37,5 @@ Thumbs.db
 .specify/
 
 ./specs
+
+.devcontainer/.env

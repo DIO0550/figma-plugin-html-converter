@@ -84,6 +84,222 @@ describe("AIAnalysis", () => {
 
       expect(parsed.suggestions).toEqual([]);
     });
+
+    describe("confidence値のバリデーション", () => {
+      test("0-1の範囲内のconfidence値は保持される", () => {
+        const response = {
+          suggestions: [
+            { problemIndex: 0, suggestion: "test", confidence: 0.5 },
+            { problemIndex: 1, suggestion: "test", confidence: 0 },
+            { problemIndex: 2, suggestion: "test", confidence: 1 },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].confidence).toBe(0.5);
+        expect(parsed.suggestions[1].confidence).toBe(0);
+        expect(parsed.suggestions[2].confidence).toBe(1);
+      });
+
+      test("負のconfidence値はデフォルト値（0.5）に置き換えられる", () => {
+        const response = {
+          suggestions: [
+            { problemIndex: 0, suggestion: "test", confidence: -0.1 },
+            { problemIndex: 1, suggestion: "test", confidence: -1 },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].confidence).toBe(0.5);
+        expect(parsed.suggestions[1].confidence).toBe(0.5);
+      });
+
+      test("1を超えるconfidence値はデフォルト値（0.5）に置き換えられる", () => {
+        const response = {
+          suggestions: [
+            { problemIndex: 0, suggestion: "test", confidence: 1.1 },
+            { problemIndex: 1, suggestion: "test", confidence: 2 },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].confidence).toBe(0.5);
+        expect(parsed.suggestions[1].confidence).toBe(0.5);
+      });
+
+      test("NaNのconfidence値はデフォルト値（0.5）に置き換えられる", () => {
+        const response = {
+          suggestions: [
+            { problemIndex: 0, suggestion: "test", confidence: NaN },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].confidence).toBe(0.5);
+      });
+
+      test("confidence値が数値でない場合はデフォルト値（0.5）になる", () => {
+        const response = {
+          suggestions: [
+            { problemIndex: 0, suggestion: "test", confidence: "0.8" },
+            { problemIndex: 1, suggestion: "test", confidence: undefined },
+            { problemIndex: 2, suggestion: "test" }, // confidenceなし
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].confidence).toBe(0.5);
+        expect(parsed.suggestions[1].confidence).toBe(0.5);
+        expect(parsed.suggestions[2].confidence).toBe(0.5);
+      });
+    });
+
+    describe("recommendedStylesのバリデーション", () => {
+      test("正常なrecommendedStylesは保持される", () => {
+        const response = {
+          suggestions: [
+            {
+              problemIndex: 0,
+              suggestion: "test",
+              confidence: 0.8,
+              recommendedStyles: { display: "flex", gap: "10px" },
+            },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toEqual({
+          display: "flex",
+          gap: "10px",
+        });
+      });
+
+      test("undefinedのrecommendedStylesはundefinedのまま", () => {
+        const response = {
+          suggestions: [
+            { problemIndex: 0, suggestion: "test", confidence: 0.8 },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
+      });
+
+      test("nullのrecommendedStylesはundefinedに変換される", () => {
+        const response = {
+          suggestions: [
+            {
+              problemIndex: 0,
+              suggestion: "test",
+              confidence: 0.8,
+              recommendedStyles: null,
+            },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
+      });
+
+      test("配列のrecommendedStylesはundefinedに変換される", () => {
+        const response = {
+          suggestions: [
+            {
+              problemIndex: 0,
+              suggestion: "test",
+              confidence: 0.8,
+              recommendedStyles: ["display", "flex"],
+            },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
+      });
+
+      test("非文字列の値を含むrecommendedStylesは有効なプロパティのみ保持される", () => {
+        const response = {
+          suggestions: [
+            {
+              problemIndex: 0,
+              suggestion: "test",
+              confidence: 0.8,
+              recommendedStyles: {
+                display: "flex",
+                gap: 10, // 数値は無効
+                padding: null, // nullは無効
+                margin: undefined, // undefinedは無効
+              },
+            },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toEqual({
+          display: "flex",
+        });
+      });
+
+      test("空のオブジェクトはundefinedに変換される", () => {
+        const response = {
+          suggestions: [
+            {
+              problemIndex: 0,
+              suggestion: "test",
+              confidence: 0.8,
+              recommendedStyles: {},
+            },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
+      });
+
+      test("全て無効な値のオブジェクトはundefinedに変換される", () => {
+        const response = {
+          suggestions: [
+            {
+              problemIndex: 0,
+              suggestion: "test",
+              confidence: 0.8,
+              recommendedStyles: {
+                display: 123,
+                gap: true,
+                padding: {},
+              },
+            },
+          ],
+          processingTimeMs: 100,
+        };
+
+        const parsed = AIAnalysis.parseResponse(response);
+
+        expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
+      });
+    });
   });
 
   describe("mergeWithLocalSuggestions", () => {

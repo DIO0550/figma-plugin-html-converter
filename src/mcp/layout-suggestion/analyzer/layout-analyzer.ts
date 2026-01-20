@@ -19,10 +19,15 @@ import { createNodePath } from "../types";
  * これらの要素は自己閉じタグとして扱われ、終了タグを持ちません。
  * 参考: https://html.spec.whatwg.org/multipage/syntax.html#void-elements
  *
- * パフォーマンス最適化: 関数外に配置することで、
- * countDirectChildren()の呼び出しごとの配列再生成を回避
+ * パフォーマンス最適化:
+ * - 関数外に配置することで、countDirectChildren()の呼び出しごとの配列再生成を回避
+ * - Setを使用することでO(1)のルックアップを実現
+ *
+ * 型安全性:
+ * - `as const` を使用した readonly tuple では `.includes()` との型互換性に問題が発生するため、
+ *   Setを使用して `.has()` メソッドで型安全なチェックを行う
  */
-const VOID_ELEMENTS = [
+const VOID_ELEMENTS: ReadonlySet<string> = new Set([
   "img",
   "br",
   "hr",
@@ -36,7 +41,7 @@ const VOID_ELEMENTS = [
   "source",
   "track",
   "wbr",
-] as const;
+]);
 
 /**
  * 分析サマリー
@@ -291,10 +296,9 @@ export const LayoutAnalyzer = {
       // 自己閉じタグの検出:
       // 1. 明示的な自己閉じ: `<img />`, `<br/>`（スラッシュで終わる）
       // 2. HTML5 void要素: VOID_ELEMENTS定数で定義（ファイル先頭参照）
-      const tagName = match[1]?.toLowerCase();
+      const tagName = match[1]?.toLowerCase() ?? "";
       const isSelfClosing =
-        /\/\s*>$/.test(fullMatch) ||
-        VOID_ELEMENTS.includes(tagName as (typeof VOID_ELEMENTS)[number]);
+        /\/\s*>$/.test(fullMatch) || VOID_ELEMENTS.has(tagName);
 
       if (isSelfClosing) {
         // 自己閉じタグは現在の深さが 0 のときのみ直接の子要素としてカウント

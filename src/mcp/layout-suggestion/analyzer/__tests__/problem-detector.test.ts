@@ -12,6 +12,11 @@ import { Styles } from "../../../../converter/models/styles";
 import { createNodePath } from "../../types";
 
 describe("ProblemDetector", () => {
+  // テストの独立性を保つため、各テスト後に検出閾値をリセット
+  afterEach(() => {
+    resetDetectionThresholds();
+  });
+
   describe("detectMissingFlexContainer", () => {
     test("子要素が複数あり、Flexコンテナでない場合に問題を検出する", () => {
       const styles = Styles.from({ display: "block" });
@@ -334,10 +339,7 @@ describe("ProblemDetector", () => {
   });
 
   describe("configureDetectionThresholds", () => {
-    afterEach(() => {
-      // 各テスト後にデフォルト値にリセット
-      resetDetectionThresholds();
-    });
+    // NOTE: afterEachは親describeで定義済みのため、ここでの定義は不要
 
     test("単一のプロパティを設定できる", () => {
       configureDetectionThresholds({ minChildrenForFlex: 5 });
@@ -406,9 +408,7 @@ describe("ProblemDetector", () => {
   });
 
   describe("getDetectionThresholds", () => {
-    afterEach(() => {
-      resetDetectionThresholds();
-    });
+    // NOTE: afterEachは親describeで定義済みのため、ここでの定義は不要
 
     test("デフォルト値を取得できる", () => {
       const thresholds = getDetectionThresholds();

@@ -396,23 +396,49 @@ export const ProblemDetector = {
   /**
    * スペーシング値をパースする
    *
-   * 注: この関数は数値のみの入力（px省略）も受け入れます。
-   * CSSでは通常単位が必須ですが、以下の理由から数値のみも許容しています：
-   * - Figma APIやインラインスタイルでは単位なしの数値が使用されることがある
-   * - 内部処理での比較・計算を簡素化するため
-   * - em, rem, %などの他の単位は現在サポートしていません（pxのみ）
+   * @param value - CSS値（"10px", "16.5px" など）
+   * @param options - パースオプション
+   * @param options.allowUnitless - 単位なしの数値を許容するかどうか
+   *   - true（デフォルト）: Figma APIやインラインスタイルで使用される単位なし数値を受け入れる
+   *   - false: CSS仕様に従い、"px"が必須。単位なしの場合は0を返す
    *
-   * @param value - CSS値（"10px", "10", "16.5px" など）
+   * 注: em, rem, %などの他の単位は現在サポートしていません（pxのみ）
+   *
    * @returns 数値（px単位）。パース失敗時は0
+   *
+   * @example
+   * ```ts
+   * // デフォルト: 単位なしも許容
+   * parseSpacingValue("10px")   // => 10
+   * parseSpacingValue("10")     // => 10
+   *
+   * // 厳密モード: pxが必須
+   * parseSpacingValue("10px", { allowUnitless: false })  // => 10
+   * parseSpacingValue("10", { allowUnitless: false })    // => 0
+   * ```
    */
-  parseSpacingValue(value: string | undefined): number {
+  parseSpacingValue(
+    value: string | undefined,
+    options: { allowUnitless?: boolean } = {},
+  ): number {
+    const { allowUnitless = true } = options;
+
     if (!value) return 0;
 
-    // 数値 + オプショナルな "px" にマッチ
-    const match = value.match(/^(\d+(?:\.\d+)?)(px)?$/);
-    if (match) {
-      return parseFloat(match[1]);
+    if (allowUnitless) {
+      // 数値 + オプショナルな "px" にマッチ
+      const match = value.match(/^(\d+(?:\.\d+)?)(px)?$/);
+      if (match) {
+        return parseFloat(match[1]);
+      }
+    } else {
+      // px必須モード: "px"で終わる値のみ受け入れる
+      const match = value.match(/^(\d+(?:\.\d+)?)px$/);
+      if (match) {
+        return parseFloat(match[1]);
+      }
     }
+
     return 0;
   },
 

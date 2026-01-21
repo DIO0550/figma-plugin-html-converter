@@ -26,7 +26,11 @@ import { generateSuggestionId } from "../types";
 const DEFAULT_REQUEST_TIMEOUT_MS = 30000;
 
 /**
- * 環境変数からタイムアウト値を取得する
+ * 環境変数からタイムアウト値を取得する（初回のみ実行）
+ *
+ * パフォーマンス最適化:
+ * - 環境変数は実行時に変更されることが稀であるため、初回読み取り時にキャッシュする
+ * - これにより getTimeout() の呼び出しごとの環境変数読み取りオーバーヘッドを排除
  *
  * @returns タイムアウト値（ミリ秒）
  */
@@ -50,6 +54,15 @@ function getTimeoutFromEnv(): number {
 }
 
 /**
+ * キャッシュされたタイムアウト値
+ *
+ * 初期化時に一度だけ環境変数を読み取り、以降はこの値を使用する。
+ * 環境変数は実行時に変更されることが稀であり、パフォーマンスのために
+ * 初期化時に読み取る方が適切。
+ */
+const CACHED_REQUEST_TIMEOUT_MS = getTimeoutFromEnv();
+
+/**
  * AI分析の設定定数
  *
  * これらの値はネットワーク環境やAIサービスの応答時間によって
@@ -65,11 +78,9 @@ const AI_ANALYSIS_CONFIG = {
 
   /**
    * リクエストタイムアウト（ミリ秒）
-   * 環境変数 AI_ANALYSIS_TIMEOUT_MS から取得し、未設定時は30秒をデフォルトとする
+   * 環境変数 AI_ANALYSIS_TIMEOUT_MS から初期化時に取得しキャッシュ
    */
-  get REQUEST_TIMEOUT_MS(): number {
-    return getTimeoutFromEnv();
-  },
+  REQUEST_TIMEOUT_MS: CACHED_REQUEST_TIMEOUT_MS,
 } as const;
 
 /**

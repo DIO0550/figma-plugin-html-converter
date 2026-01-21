@@ -224,50 +224,32 @@ export const ProblemDetector = {
     const paddingValues = ProblemDetector.parsePaddingValues(padding);
     const uniquePaddingValues = new Set(paddingValues);
 
-    /**
-     * スペーシングの不一致を検出するロジック:
-     *
-     * 前提条件:
-     *   - gap > 0: gapが設定されている（Flexboxでスペーシングを使用）
-     *   - uniquePaddingValues.size > 1: paddingの各方向の値が異なる
-     *
-     * 検出条件（hasInconsistency）:
-     *   paddingのいずれかの値が「gapとも、padding最初の値とも異なる」場合
-     *   → スペーシングに3種類以上の値が存在することを意味する
-     *
-     * 具体例:
-     *   - gap: 10px, padding: 10px 20px
-     *     → paddingValues = [10, 20, 10, 20]
-     *     → hasInconsistency: 各値を検証 → 10はgapと同じ、20はpaddingValues[0]=10と異なるがgapとも違う？
-     *       20 !== gap(10) && 20 !== paddingValues[0](10) → true
-     *     → 検出される（gapとpaddingで10と20の2系統が混在）
-     *
-     *   - gap: 10px, padding: 10px 10px 20px
-     *     → paddingValues = [10, 10, 20, 10]
-     *     → 20 !== gap(10) && 20 !== paddingValues[0](10) → true
-     *     → 検出される
-     *
-     *   - gap: 10px, padding: 20px
-     *     → uniquePaddingValues.size = 1（全方向同じ）
-     *     → 前提条件を満たさず、検出されない（意図的な異なる値として許容）
-     *
-     * このロジックにより「意図的に異なる値を使用している」のではなく、
-     * 「一貫性なく値がバラついている」状態のみを検出する
-     */
-    if (gap > 0 && uniquePaddingValues.size > 1) {
-      const hasInconsistency = paddingValues.some(
-        (p) => p !== gap && p !== paddingValues[0],
-      );
-      if (hasInconsistency) {
-        return {
-          type: "inconsistent-spacing",
-          severity: "low",
-          location: path,
-          description:
-            "スペーシング値（gap、padding）に一貫性がありません。デザインの一貫性のために、同じ値を使用することを検討してください。",
-          currentValue: `gap: ${gap}px, padding: ${padding}`,
-        };
-      }
+    // 可読性向上: 段階的な条件チェックと明確な変数名
+    const hasGap = gap > 0;
+    const hasMultiplePaddingValues = uniquePaddingValues.size > 1;
+
+    // gapが設定されていない、または全てのpadding値が同じ場合は不一致なし
+    if (!hasGap || !hasMultiplePaddingValues) {
+      return null;
+    }
+
+    // 不一致検出: paddingの値がgapとも最初のpadding値とも異なる場合
+    // これは「スペーシングに3種類以上の値が存在する」ことを意味する
+    const primaryPaddingValue = paddingValues[0];
+    const hasMismatchWithGap = paddingValues.some(
+      (paddingValue) =>
+        paddingValue !== gap && paddingValue !== primaryPaddingValue,
+    );
+
+    if (hasMismatchWithGap) {
+      return {
+        type: "inconsistent-spacing",
+        severity: "low",
+        location: path,
+        description:
+          "スペーシング値（gap、padding）に一貫性がありません。デザインの一貫性のために、同じ値を使用することを検討してください。",
+        currentValue: `gap: ${gap}px, padding: ${padding}`,
+      };
     }
 
     return null;

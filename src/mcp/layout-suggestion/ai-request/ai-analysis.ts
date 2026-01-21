@@ -284,13 +284,22 @@ export const AIAnalysis = {
         if (storedValue != null) {
           return storedValue === "true";
         }
-      } catch {
+      } catch (error) {
         // localStorageアクセスがブロックされるケース:
         // - プライベートブラウジングモード（Safari等）
         // - ブラウザのセキュリティ設定でストレージが無効化されている場合
         // - iframe内でサードパーティCookieがブロックされている場合
         // - Content Security Policy (CSP) による制限
         // これらの場合は次の設定ソース（環境変数）にフォールスルーする
+
+        // 開発環境でのデバッグ支援: localStorageアクセス失敗時に警告ログを出力
+        if (
+          typeof process !== "undefined" &&
+          process.env?.NODE_ENV === "development"
+        ) {
+          // eslint-disable-next-line no-console
+          console.warn("localStorage access failed in isEnabled:", error);
+        }
       }
     }
 

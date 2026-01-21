@@ -297,7 +297,6 @@ export const AIAnalysis = {
           typeof process !== "undefined" &&
           process.env?.NODE_ENV === "development"
         ) {
-          // eslint-disable-next-line no-console
           console.warn("localStorage access failed in isEnabled:", error);
         }
       }

@@ -54,8 +54,11 @@ RUN (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
     && rm -rf /var/lib/apt/lists/*
 
 
-# Install GitHub Copilot CLI
-RUN curl -fsSL https://gh.io/copilot-install | bash
+# Install GitHub Copilot CLI extension via gh CLI
+# セキュリティ対策: curl | bash パターンはサプライチェーン攻撃のリスクがあるため、
+# gh CLI の拡張機能として管理されているパッケージを使用
+# これにより GitHub の署名済みリリースからインストールが行われる
+RUN gh extension install github/gh-copilot
 
 # Install Node.js 22.x
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \

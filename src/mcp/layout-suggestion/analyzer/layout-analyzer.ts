@@ -44,6 +44,34 @@ const VOID_ELEMENTS: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * HTMLパーサーのセキュリティ制限値
+ *
+ * これらの制限は以下のリスクを軽減するために設定されています：
+ * - ReDoS（正規表現サービス拒否）攻撃
+ * - 過度のメモリ消費
+ * - 深くネストされた構造による無限ループ
+ */
+const HTML_PARSER_LIMITS = {
+  /**
+   * 入力HTMLの最大サイズ（バイト）
+   * 100KBを超えるHTMLは処理を拒否
+   */
+  MAX_HTML_SIZE_BYTES: 100 * 1024, // 100KB
+
+  /**
+   * 許容される最大ネスト深度
+   * これを超える深さの要素は解析をスキップ
+   */
+  MAX_NESTING_DEPTH: 50,
+
+  /**
+   * 処理する最大要素数
+   * ReDoS対策として、この数を超える要素がある場合は処理を打ち切り
+   */
+  MAX_ELEMENTS: 1000,
+} as const;
+
+/**
  * 分析サマリー
  */
 export interface AnalysisSummary {
@@ -178,10 +206,33 @@ export const LayoutAnalyzer = {
    * - 大規模なHTML処理が必要な場合は、最適化されたパーサーライブラリの
    *   使用を検討してください
    *
+   * セキュリティ対策:
+   * - 入力サイズ制限: MAX_HTML_SIZE_BYTES (100KB) を超えるHTMLは空配列を返す
+   * - ネスト深度制限: MAX_NESTING_DEPTH (50) を超える深さは解析をスキップ
+   * - 要素数制限: MAX_ELEMENTS (1000) を超える要素は処理を打ち切り
+   * - これにより ReDoS 攻撃や過度のメモリ消費を防止
+   *
    * @param html - HTML文字列
+   * @param currentDepth - 現在のネスト深度（内部使用）
+   * @param elementCount - 処理済み要素数への参照（内部使用）
    * @returns ノード情報のリスト
    */
-  parseHTML(html: string): NodeInfo[] {
+  parseHTML(
+    html: string,
+    currentDepth: number = 0,
+    elementCount: { count: number } = { count: 0 },
+  ): NodeInfo[] {
+    // セキュリティチェック: 入力サイズ制限
+    // バイト数ではなく文字数で近似的にチェック（日本語等のマルチバイト文字も考慮）
+    if (html.length > HTML_PARSER_LIMITS.MAX_HTML_SIZE_BYTES) {
+      return [];
+    }
+
+    // セキュリティチェック: ネスト深度制限
+    if (currentDepth > HTML_PARSER_LIMITS.MAX_NESTING_DEPTH) {
+      return [];
+    }
+
     const nodes: NodeInfo[] = [];
     // 注: この正規表現は開始タグと終了タグのペアを検出します
     // 自己閉じタグには対応していません
@@ -190,6 +241,12 @@ export const LayoutAnalyzer = {
     let index = 0;
 
     while ((match = tagRegex.exec(html)) !== null) {
+      // セキュリティチェック: 要素数制限
+      if (elementCount.count >= HTML_PARSER_LIMITS.MAX_ELEMENTS) {
+        break;
+      }
+      elementCount.count++;
+
       const tagName = match[1];
       const attributes = match[2];
       const content = match[3];
@@ -204,9 +261,16 @@ export const LayoutAnalyzer = {
         path: createNodePath(`root > ${tagName}[${index}]`),
       });
 
-      // 子要素も再帰的にパース
-      if (content.includes("<")) {
-        const childNodes = LayoutAnalyzer.parseHTML(content);
+      // 子要素も再帰的にパース（深度制限内の場合のみ）
+      if (
+        content.includes("<") &&
+        currentDepth + 1 <= HTML_PARSER_LIMITS.MAX_NESTING_DEPTH
+      ) {
+        const childNodes = LayoutAnalyzer.parseHTML(
+          content,
+          currentDepth + 1,
+          elementCount,
+        );
         for (const childNode of childNodes) {
           nodes.push({
             ...childNode,

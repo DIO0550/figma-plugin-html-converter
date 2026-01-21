@@ -419,13 +419,22 @@ describe("ProblemDetector", () => {
       expect(thresholds.narrowContainerWidth).toBe(300);
     });
 
-    test("読み取り専用のコピーを返す（元のオブジェクトに影響しない）", () => {
+    test("読み取り専用のコピーを返す（呼び出しごとに新しいオブジェクトを返す）", () => {
       const thresholds1 = getDetectionThresholds();
-      // TypeScriptの型システムではReadonlyだが、実行時に変更を試みる
-      (thresholds1 as { minChildrenForFlex: number }).minChildrenForFlex = 999;
+      const originalValue = thresholds1.minChildrenForFlex;
 
+      // 新しいオブジェクトを作成して値を変更（型安全なアプローチ）
+      const modified = { ...thresholds1, minChildrenForFlex: 999 };
+      expect(modified.minChildrenForFlex).toBe(999); // 新しいオブジェクトには反映される
+
+      // 再度取得しても元の値のまま
       const thresholds2 = getDetectionThresholds();
-      expect(thresholds2.minChildrenForFlex).toBe(2); // 変更されていない
+      expect(thresholds2.minChildrenForFlex).toBe(originalValue);
+
+      // 各呼び出しは異なるオブジェクトを返す（参照が異なる）
+      expect(thresholds1).not.toBe(thresholds2);
+      // しかし値は同じ
+      expect(thresholds1).toEqual(thresholds2);
     });
   });
 

@@ -234,7 +234,8 @@ export const ProblemDetector = {
     }
 
     // 不一致検出: paddingの値がgapとも最初のpadding値とも異なる場合
-    // これは「スペーシングに3種類以上の値が存在する」ことを意味する
+    // gapと異なり、かつprimaryPaddingValueとも異なるpadding値があれば不一致と判定
+    // 例: gap: 10px, padding: 10px 20px の場合、20pxがgap(10px)と異なるため不一致
     const primaryPaddingValue = paddingValues[0];
     const hasMismatchWithGap = paddingValues.some(
       (paddingValue) =>

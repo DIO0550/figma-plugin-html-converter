@@ -179,6 +179,8 @@ export interface ApplyResult {
   success: boolean;
   /** 適用された提案ID */
   appliedSuggestionId: SuggestionId;
+  /** 適用後のスタイル（成功時のみ） */
+  appliedStyles?: Styles;
   /** エラーメッセージ（失敗時） */
   errorMessage?: string;
 }

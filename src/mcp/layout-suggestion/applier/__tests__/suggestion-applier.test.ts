@@ -86,6 +86,31 @@ describe("SuggestionApplier", () => {
       expect(result.appliedSuggestionId).toBe(suggestion.id);
     });
 
+    test("成功時にappliedStylesが返される", () => {
+      const originalStyles = Styles.from({ color: "red" });
+      const suggestion: LayoutSuggestion = {
+        id: createSuggestionId("test-apply-styles"),
+        problem: {
+          type: "missing-flex-container",
+          severity: "medium",
+          location: createNodePath("root > div"),
+          description: "Flexコンテナがありません",
+        },
+        suggestion: "display: flexを追加",
+        confidence: 0.9,
+        autoApplicable: true,
+        improvedStyles: { display: "flex", gap: "8px" },
+      };
+
+      const result = SuggestionApplier.apply(suggestion, originalStyles);
+
+      expect(result.success).toBe(true);
+      expect(result.appliedStyles).toBeDefined();
+      expect(Styles.get(result.appliedStyles!, "color")).toBe("red");
+      expect(Styles.get(result.appliedStyles!, "display")).toBe("flex");
+      expect(Styles.get(result.appliedStyles!, "gap")).toBe("8px");
+    });
+
     test("適用不可な提案でエラーを返す", () => {
       const originalStyles = Styles.from({});
       const suggestion: LayoutSuggestion = {

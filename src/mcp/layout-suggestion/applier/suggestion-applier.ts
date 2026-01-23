@@ -29,7 +29,7 @@ export const SuggestionApplier = {
    *
    * @param suggestion - 適用する提案
    * @param originalStyles - 元のスタイル
-   * @returns 適用結果
+   * @returns 適用結果（成功時は新しいスタイルを含む）
    */
   apply(suggestion: LayoutSuggestion, originalStyles: Styles): ApplyResult {
     if (!SuggestionApplier.canApply(suggestion)) {
@@ -41,8 +41,8 @@ export const SuggestionApplier = {
     }
 
     try {
-      // 新しいスタイルを生成（検証のため）
-      SuggestionApplier.generateNewStyles(
+      // 新しいスタイルを生成
+      const newStyles = SuggestionApplier.generateNewStyles(
         originalStyles,
         suggestion.improvedStyles!,
       );
@@ -50,6 +50,7 @@ export const SuggestionApplier = {
       return {
         success: true,
         appliedSuggestionId: suggestion.id,
+        appliedStyles: newStyles,
       };
     } catch (error) {
       return {

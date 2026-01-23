@@ -145,17 +145,38 @@ export const LayoutAnalyzer = {
    * 単一ノードを分析する
    *
    * @param html - HTML文字列
-   * @param pathPrefix - パスのプレフィックス
+   * @param pathPrefix - パスのプレフィックス（親ノードのパス）
    * @returns 検出された問題のリスト
    */
-  analyzeNode(html: string, pathPrefix: string): LayoutProblem[] {
+  analyzeNode(html: string, pathPrefix: NodePath): LayoutProblem[] {
     const nodes = LayoutAnalyzer.parseHTML(html);
     const problems: LayoutProblem[] = [];
 
     for (const node of nodes) {
+      const originalPath = String(node.path);
+      const prefixString = String(pathPrefix);
+
+      let combinedPath: string;
+
+      // pathPrefix が空の場合は parseHTML が付与したパスをそのまま利用する
+      if (!prefixString || prefixString.trim() === "") {
+        combinedPath = originalPath;
+      } else {
+        // parseHTMLが付与した "root > " プレフィックスを除去して相対パスを取得
+        const rootPrefix = "root > ";
+        const relativePath = originalPath.startsWith(rootPrefix)
+          ? originalPath.slice(rootPrefix.length)
+          : originalPath;
+
+        combinedPath =
+          relativePath && relativePath.trim().length > 0
+            ? `${prefixString} > ${relativePath}`
+            : prefixString;
+      }
+
       const updatedNode = {
         ...node,
-        path: createNodePath(`${pathPrefix} > ${node.path}`),
+        path: createNodePath(combinedPath),
       };
       const nodeProblems = LayoutAnalyzer.analyzeNodeInfo(updatedNode);
       problems.push(...nodeProblems);

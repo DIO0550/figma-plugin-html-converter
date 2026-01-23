@@ -52,13 +52,20 @@ export const SuggestionSettingsManager = {
       return false;
     }
 
-    // minConfidence: 0.0〜1.0（確率として両端を含む）
-    if (settings.minConfidence < 0 || settings.minConfidence > 1) {
+    // minConfidence: number型で、0.0〜1.0（確率として両端を含む）
+    if (
+      typeof settings.minConfidence !== "number" ||
+      settings.minConfidence < 0 ||
+      settings.minConfidence > 1
+    ) {
       return false;
     }
 
-    // maxSuggestions: 1以上（少なくとも1つの提案が必要）
-    if (settings.maxSuggestions < 1) {
+    // maxSuggestions: number型で、1以上（少なくとも1つの提案が必要）
+    if (
+      typeof settings.maxSuggestions !== "number" ||
+      settings.maxSuggestions < 1
+    ) {
       return false;
     }
 

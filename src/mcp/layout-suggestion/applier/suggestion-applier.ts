@@ -112,12 +112,9 @@ export const SuggestionApplier = {
       const result = SuggestionApplier.apply(suggestion, currentStyles);
       results.push(result);
 
-      // 成功した場合、スタイルを更新して次の提案に引き継ぐ
-      if (result.success && suggestion.improvedStyles) {
-        currentStyles = SuggestionApplier.generateNewStyles(
-          currentStyles,
-          suggestion.improvedStyles,
-        );
+      // 成功した場合、apply()が返した新しいスタイルを次の提案に引き継ぐ
+      if (result.success && result.appliedStyles) {
+        currentStyles = result.appliedStyles;
       }
     }
 

@@ -94,7 +94,7 @@ describe("LayoutAnalyzer", () => {
     test("ノード単位で分析できる", () => {
       const html = '<div style="display: flex;"><span>Hello</span></div>';
 
-      const problems = LayoutAnalyzer.analyzeNode(html, "root");
+      const problems = LayoutAnalyzer.analyzeNode(html, createNodePath("root"));
 
       expect(Array.isArray(problems)).toBe(true);
     });

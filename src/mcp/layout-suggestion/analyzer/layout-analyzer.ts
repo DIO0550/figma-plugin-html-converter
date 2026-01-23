@@ -293,10 +293,17 @@ export const LayoutAnalyzer = {
           elementCount,
         );
         for (const childNode of childNodes) {
+          // childNode.pathから"root > "プレフィックスを除去して相対パスを取得
+          const childPath = String(childNode.path);
+          const rootPrefix = "root > ";
+          const relativePath = childPath.startsWith(rootPrefix)
+            ? childPath.slice(rootPrefix.length)
+            : childPath;
+
           nodes.push({
             ...childNode,
             path: createNodePath(
-              `root > ${tagName}[${index}] > ${childNode.tagName}`,
+              `root > ${tagName}[${index}] > ${relativePath}`,
             ),
           });
         }

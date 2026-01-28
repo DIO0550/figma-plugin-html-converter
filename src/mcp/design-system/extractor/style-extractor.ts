@@ -66,6 +66,22 @@ export interface CategorizedStyles {
 }
 
 // =============================================================================
+// 定数
+// =============================================================================
+
+/** RGB値の最大値（0-255） */
+const RGB_MAX_VALUE = 255;
+
+/** 16進数の基数 */
+const HEX_RADIX = 16;
+
+/** 16進数の桁数（1バイト = 2桁） */
+const HEX_PAD_LENGTH = 2;
+
+/** パーセント値の乗数 */
+const PERCENTAGE_MULTIPLIER = 100;
+
+// =============================================================================
 // StyleExtractor クラス
 // =============================================================================
 
@@ -96,9 +112,9 @@ export class StyleExtractor {
     if (firstPaint.type === "SOLID") {
       const color = firstPaint.color;
       const rgb = {
-        r: Math.round(color.r * 255),
-        g: Math.round(color.g * 255),
-        b: Math.round(color.b * 255),
+        r: Math.round(color.r * RGB_MAX_VALUE),
+        g: Math.round(color.g * RGB_MAX_VALUE),
+        b: Math.round(color.b * RGB_MAX_VALUE),
       };
       const hex = this.rgbToHex(rgb.r, rgb.g, rgb.b);
 
@@ -118,10 +134,10 @@ export class StyleExtractor {
     ) {
       const gradientStops = firstPaint.gradientStops.map((stop) => ({
         position: stop.position,
-        color: this.rgbaToHex(
-          Math.round(stop.color.r * 255),
-          Math.round(stop.color.g * 255),
-          Math.round(stop.color.b * 255),
+        color: this.rgbaToColorString(
+          Math.round(stop.color.r * RGB_MAX_VALUE),
+          Math.round(stop.color.g * RGB_MAX_VALUE),
+          Math.round(stop.color.b * RGB_MAX_VALUE),
           stop.color.a,
         ),
       }));
@@ -240,7 +256,12 @@ export class StyleExtractor {
     return `#${this.toHex(r)}${this.toHex(g)}${this.toHex(b)}`;
   }
 
-  private rgbaToHex(r: number, g: number, b: number, a: number): string {
+  private rgbaToColorString(
+    r: number,
+    g: number,
+    b: number,
+    a: number,
+  ): string {
     if (a === 1) {
       return this.rgbToHex(r, g, b);
     }
@@ -248,7 +269,7 @@ export class StyleExtractor {
   }
 
   private toHex(n: number): string {
-    return n.toString(16).padStart(2, "0");
+    return n.toString(HEX_RADIX).padStart(HEX_PAD_LENGTH, "0");
   }
 
   private convertEffect(effect: Effect): EffectInfo {
@@ -304,18 +325,19 @@ export class StyleExtractor {
           cssValue: `blur(${effect.radius}px)`,
         };
       }
-      default:
-        return {
-          ...baseInfo,
-          type: "drop-shadow",
-        };
+      default: {
+        const _exhaustiveCheck: never = effect;
+        throw new Error(
+          `[style-extractor] 未対応のエフェクトタイプを検出しました: ${(effect as Effect).type}`,
+        );
+      }
     }
   }
 
   private effectColorToCss(color: RGBA): string {
-    const r = Math.round(color.r * 255);
-    const g = Math.round(color.g * 255);
-    const b = Math.round(color.b * 255);
+    const r = Math.round(color.r * RGB_MAX_VALUE);
+    const g = Math.round(color.g * RGB_MAX_VALUE);
+    const b = Math.round(color.b * RGB_MAX_VALUE);
     return `rgba(${r}, ${g}, ${b}, ${color.a})`;
   }
 
@@ -336,7 +358,7 @@ export class StyleExtractor {
 
     if (colorInfo.type === "gradient" && colorInfo.gradientStops) {
       const stops = colorInfo.gradientStops
-        .map((s) => `${s.color} ${s.position * 100}%`)
+        .map((s) => `${s.color} ${s.position * PERCENTAGE_MULTIPLIER}%`)
         .join(", ");
       return { "background-image": `linear-gradient(${stops})` };
     }

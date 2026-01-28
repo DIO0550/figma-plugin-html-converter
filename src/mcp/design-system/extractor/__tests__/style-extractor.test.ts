@@ -1,0 +1,305 @@
+import { describe, it, expect } from "vitest";
+import { StyleExtractor } from "../style-extractor";
+import type {
+  PaintStyleInfo,
+  TextStyleInfo,
+  EffectStyleInfo,
+  DesignSystemStyle,
+} from "../../types";
+import { createDesignSystemStyleId } from "../../types";
+
+describe("StyleExtractor", () => {
+  const createMockPaintStyle = (
+    overrides: Partial<PaintStyleInfo> = {},
+  ): PaintStyleInfo => ({
+    id: createDesignSystemStyleId("S:paint1"),
+    name: "Primary/Blue",
+    type: "PAINT",
+    key: "paint-key-1",
+    paints: [{ type: "SOLID", color: { r: 0, g: 0.4, b: 1 }, opacity: 1 }],
+    ...overrides,
+  });
+
+  const createMockTextStyle = (
+    overrides: Partial<TextStyleInfo> = {},
+  ): TextStyleInfo => ({
+    id: createDesignSystemStyleId("S:text1"),
+    name: "Heading/H1",
+    type: "TEXT",
+    key: "text-key-1",
+    fontFamily: "Inter",
+    fontSize: 32,
+    fontWeight: 700,
+    lineHeight: 40,
+    letterSpacing: 0,
+    ...overrides,
+  });
+
+  const createMockEffectStyle = (
+    overrides: Partial<EffectStyleInfo> = {},
+  ): EffectStyleInfo => ({
+    id: createDesignSystemStyleId("S:effect1"),
+    name: "Shadow/Medium",
+    type: "EFFECT",
+    key: "effect-key-1",
+    effects: [
+      {
+        type: "DROP_SHADOW",
+        color: { r: 0, g: 0, b: 0, a: 0.25 },
+        offset: { x: 0, y: 4 },
+        radius: 8,
+        spread: 0,
+        visible: true,
+        blendMode: "NORMAL",
+      },
+    ],
+    ...overrides,
+  });
+
+  describe("extractColorInfo", () => {
+    it("ソリッドカラーからカラー情報を抽出する", () => {
+      const style = createMockPaintStyle({
+        paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
+      });
+
+      const extractor = StyleExtractor.create();
+      const colorInfo = extractor.extractColorInfo(style);
+
+      expect(colorInfo).toEqual({
+        type: "solid",
+        hex: "#ff0000",
+        rgb: { r: 255, g: 0, b: 0 },
+        opacity: 1,
+      });
+    });
+
+    it("透明度付きカラーを抽出する", () => {
+      const style = createMockPaintStyle({
+        paints: [{ type: "SOLID", color: { r: 0, g: 0, b: 1 }, opacity: 0.5 }],
+      });
+
+      const extractor = StyleExtractor.create();
+      const colorInfo = extractor.extractColorInfo(style);
+
+      expect(colorInfo?.opacity).toBe(0.5);
+    });
+
+    it("グラデーションからグラデーション情報を抽出する", () => {
+      const style = createMockPaintStyle({
+        paints: [
+          {
+            type: "GRADIENT_LINEAR",
+            gradientStops: [
+              { position: 0, color: { r: 1, g: 0, b: 0, a: 1 } },
+              { position: 1, color: { r: 0, g: 0, b: 1, a: 1 } },
+            ],
+            gradientTransform: [
+              [1, 0, 0],
+              [0, 1, 0],
+            ],
+          },
+        ],
+      });
+
+      const extractor = StyleExtractor.create();
+      const colorInfo = extractor.extractColorInfo(style);
+
+      expect(colorInfo?.type).toBe("gradient");
+    });
+
+    it("空のpaintsの場合nullを返す", () => {
+      const style = createMockPaintStyle({ paints: [] });
+
+      const extractor = StyleExtractor.create();
+      const colorInfo = extractor.extractColorInfo(style);
+
+      expect(colorInfo).toBeNull();
+    });
+  });
+
+  describe("extractTypographyInfo", () => {
+    it("テキストスタイルからタイポグラフィ情報を抽出する", () => {
+      const style = createMockTextStyle();
+
+      const extractor = StyleExtractor.create();
+      const typographyInfo = extractor.extractTypographyInfo(style);
+
+      expect(typographyInfo).toEqual({
+        fontFamily: "Inter",
+        fontSize: 32,
+        fontWeight: 700,
+        lineHeight: 40,
+        letterSpacing: 0,
+        cssValue: "700 32px/40px Inter",
+      });
+    });
+
+    it("AUTO lineHeightの場合normalを使用する", () => {
+      const style = createMockTextStyle({ lineHeight: "AUTO" });
+
+      const extractor = StyleExtractor.create();
+      const typographyInfo = extractor.extractTypographyInfo(style);
+
+      expect(typographyInfo.cssValue).toBe("700 32px/normal Inter");
+    });
+  });
+
+  describe("extractEffectInfo", () => {
+    it("ドロップシャドウからエフェクト情報を抽出する", () => {
+      const style = createMockEffectStyle();
+
+      const extractor = StyleExtractor.create();
+      const effectInfo = extractor.extractEffectInfo(style);
+
+      expect(effectInfo).toHaveLength(1);
+      expect(effectInfo[0]).toMatchObject({
+        type: "drop-shadow",
+        offsetX: 0,
+        offsetY: 4,
+        blurRadius: 8,
+      });
+    });
+
+    it("複数のエフェクトを抽出する", () => {
+      const style = createMockEffectStyle({
+        effects: [
+          {
+            type: "DROP_SHADOW",
+            color: { r: 0, g: 0, b: 0, a: 0.1 },
+            offset: { x: 0, y: 2 },
+            radius: 4,
+            spread: 0,
+            visible: true,
+            blendMode: "NORMAL",
+          },
+          {
+            type: "DROP_SHADOW",
+            color: { r: 0, g: 0, b: 0, a: 0.2 },
+            offset: { x: 0, y: 8 },
+            radius: 16,
+            spread: 0,
+            visible: true,
+            blendMode: "NORMAL",
+          },
+        ],
+      });
+
+      const extractor = StyleExtractor.create();
+      const effectInfo = extractor.extractEffectInfo(style);
+
+      expect(effectInfo).toHaveLength(2);
+    });
+
+    it("非表示のエフェクトはスキップする", () => {
+      const style = createMockEffectStyle({
+        effects: [
+          {
+            type: "DROP_SHADOW",
+            color: { r: 0, g: 0, b: 0, a: 0.1 },
+            offset: { x: 0, y: 2 },
+            radius: 4,
+            spread: 0,
+            visible: false,
+            blendMode: "NORMAL",
+          },
+        ],
+      });
+
+      const extractor = StyleExtractor.create();
+      const effectInfo = extractor.extractEffectInfo(style);
+
+      expect(effectInfo).toHaveLength(0);
+    });
+  });
+
+  describe("categorizeStyles", () => {
+    it("スタイルをカテゴリ別に分類する", () => {
+      const styles: DesignSystemStyle[] = [
+        createMockPaintStyle({ name: "Colors/Primary" }),
+        createMockPaintStyle({
+          id: createDesignSystemStyleId("S:paint2"),
+          name: "Colors/Secondary",
+        }),
+        createMockTextStyle({ name: "Typography/Heading" }),
+        createMockEffectStyle({ name: "Effects/Shadow" }),
+      ];
+
+      const extractor = StyleExtractor.create();
+      const categorized = extractor.categorizeStyles(styles);
+
+      expect(categorized.paint).toHaveLength(2);
+      expect(categorized.text).toHaveLength(1);
+      expect(categorized.effect).toHaveLength(1);
+      expect(categorized.grid).toHaveLength(0);
+    });
+  });
+
+  describe("findMatchingStyle", () => {
+    it("名前パターンでスタイルを検索する", () => {
+      const styles: DesignSystemStyle[] = [
+        createMockPaintStyle({ name: "Colors/Primary/Blue" }),
+        createMockPaintStyle({
+          id: createDesignSystemStyleId("S:paint2"),
+          name: "Colors/Primary/Red",
+        }),
+        createMockPaintStyle({
+          id: createDesignSystemStyleId("S:paint3"),
+          name: "Colors/Secondary/Gray",
+        }),
+      ];
+
+      const extractor = StyleExtractor.create();
+      const matches = extractor.findMatchingStyles(styles, "Primary");
+
+      expect(matches).toHaveLength(2);
+      expect(matches.every((s) => s.name.includes("Primary"))).toBe(true);
+    });
+
+    it("大文字小文字を区別しない検索", () => {
+      const styles: DesignSystemStyle[] = [
+        createMockPaintStyle({ name: "Colors/PRIMARY/Blue" }),
+      ];
+
+      const extractor = StyleExtractor.create();
+      const matches = extractor.findMatchingStyles(styles, "primary");
+
+      expect(matches).toHaveLength(1);
+    });
+  });
+
+  describe("toCssProperties", () => {
+    it("ペイントスタイルをCSS プロパティに変換する", () => {
+      const style = createMockPaintStyle({
+        paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
+      });
+
+      const extractor = StyleExtractor.create();
+      const cssProps = extractor.toCssProperties(style);
+
+      expect(cssProps).toHaveProperty("background-color");
+      expect(cssProps["background-color"]).toBe("#ff0000");
+    });
+
+    it("テキストスタイルをCSS プロパティに変換する", () => {
+      const style = createMockTextStyle();
+
+      const extractor = StyleExtractor.create();
+      const cssProps = extractor.toCssProperties(style);
+
+      expect(cssProps).toHaveProperty("font-family");
+      expect(cssProps).toHaveProperty("font-size");
+      expect(cssProps).toHaveProperty("font-weight");
+      expect(cssProps["font-family"]).toBe("Inter");
+      expect(cssProps["font-size"]).toBe("32px");
+    });
+
+    it("エフェクトスタイルをCSS プロパティに変換する", () => {
+      const style = createMockEffectStyle();
+
+      const extractor = StyleExtractor.create();
+      const cssProps = extractor.toCssProperties(style);
+
+      expect(cssProps).toHaveProperty("box-shadow");
+    });
+  });
+});

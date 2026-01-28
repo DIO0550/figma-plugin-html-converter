@@ -115,7 +115,13 @@ export class DesignSystemApplier {
       }
 
       try {
-        // 実際の適用処理（ここでは適用成功とする）
+        // TODO: 実際のFigmaノードへの適用処理を実装する
+        // 現時点ではマッチの記録のみ行い、FigmaNodeConfigへの適用は
+        // applyToFigmaNodeConfig()を個別に呼び出して行う
+        this.applyToFigmaNodeConfig(match, {
+          type: "FRAME",
+          name: match.elementPath,
+        });
         appliedCount++;
       } catch (error) {
         errors.push({

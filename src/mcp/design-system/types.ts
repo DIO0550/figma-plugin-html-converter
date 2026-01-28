@@ -348,13 +348,16 @@ export interface DesignSystemSettings {
   customRules: MappingRule[];
 }
 
+/** デフォルトの最小信頼度閾値（50%: 半分以上の確信があるマッピングを表示） */
+const DEFAULT_MIN_CONFIDENCE = 0.5;
+
 /**
  * デフォルト設定
  */
 export const DEFAULT_DESIGN_SYSTEM_SETTINGS: DesignSystemSettings = {
   enabled: true,
   autoApply: false,
-  minConfidence: 0.5,
+  minConfidence: DEFAULT_MIN_CONFIDENCE,
   useAIOptimization: true,
   customRules: [],
 };
@@ -387,6 +390,16 @@ export function createMappingRuleId(value: string): MappingRuleId {
 }
 
 /**
+ * ID生成用の定数
+ */
+const UUID_ARRAY_SIZE = 4;
+const HEX_PAD_LENGTH = 8;
+const HEX_RADIX = 16;
+const BASE36_RADIX = 36;
+const RANDOM_STRING_START = 2;
+const RANDOM_STRING_END = 8;
+
+/**
  * ID生成用のカウンター
  */
 let ruleIdCounter = 0;
@@ -406,16 +419,18 @@ export function generateMappingRuleId(): MappingRuleId {
     typeof crypto !== "undefined" &&
     typeof crypto.getRandomValues === "function"
   ) {
-    const array = new Uint32Array(4);
+    const array = new Uint32Array(UUID_ARRAY_SIZE);
     crypto.getRandomValues(array);
     const randomHex = Array.from(array)
-      .map((n) => n.toString(16).padStart(8, "0"))
+      .map((n) => n.toString(HEX_RADIX).padStart(HEX_PAD_LENGTH, "0"))
       .join("");
     return createMappingRuleId(`rule-${randomHex}`);
   }
 
-  const timestamp = Date.now().toString(36);
-  const counter = (ruleIdCounter++).toString(36);
-  const random = Math.random().toString(36).substring(2, 8);
+  const timestamp = Date.now().toString(BASE36_RADIX);
+  const counter = (ruleIdCounter++).toString(BASE36_RADIX);
+  const random = Math.random()
+    .toString(BASE36_RADIX)
+    .substring(RANDOM_STRING_START, RANDOM_STRING_END);
   return createMappingRuleId(`rule-${timestamp}-${counter}-${random}`);
 }

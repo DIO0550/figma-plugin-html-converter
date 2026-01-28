@@ -16,6 +16,15 @@ import { DEFAULT_DESIGN_SYSTEM_SETTINGS } from "../types";
  */
 export const STORAGE_KEY = "design-system-settings";
 
+// =============================================================================
+// バリデーション定数
+// =============================================================================
+
+/** 信頼度の最小値 */
+const MIN_CONFIDENCE_VALUE = 0;
+/** 信頼度の最大値 */
+const MAX_CONFIDENCE_VALUE = 1;
+
 /**
  * 検証結果
  */
@@ -62,8 +71,16 @@ export class DesignSystemSettingsManager {
    * 設定を保存する
    */
   async save(settings: DesignSystemSettings): Promise<void> {
-    await figma.clientStorage.setAsync(STORAGE_KEY, settings);
-    this.currentSettings = { ...settings };
+    try {
+      await figma.clientStorage.setAsync(STORAGE_KEY, settings);
+      this.currentSettings = { ...settings };
+    } catch (error) {
+      console.error(
+        "[DesignSystemSettingsManager] 設定の保存に失敗:",
+        error instanceof Error ? error.message : error,
+      );
+      throw error;
+    }
   }
 
   /**
@@ -129,23 +146,26 @@ export class DesignSystemSettingsManager {
     const errors: string[] = [];
 
     // minConfidenceの検証
-    if (settings.minConfidence < 0 || settings.minConfidence > 1) {
-      errors.push("minConfidence must be between 0 and 1");
+    if (
+      settings.minConfidence < MIN_CONFIDENCE_VALUE ||
+      settings.minConfidence > MAX_CONFIDENCE_VALUE
+    ) {
+      errors.push("minConfidenceは0から1の範囲で指定してください");
     }
 
     // カスタムルールの検証
     for (const rule of settings.customRules) {
       if (!rule.id) {
-        errors.push("Custom rule must have an id");
+        errors.push("カスタムルールにはIDが必要です");
       }
       if (!rule.name) {
-        errors.push("Custom rule must have a name");
+        errors.push("カスタムルールには名前が必要です");
       }
       if (!rule.condition) {
-        errors.push("Custom rule must have a condition");
+        errors.push("カスタムルールには条件が必要です");
       }
       if (!rule.action) {
-        errors.push("Custom rule must have an action");
+        errors.push("カスタムルールにはアクションが必要です");
       }
     }
 

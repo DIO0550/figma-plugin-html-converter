@@ -44,9 +44,16 @@ export interface TypographyInfo {
 
 /**
  * エフェクト情報
+ * NOTE: typeにstringを含めることで、Figma APIで新しく追加された
+ * エフェクトタイプ（NOISE, TEXTURE, GLASS等）にも対応可能
  */
 export interface EffectInfo {
-  type: "drop-shadow" | "inner-shadow" | "layer-blur" | "background-blur";
+  type:
+    | "drop-shadow"
+    | "inner-shadow"
+    | "layer-blur"
+    | "background-blur"
+    | string;
   offsetX?: number;
   offsetY?: number;
   blurRadius?: number;
@@ -326,10 +333,13 @@ export class StyleExtractor {
         };
       }
       default: {
-        const _exhaustiveCheck: never = effect;
-        throw new Error(
-          `[style-extractor] 未対応のエフェクトタイプを検出しました: ${(effect as Effect).type}`,
-        );
+        // Figma APIで新しく追加されたエフェクトタイプ（NOISE, TEXTURE, GLASS等）は
+        // 現時点でCSS変換をサポートしていないため、基本情報のみ返す
+        return {
+          ...baseInfo,
+          type: (effect as Effect).type.toLowerCase() as EffectInfo["type"],
+          cssValue: "",
+        };
       }
     }
   }

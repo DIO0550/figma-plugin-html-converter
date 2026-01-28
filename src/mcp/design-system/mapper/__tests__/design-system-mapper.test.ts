@@ -13,6 +13,30 @@ import {
   createMappingRuleId,
 } from "../../types";
 
+// =============================================================================
+// テストデータ用の定数
+// =============================================================================
+
+/** テスト用タイポグラフィ - 見出しフォントサイズ */
+const TEST_HEADING_FONT_SIZE = 32;
+/** テスト用タイポグラフィ - 見出し行高さ */
+const TEST_HEADING_LINE_HEIGHT = 40;
+/** テスト用タイポグラフィ - 見出しフォントウェイト */
+const TEST_HEADING_FONT_WEIGHT = 700;
+/** テスト用タイポグラフィ - 本文フォントサイズ */
+const TEST_BODY_FONT_SIZE = 16;
+/** テスト用タイポグラフィ - 本文行高さ */
+const TEST_BODY_LINE_HEIGHT = 24;
+/** テスト用タイポグラフィ - 本文フォントウェイト */
+const TEST_BODY_FONT_WEIGHT = 400;
+
+/** テスト用ルール優先度 - 低 */
+const TEST_PRIORITY_LOW = 50;
+/** テスト用ルール優先度 - 標準 */
+const TEST_PRIORITY_NORMAL = 100;
+/** テスト用ルール優先度 - 高 */
+const TEST_PRIORITY_HIGH = 200;
+
 describe("DesignSystemMapper", () => {
   // テストデータのファクトリ
   const createMockDesignSystem = (): DesignSystem => ({
@@ -39,9 +63,9 @@ describe("DesignSystemMapper", () => {
         type: "TEXT",
         key: "key3",
         fontFamily: "Inter",
-        fontSize: 32,
-        fontWeight: 700,
-        lineHeight: 40,
+        fontSize: TEST_HEADING_FONT_SIZE,
+        fontWeight: TEST_HEADING_FONT_WEIGHT,
+        lineHeight: TEST_HEADING_LINE_HEIGHT,
       } as TextStyleInfo,
       {
         id: createDesignSystemStyleId("S:text-body"),
@@ -49,9 +73,9 @@ describe("DesignSystemMapper", () => {
         type: "TEXT",
         key: "key4",
         fontFamily: "Inter",
-        fontSize: 16,
-        fontWeight: 400,
-        lineHeight: 24,
+        fontSize: TEST_BODY_FONT_SIZE,
+        fontWeight: TEST_BODY_FONT_WEIGHT,
+        lineHeight: TEST_BODY_LINE_HEIGHT,
       } as TextStyleInfo,
     ],
     components: [
@@ -74,7 +98,7 @@ describe("DesignSystemMapper", () => {
         applyStyleName: "Typography/Heading/H1",
         category: "typography",
       },
-      priority: 100,
+      priority: TEST_PRIORITY_NORMAL,
       enabled: true,
       isCustom: false,
     },
@@ -86,7 +110,7 @@ describe("DesignSystemMapper", () => {
         applyStyleName: "Typography/Body",
         category: "typography",
       },
-      priority: 100,
+      priority: TEST_PRIORITY_NORMAL,
       enabled: true,
       isCustom: false,
     },
@@ -98,7 +122,7 @@ describe("DesignSystemMapper", () => {
         applyComponentName: "Button/Primary",
         category: "layout",
       },
-      priority: 200,
+      priority: TEST_PRIORITY_HIGH,
       enabled: true,
       isCustom: false,
     },
@@ -123,7 +147,7 @@ describe("DesignSystemMapper", () => {
         name: "Custom Rule",
         condition: { tagName: "div", className: "custom" },
         action: { applyStyleName: "Colors/Primary", category: "color" },
-        priority: 50,
+        priority: TEST_PRIORITY_LOW,
         enabled: true,
         isCustom: true,
       };
@@ -203,7 +227,7 @@ describe("DesignSystemMapper", () => {
             applyStyleName: "Typography/Heading/H1",
             category: "typography",
           },
-          priority: 100,
+          priority: TEST_PRIORITY_NORMAL,
           enabled: false,
           isCustom: false,
         },
@@ -226,7 +250,7 @@ describe("DesignSystemMapper", () => {
           name: "Low Priority",
           condition: { tagName: "div" },
           action: { applyStyleName: "Colors/Secondary", category: "color" },
-          priority: 50,
+          priority: TEST_PRIORITY_LOW,
           enabled: true,
           isCustom: false,
         },
@@ -235,7 +259,7 @@ describe("DesignSystemMapper", () => {
           name: "High Priority",
           condition: { tagName: "div" },
           action: { applyStyleName: "Colors/Primary", category: "color" },
-          priority: 100,
+          priority: TEST_PRIORITY_NORMAL,
           enabled: true,
           isCustom: false,
         },
@@ -329,7 +353,7 @@ describe("DesignSystemMapper", () => {
             attributes: { type: "submit" },
           },
           action: { applyStyleName: "Colors/Primary", category: "color" },
-          priority: 100,
+          priority: TEST_PRIORITY_NORMAL,
           enabled: true,
           isCustom: false,
         },
@@ -356,7 +380,7 @@ describe("DesignSystemMapper", () => {
             attributes: { type: "submit" },
           },
           action: { applyStyleName: "Colors/Primary", category: "color" },
-          priority: 100,
+          priority: TEST_PRIORITY_NORMAL,
           enabled: true,
           isCustom: false,
         },

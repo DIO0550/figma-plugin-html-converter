@@ -229,7 +229,7 @@ describe("DesignSystemSettingsManager", () => {
       const result = manager.validate(settings);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors.some((e) => e.includes("minConfidence"))).toBe(true);
+      expect(result.errors.some((e) => e.includes("0から1の範囲"))).toBe(true);
     });
   });
 });

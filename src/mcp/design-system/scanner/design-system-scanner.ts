@@ -20,6 +20,26 @@ import {
   createDesignSystemComponentId,
 } from "../types";
 
+// =============================================================================
+// CSS font-weight 標準値（100-900の9段階）
+// =============================================================================
+
+/** @see https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight */
+const CSS_FONT_WEIGHTS: Record<string, number> = {
+  Thin: 100,
+  ExtraLight: 200,
+  Light: 300,
+  Regular: 400,
+  Medium: 500,
+  SemiBold: 600,
+  Bold: 700,
+  ExtraBold: 800,
+  Black: 900,
+};
+
+/** デフォルトのフォントウェイト（Regular） */
+const DEFAULT_FONT_WEIGHT = 400;
+
 /**
  * デザインシステムスキャナークラス
  */
@@ -66,6 +86,12 @@ export class DesignSystemScanner {
 
   /**
    * コンポーネントのみをスキャンする
+   *
+   * NOTE: 大規模デザインシステムではコンポーネント数が多くなる可能性がある。
+   * パフォーマンスが問題になる場合は、以下の最適化を検討すること：
+   * - キャッシュの有効期限設定
+   * - 必要なプロパティのみの遅延評価
+   * - ページネーション/バッチ処理の導入
    */
   async scanComponents(): Promise<DesignSystemComponent[]> {
     const components = figma.root.findAllWithCriteria({
@@ -223,25 +249,13 @@ export class DesignSystemScanner {
   }
 
   private getFontWeight(fontStyle: string): number {
-    const weightMap: Record<string, number> = {
-      Thin: 100,
-      ExtraLight: 200,
-      Light: 300,
-      Regular: 400,
-      Medium: 500,
-      SemiBold: 600,
-      Bold: 700,
-      ExtraBold: 800,
-      Black: 900,
-    };
-
-    for (const [styleName, weight] of Object.entries(weightMap)) {
+    for (const [styleName, weight] of Object.entries(CSS_FONT_WEIGHTS)) {
       if (fontStyle.includes(styleName)) {
         return weight;
       }
     }
 
-    return 400; // デフォルトはRegular
+    return DEFAULT_FONT_WEIGHT;
   }
 
   private getLineHeight(lineHeight: LineHeight): number | "AUTO" {
@@ -252,10 +266,8 @@ export class DesignSystemScanner {
   }
 
   private getLetterSpacing(letterSpacing: LetterSpacing): number {
-    if (letterSpacing.unit === "PERCENT") {
-      // パーセントの場合はそのまま返す（後で計算が必要）
-      return letterSpacing.value;
-    }
+    // TODO: PERCENT単位の場合、fontSize基準のpx変換を実装する
+    // 現時点ではPERCENT/PIXELSどちらも数値をそのまま返す
     return letterSpacing.value;
   }
 }

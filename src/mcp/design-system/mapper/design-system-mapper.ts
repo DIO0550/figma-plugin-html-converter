@@ -15,6 +15,34 @@ import type {
 } from "../types";
 import { createMappingRuleId } from "../types";
 
+// =============================================================================
+// 信頼度計算の重み付け定数
+// =============================================================================
+
+/** 信頼度のベースライン */
+const BASE_CONFIDENCE = 0.5;
+/** タグ名マッチの重み */
+const TAG_NAME_WEIGHT = 0.1;
+/** クラス名マッチの重み */
+const CLASS_NAME_WEIGHT = 0.15;
+/** 属性条件1件あたりの重み */
+const ATTRIBUTE_WEIGHT_PER_ITEM = 0.1;
+/** スタイル条件1件あたりの重み */
+const STYLE_CONDITION_WEIGHT_PER_ITEM = 0.1;
+/** スタイル/コンポーネント解決ボーナス */
+const STYLE_RESOLVED_BONUS = 0.1;
+/** 信頼度の最大値 */
+const MAX_CONFIDENCE = 1.0;
+
+// =============================================================================
+// デフォルトルール優先度
+// =============================================================================
+
+/** タグ名のみの基本ルール優先度 */
+const PRIORITY_TAG_ONLY = 100;
+/** タグ名＋クラス名の複合ルール優先度 */
+const PRIORITY_TAG_AND_CLASS = 150;
+
 /**
  * マッチング対象の要素情報
  */
@@ -40,7 +68,8 @@ export class DesignSystemMapper {
 
   private constructor(designSystem: DesignSystem, rules: MappingRule[] = []) {
     this.designSystem = designSystem;
-    this.rules = [...rules];
+    this.rules = rules.map((rule) => ({ ...rule }));
+    this.sortRulesByPriority();
   }
 
   /**
@@ -58,7 +87,7 @@ export class DesignSystemMapper {
    */
   static getDefaultRules(): MappingRule[] {
     return [
-      // 見出しスタイル
+      // 見出しスタイル（タグ名のみ: 基本優先度）
       {
         id: createMappingRuleId("default-h1"),
         name: "H1 Heading",
@@ -67,7 +96,7 @@ export class DesignSystemMapper {
           applyStyleName: "Typography/Heading/H1",
           category: "typography",
         },
-        priority: 100,
+        priority: PRIORITY_TAG_ONLY,
         enabled: true,
         isCustom: false,
       },
@@ -79,7 +108,7 @@ export class DesignSystemMapper {
           applyStyleName: "Typography/Heading/H2",
           category: "typography",
         },
-        priority: 100,
+        priority: PRIORITY_TAG_ONLY,
         enabled: true,
         isCustom: false,
       },
@@ -91,7 +120,7 @@ export class DesignSystemMapper {
           applyStyleName: "Typography/Heading/H3",
           category: "typography",
         },
-        priority: 100,
+        priority: PRIORITY_TAG_ONLY,
         enabled: true,
         isCustom: false,
       },
@@ -101,7 +130,7 @@ export class DesignSystemMapper {
         name: "Paragraph",
         condition: { tagName: "p" },
         action: { applyStyleName: "Typography/Body", category: "typography" },
-        priority: 100,
+        priority: PRIORITY_TAG_ONLY,
         enabled: true,
         isCustom: false,
       },
@@ -111,17 +140,17 @@ export class DesignSystemMapper {
         name: "Link",
         condition: { tagName: "a" },
         action: { applyStyleName: "Typography/Link", category: "typography" },
-        priority: 100,
+        priority: PRIORITY_TAG_ONLY,
         enabled: true,
         isCustom: false,
       },
-      // ボタンスタイル
+      // ボタンスタイル（コンポーネント適用: 複合条件優先度）
       {
         id: createMappingRuleId("default-button"),
         name: "Button",
         condition: { tagName: "button" },
         action: { applyComponentName: "Button/Default", category: "layout" },
-        priority: 100,
+        priority: PRIORITY_TAG_AND_CLASS,
         enabled: true,
         isCustom: false,
       },
@@ -167,10 +196,8 @@ export class DesignSystemMapper {
   matchElement(element: ElementInfo): MappingMatch[] {
     const matches: MappingMatch[] = [];
 
-    // 優先度順にソートされたルールに対してマッチング
-    const sortedRules = this.getSortedRules();
-
-    for (const rule of sortedRules) {
+    // this.rulesは常にソート済みの状態で保持されている
+    for (const rule of this.rules) {
       if (!rule.enabled) {
         continue;
       }
@@ -213,10 +240,6 @@ export class DesignSystemMapper {
 
   private sortRulesByPriority(): void {
     this.rules.sort((a, b) => b.priority - a.priority);
-  }
-
-  private getSortedRules(): MappingRule[] {
-    return [...this.rules].sort((a, b) => b.priority - a.priority);
   }
 
   private doesRuleMatch(rule: MappingRule, element: ElementInfo): boolean {
@@ -320,34 +343,37 @@ export class DesignSystemMapper {
     rule: MappingRule,
     _element: ElementInfo,
   ): number {
-    let confidence = 0.5; // ベースライン
+    let confidence = BASE_CONFIDENCE;
 
     const { condition } = rule;
 
     // 条件が多いほど信頼度が高い
     if (condition.tagName) {
-      confidence += 0.1;
+      confidence += TAG_NAME_WEIGHT;
     }
     if (condition.className) {
-      confidence += 0.15;
+      confidence += CLASS_NAME_WEIGHT;
     }
     if (condition.attributes && Object.keys(condition.attributes).length > 0) {
-      confidence += 0.1 * Object.keys(condition.attributes).length;
+      confidence +=
+        ATTRIBUTE_WEIGHT_PER_ITEM * Object.keys(condition.attributes).length;
     }
     if (
       condition.styleCondition &&
       Object.keys(condition.styleCondition).length > 0
     ) {
-      confidence += 0.1 * Object.keys(condition.styleCondition).length;
+      confidence +=
+        STYLE_CONDITION_WEIGHT_PER_ITEM *
+        Object.keys(condition.styleCondition).length;
     }
 
     // スタイル/コンポーネントが解決できた場合
     const resolvedStyle = this.resolveStyle(rule);
     const resolvedComponent = this.resolveComponent(rule);
     if (resolvedStyle || resolvedComponent) {
-      confidence += 0.1;
+      confidence += STYLE_RESOLVED_BONUS;
     }
 
-    return Math.min(confidence, 1.0);
+    return Math.min(confidence, MAX_CONFIDENCE);
   }
 }

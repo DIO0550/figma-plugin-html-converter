@@ -38,6 +38,25 @@ const FALLBACK_RESPONSE: AIOptimizationResponse = {
   processingTimeMs: 0,
 };
 
+// =============================================================================
+// バリデーション信頼度の重み付け定数
+// =============================================================================
+
+/** バリデーション信頼度のベースライン */
+const BASE_VALIDATION_CONFIDENCE = 0.5;
+/** タグ名がスタイル名に含まれる場合の重み */
+const TAG_NAME_MATCH_WEIGHT = 0.2;
+/** タイポグラフィスタイルとテキスト要素の対応の重み */
+const TYPOGRAPHY_MATCH_WEIGHT = 0.2;
+/** 見出しレベル一致の重み */
+const HEADING_LEVEL_MATCH_WEIGHT = 0.1;
+/** バリデーション信頼度の最大値 */
+const MAX_VALIDATION_CONFIDENCE = 1.0;
+/** スタイル未発見時の信頼度 */
+const STYLE_NOT_FOUND_CONFIDENCE = 0.2;
+/** バリデーション有効/無効の閾値 */
+const VALIDATION_THRESHOLD = 0.5;
+
 /**
  * マッピング最適化クラス
  */
@@ -82,7 +101,11 @@ export class MappingOptimizer {
         },
       );
       return response;
-    } catch {
+    } catch (error) {
+      console.error(
+        "[MappingOptimizer] MCP最適化リクエスト失敗:",
+        error instanceof Error ? error.message : error,
+      );
       return FALLBACK_RESPONSE;
     }
   }
@@ -136,7 +159,7 @@ export class MappingOptimizer {
     if (!styleExists) {
       return {
         isValid: false,
-        confidence: 0.2,
+        confidence: STYLE_NOT_FOUND_CONFIDENCE,
         reason: `Style "${styleName}" not found in design system`,
       };
     }
@@ -149,10 +172,10 @@ export class MappingOptimizer {
     );
 
     return {
-      isValid: confidence > 0.5,
+      isValid: confidence > VALIDATION_THRESHOLD,
       confidence,
       reason:
-        confidence > 0.5
+        confidence > VALIDATION_THRESHOLD
           ? "Mapping appears valid based on element type and style category"
           : "Mapping may not be optimal for this element type",
     };
@@ -167,14 +190,14 @@ export class MappingOptimizer {
     styleName: string,
     _designSystem: DesignSystem,
   ): number {
-    let confidence = 0.5;
+    let confidence = BASE_VALIDATION_CONFIDENCE;
 
     // スタイル名にタグ名が含まれているか
     const styleNameLower = styleName.toLowerCase();
     const tagNameLower = element.tagName.toLowerCase();
 
     if (styleNameLower.includes(tagNameLower)) {
-      confidence += 0.2;
+      confidence += TAG_NAME_MATCH_WEIGHT;
     }
 
     // タイポグラフィスタイルとテキスト要素の対応
@@ -187,7 +210,7 @@ export class MappingOptimizer {
       styleNameLower.includes("text");
 
     if (isTextElement && isTypographyStyle) {
-      confidence += 0.2;
+      confidence += TYPOGRAPHY_MATCH_WEIGHT;
     }
 
     // 見出しレベルの一致
@@ -195,11 +218,11 @@ export class MappingOptimizer {
     if (headingMatch) {
       const level = headingMatch[1];
       if (styleNameLower.includes(`h${level}`)) {
-        confidence += 0.1;
+        confidence += HEADING_LEVEL_MATCH_WEIGHT;
       }
     }
 
-    return Math.min(confidence, 1.0);
+    return Math.min(confidence, MAX_VALIDATION_CONFIDENCE);
   }
 
   private serializeDesignSystem(

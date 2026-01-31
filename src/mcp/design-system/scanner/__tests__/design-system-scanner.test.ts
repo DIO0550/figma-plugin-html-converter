@@ -73,15 +73,20 @@ describe("DesignSystemScanner", () => {
 
   describe("scan", () => {
     it("空のデザインシステムを返す（スタイル・コンポーネントがない場合）", async () => {
+      // Arrange
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const result = await scanner.scan();
 
+      // Assert
       expect(result.styles).toEqual([]);
       expect(result.components).toEqual([]);
       expect(result.scannedAt).toBeInstanceOf(Date);
     });
 
     it("ペイントスタイルをスキャンする", async () => {
+      // Arrange
       const mockPaintStyles: MockPaintStyle[] = [
         {
           id: "S:paint1",
@@ -95,10 +100,12 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const result = await scanner.scan();
 
+      // Assert
       expect(result.styles).toHaveLength(1);
       expect(result.styles[0]).toMatchObject({
         name: "Primary/Blue",
@@ -108,6 +115,7 @@ describe("DesignSystemScanner", () => {
     });
 
     it("テキストスタイルをスキャンする", async () => {
+      // Arrange
       const mockTextStyles: MockTextStyle[] = [
         {
           id: "S:text1",
@@ -122,10 +130,12 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const result = await scanner.scan();
 
+      // Assert
       expect(result.styles).toHaveLength(1);
       expect(result.styles[0]).toMatchObject({
         name: "Heading/H1",
@@ -136,6 +146,7 @@ describe("DesignSystemScanner", () => {
     });
 
     it("エフェクトスタイルをスキャンする", async () => {
+      // Arrange
       const mockEffectStyles: MockEffectStyle[] = [
         {
           id: "S:effect1",
@@ -157,10 +168,12 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.getLocalEffectStyles.mockReturnValue(mockEffectStyles);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const result = await scanner.scan();
 
+      // Assert
       expect(result.styles).toHaveLength(1);
       expect(result.styles[0]).toMatchObject({
         name: "Shadow/Medium",
@@ -169,6 +182,7 @@ describe("DesignSystemScanner", () => {
     });
 
     it("コンポーネントをスキャンする", async () => {
+      // Arrange
       const mockComponents: MockComponent[] = [
         {
           id: "C:component1",
@@ -182,10 +196,12 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const result = await scanner.scan();
 
+      // Assert
       expect(result.components).toHaveLength(1);
       expect(result.components[0]).toMatchObject({
         name: "Button/Primary",
@@ -195,6 +211,7 @@ describe("DesignSystemScanner", () => {
     });
 
     it("複数のスタイルとコンポーネントをスキャンする", async () => {
+      // Arrange
       const mockPaintStyles: MockPaintStyle[] = [
         {
           id: "S:paint1",
@@ -234,14 +251,15 @@ describe("DesignSystemScanner", () => {
           key: "key4",
         },
       ];
-
       mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
       mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
       mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const result = await scanner.scan();
 
+      // Assert
       expect(result.styles).toHaveLength(3);
       expect(result.components).toHaveLength(1);
     });
@@ -249,6 +267,7 @@ describe("DesignSystemScanner", () => {
 
   describe("scanStyles", () => {
     it("スタイルのみをスキャンする", async () => {
+      // Arrange
       const mockPaintStyles: MockPaintStyle[] = [
         {
           id: "S:paint1",
@@ -260,10 +279,12 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const styles = await scanner.scanStyles();
 
+      // Assert
       expect(styles).toHaveLength(1);
       expect(styles[0].name).toBe("Color/Red");
     });
@@ -271,6 +292,7 @@ describe("DesignSystemScanner", () => {
 
   describe("scanComponents", () => {
     it("コンポーネントのみをスキャンする", async () => {
+      // Arrange
       const mockComponents: MockComponent[] = [
         {
           id: "C:comp1",
@@ -280,10 +302,12 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-
       const scanner = DesignSystemScanner.create();
+
+      // Act
       const components = await scanner.scanComponents();
 
+      // Assert
       expect(components).toHaveLength(1);
       expect(components[0].name).toBe("Icon/Arrow");
     });
@@ -291,6 +315,7 @@ describe("DesignSystemScanner", () => {
 
   describe("findStyleByName", () => {
     it("名前でスタイルを検索する", async () => {
+      // Arrange
       const mockPaintStyles: MockPaintStyle[] = [
         {
           id: "S:paint1",
@@ -310,28 +335,34 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-
       const scanner = DesignSystemScanner.create();
       await scanner.scan();
+
+      // Act
       const style = scanner.findStyleByName("Primary/Blue");
 
+      // Assert
       expect(style).toBeDefined();
       expect(style?.name).toBe("Primary/Blue");
     });
 
     it("存在しない名前の場合undefinedを返す", async () => {
+      // Arrange
       mockFigma.getLocalPaintStyles.mockReturnValue([]);
-
       const scanner = DesignSystemScanner.create();
       await scanner.scan();
+
+      // Act
       const style = scanner.findStyleByName("NonExistent");
 
+      // Assert
       expect(style).toBeUndefined();
     });
   });
 
   describe("findComponentByName", () => {
     it("名前でコンポーネントを検索する", async () => {
+      // Arrange
       const mockComponents: MockComponent[] = [
         {
           id: "C:comp1",
@@ -341,11 +372,13 @@ describe("DesignSystemScanner", () => {
         },
       ];
       mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-
       const scanner = DesignSystemScanner.create();
       await scanner.scan();
+
+      // Act
       const component = scanner.findComponentByName("Button/Primary");
 
+      // Assert
       expect(component).toBeDefined();
       expect(component?.name).toBe("Button/Primary");
     });
@@ -353,6 +386,7 @@ describe("DesignSystemScanner", () => {
 
   describe("getStylesByType", () => {
     it("タイプでスタイルをフィルタリングする", async () => {
+      // Arrange
       const mockPaintStyles: MockPaintStyle[] = [
         {
           id: "S:paint1",
@@ -378,13 +412,14 @@ describe("DesignSystemScanner", () => {
       ];
       mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
       mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
-
       const scanner = DesignSystemScanner.create();
       await scanner.scan();
 
+      // Act
       const paintStyles = scanner.getStylesByType("PAINT");
       const textStyles = scanner.getStylesByType("TEXT");
 
+      // Assert
       expect(paintStyles).toHaveLength(1);
       expect(textStyles).toHaveLength(1);
       expect(paintStyles[0].type).toBe("PAINT");

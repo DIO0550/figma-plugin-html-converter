@@ -266,7 +266,8 @@ export class DesignSystemScanner {
   }
 
   private getLetterSpacing(letterSpacing: LetterSpacing): number {
-    // TODO: PERCENT単位の場合、fontSize基準のpx変換を実装する
+    // TODO(#145): PERCENT単位の場合、fontSize基準のpx変換を実装する
+    // 優先度: 低（現在のFigmaデザインシステムではPIXELS単位が主流のため）
     // 現時点ではPERCENT/PIXELSどちらも数値をそのまま返す
     return letterSpacing.value;
   }

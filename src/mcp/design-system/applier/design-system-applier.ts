@@ -115,7 +115,8 @@ export class DesignSystemApplier {
       }
 
       try {
-        // TODO: 実際のFigmaノードへの適用処理を実装する
+        // TODO(#145): 実際のFigmaノードへの適用処理を実装する
+        // 優先度: 中（現時点ではdryRunモードでの検証が主な用途のため）
         // 現時点ではマッチの記録のみ行い、FigmaNodeConfigへの適用は
         // applyToFigmaNodeConfig()を個別に呼び出して行う
         this.applyToFigmaNodeConfig(match, {

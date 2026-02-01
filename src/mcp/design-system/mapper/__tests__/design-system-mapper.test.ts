@@ -129,21 +129,17 @@ describe("DesignSystemMapper", () => {
   ];
 
   describe("create", () => {
-    it("マッパーインスタンスを作成できる", () => {
-      // Arrange
+    it("should create mapper instance", () => {
       const designSystem = createMockDesignSystem();
 
-      // Act
       const mapper = DesignSystemMapper.create(designSystem);
 
-      // Assert
       expect(mapper).toBeInstanceOf(DesignSystemMapper);
     });
   });
 
   describe("addRule", () => {
-    it("ルールを追加できる", () => {
-      // Arrange
+    it("should add a rule", () => {
       const designSystem = createMockDesignSystem();
       const mapper = DesignSystemMapper.create(designSystem);
       const rule: MappingRule = {
@@ -156,86 +152,71 @@ describe("DesignSystemMapper", () => {
         isCustom: true,
       };
 
-      // Act
       mapper.addRule(rule);
       const rules = mapper.getRules();
 
-      // Assert
       expect(rules).toContainEqual(rule);
     });
   });
 
   describe("removeRule", () => {
-    it("ルールを削除できる", () => {
-      // Arrange
+    it("should remove a rule", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
       const ruleId = rules[0].id;
 
-      // Act
       mapper.removeRule(ruleId);
 
-      // Assert
       const remainingRules = mapper.getRules();
       expect(remainingRules.find((r) => r.id === ruleId)).toBeUndefined();
     });
   });
 
   describe("matchElement", () => {
-    it("タグ名でマッチングする", () => {
-      // Arrange
+    it("should match element by tag name", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "h1",
         path: "/html/body/h1",
       });
 
-      // Assert
       expect(matches).toHaveLength(1);
       expect(matches[0].rule.name).toBe("H1 Heading Style");
     });
 
-    it("タグ名とクラス名の組み合わせでマッチングする", () => {
-      // Arrange
+    it("should match element by tag name and class name", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "button",
         className: "btn-primary",
         path: "/html/body/button",
       });
 
-      // Assert
       expect(matches).toHaveLength(1);
       expect(matches[0].rule.name).toBe("Primary Button");
     });
 
-    it("マッチしない場合は空配列を返す", () => {
-      // Arrange
+    it("should return empty array when no rules match", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "span",
         path: "/html/body/span",
       });
 
-      // Assert
       expect(matches).toHaveLength(0);
     });
 
-    it("無効なルールはスキップする", () => {
-      // Arrange
+    it("should skip disabled rules", () => {
       const designSystem = createMockDesignSystem();
       const rules: MappingRule[] = [
         {
@@ -253,18 +234,15 @@ describe("DesignSystemMapper", () => {
       ];
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "h1",
         path: "/html/body/h1",
       });
 
-      // Assert
       expect(matches).toHaveLength(0);
     });
 
-    it("優先度の高いルールが先にマッチする", () => {
-      // Arrange
+    it("should match higher priority rules first", () => {
       const designSystem = createMockDesignSystem();
       const rules: MappingRule[] = [
         {
@@ -288,56 +266,47 @@ describe("DesignSystemMapper", () => {
       ];
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "div",
         path: "/html/body/div",
       });
 
-      // Assert
       expect(matches).toHaveLength(2);
       expect(matches[0].rule.name).toBe("High Priority");
     });
 
-    it("マッチしたスタイルを解決する", () => {
-      // Arrange
+    it("should resolve matched style", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "h1",
         path: "/html/body/h1",
       });
 
-      // Assert
       expect(matches[0].appliedStyle).toBeDefined();
       expect(matches[0].appliedStyle?.name).toBe("Typography/Heading/H1");
     });
 
-    it("マッチしたコンポーネントを解決する", () => {
-      // Arrange
+    it("should resolve matched component", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "button",
         className: "btn-primary",
         path: "/html/body/button",
       });
 
-      // Assert
       expect(matches[0].appliedComponent).toBeDefined();
       expect(matches[0].appliedComponent?.name).toBe("Button/Primary");
     });
   });
 
   describe("mapHtml", () => {
-    it("HTML要素リストをマッピングする", () => {
-      // Arrange
+    it("should map HTML element list", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
@@ -347,16 +316,13 @@ describe("DesignSystemMapper", () => {
         { tagName: "div", path: "/html/body/div" },
       ];
 
-      // Act
       const result = mapper.mapHtml(elements);
 
-      // Assert
       expect(result.matches).toHaveLength(2); // h1 と p がマッチ
       expect(result.unmatchedElements).toContain("/html/body/div");
     });
 
-    it("複数要素のマッピング結果を返す", () => {
-      // Arrange
+    it("should return mapping results for multiple elements", () => {
       const designSystem = createMockDesignSystem();
       const rules = createDefaultRules();
       const mapper = DesignSystemMapper.create(designSystem, rules);
@@ -366,18 +332,15 @@ describe("DesignSystemMapper", () => {
         { tagName: "p", path: "/html/body/p[2]" },
       ];
 
-      // Act
       const result = mapper.mapHtml(elements);
 
-      // Assert
       expect(result.matches).toHaveLength(3);
       expect(result.unmatchedElements).toHaveLength(0);
     });
   });
 
-  describe("属性条件でのマッチング", () => {
-    it("属性条件でマッチングする", () => {
-      // Arrange
+  describe("attribute condition matching", () => {
+    it("should match element by attributes", () => {
       const designSystem = createMockDesignSystem();
       const rules: MappingRule[] = [
         {
@@ -395,19 +358,16 @@ describe("DesignSystemMapper", () => {
       ];
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "button",
         attributes: { type: "submit" },
         path: "/html/body/form/button",
       });
 
-      // Assert
       expect(matches).toHaveLength(1);
     });
 
-    it("属性が一致しない場合はマッチしない", () => {
-      // Arrange
+    it("should not match when attributes do not match", () => {
       const designSystem = createMockDesignSystem();
       const rules: MappingRule[] = [
         {
@@ -425,24 +385,20 @@ describe("DesignSystemMapper", () => {
       ];
       const mapper = DesignSystemMapper.create(designSystem, rules);
 
-      // Act
       const matches = mapper.matchElement({
         tagName: "button",
         attributes: { type: "button" },
         path: "/html/body/button",
       });
 
-      // Assert
       expect(matches).toHaveLength(0);
     });
   });
 
   describe("getDefaultRules", () => {
-    it("デフォルトルールを取得できる", () => {
-      // Act
+    it("should return default rules", () => {
       const rules = DesignSystemMapper.getDefaultRules();
 
-      // Assert
       expect(rules.length).toBeGreaterThan(0);
       expect(rules.every((r) => !r.isCustom)).toBe(true);
     });

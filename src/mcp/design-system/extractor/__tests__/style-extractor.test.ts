@@ -57,17 +57,14 @@ describe("StyleExtractor", () => {
   });
 
   describe("extractColorInfo", () => {
-    it("ソリッドカラーからカラー情報を抽出する", () => {
-      // Arrange
+    it("should extract color info from solid color", () => {
       const style = createMockPaintStyle({
         paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
       });
       const extractor = StyleExtractor.create();
 
-      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
-      // Assert
       expect(colorInfo).toEqual({
         type: "solid",
         hex: "#ff0000",
@@ -76,22 +73,18 @@ describe("StyleExtractor", () => {
       });
     });
 
-    it("透明度付きカラーを抽出する", () => {
-      // Arrange
+    it("should extract color with opacity", () => {
       const style = createMockPaintStyle({
         paints: [{ type: "SOLID", color: { r: 0, g: 0, b: 1 }, opacity: 0.5 }],
       });
       const extractor = StyleExtractor.create();
 
-      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
-      // Assert
       expect(colorInfo?.opacity).toBe(0.5);
     });
 
-    it("グラデーションからグラデーション情報を抽出する", () => {
-      // Arrange
+    it("should extract gradient info from gradient paint", () => {
       const style = createMockPaintStyle({
         paints: [
           {
@@ -109,36 +102,28 @@ describe("StyleExtractor", () => {
       });
       const extractor = StyleExtractor.create();
 
-      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
-      // Assert
       expect(colorInfo?.type).toBe("gradient");
     });
 
-    it("空のpaintsの場合nullを返す", () => {
-      // Arrange
+    it("should return null for empty paints", () => {
       const style = createMockPaintStyle({ paints: [] });
       const extractor = StyleExtractor.create();
 
-      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
-      // Assert
       expect(colorInfo).toBeNull();
     });
   });
 
   describe("extractTypographyInfo", () => {
-    it("テキストスタイルからタイポグラフィ情報を抽出する", () => {
-      // Arrange
+    it("should extract typography info from text style", () => {
       const style = createMockTextStyle();
       const extractor = StyleExtractor.create();
 
-      // Act
       const typographyInfo = extractor.extractTypographyInfo(style);
 
-      // Assert
       expect(typographyInfo).toEqual({
         fontFamily: "Inter",
         fontSize: 32,
@@ -149,29 +134,23 @@ describe("StyleExtractor", () => {
       });
     });
 
-    it("AUTO lineHeightの場合normalを使用する", () => {
-      // Arrange
+    it("should use normal for AUTO lineHeight", () => {
       const style = createMockTextStyle({ lineHeight: "AUTO" });
       const extractor = StyleExtractor.create();
 
-      // Act
       const typographyInfo = extractor.extractTypographyInfo(style);
 
-      // Assert
       expect(typographyInfo.cssValue).toBe("700 32px/normal Inter");
     });
   });
 
   describe("extractEffectInfo", () => {
-    it("ドロップシャドウからエフェクト情報を抽出する", () => {
-      // Arrange
+    it("should extract effect info from drop shadow", () => {
       const style = createMockEffectStyle();
       const extractor = StyleExtractor.create();
 
-      // Act
       const effectInfo = extractor.extractEffectInfo(style);
 
-      // Assert
       expect(effectInfo).toHaveLength(1);
       expect(effectInfo[0]).toMatchObject({
         type: "drop-shadow",
@@ -181,8 +160,7 @@ describe("StyleExtractor", () => {
       });
     });
 
-    it("複数のエフェクトを抽出する", () => {
-      // Arrange
+    it("should extract multiple effects", () => {
       const style = createMockEffectStyle({
         effects: [
           {
@@ -207,15 +185,12 @@ describe("StyleExtractor", () => {
       });
       const extractor = StyleExtractor.create();
 
-      // Act
       const effectInfo = extractor.extractEffectInfo(style);
 
-      // Assert
       expect(effectInfo).toHaveLength(2);
     });
 
-    it("非表示のエフェクトはスキップする", () => {
-      // Arrange
+    it("should skip invisible effects", () => {
       const style = createMockEffectStyle({
         effects: [
           {
@@ -231,17 +206,14 @@ describe("StyleExtractor", () => {
       });
       const extractor = StyleExtractor.create();
 
-      // Act
       const effectInfo = extractor.extractEffectInfo(style);
 
-      // Assert
       expect(effectInfo).toHaveLength(0);
     });
   });
 
   describe("categorizeStyles", () => {
-    it("スタイルをカテゴリ別に分類する", () => {
-      // Arrange
+    it("should categorize styles by type", () => {
       const styles: DesignSystemStyle[] = [
         createMockPaintStyle({ name: "Colors/Primary" }),
         createMockPaintStyle({
@@ -253,10 +225,8 @@ describe("StyleExtractor", () => {
       ];
       const extractor = StyleExtractor.create();
 
-      // Act
       const categorized = extractor.categorizeStyles(styles);
 
-      // Assert
       expect(categorized.paint).toHaveLength(2);
       expect(categorized.text).toHaveLength(1);
       expect(categorized.effect).toHaveLength(1);
@@ -265,8 +235,7 @@ describe("StyleExtractor", () => {
   });
 
   describe("findMatchingStyle", () => {
-    it("名前パターンでスタイルを検索する", () => {
-      // Arrange
+    it("should find styles by name pattern", () => {
       const styles: DesignSystemStyle[] = [
         createMockPaintStyle({ name: "Colors/Primary/Blue" }),
         createMockPaintStyle({
@@ -280,54 +249,43 @@ describe("StyleExtractor", () => {
       ];
       const extractor = StyleExtractor.create();
 
-      // Act
       const matches = extractor.findMatchingStyles(styles, "Primary");
 
-      // Assert
       expect(matches).toHaveLength(2);
       expect(matches.every((s) => s.name.includes("Primary"))).toBe(true);
     });
 
-    it("大文字小文字を区別しない検索", () => {
-      // Arrange
+    it("should search case-insensitively", () => {
       const styles: DesignSystemStyle[] = [
         createMockPaintStyle({ name: "Colors/PRIMARY/Blue" }),
       ];
       const extractor = StyleExtractor.create();
 
-      // Act
       const matches = extractor.findMatchingStyles(styles, "primary");
 
-      // Assert
       expect(matches).toHaveLength(1);
     });
   });
 
   describe("toCssProperties", () => {
-    it("ペイントスタイルをCSS プロパティに変換する", () => {
-      // Arrange
+    it("should convert paint style to CSS properties", () => {
       const style = createMockPaintStyle({
         paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
       });
       const extractor = StyleExtractor.create();
 
-      // Act
       const cssProps = extractor.toCssProperties(style);
 
-      // Assert
       expect(cssProps).toHaveProperty("background-color");
       expect(cssProps["background-color"]).toBe("#ff0000");
     });
 
-    it("テキストスタイルをCSS プロパティに変換する", () => {
-      // Arrange
+    it("should convert text style to CSS properties", () => {
       const style = createMockTextStyle();
       const extractor = StyleExtractor.create();
 
-      // Act
       const cssProps = extractor.toCssProperties(style);
 
-      // Assert
       expect(cssProps).toHaveProperty("font-family");
       expect(cssProps).toHaveProperty("font-size");
       expect(cssProps).toHaveProperty("font-weight");
@@ -335,15 +293,12 @@ describe("StyleExtractor", () => {
       expect(cssProps["font-size"]).toBe("32px");
     });
 
-    it("エフェクトスタイルをCSS プロパティに変換する", () => {
-      // Arrange
+    it("should convert effect style to CSS properties", () => {
       const style = createMockEffectStyle();
       const extractor = StyleExtractor.create();
 
-      // Act
       const cssProps = extractor.toCssProperties(style);
 
-      // Assert
       expect(cssProps).toHaveProperty("box-shadow");
     });
   });

@@ -60,18 +60,15 @@ describe("MappingOptimizer", () => {
   });
 
   describe("create", () => {
-    it("オプティマイザーインスタンスを作成できる", () => {
-      // Act
+    it("should create optimizer instance", () => {
       const optimizer = MappingOptimizer.create();
 
-      // Assert
       expect(optimizer).toBeInstanceOf(MappingOptimizer);
     });
   });
 
   describe("optimize", () => {
-    it("MCP接続時にAI最適化を実行する", async () => {
-      // Arrange
+    it("should execute AI optimization when MCP is connected", async () => {
       const mockResponse: AIOptimizationResponse = {
         recommendedMappings: [
           {
@@ -87,58 +84,49 @@ describe("MappingOptimizer", () => {
       const optimizer = MappingOptimizer.create();
       optimizer.setMcpClient(mockMcpClient);
 
-      // Act
       const result = await optimizer.optimize({
         html: "<h1>Hello</h1>",
         designSystem: createMockDesignSystem(),
         currentRules: createMockRules(),
       });
 
-      // Assert
       expect(result.recommendedMappings).toHaveLength(1);
       expect(result.recommendedMappings[0].confidence).toBe(0.9);
     });
 
-    it("MCP未接続時はフォールバック結果を返す", async () => {
-      // Arrange
+    it("should return fallback result when MCP is not connected", async () => {
       mockMcpClient.isConnected.mockReturnValue(false);
       const optimizer = MappingOptimizer.create();
 
-      // Act
       const result = await optimizer.optimize({
         html: "<h1>Hello</h1>",
         designSystem: createMockDesignSystem(),
         currentRules: createMockRules(),
       });
 
-      // Assert
       expect(result.recommendedMappings).toHaveLength(0);
       expect(result.processingTimeMs).toBe(0);
     });
 
-    it("MCPリクエストエラー時はフォールバック結果を返す", async () => {
-      // Arrange
+    it("should return fallback result on MCP request error", async () => {
       mockMcpClient.sendRequest.mockRejectedValue(
         new Error("Connection failed"),
       );
       const optimizer = MappingOptimizer.create();
       optimizer.setMcpClient(mockMcpClient);
 
-      // Act
       const result = await optimizer.optimize({
         html: "<h1>Hello</h1>",
         designSystem: createMockDesignSystem(),
         currentRules: createMockRules(),
       });
 
-      // Assert
       expect(result.recommendedMappings).toHaveLength(0);
     });
   });
 
   describe("suggestRulesFromHtml", () => {
-    it("HTMLからルール候補を提案する", async () => {
-      // Arrange
+    it("should suggest rule candidates from HTML", async () => {
       const mockResponse: AIOptimizationResponse = {
         recommendedMappings: [
           {
@@ -154,21 +142,18 @@ describe("MappingOptimizer", () => {
       const optimizer = MappingOptimizer.create();
       optimizer.setMcpClient(mockMcpClient);
 
-      // Act
       const suggestions = await optimizer.suggestRulesFromHtml(
         '<div class="card">Content</div>',
         createMockDesignSystem(),
       );
 
-      // Assert
       expect(suggestions).toHaveLength(1);
       expect(suggestions[0].recommendedStyleName).toBe("Card/Default");
     });
   });
 
   describe("analyzeUnmatchedElements", () => {
-    it("マッチしなかった要素を分析する", async () => {
-      // Arrange
+    it("should analyze unmatched elements", async () => {
       const mockResponse: AIOptimizationResponse = {
         recommendedMappings: [
           {
@@ -184,67 +169,56 @@ describe("MappingOptimizer", () => {
       const optimizer = MappingOptimizer.create();
       optimizer.setMcpClient(mockMcpClient);
 
-      // Act
       const analysis = await optimizer.analyzeUnmatchedElements(
         ["/html/body/article", "/html/body/aside"],
         "<article>Content</article><aside>Sidebar</aside>",
         createMockDesignSystem(),
       );
 
-      // Assert
       expect(analysis.recommendedMappings.length).toBeGreaterThanOrEqual(1);
     });
   });
 
   describe("validateMapping", () => {
-    it("マッピングの妥当性を検証する", async () => {
-      // Arrange
+    it("should validate mapping", async () => {
       mockMcpClient.sendRequest.mockResolvedValue({
         recommendedMappings: [],
         processingTimeMs: 10,
       });
       const optimizer = MappingOptimizer.create();
 
-      // Act
       const validation = await optimizer.validateMapping(
         { tagName: "h1", path: "/html/body/h1" },
         "Typography/Heading/H1",
         createMockDesignSystem(),
       );
 
-      // Assert
       expect(validation).toHaveProperty("isValid");
       expect(validation).toHaveProperty("confidence");
     });
 
-    it("スタイルが存在する場合は高い信頼度を返す", async () => {
-      // Arrange
+    it("should return high confidence when style exists", async () => {
       const optimizer = MappingOptimizer.create();
 
-      // Act
       const validation = await optimizer.validateMapping(
         { tagName: "h1", path: "/html/body/h1" },
         "Typography/Heading/H1",
         createMockDesignSystem(),
       );
 
-      // Assert
       expect(validation.isValid).toBe(true);
       expect(validation.confidence).toBeGreaterThan(0.5);
     });
 
-    it("スタイルが存在しない場合は低い信頼度を返す", async () => {
-      // Arrange
+    it("should return low confidence when style does not exist", async () => {
       const optimizer = MappingOptimizer.create();
 
-      // Act
       const validation = await optimizer.validateMapping(
         { tagName: "h1", path: "/html/body/h1" },
         "NonExistent/Style",
         createMockDesignSystem(),
       );
 
-      // Assert
       expect(validation.isValid).toBe(false);
       expect(validation.confidence).toBeLessThan(0.5);
     });

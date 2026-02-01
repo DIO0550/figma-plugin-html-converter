@@ -339,6 +339,9 @@ export class DesignSystemMapper {
     return undefined;
   }
 
+  // TODO(#145): _elementパラメータを使用して、要素の実際の内容（テキスト、属性値の類似性）に基づく
+  // 信頼度計算を実装する。現在はルール条件のみで信頼度を算出している。
+  // 優先度: 中（AI最適化機能の精度向上に寄与）
   private calculateConfidence(
     rule: MappingRule,
     _element: ElementInfo,

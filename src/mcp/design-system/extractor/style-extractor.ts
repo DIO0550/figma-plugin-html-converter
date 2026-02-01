@@ -335,7 +335,7 @@ export class StyleExtractor {
       default: {
         // Figma APIで新しく追加されたエフェクトタイプ（NOISE, TEXTURE, GLASS等）は
         // 現時点でCSS変換をサポートしていないため、基本情報のみ返す
-        const unknownType = (effect as Effect).type;
+        const unknownType = effect.type;
         console.warn(
           `[StyleExtractor] 未対応のエフェクトタイプを検出しました: ${unknownType}`,
         );

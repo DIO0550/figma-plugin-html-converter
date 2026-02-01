@@ -12,6 +12,7 @@ import type {
 } from "../../types";
 import { createA11yIssueId } from "../../types";
 import { LANDMARK_ELEMENTS, HEADING_ELEMENTS } from "../../constants";
+import { flattenNodes } from "./utils";
 
 /**
  * セマンティクスHTMLをチェックするルール
@@ -27,7 +28,7 @@ export class SemanticRule implements A11yRule {
       return [];
     }
     const issues: A11yIssue[] = [];
-    const allNodes = this.flattenNodes(context.parsedNodes);
+    const allNodes = flattenNodes(context.parsedNodes);
 
     this.checkHeadingHierarchy(allNodes, issues);
     this.checkLandmarks(allNodes, issues);
@@ -39,17 +40,6 @@ export class SemanticRule implements A11yRule {
   private nextIssueId(): string {
     this.issueCounter++;
     return `semantic-${this.issueCounter}`;
-  }
-
-  private flattenNodes(nodes: readonly ParsedHtmlNode[]): ParsedHtmlNode[] {
-    const result: ParsedHtmlNode[] = [];
-    for (const node of nodes) {
-      result.push(node);
-      if (node.children.length > 0) {
-        result.push(...this.flattenNodes(node.children));
-      }
-    }
-    return result;
   }
 
   private checkHeadingHierarchy(

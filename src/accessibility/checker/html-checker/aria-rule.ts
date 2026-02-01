@@ -12,6 +12,7 @@ import type {
 } from "../../types";
 import { createA11yIssueId } from "../../types";
 import { VALID_ARIA_ROLES } from "../../constants";
+import { flattenNodes } from "./utils";
 
 /**
  * ラベルが必要なインタラクティブ要素
@@ -33,7 +34,7 @@ export class AriaRule implements A11yRule {
       return [];
     }
     const issues: A11yIssue[] = [];
-    const allNodes = this.flattenNodes(context.parsedNodes);
+    const allNodes = flattenNodes(context.parsedNodes);
 
     this.checkInvalidRoles(allNodes, issues);
     this.checkDuplicateIds(allNodes, issues);
@@ -45,17 +46,6 @@ export class AriaRule implements A11yRule {
   private nextIssueId(): string {
     this.issueCounter++;
     return `aria-${this.issueCounter}`;
-  }
-
-  private flattenNodes(nodes: readonly ParsedHtmlNode[]): ParsedHtmlNode[] {
-    const result: ParsedHtmlNode[] = [];
-    for (const node of nodes) {
-      result.push(node);
-      if (node.children.length > 0) {
-        result.push(...this.flattenNodes(node.children));
-      }
-    }
-    return result;
   }
 
   private checkInvalidRoles(

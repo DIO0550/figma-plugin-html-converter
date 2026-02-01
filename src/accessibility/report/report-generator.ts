@@ -49,7 +49,14 @@ function calculateSummary(issues: readonly A11yIssue[]): A11ySummary {
 function calculateWcagCompliance(
   issues: readonly A11yIssue[],
 ): WcagComplianceStatus {
-  const criteriaToCheck: WcagCriterion[] = ["1.1.1", "1.4.3", "1.4.4", "4.1.2"];
+  const criteriaToCheck: WcagCriterion[] = [
+    "1.1.1",
+    "1.3.1",
+    "1.4.3",
+    "1.4.4",
+    "3.1.1",
+    "4.1.2",
+  ];
 
   // error重要度の問題のみがWCAG準拠を不合格にする
   const errorIssues = issues.filter((i) => i.severity === "error");
@@ -64,8 +71,10 @@ function calculateWcagCompliance(
 
   return {
     "1.1.1": compliance["1.1.1"],
+    "1.3.1": compliance["1.3.1"],
     "1.4.3": compliance["1.4.3"],
     "1.4.4": compliance["1.4.4"],
+    "3.1.1": compliance["3.1.1"],
     "4.1.2": compliance["4.1.2"],
     overallAA,
   };

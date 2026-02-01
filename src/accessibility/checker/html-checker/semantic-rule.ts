@@ -25,7 +25,7 @@ function nextIssueId(): string {
  */
 export class SemanticRule implements A11yRule {
   readonly id: A11yIssueType = "missing-heading-hierarchy";
-  readonly wcagCriterion: WcagCriterion = "1.1.1";
+  readonly wcagCriterion: WcagCriterion = "1.3.1";
   readonly severity: A11ySeverity = "warning";
 
   check(context: A11yCheckContext): readonly A11yIssue[] {
@@ -70,7 +70,7 @@ export class SemanticRule implements A11yRule {
           id: createA11yIssueId(nextIssueId()),
           type: "missing-heading-hierarchy",
           severity: "warning",
-          wcagCriterion: "1.1.1",
+          wcagCriterion: "1.3.1",
           target: "html",
           element: {
             tagName: headings[i].tagName,
@@ -99,7 +99,7 @@ export class SemanticRule implements A11yRule {
         id: createA11yIssueId(nextIssueId()),
         type: "missing-landmark",
         severity: "info",
-        wcagCriterion: "1.1.1",
+        wcagCriterion: "1.3.1",
         target: "html",
         element: {
           tagName: "document",
@@ -122,7 +122,7 @@ export class SemanticRule implements A11yRule {
         id: createA11yIssueId(nextIssueId()),
         type: "missing-lang-attribute",
         severity: "error",
-        wcagCriterion: "4.1.2",
+        wcagCriterion: "3.1.1",
         target: "html",
         element: {
           tagName: htmlNode.tagName,

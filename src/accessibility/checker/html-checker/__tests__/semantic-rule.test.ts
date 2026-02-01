@@ -31,8 +31,8 @@ test("ルールIDがmissing-heading-hierarchyである", () => {
   expect(rule.id).toBe("missing-heading-hierarchy");
 });
 
-test("WCAG基準が1.1.1である", () => {
-  expect(rule.wcagCriterion).toBe("1.1.1");
+test("WCAG基準が1.3.1である", () => {
+  expect(rule.wcagCriterion).toBe("1.3.1");
 });
 
 // =============================================================================

@@ -47,8 +47,10 @@ test("WCAG準拠状態を正しく計算する", () => {
   const report = generateReport(issues);
 
   expect(report.summary.wcagCompliance["1.1.1"]).toBe(false);
+  expect(report.summary.wcagCompliance["1.3.1"]).toBe(true);
   expect(report.summary.wcagCompliance["1.4.3"]).toBe(true);
   expect(report.summary.wcagCompliance["1.4.4"]).toBe(true);
+  expect(report.summary.wcagCompliance["3.1.1"]).toBe(true);
   expect(report.summary.wcagCompliance["4.1.2"]).toBe(true);
   expect(report.summary.wcagCompliance.overallAA).toBe(false);
 });

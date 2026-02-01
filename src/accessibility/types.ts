@@ -32,7 +32,13 @@ export type A11ySeverity = "error" | "warning" | "info";
 /**
  * WCAG基準
  */
-export type WcagCriterion = "1.1.1" | "1.4.3" | "1.4.4" | "4.1.2";
+export type WcagCriterion =
+  | "1.1.1"
+  | "1.3.1"
+  | "1.4.3"
+  | "1.4.4"
+  | "3.1.1"
+  | "4.1.2";
 
 /**
  * チェック対象
@@ -143,8 +149,10 @@ export interface A11yAIAnalysis {
  */
 export interface WcagComplianceStatus {
   readonly "1.1.1": boolean;
+  readonly "1.3.1": boolean;
   readonly "1.4.3": boolean;
   readonly "1.4.4": boolean;
+  readonly "3.1.1": boolean;
   readonly "4.1.2": boolean;
   readonly overallAA: boolean;
 }

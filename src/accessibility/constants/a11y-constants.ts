@@ -177,8 +177,11 @@ export const HEADING_ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
  */
 export const WCAG_REFERENCE_URLS = {
   "1.1.1": "https://www.w3.org/WAI/WCAG21/Understanding/non-text-content.html",
+  "1.3.1":
+    "https://www.w3.org/WAI/WCAG21/Understanding/info-and-relationships.html",
   "1.4.3": "https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html",
   "1.4.4": "https://www.w3.org/WAI/WCAG21/Understanding/resize-text.html",
+  "3.1.1": "https://www.w3.org/WAI/WCAG21/Understanding/language-of-page.html",
   "4.1.2": "https://www.w3.org/WAI/WCAG21/Understanding/name-role-value.html",
 } as const;
 

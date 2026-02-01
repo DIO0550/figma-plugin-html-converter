@@ -99,6 +99,33 @@ test("MCPリクエストが失敗した場合はフォールバック結果を�
 });
 
 // =============================================================================
+// タイムアウト
+// =============================================================================
+
+test("MCPリクエストがタイムアウトした場合はフォールバック結果を返す", async () => {
+  vi.useFakeTimers();
+
+  const mockClient: MockMcpClient = {
+    isConnected: () => true,
+    sendRequest: vi.fn().mockImplementation(
+      () => new Promise(() => {}), // 永久に解決しないPromise
+    ),
+  };
+  analyzer.setMcpClient(mockClient);
+
+  const issues = [createMockIssue("1")];
+  const resultPromise = analyzer.analyze(issues);
+
+  await vi.advanceTimersByTimeAsync(30000);
+
+  const result = await resultPromise;
+  expect(result.confidence).toBe(0);
+  expect(result.additionalIssues).toHaveLength(0);
+
+  vi.useRealTimers();
+});
+
+// =============================================================================
 // フォールバック
 // =============================================================================
 

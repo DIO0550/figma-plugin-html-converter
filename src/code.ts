@@ -3,12 +3,17 @@
 import { A11yChecker } from "./accessibility/checker";
 import { generateReport } from "./accessibility/report";
 import { DEFAULT_A11Y_CONFIG } from "./accessibility/constants";
-import type { ParsedHtmlNode, A11yCheckerConfig } from "./accessibility/types";
+import type {
+  ParsedHtmlNode,
+  FigmaNodeInfo,
+  A11yCheckerConfig,
+} from "./accessibility/types";
 
 interface PluginMessage {
   type: string;
   html?: string;
   parsedNodes?: readonly ParsedHtmlNode[];
+  figmaNodes?: readonly FigmaNodeInfo[];
   a11yConfig?: Partial<A11yCheckerConfig>;
 }
 
@@ -77,6 +82,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       const config = { ...DEFAULT_A11Y_CONFIG, ...msg.a11yConfig };
       const issues = checker.check({
         parsedNodes: msg.parsedNodes,
+        figmaNodes: msg.figmaNodes,
         config,
       });
       const report = generateReport(issues);

@@ -2,6 +2,7 @@
  * MCP AI分析モジュール
  */
 import type { A11yIssue, A11yAIAnalysis } from "../types";
+import { AI_ANALYSIS } from "../constants";
 
 /**
  * MCPクライアントインターフェース
@@ -36,7 +37,14 @@ export class A11yAIAnalyzer {
     }
 
     try {
-      const result = await this.mcpClient.sendRequest<A11yAIAnalysis>(
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(
+          () => reject(new Error("AI analysis timed out")),
+          AI_ANALYSIS.TIMEOUT_MS,
+        );
+      });
+
+      const requestPromise = this.mcpClient.sendRequest<A11yAIAnalysis>(
         "accessibility/analyze",
         {
           issues: issues.map((issue) => ({
@@ -48,7 +56,8 @@ export class A11yAIAnalyzer {
           })),
         },
       );
-      return result;
+
+      return await Promise.race([requestPromise, timeoutPromise]);
     } catch {
       return FALLBACK_ANALYSIS;
     }

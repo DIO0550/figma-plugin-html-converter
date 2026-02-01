@@ -48,8 +48,8 @@ export class FigmaContrastRule implements A11yRule {
   }
 
   private checkTextNode(node: FigmaNodeInfo, issues: A11yIssue[]): void {
-    const foreground = this.extractColor(node.fills);
-    const background = this.extractColor(node.parentFills);
+    const background = this.extractSolidColor(node.parentFills);
+    const foreground = this.extractColorWithAlpha(node.fills, background);
 
     if (!foreground || !background) {
       return;
@@ -75,12 +75,36 @@ export class FigmaContrastRule implements A11yRule {
     }
   }
 
-  private extractColor(paints?: readonly FigmaPaint[]): RGB | null {
+  private extractSolidColor(paints?: readonly FigmaPaint[]): RGB | null {
     if (!paints || paints.length === 0) {
       return null;
     }
-
     const solidPaint = paints.find((p) => p.type === "SOLID" && p.color);
     return solidPaint?.color ?? null;
+  }
+
+  private extractColorWithAlpha(
+    paints?: readonly FigmaPaint[],
+    background?: RGB | null,
+  ): RGB | null {
+    if (!paints || paints.length === 0) {
+      return null;
+    }
+    const solidPaint = paints.find((p) => p.type === "SOLID" && p.color);
+    if (!solidPaint?.color) {
+      return null;
+    }
+
+    const opacity = solidPaint.opacity ?? 1;
+    if (opacity === 1 || !background) {
+      return solidPaint.color;
+    }
+
+    // アルファブレンディング: result = fg * alpha + bg * (1 - alpha)
+    return {
+      r: solidPaint.color.r * opacity + background.r * (1 - opacity),
+      g: solidPaint.color.g * opacity + background.g * (1 - opacity),
+      b: solidPaint.color.b * opacity + background.b * (1 - opacity),
+    };
   }
 }

@@ -75,6 +75,11 @@ export class DesignSystemSettingsManager {
    * 設定を保存する
    */
   async save(settings: DesignSystemSettings): Promise<void> {
+    const validation = this.validate(settings);
+    if (!validation.isValid) {
+      throw new Error(`無効な設定: ${validation.errors.join(", ")}`);
+    }
+
     try {
       await figma.clientStorage.setAsync(STORAGE_KEY, settings);
       this.currentSettings = { ...settings };
@@ -137,9 +142,15 @@ export class DesignSystemSettingsManager {
     ruleId: MappingRuleId,
     updates: Partial<MappingRule>,
   ): Promise<void> {
-    const newRules = this.currentSettings.customRules.map((rule) =>
-      rule.id === ruleId ? { ...rule, ...updates } : rule,
-    );
+    const newRules = this.currentSettings.customRules.map((rule) => {
+      if (rule.id !== ruleId) return rule;
+      const merged = { ...rule, ...updates };
+      return {
+        ...merged,
+        condition: { ...merged.condition },
+        action: { ...merged.action },
+      };
+    });
     await this.update({ customRules: newRules });
   }
 

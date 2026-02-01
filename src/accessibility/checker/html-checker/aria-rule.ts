@@ -13,13 +13,6 @@ import type {
 import { createA11yIssueId } from "../../types";
 import { VALID_ARIA_ROLES } from "../../constants";
 
-let issueCounter = 0;
-
-function nextIssueId(): string {
-  issueCounter++;
-  return `aria-${issueCounter}`;
-}
-
 /**
  * ラベルが必要なインタラクティブ要素
  */
@@ -29,6 +22,8 @@ const INTERACTIVE_ELEMENTS = ["button", "input", "select", "textarea"] as const;
  * ARIA属性をチェックするルール
  */
 export class AriaRule implements A11yRule {
+  private issueCounter = 0;
+
   readonly id: A11yIssueType = "invalid-aria-role";
   readonly wcagCriterion: WcagCriterion = "4.1.2";
   readonly severity: A11ySeverity = "error";
@@ -45,6 +40,11 @@ export class AriaRule implements A11yRule {
     this.checkMissingLabels(allNodes, issues);
 
     return issues;
+  }
+
+  private nextIssueId(): string {
+    this.issueCounter++;
+    return `aria-${this.issueCounter}`;
   }
 
   private flattenNodes(nodes: readonly ParsedHtmlNode[]): ParsedHtmlNode[] {
@@ -69,7 +69,7 @@ export class AriaRule implements A11yRule {
         !VALID_ARIA_ROLES.includes(role as (typeof VALID_ARIA_ROLES)[number])
       ) {
         issues.push({
-          id: createA11yIssueId(nextIssueId()),
+          id: createA11yIssueId(this.nextIssueId()),
           type: "invalid-aria-role",
           severity: "error",
           wcagCriterion: "4.1.2",
@@ -103,7 +103,7 @@ export class AriaRule implements A11yRule {
     for (const [id, elements] of idMap) {
       if (elements.length > 1) {
         issues.push({
-          id: createA11yIssueId(nextIssueId()),
+          id: createA11yIssueId(this.nextIssueId()),
           type: "duplicate-aria-id",
           severity: "error",
           wcagCriterion: "4.1.2",
@@ -137,7 +137,7 @@ export class AriaRule implements A11yRule {
 
         if (!hasLabel) {
           issues.push({
-            id: createA11yIssueId(nextIssueId()),
+            id: createA11yIssueId(this.nextIssueId()),
             type: "missing-aria-label",
             severity: "error",
             wcagCriterion: "4.1.2",

@@ -15,17 +15,11 @@ import { TEXT_SIZE } from "../../constants";
 
 const FONT_SIZE_PATTERN = /font-size:\s*([\d.]+)(px|pt)/;
 
-let issueCounter = 0;
-
-function nextIssueId(): string {
-  issueCounter++;
-  return `text-size-${issueCounter}`;
-}
-
 /**
  * テキストサイズをチェックするルール
  */
 export class TextSizeRule implements A11yRule {
+  private issueCounter = 0;
   readonly id: A11yIssueType = "insufficient-text-size";
   readonly wcagCriterion: WcagCriterion = "1.4.4";
   readonly severity: A11ySeverity = "warning";
@@ -53,6 +47,11 @@ export class TextSizeRule implements A11yRule {
     }
   }
 
+  private nextIssueId(): string {
+    this.issueCounter++;
+    return `text-size-${this.issueCounter}`;
+  }
+
   private checkFontSize(
     node: ParsedHtmlNode,
     issues: A11yIssue[],
@@ -70,7 +69,7 @@ export class TextSizeRule implements A11yRule {
 
     if (fontSize < minSize) {
       issues.push({
-        id: createA11yIssueId(nextIssueId()),
+        id: createA11yIssueId(this.nextIssueId()),
         type: "insufficient-text-size",
         severity: "warning",
         wcagCriterion: "1.4.4",

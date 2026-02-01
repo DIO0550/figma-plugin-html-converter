@@ -16,17 +16,11 @@ import { RGB_RANGE } from "../../../converter/constants/color-constants";
 import { createA11yIssueId } from "../../types";
 import { checkContrast } from "../../contrast/contrast-calculator";
 
-let issueCounter = 0;
-
-function nextIssueId(): string {
-  issueCounter++;
-  return `figma-contrast-${issueCounter}`;
-}
-
 /**
  * Figmaテキストノードのコントラスト比をチェックするルール
  */
 export class FigmaContrastRule implements A11yRule {
+  private issueCounter = 0;
   readonly id: A11yIssueType = "low-contrast";
   readonly wcagCriterion: WcagCriterion = "1.4.3";
   readonly severity: A11ySeverity = "error";
@@ -47,6 +41,11 @@ export class FigmaContrastRule implements A11yRule {
     return issues;
   }
 
+  private nextIssueId(): string {
+    this.issueCounter++;
+    return `figma-contrast-${this.issueCounter}`;
+  }
+
   private checkTextNode(node: FigmaNodeInfo, issues: A11yIssue[]): void {
     const background = this.extractSolidColor(node.parentFills);
     const foreground = this.extractColorWithAlpha(node.fills, background);
@@ -59,7 +58,7 @@ export class FigmaContrastRule implements A11yRule {
 
     if (!result.meetsAA) {
       issues.push({
-        id: createA11yIssueId(nextIssueId()),
+        id: createA11yIssueId(this.nextIssueId()),
         type: "low-contrast",
         severity: "error",
         wcagCriterion: "1.4.3",

@@ -13,17 +13,11 @@ import type {
 import { createA11yIssueId } from "../../types";
 import { LANDMARK_ELEMENTS, HEADING_ELEMENTS } from "../../constants";
 
-let issueCounter = 0;
-
-function nextIssueId(): string {
-  issueCounter++;
-  return `semantic-${issueCounter}`;
-}
-
 /**
  * セマンティクスHTMLをチェックするルール
  */
 export class SemanticRule implements A11yRule {
+  private issueCounter = 0;
   readonly id: A11yIssueType = "missing-heading-hierarchy";
   readonly wcagCriterion: WcagCriterion = "1.3.1";
   readonly severity: A11ySeverity = "warning";
@@ -40,6 +34,11 @@ export class SemanticRule implements A11yRule {
     this.checkLangAttribute(allNodes, issues);
 
     return issues;
+  }
+
+  private nextIssueId(): string {
+    this.issueCounter++;
+    return `semantic-${this.issueCounter}`;
   }
 
   private flattenNodes(nodes: readonly ParsedHtmlNode[]): ParsedHtmlNode[] {
@@ -67,7 +66,7 @@ export class SemanticRule implements A11yRule {
 
       if (currentLevel - prevLevel > 1) {
         issues.push({
-          id: createA11yIssueId(nextIssueId()),
+          id: createA11yIssueId(this.nextIssueId()),
           type: "missing-heading-hierarchy",
           severity: "warning",
           wcagCriterion: "1.3.1",
@@ -96,7 +95,7 @@ export class SemanticRule implements A11yRule {
 
     if (!hasLandmark && nodes.length > 0) {
       issues.push({
-        id: createA11yIssueId(nextIssueId()),
+        id: createA11yIssueId(this.nextIssueId()),
         type: "missing-landmark",
         severity: "info",
         wcagCriterion: "1.3.1",
@@ -119,7 +118,7 @@ export class SemanticRule implements A11yRule {
 
     if (htmlNode && !htmlNode.attributes["lang"]) {
       issues.push({
-        id: createA11yIssueId(nextIssueId()),
+        id: createA11yIssueId(this.nextIssueId()),
         type: "missing-lang-attribute",
         severity: "error",
         wcagCriterion: "3.1.1",

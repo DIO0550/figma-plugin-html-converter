@@ -12,20 +12,20 @@ import type {
 import { createA11yIssueId } from "../../types";
 import { TEXT_SIZE } from "../../constants";
 
-let issueCounter = 0;
-
-function nextIssueId(): string {
-  issueCounter++;
-  return `figma-text-size-${issueCounter}`;
-}
-
 /**
  * Figmaテキストノードのフォントサイズをチェックするルール
  */
 export class FigmaTextSizeRule implements A11yRule {
+  private issueCounter = 0;
+
   readonly id: A11yIssueType = "insufficient-text-size";
   readonly wcagCriterion: WcagCriterion = "1.4.4";
   readonly severity: A11ySeverity = "warning";
+
+  private nextIssueId(): string {
+    this.issueCounter++;
+    return `figma-text-size-${this.issueCounter}`;
+  }
 
   check(context: A11yCheckContext): readonly A11yIssue[] {
     if (!context.figmaNodes) {
@@ -44,7 +44,7 @@ export class FigmaTextSizeRule implements A11yRule {
       }
       if (node.fontSize < minSize) {
         issues.push({
-          id: createA11yIssueId(nextIssueId()),
+          id: createA11yIssueId(this.nextIssueId()),
           type: "insufficient-text-size",
           severity: "warning",
           wcagCriterion: "1.4.4",

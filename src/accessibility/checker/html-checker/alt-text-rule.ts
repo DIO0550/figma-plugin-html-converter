@@ -12,17 +12,12 @@ import type {
 } from "../../types";
 import { createA11yIssueId } from "../../types";
 
-let issueCounter = 0;
-
-function nextIssueId(): string {
-  issueCounter++;
-  return `alt-${issueCounter}`;
-}
-
 /**
  * img要素のalt属性をチェックするルール
  */
 export class AltTextRule implements A11yRule {
+  private issueCounter = 0;
+
   readonly id: A11yIssueType = "missing-alt-text";
   readonly wcagCriterion: WcagCriterion = "1.1.1";
   readonly severity: A11ySeverity = "error";
@@ -50,6 +45,11 @@ export class AltTextRule implements A11yRule {
     }
   }
 
+  private nextIssueId(): string {
+    this.issueCounter++;
+    return `alt-${this.issueCounter}`;
+  }
+
   private checkImgNode(node: ParsedHtmlNode, issues: A11yIssue[]): void {
     // role="presentation" or role="none" の場合はスキップ（装飾画像）
     const role = node.attributes["role"];
@@ -61,7 +61,7 @@ export class AltTextRule implements A11yRule {
 
     if (alt === undefined) {
       issues.push({
-        id: createA11yIssueId(nextIssueId()),
+        id: createA11yIssueId(this.nextIssueId()),
         type: "missing-alt-text",
         severity: "error",
         wcagCriterion: "1.1.1",
@@ -75,7 +75,7 @@ export class AltTextRule implements A11yRule {
       });
     } else if (alt === "") {
       issues.push({
-        id: createA11yIssueId(nextIssueId()),
+        id: createA11yIssueId(this.nextIssueId()),
         type: "empty-alt-text",
         severity: "warning",
         wcagCriterion: "1.1.1",

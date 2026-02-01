@@ -12,6 +12,7 @@ import type {
   FigmaPaint,
 } from "../../types";
 import type { RGB } from "../../../converter/models/colors";
+import { RGB_RANGE } from "../../../converter/constants/color-constants";
 import { createA11yIssueId } from "../../types";
 import { checkContrast } from "../../contrast/contrast-calculator";
 
@@ -69,7 +70,7 @@ export class FigmaContrastRule implements A11yRule {
           textContent: node.name,
         },
         message: `コントラスト比が不十分です（${result.ratio.toFixed(2)}:1）。AA基準は4.5:1以上です`,
-        details: `前景色: rgb(${Math.round(foreground.r * 255)}, ${Math.round(foreground.g * 255)}, ${Math.round(foreground.b * 255)}) / 背景色: rgb(${Math.round(background.r * 255)}, ${Math.round(background.g * 255)}, ${Math.round(background.b * 255)})`,
+        details: `前景色: rgb(${Math.round(foreground.r * RGB_RANGE.MAX_VALUE)}, ${Math.round(foreground.g * RGB_RANGE.MAX_VALUE)}, ${Math.round(foreground.b * RGB_RANGE.MAX_VALUE)}) / 背景色: rgb(${Math.round(background.r * RGB_RANGE.MAX_VALUE)}, ${Math.round(background.g * RGB_RANGE.MAX_VALUE)}, ${Math.round(background.b * RGB_RANGE.MAX_VALUE)})`,
       });
     }
   }

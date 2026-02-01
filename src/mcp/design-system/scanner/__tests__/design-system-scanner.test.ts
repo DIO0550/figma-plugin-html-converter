@@ -426,4 +426,43 @@ describe("DesignSystemScanner", () => {
       expect(textStyles[0].type).toBe("TEXT");
     });
   });
+
+  describe("clearCache", () => {
+    it("should clear cached design system", async () => {
+      // Arrange
+      const scanner = DesignSystemScanner.create();
+      await scanner.scan();
+      expect(scanner.getCachedDesignSystem()).not.toBeNull();
+
+      // Act
+      scanner.clearCache();
+
+      // Assert
+      expect(scanner.getCachedDesignSystem()).toBeNull();
+    });
+
+    it("should return undefined for findStyleByName after cache clear", async () => {
+      // Arrange
+      const mockPaintStyles: MockPaintStyle[] = [
+        {
+          id: "S:paint1",
+          name: "Primary/Blue",
+          description: "",
+          key: "key1",
+          paints: [],
+          type: "PAINT",
+        },
+      ];
+      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+      const scanner = DesignSystemScanner.create();
+      await scanner.scan();
+
+      // Act
+      scanner.clearCache();
+      const style = scanner.findStyleByName("Primary/Blue");
+
+      // Assert
+      expect(style).toBeUndefined();
+    });
+  });
 });

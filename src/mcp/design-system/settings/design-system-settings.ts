@@ -61,7 +61,11 @@ export class DesignSystemSettingsManager {
       } else {
         this.currentSettings = { ...DEFAULT_DESIGN_SYSTEM_SETTINGS };
       }
-    } catch {
+    } catch (error) {
+      console.warn(
+        "[DesignSystemSettingsManager] 設定の読み込みに失敗、デフォルト設定を使用:",
+        error instanceof Error ? error.message : error,
+      );
       this.currentSettings = { ...DEFAULT_DESIGN_SYSTEM_SETTINGS };
     }
     return this.currentSettings;
@@ -166,6 +170,9 @@ export class DesignSystemSettingsManager {
       }
       if (!rule.action) {
         errors.push("カスタムルールにはアクションが必要です");
+      }
+      if (rule.priority !== undefined && rule.priority < 0) {
+        errors.push("カスタムルールの優先度は0以上で指定してください");
       }
     }
 

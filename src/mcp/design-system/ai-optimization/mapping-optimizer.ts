@@ -57,6 +57,19 @@ const STYLE_NOT_FOUND_CONFIDENCE = 0.2;
 /** バリデーション有効/無効の閾値 */
 const VALIDATION_THRESHOLD = 0.5;
 
+/** テキスト系HTML要素のタグ名一覧 */
+const TEXT_ELEMENT_TAGS = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "a",
+];
+
 /**
  * マッピング最適化クラス
  */
@@ -201,8 +214,7 @@ export class MappingOptimizer {
     }
 
     // タイポグラフィスタイルとテキスト要素の対応
-    const textElements = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "a"];
-    const isTextElement = textElements.includes(tagNameLower);
+    const isTextElement = TEXT_ELEMENT_TAGS.includes(tagNameLower);
     const isTypographyStyle =
       styleNameLower.includes("typography") ||
       styleNameLower.includes("heading") ||

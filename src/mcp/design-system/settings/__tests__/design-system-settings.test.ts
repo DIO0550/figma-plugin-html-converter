@@ -73,6 +73,44 @@ describe("DesignSystemSettingsManager", () => {
       // Assert
       expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
     });
+
+    it("should return default settings when saved data is invalid type", async () => {
+      // Arrange
+      mockStorage[STORAGE_KEY] = "invalid string";
+      const manager = DesignSystemSettingsManager.create();
+
+      // Act
+      const settings = await manager.load();
+
+      // Assert
+      expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
+    });
+
+    it("should return default settings when saved data has missing fields", async () => {
+      // Arrange
+      mockStorage[STORAGE_KEY] = { enabled: true };
+      const manager = DesignSystemSettingsManager.create();
+
+      // Act
+      const settings = await manager.load();
+
+      // Assert
+      expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
+    });
+
+    it("should return default settings when storage throws error", async () => {
+      // Arrange
+      mockFigma.clientStorage.getAsync.mockRejectedValueOnce(
+        new Error("Storage error"),
+      );
+      const manager = DesignSystemSettingsManager.create();
+
+      // Act
+      const settings = await manager.load();
+
+      // Assert
+      expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
+    });
   });
 
   describe("save", () => {

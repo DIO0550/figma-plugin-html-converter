@@ -68,7 +68,13 @@ export class DesignSystemMapper {
 
   private constructor(designSystem: DesignSystem, rules: MappingRule[] = []) {
     this.designSystem = designSystem;
-    this.rules = rules.map((rule) => ({ ...rule }));
+    // NOTE: condition/actionのネストされたオブジェクトもコピーし、
+    // 外部からの変更が内部状態に影響しないようにする
+    this.rules = rules.map((rule) => ({
+      ...rule,
+      condition: { ...rule.condition },
+      action: { ...rule.action },
+    }));
     this.sortRulesByPriority();
   }
 

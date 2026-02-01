@@ -1,5 +1,9 @@
 /**
  * デザインシステム適用機能の型定義
+ *
+ * NOTE: Paint, Effect, LayoutGrid等のFigma Plugin API型は
+ * @figma/plugin-typingsによりグローバルに定義されているため、
+ * 明示的なimport文は不要。
  */
 import type { Brand } from "../../types/brand";
 
@@ -402,6 +406,8 @@ const RANDOM_STRING_END = 8;
 
 /**
  * ID生成用のカウンター
+ * NOTE: モジュールレベルのグローバル変数のため、テスト間で状態が共有される。
+ * crypto.randomUUID()が利用可能な環境では使用されない（フォールバック専用）。
  */
 let ruleIdCounter = 0;
 

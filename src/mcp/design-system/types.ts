@@ -349,7 +349,7 @@ export interface DesignSystemSettings {
 }
 
 /** デフォルトの最小信頼度閾値（50%: 半分以上の確信があるマッピングを表示） */
-const DEFAULT_MIN_CONFIDENCE = 0.5;
+export const DEFAULT_MIN_CONFIDENCE = 0.5;
 
 /**
  * デフォルト設定
@@ -395,6 +395,7 @@ export function createMappingRuleId(value: string): MappingRuleId {
 const UUID_ARRAY_SIZE = 4;
 const HEX_PAD_LENGTH = 8;
 const HEX_RADIX = 16;
+/** 36進数（0-9, a-z）を使用してURLセーフな短い文字列を生成 */
 const BASE36_RADIX = 36;
 const RANDOM_STRING_START = 2;
 const RANDOM_STRING_END = 8;

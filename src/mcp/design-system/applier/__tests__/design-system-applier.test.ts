@@ -56,28 +56,34 @@ describe("DesignSystemApplier", () => {
 
   describe("create", () => {
     it("should create applier instance", () => {
+      // Act
       const applier = DesignSystemApplier.create();
 
+      // Assert
       expect(applier).toBeInstanceOf(DesignSystemApplier);
     });
   });
 
   describe("applyToFigmaNodeConfig", () => {
     it("should apply text style to FigmaNodeConfig", () => {
+      // Arrange
       const designSystem = createMockDesignSystem();
       const match = createMockMatch(designSystem);
       const applier = DesignSystemApplier.create();
 
+      // Act
       const config = applier.applyToFigmaNodeConfig(match, {
         type: "TEXT",
         name: "h1",
       });
 
+      // Assert
       expect(config.fontSize).toBe(32);
       expect(config.fontWeight).toBe(700);
     });
 
     it("should apply paint style to FigmaNodeConfig", () => {
+      // Arrange
       const designSystem = createMockDesignSystem();
       const match: MappingMatch = {
         rule: {
@@ -93,16 +99,19 @@ describe("DesignSystemApplier", () => {
       };
       const applier = DesignSystemApplier.create();
 
+      // Act
       const config = applier.applyToFigmaNodeConfig(match, {
         type: "FRAME",
         name: "div",
       });
 
+      // Assert
       expect(config.fills).toBeDefined();
       expect(config.fills).toHaveLength(1);
     });
 
     it("should return original config when no style is applied", () => {
+      // Arrange
       const match: MappingMatch = {
         rule: createMockRule(),
         elementPath: "/html/body/div",
@@ -112,14 +121,17 @@ describe("DesignSystemApplier", () => {
       const applier = DesignSystemApplier.create();
       const originalConfig = { type: "FRAME" as const, name: "div" };
 
+      // Act
       const config = applier.applyToFigmaNodeConfig(match, originalConfig);
 
+      // Assert
       expect(config).toEqual(originalConfig);
     });
   });
 
   describe("applyMatches", () => {
     it("should apply multiple matches", () => {
+      // Arrange
       const designSystem = createMockDesignSystem();
       const matches: MappingMatch[] = [
         createMockMatch(designSystem),
@@ -130,16 +142,19 @@ describe("DesignSystemApplier", () => {
       ];
       const applier = DesignSystemApplier.create();
 
+      // Act
       const result = applier.applyMatches(matches, {
         minConfidence: 0.5,
       });
 
+      // Assert
       expect(result.success).toBe(true);
       expect(result.appliedCount).toBe(2);
       expect(result.skippedCount).toBe(0);
     });
 
     it("should skip matches with low confidence", () => {
+      // Arrange
       const designSystem = createMockDesignSystem();
       const matches: MappingMatch[] = [
         { ...createMockMatch(designSystem), confidence: 0.3 },
@@ -147,10 +162,12 @@ describe("DesignSystemApplier", () => {
       ];
       const applier = DesignSystemApplier.create();
 
+      // Act
       const result = applier.applyMatches(matches, {
         minConfidence: 0.5,
       });
 
+      // Assert
       expect(result.appliedCount).toBe(1);
       expect(result.skippedCount).toBe(1);
     });
@@ -158,17 +175,21 @@ describe("DesignSystemApplier", () => {
 
   describe("generateCssFromMatch", () => {
     it("should generate CSS string from match", () => {
+      // Arrange
       const designSystem = createMockDesignSystem();
       const match = createMockMatch(designSystem);
       const applier = DesignSystemApplier.create();
 
+      // Act
       const css = applier.generateCssFromMatch(match);
 
+      // Assert
       expect(css).toContain("font-family");
       expect(css).toContain("font-size");
     });
 
     it("should return empty string when no style is applied", () => {
+      // Arrange
       const match: MappingMatch = {
         rule: createMockRule(),
         elementPath: "/html/body/div",
@@ -177,20 +198,25 @@ describe("DesignSystemApplier", () => {
       };
       const applier = DesignSystemApplier.create();
 
+      // Act
       const css = applier.generateCssFromMatch(match);
 
+      // Assert
       expect(css).toBe("");
     });
   });
 
   describe("previewApply", () => {
     it("should generate preview of apply result", () => {
+      // Arrange
       const designSystem = createMockDesignSystem();
       const match = createMockMatch(designSystem);
       const applier = DesignSystemApplier.create();
 
+      // Act
       const preview = applier.previewApply(match);
 
+      // Assert
       expect(preview.elementPath).toBe("/html/body/h1");
       expect(preview.styleName).toBe("Typography/Heading/H1");
       expect(preview.changes).toBeDefined();

@@ -58,13 +58,16 @@ describe("StyleExtractor", () => {
 
   describe("extractColorInfo", () => {
     it("should extract color info from solid color", () => {
+      // Arrange
       const style = createMockPaintStyle({
         paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
       });
       const extractor = StyleExtractor.create();
 
+      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
+      // Assert
       expect(colorInfo).toEqual({
         type: "solid",
         hex: "#ff0000",
@@ -74,17 +77,21 @@ describe("StyleExtractor", () => {
     });
 
     it("should extract color with opacity", () => {
+      // Arrange
       const style = createMockPaintStyle({
         paints: [{ type: "SOLID", color: { r: 0, g: 0, b: 1 }, opacity: 0.5 }],
       });
       const extractor = StyleExtractor.create();
 
+      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
+      // Assert
       expect(colorInfo?.opacity).toBe(0.5);
     });
 
     it("should extract gradient info from gradient paint", () => {
+      // Arrange
       const style = createMockPaintStyle({
         paints: [
           {
@@ -102,28 +109,36 @@ describe("StyleExtractor", () => {
       });
       const extractor = StyleExtractor.create();
 
+      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
+      // Assert
       expect(colorInfo?.type).toBe("gradient");
     });
 
     it("should return null for empty paints", () => {
+      // Arrange
       const style = createMockPaintStyle({ paints: [] });
       const extractor = StyleExtractor.create();
 
+      // Act
       const colorInfo = extractor.extractColorInfo(style);
 
+      // Assert
       expect(colorInfo).toBeNull();
     });
   });
 
   describe("extractTypographyInfo", () => {
     it("should extract typography info from text style", () => {
+      // Arrange
       const style = createMockTextStyle();
       const extractor = StyleExtractor.create();
 
+      // Act
       const typographyInfo = extractor.extractTypographyInfo(style);
 
+      // Assert
       expect(typographyInfo).toEqual({
         fontFamily: "Inter",
         fontSize: 32,
@@ -135,22 +150,28 @@ describe("StyleExtractor", () => {
     });
 
     it("should use normal for AUTO lineHeight", () => {
+      // Arrange
       const style = createMockTextStyle({ lineHeight: "AUTO" });
       const extractor = StyleExtractor.create();
 
+      // Act
       const typographyInfo = extractor.extractTypographyInfo(style);
 
+      // Assert
       expect(typographyInfo.cssValue).toBe("700 32px/normal Inter");
     });
   });
 
   describe("extractEffectInfo", () => {
     it("should extract effect info from drop shadow", () => {
+      // Arrange
       const style = createMockEffectStyle();
       const extractor = StyleExtractor.create();
 
+      // Act
       const effectInfo = extractor.extractEffectInfo(style);
 
+      // Assert
       expect(effectInfo).toHaveLength(1);
       expect(effectInfo[0]).toMatchObject({
         type: "drop-shadow",
@@ -161,6 +182,7 @@ describe("StyleExtractor", () => {
     });
 
     it("should extract multiple effects", () => {
+      // Arrange
       const style = createMockEffectStyle({
         effects: [
           {
@@ -185,12 +207,15 @@ describe("StyleExtractor", () => {
       });
       const extractor = StyleExtractor.create();
 
+      // Act
       const effectInfo = extractor.extractEffectInfo(style);
 
+      // Assert
       expect(effectInfo).toHaveLength(2);
     });
 
     it("should skip invisible effects", () => {
+      // Arrange
       const style = createMockEffectStyle({
         effects: [
           {
@@ -206,14 +231,17 @@ describe("StyleExtractor", () => {
       });
       const extractor = StyleExtractor.create();
 
+      // Act
       const effectInfo = extractor.extractEffectInfo(style);
 
+      // Assert
       expect(effectInfo).toHaveLength(0);
     });
   });
 
   describe("categorizeStyles", () => {
     it("should categorize styles by type", () => {
+      // Arrange
       const styles: DesignSystemStyle[] = [
         createMockPaintStyle({ name: "Colors/Primary" }),
         createMockPaintStyle({
@@ -225,8 +253,10 @@ describe("StyleExtractor", () => {
       ];
       const extractor = StyleExtractor.create();
 
+      // Act
       const categorized = extractor.categorizeStyles(styles);
 
+      // Assert
       expect(categorized.paint).toHaveLength(2);
       expect(categorized.text).toHaveLength(1);
       expect(categorized.effect).toHaveLength(1);
@@ -236,6 +266,7 @@ describe("StyleExtractor", () => {
 
   describe("findMatchingStyle", () => {
     it("should find styles by name pattern", () => {
+      // Arrange
       const styles: DesignSystemStyle[] = [
         createMockPaintStyle({ name: "Colors/Primary/Blue" }),
         createMockPaintStyle({
@@ -249,43 +280,54 @@ describe("StyleExtractor", () => {
       ];
       const extractor = StyleExtractor.create();
 
+      // Act
       const matches = extractor.findMatchingStyles(styles, "Primary");
 
+      // Assert
       expect(matches).toHaveLength(2);
       expect(matches.every((s) => s.name.includes("Primary"))).toBe(true);
     });
 
     it("should search case-insensitively", () => {
+      // Arrange
       const styles: DesignSystemStyle[] = [
         createMockPaintStyle({ name: "Colors/PRIMARY/Blue" }),
       ];
       const extractor = StyleExtractor.create();
 
+      // Act
       const matches = extractor.findMatchingStyles(styles, "primary");
 
+      // Assert
       expect(matches).toHaveLength(1);
     });
   });
 
   describe("toCssProperties", () => {
     it("should convert paint style to CSS properties", () => {
+      // Arrange
       const style = createMockPaintStyle({
         paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
       });
       const extractor = StyleExtractor.create();
 
+      // Act
       const cssProps = extractor.toCssProperties(style);
 
+      // Assert
       expect(cssProps).toHaveProperty("background-color");
       expect(cssProps["background-color"]).toBe("#ff0000");
     });
 
     it("should convert text style to CSS properties", () => {
+      // Arrange
       const style = createMockTextStyle();
       const extractor = StyleExtractor.create();
 
+      // Act
       const cssProps = extractor.toCssProperties(style);
 
+      // Assert
       expect(cssProps).toHaveProperty("font-family");
       expect(cssProps).toHaveProperty("font-size");
       expect(cssProps).toHaveProperty("font-weight");
@@ -294,11 +336,14 @@ describe("StyleExtractor", () => {
     });
 
     it("should convert effect style to CSS properties", () => {
+      // Arrange
       const style = createMockEffectStyle();
       const extractor = StyleExtractor.create();
 
+      // Act
       const cssProps = extractor.toCssProperties(style);
 
+      // Assert
       expect(cssProps).toHaveProperty("box-shadow");
     });
   });

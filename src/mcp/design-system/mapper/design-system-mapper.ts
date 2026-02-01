@@ -40,8 +40,6 @@ const MAX_CONFIDENCE = 1.0;
 
 /** タグ名のみの基本ルール優先度 */
 const PRIORITY_TAG_ONLY = 100;
-/** タグ名＋クラス名の複合ルール優先度 */
-const PRIORITY_TAG_AND_CLASS = 150;
 
 /**
  * マッチング対象の要素情報

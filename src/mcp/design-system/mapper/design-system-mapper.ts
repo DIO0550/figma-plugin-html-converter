@@ -150,13 +150,13 @@ export class DesignSystemMapper {
         enabled: true,
         isCustom: false,
       },
-      // ボタンスタイル（コンポーネント適用: 複合条件優先度）
+      // ボタンスタイル（コンポーネント適用: タグ名のみ）
       {
         id: createMappingRuleId("default-button"),
         name: "Button",
         condition: { tagName: "button" },
         action: { applyComponentName: "Button/Default", category: "layout" },
-        priority: PRIORITY_TAG_AND_CLASS,
+        priority: PRIORITY_TAG_ONLY,
         enabled: true,
         isCustom: false,
       },
@@ -167,7 +167,11 @@ export class DesignSystemMapper {
    * ルールを追加する
    */
   addRule(rule: MappingRule): void {
-    this.rules.push(rule);
+    this.rules.push({
+      ...rule,
+      condition: { ...rule.condition },
+      action: { ...rule.action },
+    });
     this.sortRulesByPriority();
   }
 
@@ -184,7 +188,12 @@ export class DesignSystemMapper {
   updateRule(ruleId: MappingRuleId, updates: Partial<MappingRule>): void {
     const index = this.rules.findIndex((rule) => rule.id === ruleId);
     if (index !== -1) {
-      this.rules[index] = { ...this.rules[index], ...updates };
+      const merged = { ...this.rules[index], ...updates };
+      this.rules[index] = {
+        ...merged,
+        condition: { ...merged.condition },
+        action: { ...merged.action },
+      };
       this.sortRulesByPriority();
     }
   }

@@ -13,6 +13,8 @@ import type {
 import { createA11yIssueId } from "../../types";
 import { TEXT_SIZE } from "../../constants";
 
+const FONT_SIZE_PATTERN = /font-size:\s*([\d.]+)(px|pt)/;
+
 let issueCounter = 0;
 
 function nextIssueId(): string {
@@ -84,7 +86,7 @@ export class TextSizeRule implements A11yRule {
   }
 
   private parseFontSize(style: string): number | null {
-    const match = style.match(/font-size:\s*([\d.]+)(px|pt)/);
+    const match = style.match(FONT_SIZE_PATTERN);
     if (!match) {
       return null;
     }

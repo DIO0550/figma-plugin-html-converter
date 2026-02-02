@@ -10,11 +10,22 @@ export function flattenNodes(
   nodes: readonly ParsedHtmlNode[],
 ): ParsedHtmlNode[] {
   const result: ParsedHtmlNode[] = [];
-  for (const node of nodes) {
+  const stack: ParsedHtmlNode[] = [];
+
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    stack.push(nodes[i]);
+  }
+
+  while (stack.length > 0) {
+    const node = stack.pop() as ParsedHtmlNode;
     result.push(node);
+
     if (node.children.length > 0) {
-      result.push(...flattenNodes(node.children));
+      for (let i = node.children.length - 1; i >= 0; i--) {
+        stack.push(node.children[i]);
+      }
     }
   }
+
   return result;
 }

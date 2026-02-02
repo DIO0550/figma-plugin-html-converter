@@ -28,6 +28,7 @@ export class FigmaTextSizeRule implements A11yRule {
   }
 
   check(context: A11yCheckContext): readonly A11yIssue[] {
+    this.issueCounter = 0;
     if (!context.figmaNodes) {
       return [];
     }

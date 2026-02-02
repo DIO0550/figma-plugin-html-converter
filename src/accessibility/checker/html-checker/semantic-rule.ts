@@ -24,6 +24,7 @@ export class SemanticRule implements A11yRule {
   readonly severity: A11ySeverity = "warning";
 
   check(context: A11yCheckContext): readonly A11yIssue[] {
+    this.issueCounter = 0;
     if (!context.parsedNodes) {
       return [];
     }

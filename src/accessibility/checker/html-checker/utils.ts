@@ -17,7 +17,8 @@ export function flattenNodes(
   }
 
   while (stack.length > 0) {
-    const node = stack.pop() as ParsedHtmlNode;
+    const node = stack.pop();
+    if (!node) break;
     result.push(node);
 
     if (node.children.length > 0) {

@@ -27,8 +27,8 @@ const rule = new AriaRule();
 // ルールメタ情報
 // =============================================================================
 
-test("ルールIDがinvalid-aria-roleである", () => {
-  expect(rule.id).toBe("invalid-aria-role");
+test("ルールIDがaria-attributesである", () => {
+  expect(rule.id).toBe("aria-attributes");
 });
 
 test("WCAG基準が4.1.2である", () => {

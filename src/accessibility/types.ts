@@ -54,11 +54,13 @@ export type A11yIssueType =
   | "missing-aria-label"
   | "invalid-aria-role"
   | "duplicate-aria-id"
+  | "aria-attributes"
   | "low-contrast"
   | "insufficient-text-size"
   | "missing-heading-hierarchy"
   | "missing-landmark"
-  | "missing-lang-attribute";
+  | "missing-lang-attribute"
+  | "semantic-html";
 
 // =============================================================================
 // 検出された問題

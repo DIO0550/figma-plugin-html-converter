@@ -198,11 +198,13 @@ export const ALL_A11Y_RULES: readonly A11yIssueType[] = [
   "missing-aria-label",
   "invalid-aria-role",
   "duplicate-aria-id",
+  "aria-attributes",
   "low-contrast",
   "insufficient-text-size",
   "missing-heading-hierarchy",
   "missing-landmark",
   "missing-lang-attribute",
+  "semantic-html",
 ] as const;
 
 /**

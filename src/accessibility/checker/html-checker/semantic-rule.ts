@@ -19,7 +19,7 @@ import { flattenNodes } from "./utils";
  */
 export class SemanticRule implements A11yRule {
   private issueCounter = 0;
-  readonly id: A11yIssueType = "missing-heading-hierarchy";
+  readonly id: A11yIssueType = "semantic-html";
   readonly wcagCriterion: WcagCriterion = "1.3.1";
   readonly severity: A11ySeverity = "warning";
 

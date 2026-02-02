@@ -27,8 +27,8 @@ const rule = new SemanticRule();
 // ルールメタ情報
 // =============================================================================
 
-test("ルールIDがmissing-heading-hierarchyである", () => {
-  expect(rule.id).toBe("missing-heading-hierarchy");
+test("ルールIDがsemantic-htmlである", () => {
+  expect(rule.id).toBe("semantic-html");
 });
 
 test("WCAG基準が1.3.1である", () => {

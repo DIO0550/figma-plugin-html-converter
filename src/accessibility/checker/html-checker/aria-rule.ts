@@ -25,7 +25,7 @@ const INTERACTIVE_ELEMENTS = ["button", "input", "select", "textarea"] as const;
 export class AriaRule implements A11yRule {
   private issueCounter = 0;
 
-  readonly id: A11yIssueType = "invalid-aria-role";
+  readonly id: A11yIssueType = "aria-attributes";
   readonly wcagCriterion: WcagCriterion = "4.1.2";
   readonly severity: A11ySeverity = "error";
 

@@ -37,16 +37,16 @@ export class A11yAIAnalyzer {
     }
 
     try {
+      let timeoutId: ReturnType<typeof setTimeout>;
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(
+        timeoutId = setTimeout(
           () => reject(new Error("AI analysis timed out")),
           AI_ANALYSIS.TIMEOUT_MS,
         );
       });
 
-      const requestPromise = this.mcpClient.sendRequest<A11yAIAnalysis>(
-        "accessibility/analyze",
-        {
+      const requestPromise = this.mcpClient
+        .sendRequest<A11yAIAnalysis>("accessibility/analyze", {
           issues: issues.map((issue) => ({
             type: issue.type,
             severity: issue.severity,
@@ -54,8 +54,8 @@ export class A11yAIAnalyzer {
             element: issue.element,
             message: issue.message,
           })),
-        },
-      );
+        })
+        .finally(() => clearTimeout(timeoutId));
 
       return await Promise.race([requestPromise, timeoutPromise]);
     } catch {

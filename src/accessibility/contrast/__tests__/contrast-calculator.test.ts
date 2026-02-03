@@ -69,3 +69,42 @@ test("checkContrastは前景色と背景色をそのまま保持する", () => {
   expect(result.foreground).toEqual(fg);
   expect(result.background).toEqual(bg);
 });
+
+// =============================================================================
+// 境界値・エッジケース
+// =============================================================================
+
+test("範囲外の負の値はクランプされて正しく計算される", () => {
+  const ratio = calculateContrastRatio(
+    { r: -0.1, g: 0.5, b: 0.5 },
+    { r: 1, g: 1, b: 1 },
+  );
+  expect(ratio).toBeGreaterThanOrEqual(1);
+  expect(ratio).toBeLessThanOrEqual(21);
+});
+
+test("範囲外の1を超える値はクランプされて正しく計算される", () => {
+  const ratio = calculateContrastRatio(
+    { r: 1.5, g: 0.5, b: 0.5 },
+    { r: 0, g: 0, b: 0 },
+  );
+  expect(ratio).toBeGreaterThanOrEqual(1);
+  expect(ratio).toBeLessThanOrEqual(21);
+});
+
+test("極小値に近い色のコントラスト比が正しく計算される", () => {
+  const ratio = calculateContrastRatio(
+    { r: 0.001, g: 0.001, b: 0.001 },
+    { r: 1, g: 1, b: 1 },
+  );
+  expect(ratio).toBeGreaterThan(20);
+});
+
+test("純粋な赤と白のコントラスト比が計算される", () => {
+  const ratio = calculateContrastRatio(
+    { r: 1, g: 0, b: 0 },
+    { r: 1, g: 1, b: 1 },
+  );
+  expect(ratio).toBeGreaterThan(1);
+  expect(ratio).toBeLessThan(21);
+});

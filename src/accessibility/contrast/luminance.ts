@@ -30,9 +30,13 @@ export function srgbToLinear(srgb: number): number {
  * @returns 相対輝度（0-1）
  */
 export function calculateRelativeLuminance(color: RGB): number {
-  const rLinear = srgbToLinear(color.r);
-  const gLinear = srgbToLinear(color.g);
-  const bLinear = srgbToLinear(color.b);
+  const r = Math.max(0, Math.min(1, color.r));
+  const g = Math.max(0, Math.min(1, color.g));
+  const b = Math.max(0, Math.min(1, color.b));
+
+  const rLinear = srgbToLinear(r);
+  const gLinear = srgbToLinear(g);
+  const bLinear = srgbToLinear(b);
 
   return (
     RELATIVE_LUMINANCE_WEIGHTS.RED * rLinear +

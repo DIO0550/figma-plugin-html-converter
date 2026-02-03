@@ -60,7 +60,11 @@ export const SRGB_LINEAR = {
 } as const;
 
 /**
- * 相対輝度の重み係数（WCAG準拠: ITU-R BT.709）
+ * 相対輝度の重み係数（WCAG 2.1準拠: ITU-R BT.709）
+ *
+ * 注: converter/constants/color-constants.tsのLUMINANCE_WEIGHTS（0.299, 0.587, 0.114）とは異なる値です。
+ * - こちら: WCAG 2.1の相対輝度計算用（リニアRGB空間での重み付け）
+ * - LUMINANCE_WEIGHTS: グレースケール変換用（知覚的な明るさの重み付け）
  */
 export const RELATIVE_LUMINANCE_WEIGHTS = {
   RED: 0.2126,

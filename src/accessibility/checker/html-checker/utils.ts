@@ -17,8 +17,8 @@ export function flattenNodes(
   }
 
   while (stack.length > 0) {
-    const node = stack.pop();
-    if (!node) break;
+    // stack.length > 0 がループ条件で保証されているため非null断言を使用
+    const node = stack.pop()!;
     result.push(node);
 
     if (node.children.length > 0) {

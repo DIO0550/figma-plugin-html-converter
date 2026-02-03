@@ -94,6 +94,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
+      console.error("Accessibility check error:", error);
       figma.ui.postMessage({
         type: "a11y-error",
         message: `アクセシビリティチェックでエラーが発生しました: ${errorMessage}`,

@@ -52,17 +52,25 @@ const SUGGESTION_MAP: Record<string, SuggestionGenerator> = {
     wcagReference: WCAG_REFERENCE_URLS[issue.wcagCriterion],
   }),
 
-  "insufficient-text-size": (issue) => ({
-    issueId: issue.id,
-    description:
-      "フォントサイズを12px以上に変更してください。小さすぎるテキストは読みにくくなります",
-    fixCode: {
-      before: "font-size: (現在の値)",
-      after: "font-size: 12px",
-      language: "css",
-    },
-    wcagReference: WCAG_REFERENCE_URLS[issue.wcagCriterion],
-  }),
+  "insufficient-text-size": (issue) => {
+    const style = issue.element.attributes?.["style"] ?? "";
+    const fontSizeMatch = style.match(/font-size:\s*([\d.]+(?:px|pt))/);
+    const currentValue = fontSizeMatch ? fontSizeMatch[1] : undefined;
+
+    return {
+      issueId: issue.id,
+      description:
+        "フォントサイズを12px以上に変更してください。小さすぎるテキストは読みにくくなります",
+      fixCode: currentValue
+        ? {
+            before: `font-size: ${currentValue}`,
+            after: "font-size: 12px",
+            language: "css",
+          }
+        : undefined,
+      wcagReference: WCAG_REFERENCE_URLS[issue.wcagCriterion],
+    };
+  },
 
   "invalid-aria-role": (issue) => ({
     issueId: issue.id,

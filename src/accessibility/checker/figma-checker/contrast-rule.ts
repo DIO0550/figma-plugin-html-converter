@@ -95,6 +95,7 @@ export class FigmaContrastRule implements A11yRule {
       return null;
     }
 
+    // Figma API仕様: opacity未定義の場合は1.0（完全不透明）として扱う
     const opacity = solidPaint.opacity ?? 1;
     if (opacity === 1 || !background) {
       return solidPaint.color;

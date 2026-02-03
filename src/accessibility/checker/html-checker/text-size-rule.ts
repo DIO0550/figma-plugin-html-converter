@@ -13,7 +13,7 @@ import type {
 import { createA11yIssueId } from "../../types";
 import { TEXT_SIZE } from "../../constants";
 
-const FONT_SIZE_PATTERN = /font-size:\s*([\d.]+)(px|pt)/;
+const FONT_SIZE_PATTERN = /font-size:\s*([\d.]+)(px|pt|em|rem|%)/;
 
 /**
  * テキストサイズをチェックするルール
@@ -94,9 +94,18 @@ export class TextSizeRule implements A11yRule {
     const value = parseFloat(match[1]);
     const unit = match[2];
 
-    if (unit === "pt") {
-      return value * TEXT_SIZE.PT_TO_PX_RATIO;
+    switch (unit) {
+      case "pt":
+        return value * TEXT_SIZE.PT_TO_PX_RATIO;
+      case "px":
+        return value;
+      case "em":
+      case "rem":
+      case "%":
+        // 相対単位は基準値が不明なためチェックをスキップ
+        return null;
+      default:
+        return null;
     }
-    return value;
   }
 }

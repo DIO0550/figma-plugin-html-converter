@@ -118,12 +118,16 @@ export class AriaRule implements A11yRule {
   }
 
   private isInteractiveElement(node: ParsedHtmlNode): boolean {
-    // a要素はhref属性がある場合のみインタラクティブ
-    if (node.tagName === "a") {
-      return !!node.attributes["href"];
+    if (
+      !INTERACTIVE_ELEMENTS.includes(
+        node.tagName as (typeof INTERACTIVE_ELEMENTS)[number],
+      )
+    ) {
+      return false;
     }
-    // area要素はhref属性がある場合のみインタラクティブ
-    if (node.tagName === "area") {
+
+    // a要素・area要素はhref属性がある場合のみインタラクティブ
+    if (node.tagName === "a" || node.tagName === "area") {
       return !!node.attributes["href"];
     }
     return true;
@@ -134,12 +138,7 @@ export class AriaRule implements A11yRule {
     issues: A11yIssue[],
   ): void {
     for (const node of nodes) {
-      const isInteractive =
-        INTERACTIVE_ELEMENTS.includes(
-          node.tagName as (typeof INTERACTIVE_ELEMENTS)[number],
-        ) && this.isInteractiveElement(node);
-
-      if (isInteractive) {
+      if (this.isInteractiveElement(node)) {
         const hasLabel =
           node.attributes["aria-label"] ||
           node.attributes["aria-labelledby"] ||

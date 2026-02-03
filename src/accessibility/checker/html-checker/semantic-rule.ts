@@ -74,7 +74,14 @@ export class SemanticRule implements A11yRule {
   }
 
   private getHeadingLevel(tagName: string): number {
-    return parseInt(tagName.charAt(1), 10);
+    const normalizedTagName = tagName.toLowerCase();
+    const level = parseInt(normalizedTagName.charAt(1), 10);
+
+    if (Number.isNaN(level) || level < 1 || level > 6) {
+      throw new Error(`Invalid heading tag: ${tagName}`);
+    }
+
+    return level;
   }
 
   private checkLandmarks(nodes: ParsedHtmlNode[], issues: A11yIssue[]): void {

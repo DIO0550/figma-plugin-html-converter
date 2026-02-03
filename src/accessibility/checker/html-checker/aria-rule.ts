@@ -17,7 +17,14 @@ import { flattenNodes } from "./utils";
 /**
  * ラベルが必要なインタラクティブ要素
  */
-const INTERACTIVE_ELEMENTS = ["button", "input", "select", "textarea"] as const;
+const INTERACTIVE_ELEMENTS = [
+  "button",
+  "input",
+  "select",
+  "textarea",
+  "a",
+  "area",
+] as const;
 
 /**
  * ARIA属性をチェックするルール
@@ -110,16 +117,29 @@ export class AriaRule implements A11yRule {
     }
   }
 
+  private isInteractiveElement(node: ParsedHtmlNode): boolean {
+    // a要素はhref属性がある場合のみインタラクティブ
+    if (node.tagName === "a") {
+      return !!node.attributes["href"];
+    }
+    // area要素はhref属性がある場合のみインタラクティブ
+    if (node.tagName === "area") {
+      return !!node.attributes["href"];
+    }
+    return true;
+  }
+
   private checkMissingLabels(
     nodes: ParsedHtmlNode[],
     issues: A11yIssue[],
   ): void {
     for (const node of nodes) {
-      if (
+      const isInteractive =
         INTERACTIVE_ELEMENTS.includes(
           node.tagName as (typeof INTERACTIVE_ELEMENTS)[number],
-        )
-      ) {
+        ) && this.isInteractiveElement(node);
+
+      if (isInteractive) {
         const hasLabel =
           node.attributes["aria-label"] ||
           node.attributes["aria-labelledby"] ||

@@ -358,13 +358,25 @@
       });
     }
 
+    function createSummaryStat(label, value) {
+      var row = document.createElement('div');
+      row.className = 'summary-stat';
+      var labelSpan = document.createElement('span');
+      labelSpan.textContent = label;
+      var valueSpan = document.createElement('span');
+      valueSpan.textContent = String(value);
+      row.appendChild(labelSpan);
+      row.appendChild(valueSpan);
+      return row;
+    }
+
     function renderSummary(summary, comparison) {
       var el = document.getElementById('optimization-summary');
       el.style.display = 'block';
-      el.innerHTML =
-        '<div class="summary-stat"><span>検出された問題:</span><span>' + summary.totalIssues + '</span></div>' +
-        '<div class="summary-stat"><span>適用済み:</span><span>' + summary.applied + '</span></div>' +
-        '<div class="summary-stat"><span>削減率:</span><span>' + (comparison.reductionPercentage || summary.reductionPercentage) + '%</span></div>';
+      el.textContent = '';
+      el.appendChild(createSummaryStat('検出された問題:', summary.totalIssues));
+      el.appendChild(createSummaryStat('適用済み:', summary.applied));
+      el.appendChild(createSummaryStat('削減率:', (comparison.reductionPercentage || summary.reductionPercentage) + '%'));
     }
 
     function approveProposal(id) {

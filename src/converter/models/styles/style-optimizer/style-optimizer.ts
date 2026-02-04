@@ -112,20 +112,8 @@ export namespace StyleOptimizer {
 
       case "replace":
         if (proposal.afterValue) {
-          // shorthand統合の場合: 各longhandを削除してshorthandを追加
           if (proposal.issue.type === "shorthand-opportunity") {
-            const shorthandMatch = proposal.afterValue.match(/^(\S+):\s*(.+)$/);
-            if (shorthandMatch) {
-              const [, shorthandProp, shorthandVal] = shorthandMatch;
-              // longhandを削除
-              const currentValueList = proposal.issue.currentValue
-                .split(",")
-                .map((s) => s.trim());
-              for (const longhand of currentValueList) {
-                delete record[longhand];
-              }
-              record[shorthandProp] = shorthandVal;
-            }
+            applyShorthandMerge(record, proposal);
           } else {
             record[proposal.issue.property] = proposal.afterValue;
           }
@@ -133,19 +121,8 @@ export namespace StyleOptimizer {
         break;
 
       case "merge":
-        // shorthand統合
         if (proposal.afterValue) {
-          const shorthandMatch = proposal.afterValue.match(/^(\S+):\s*(.+)$/);
-          if (shorthandMatch) {
-            const [, shorthandProp, shorthandVal] = shorthandMatch;
-            const currentValueList = proposal.issue.currentValue
-              .split(",")
-              .map((s) => s.trim());
-            for (const longhand of currentValueList) {
-              delete record[longhand];
-            }
-            record[shorthandProp] = shorthandVal;
-          }
+          applyShorthandMerge(record, proposal);
         }
         break;
     }
@@ -225,6 +202,26 @@ export namespace StyleOptimizer {
         : 0;
 
     return { added, removed, changed, unchanged, reductionPercentage };
+  }
+
+  /**
+   * ショートハンド統合の共通処理: longhandを削除してshorthandを追加
+   */
+  function applyShorthandMerge(
+    record: Record<string, string>,
+    proposal: OptimizationProposal,
+  ): void {
+    const shorthandMatch = proposal.afterValue.match(/^(\S+):\s*(.+)$/);
+    if (shorthandMatch) {
+      const [, shorthandProp, shorthandVal] = shorthandMatch;
+      const currentValueList = proposal.issue.currentValue
+        .split(",")
+        .map((s) => s.trim());
+      for (const longhand of currentValueList) {
+        delete record[longhand];
+      }
+      record[shorthandProp] = shorthandVal;
+    }
   }
 
   function determineAction(

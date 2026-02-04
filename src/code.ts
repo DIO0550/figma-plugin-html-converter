@@ -110,26 +110,52 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "optimize-styles") {
     try {
       const html = msg.html as string;
-      const { Styles } = await import("./converter/models/styles");
-      const { RedundancyDetector } =
-        await import("./converter/models/styles/redundancy-detector");
+      const { StyleAnalyzer } =
+        await import("./converter/models/styles/style-analyzer");
       const { StyleOptimizer } =
         await import("./converter/models/styles/style-optimizer");
+      const { HTML } = await import("./converter/models/html");
 
-      const styles = Styles.parse(html);
-      const issues = RedundancyDetector.detect(styles);
-      const result = StyleOptimizer.optimize(styles, issues);
-      const comparison = StyleOptimizer.compare(
-        result.originalStyles,
-        result.optimizedStyles,
-      );
+      const htmlObj = HTML.from(html);
+      const htmlNode = HTML.toHTMLNode(htmlObj);
+      const analysis = StyleAnalyzer.analyze(htmlNode);
+
+      const allProposals: unknown[] = [];
+      const allResults: unknown[] = [];
+      for (const nodeResult of analysis.results) {
+        const result = StyleOptimizer.optimize(
+          nodeResult.styles,
+          nodeResult.issues,
+        );
+        const comparison = StyleOptimizer.compare(
+          result.originalStyles,
+          result.optimizedStyles,
+        );
+        allProposals.push(...result.proposals);
+        allResults.push({ result, comparison });
+      }
+
+      const totalIssues = analysis.totalIssues;
+      const appliedCount = allResults.length;
 
       figma.ui.postMessage({
         type: "optimization-result",
         result: {
-          proposals: result.proposals,
-          summary: result.summary,
-          comparison,
+          proposals: allProposals,
+          summary: {
+            totalIssues,
+            applied: appliedCount,
+            skipped: 0,
+            reductionPercentage: 0,
+            byType: {},
+          },
+          comparison: {
+            added: {},
+            removed: {},
+            changed: [],
+            unchanged: {},
+            reductionPercentage: 0,
+          },
         },
       });
     } catch (error) {

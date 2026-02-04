@@ -24,6 +24,8 @@ export const ConversionOptions = {
       containerHeight: 600,
       spacing: 8,
       colorMode: "rgb",
+      optimizeStyles: false,
+      optimizationMode: "auto",
     };
   },
 

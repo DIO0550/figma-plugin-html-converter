@@ -9,12 +9,17 @@ import type {
   A11yCheckerConfig,
 } from "./accessibility/types";
 
+import type { OptimizationMode } from "./converter/models/styles/style-optimizer/types";
+
 interface PluginMessage {
   type: string;
   html?: string;
   parsedNodes?: readonly ParsedHtmlNode[];
   figmaNodes?: readonly FigmaNodeInfo[];
   a11yConfig?: Partial<A11yCheckerConfig>;
+  optimizeStyles?: boolean;
+  optimizationMode?: OptimizationMode;
+  approvedProposalIds?: string[];
 }
 
 // UI設定定数
@@ -98,6 +103,42 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       figma.ui.postMessage({
         type: "a11y-error",
         message: `アクセシビリティチェックでエラーが発生しました: ${errorMessage}`,
+      });
+    }
+  }
+
+  if (msg.type === "optimize-styles") {
+    try {
+      const html = msg.html as string;
+      const { Styles } = await import("./converter/models/styles");
+      const { RedundancyDetector } =
+        await import("./converter/models/styles/redundancy-detector");
+      const { StyleOptimizer } =
+        await import("./converter/models/styles/style-optimizer");
+
+      const styles = Styles.parse(html);
+      const issues = RedundancyDetector.detect(styles);
+      const result = StyleOptimizer.optimize(styles, issues);
+      const comparison = StyleOptimizer.compare(
+        result.originalStyles,
+        result.optimizedStyles,
+      );
+
+      figma.ui.postMessage({
+        type: "optimization-result",
+        result: {
+          proposals: result.proposals,
+          summary: result.summary,
+          comparison,
+        },
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Style optimization error:", error);
+      figma.ui.postMessage({
+        type: "optimization-error",
+        message: `スタイル最適化でエラーが発生しました: ${errorMessage}`,
       });
     }
   }

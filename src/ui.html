@@ -110,6 +110,117 @@
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
+    .optimization-panel {
+      margin-top: 16px;
+      padding: 12px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+
+    .optimization-panel h3 {
+      font-size: 14px;
+      margin: 0 0 8px 0;
+      color: #495057;
+    }
+
+    .optimization-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .optimization-toggle input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .optimization-toggle label {
+      display: inline;
+      font-size: 13px;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .mode-toggle button {
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+      background: white;
+      cursor: pointer;
+    }
+
+    .mode-toggle button.active {
+      background-color: #5551ff;
+      color: white;
+      border-color: #5551ff;
+    }
+
+    .optimization-results {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .optimization-results h4 {
+      font-size: 13px;
+      margin: 0 0 8px 0;
+      color: #495057;
+    }
+
+    .proposal-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .proposal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      background: white;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      font-size: 12px;
+    }
+
+    .proposal-item .info {
+      flex: 1;
+    }
+
+    .proposal-item .actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .proposal-item .actions button {
+      padding: 2px 8px;
+      font-size: 11px;
+    }
+
+    .optimization-summary {
+      margin-top: 8px;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      font-size: 12px;
+      color: #495057;
+    }
+
+    .summary-stat {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -124,32 +235,71 @@
       ></textarea>
     </div>
     
+    <div class="optimization-panel">
+      <h3>スタイル最適化</h3>
+      <div class="optimization-toggle">
+        <input type="checkbox" id="optimize-styles" />
+        <label for="optimize-styles">冗長なスタイルを最適化</label>
+      </div>
+      <div id="mode-toggle-area" class="mode-toggle" style="display: none;">
+        <button id="mode-auto" class="active" onclick="setOptimizationMode('auto')">自動</button>
+        <button id="mode-manual" onclick="setOptimizationMode('manual')">手動</button>
+      </div>
+
+      <div id="optimization-results" class="optimization-results">
+        <h4>最適化提案</h4>
+        <div id="proposal-list" class="proposal-list"></div>
+        <div id="optimization-summary" class="optimization-summary" style="display: none;"></div>
+      </div>
+    </div>
+
     <div class="button-group">
       <button class="secondary" onclick="cancel()">キャンセル</button>
       <button class="primary" onclick="convertHTML()">変換</button>
     </div>
-    
+
     <div id="message" class="message"></div>
   </div>
 
   <script>
+    let optimizationMode = 'auto';
+    let currentProposals = [];
+
+    document.getElementById('optimize-styles').addEventListener('change', function() {
+      const modeArea = document.getElementById('mode-toggle-area');
+      modeArea.style.display = this.checked ? 'flex' : 'none';
+      if (!this.checked) {
+        document.getElementById('optimization-results').style.display = 'none';
+      }
+    });
+
+    function setOptimizationMode(mode) {
+      optimizationMode = mode;
+      document.getElementById('mode-auto').className = mode === 'auto' ? 'active' : '';
+      document.getElementById('mode-manual').className = mode === 'manual' ? 'active' : '';
+    }
+
     function convertHTML() {
       const htmlInput = document.getElementById('html-input');
       const html = htmlInput.value.trim();
-      
+
       if (!html) {
         showMessage('HTMLコードを入力してください', 'error');
         return;
       }
-      
+
+      const optimizeStyles = document.getElementById('optimize-styles').checked;
+
       parent.postMessage({
         pluginMessage: {
           type: 'convert-html',
-          html: html
+          html: html,
+          optimizeStyles: optimizeStyles,
+          optimizationMode: optimizationMode
         }
       }, '*');
     }
-    
+
     function cancel() {
       parent.postMessage({
         pluginMessage: {
@@ -157,25 +307,96 @@
         }
       }, '*');
     }
-    
+
     function showMessage(text, type) {
       const messageEl = document.getElementById('message');
       messageEl.textContent = text;
-      messageEl.className = `message ${type}`;
+      messageEl.className = 'message ' + type;
       messageEl.style.display = 'block';
-      
-      setTimeout(() => {
+
+      setTimeout(function() {
         messageEl.style.display = 'none';
       }, 3000);
     }
-    
-    window.onmessage = (event) => {
-      const msg = event.data.pluginMessage;
-      
+
+    function renderProposals(proposals) {
+      currentProposals = proposals;
+      var list = document.getElementById('proposal-list');
+      list.innerHTML = '';
+
+      proposals.forEach(function(proposal) {
+        var item = document.createElement('div');
+        item.className = 'proposal-item';
+        item.setAttribute('data-id', proposal.id);
+
+        var info = document.createElement('div');
+        info.className = 'info';
+        info.textContent = proposal.issue.description;
+
+        item.appendChild(info);
+
+        if (optimizationMode === 'manual') {
+          var actions = document.createElement('div');
+          actions.className = 'actions';
+
+          var approveBtn = document.createElement('button');
+          approveBtn.className = 'primary';
+          approveBtn.textContent = '承認';
+          approveBtn.onclick = function() { approveProposal(proposal.id); };
+
+          var rejectBtn = document.createElement('button');
+          rejectBtn.className = 'secondary';
+          rejectBtn.textContent = '却下';
+          rejectBtn.onclick = function() { rejectProposal(proposal.id); };
+
+          actions.appendChild(approveBtn);
+          actions.appendChild(rejectBtn);
+          item.appendChild(actions);
+        }
+
+        list.appendChild(item);
+      });
+    }
+
+    function renderSummary(summary, comparison) {
+      var el = document.getElementById('optimization-summary');
+      el.style.display = 'block';
+      el.innerHTML =
+        '<div class="summary-stat"><span>検出された問題:</span><span>' + summary.totalIssues + '</span></div>' +
+        '<div class="summary-stat"><span>適用済み:</span><span>' + summary.applied + '</span></div>' +
+        '<div class="summary-stat"><span>削減率:</span><span>' + (comparison.reductionPercentage || summary.reductionPercentage) + '%</span></div>';
+    }
+
+    function approveProposal(id) {
+      var item = document.querySelector('[data-id="' + id + '"]');
+      if (item) {
+        item.style.backgroundColor = '#d4edda';
+        item.setAttribute('data-approved', 'true');
+      }
+    }
+
+    function rejectProposal(id) {
+      var item = document.querySelector('[data-id="' + id + '"]');
+      if (item) {
+        item.style.backgroundColor = '#f8d7da';
+        item.setAttribute('data-approved', 'false');
+      }
+    }
+
+    window.onmessage = function(event) {
+      var msg = event.data.pluginMessage;
+
       if (msg.type === 'conversion-complete') {
         showMessage(msg.message, 'success');
         document.getElementById('html-input').value = '';
       } else if (msg.type === 'conversion-error') {
+        showMessage(msg.message, 'error');
+      } else if (msg.type === 'optimization-result') {
+        var resultsEl = document.getElementById('optimization-results');
+        resultsEl.style.display = 'block';
+        renderProposals(msg.result.proposals);
+        renderSummary(msg.result.summary, msg.result.comparison);
+      } else if (msg.type === 'optimization-error') {
         showMessage(msg.message, 'error');
       }
     };

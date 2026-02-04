@@ -16,3 +16,6 @@ export interface FontName {
 
 // ConversionOptionsを専用モジュールからエクスポート
 export { ConversionOptions } from "./models/conversion-options";
+
+// スタイル最適化関連の型をエクスポート
+export type { OptimizationMode } from "./models/styles/style-optimizer/types";

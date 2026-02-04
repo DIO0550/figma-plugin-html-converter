@@ -39,7 +39,8 @@ describe("StyleOptimizationAI.requestOptimization", () => {
     expect(result.processingTimeMs).toBeGreaterThanOrEqual(0);
   });
 
-  test("MCP通信エラー時はフォールバック", async () => {
+  test("MCP通信エラー時はフォールバックしエラーをログ出力", async () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const client = {
       isConnected: () => true,
       sendRequest: vi.fn().mockRejectedValue(new Error("Connection failed")),
@@ -50,6 +51,11 @@ describe("StyleOptimizationAI.requestOptimization", () => {
     });
     expect(result.proposals).toHaveLength(0);
     expect(result.processingTimeMs).toBe(0);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "[StyleOptimizationAI] MCP style-optimization request failed:",
+      expect.any(Error),
+    );
+    consoleSpy.mockRestore();
   });
 
   test("不正な提案はフィルタリングされる", async () => {

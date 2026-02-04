@@ -55,7 +55,11 @@ export namespace StyleOptimizationAI {
         proposals: validateProposals(response.proposals ?? []),
         processingTimeMs,
       };
-    } catch {
+    } catch (error) {
+      console.error(
+        "[StyleOptimizationAI] MCP style-optimization request failed:",
+        error,
+      );
       return FALLBACK_RESPONSE;
     }
   }

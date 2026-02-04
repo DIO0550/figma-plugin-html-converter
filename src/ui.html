@@ -249,6 +249,9 @@
       <div id="optimization-results" class="optimization-results">
         <h4>最適化提案</h4>
         <div id="proposal-list" class="proposal-list"></div>
+        <div id="apply-approved-area" style="display: none; margin-top: 8px;">
+          <button class="primary" onclick="applyApprovedProposals()">承認済みの提案を適用</button>
+        </div>
         <div id="optimization-summary" class="optimization-summary" style="display: none;"></div>
       </div>
     </div>
@@ -395,6 +398,26 @@
       }
     }
 
+    function applyApprovedProposals() {
+      var approvedIds = [];
+      var items = document.querySelectorAll('.proposal-item[data-approved="true"]');
+      items.forEach(function(item) {
+        approvedIds.push(item.getAttribute('data-id'));
+      });
+
+      if (approvedIds.length === 0) {
+        showMessage('承認された提案がありません', 'error');
+        return;
+      }
+
+      parent.postMessage({
+        pluginMessage: {
+          type: 'apply-optimization',
+          approvedProposalIds: approvedIds
+        }
+      }, '*');
+    }
+
     window.onmessage = function(event) {
       var msg = event.data.pluginMessage;
 
@@ -408,6 +431,8 @@
         resultsEl.style.display = 'block';
         renderProposals(msg.result.proposals);
         renderSummary(msg.result.summary, msg.result.comparison);
+        var applyArea = document.getElementById('apply-approved-area');
+        applyArea.style.display = optimizationMode === 'manual' ? 'block' : 'none';
       } else if (msg.type === 'optimization-error') {
         showMessage(msg.message, 'error');
       }

@@ -101,6 +101,8 @@ function optimizeNodeStylesRecursive(
         results.push(result);
 
         // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
+        // NOTE: 意図的なミューテーション - パイプライン内部でのみ使用されるため、
+        // toFigmaNode()変換前にStylesインスタンスを差し替える目的で直接変更する
         if (mode === "auto") {
           const optimizedStyleStr = stylesToString(result.optimizedStyles);
           if (node.attributes) {

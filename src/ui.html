@@ -138,7 +138,7 @@
 
     .optimization-toggle label {
       display: inline;
-      font-size: 13px;
+      font-size: 14px;
       margin-bottom: 0;
       cursor: pointer;
     }
@@ -151,7 +151,7 @@
 
     .mode-toggle button {
       padding: 4px 12px;
-      font-size: 12px;
+      font-size: 14px;
       border-radius: 4px;
       border: 1px solid #dee2e6;
       background: white;
@@ -170,7 +170,7 @@
     }
 
     .optimization-results h4 {
-      font-size: 13px;
+      font-size: 14px;
       margin: 0 0 8px 0;
       color: #495057;
     }
@@ -189,7 +189,7 @@
       background: white;
       border-radius: 4px;
       border: 1px solid #e9ecef;
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .proposal-item .info {
@@ -212,7 +212,7 @@
       background: white;
       border-radius: 4px;
       border: 1px solid #e9ecef;
-      font-size: 12px;
+      font-size: 14px;
       color: #495057;
     }
 
@@ -242,8 +242,8 @@
         <label for="optimize-styles">冗長なスタイルを最適化</label>
       </div>
       <div id="mode-toggle-area" class="mode-toggle" style="display: none;">
-        <button id="mode-auto" class="active" onclick="setOptimizationMode('auto')">自動</button>
-        <button id="mode-manual" onclick="setOptimizationMode('manual')">手動</button>
+        <button id="mode-auto" class="active" aria-pressed="true" onclick="setOptimizationMode('auto')">自動</button>
+        <button id="mode-manual" aria-pressed="false" onclick="setOptimizationMode('manual')">手動</button>
       </div>
 
       <div id="optimization-results" class="optimization-results">
@@ -278,8 +278,12 @@
 
     function setOptimizationMode(mode) {
       optimizationMode = mode;
-      document.getElementById('mode-auto').className = mode === 'auto' ? 'active' : '';
-      document.getElementById('mode-manual').className = mode === 'manual' ? 'active' : '';
+      const autoBtn = document.getElementById('mode-auto');
+      const manualBtn = document.getElementById('mode-manual');
+      autoBtn.className = mode === 'auto' ? 'active' : '';
+      manualBtn.className = mode === 'manual' ? 'active' : '';
+      autoBtn.setAttribute('aria-pressed', String(mode === 'auto'));
+      manualBtn.setAttribute('aria-pressed', String(mode === 'manual'));
     }
 
     function convertHTML() {

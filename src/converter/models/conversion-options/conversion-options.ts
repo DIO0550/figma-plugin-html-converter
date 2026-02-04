@@ -66,6 +66,22 @@ export const ConversionOptions = {
       return false;
     }
 
+    // optimizeStylesの検証
+    if (
+      options.optimizeStyles !== undefined &&
+      typeof options.optimizeStyles !== "boolean"
+    ) {
+      return false;
+    }
+
+    // optimizationModeの検証
+    if (
+      options.optimizationMode !== undefined &&
+      !["auto", "manual"].includes(options.optimizationMode)
+    ) {
+      return false;
+    }
+
     return true;
   },
 
@@ -95,9 +111,7 @@ export const ConversionOptions = {
     return options.defaultFont !== undefined;
   },
 
-  hasContainerSize(
-    options: ConversionOptions,
-  ): options is ConversionOptions & {
+  hasContainerSize(options: ConversionOptions): options is ConversionOptions & {
     containerWidth: number;
     containerHeight: number;
   } {

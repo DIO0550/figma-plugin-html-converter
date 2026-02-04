@@ -7,11 +7,8 @@ import type {
   OptimizationSummary,
 } from "./types";
 
-let proposalCounter = 0;
-
 function generateId(): string {
-  proposalCounter += 1;
-  return `proposal-${proposalCounter}`;
+  return `proposal-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
 /**
@@ -20,13 +17,6 @@ function generateId(): string {
  */
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace StyleOptimizer {
-  /**
-   * IDカウンターをリセット（テスト用）
-   */
-  export function resetIdCounter(): void {
-    proposalCounter = 0;
-  }
-
   /**
    * 最適化を実行（検出→提案→適用の一連の処理）
    */

@@ -1,12 +1,8 @@
-import { test, expect, describe, beforeEach } from "vitest";
+import { test, expect, describe } from "vitest";
 import { Styles } from "../../styles";
 import { StyleOptimizer } from "../style-optimizer";
 import type { RedundancyIssue } from "../../redundancy-detector/types";
 import type { OptimizationProposal } from "../types";
-
-beforeEach(() => {
-  StyleOptimizer.resetIdCounter();
-});
 
 describe("StyleOptimizer.generateProposals", () => {
   test("冗長性問題から提案を生成", () => {

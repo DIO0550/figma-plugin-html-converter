@@ -390,8 +390,18 @@
       el.appendChild(createSummaryStat('削減率:', comparison.reductionPercentage + '%'));
     }
 
+    function findProposalItemById(id) {
+      var items = document.querySelectorAll('.proposal-item');
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].getAttribute('data-id') === id) {
+          return items[i];
+        }
+      }
+      return null;
+    }
+
     function approveProposal(id) {
-      var item = document.querySelector('[data-id="' + id + '"]');
+      var item = findProposalItemById(id);
       if (item) {
         item.style.backgroundColor = '#d4edda';
         item.setAttribute('data-approved', 'true');
@@ -399,7 +409,7 @@
     }
 
     function rejectProposal(id) {
-      var item = document.querySelector('[data-id="' + id + '"]');
+      var item = findProposalItemById(id);
       if (item) {
         item.style.backgroundColor = '#f8d7da';
         item.setAttribute('data-approved', 'false');

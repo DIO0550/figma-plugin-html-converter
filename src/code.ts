@@ -136,7 +136,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       }
 
       const totalIssues = analysis.totalIssues;
-      const appliedCount = allResults.length;
+      const appliedCount = allProposals.length;
 
       figma.ui.postMessage({
         type: "optimization-result",

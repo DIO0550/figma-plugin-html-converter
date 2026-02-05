@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { DesignSystemMapper } from "../design-system-mapper";
 import type {
   DesignSystem,
@@ -127,7 +127,7 @@ const createDefaultRules = (): MappingRule[] => [
   },
 ];
 
-it("DesignSystemMapper.create - デザインシステムを渡す - マッパーインスタンスを作成する", () => {
+test("DesignSystemMapper.create - デザインシステムを渡す - マッパーインスタンスを作成する", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
 
@@ -138,7 +138,7 @@ it("DesignSystemMapper.create - デザインシステムを渡す - マッパー
   expect(mapper).toBeInstanceOf(DesignSystemMapper);
 });
 
-it("DesignSystemMapper.addRule - ルールを追加する - ルールリストに追加される", () => {
+test("DesignSystemMapper.addRule - ルールを追加する - ルールリストに追加される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const mapper = DesignSystemMapper.create(designSystem);
@@ -160,7 +160,7 @@ it("DesignSystemMapper.addRule - ルールを追加する - ルールリスト�
   expect(rules).toContainEqual(rule);
 });
 
-it("DesignSystemMapper.removeRule - ルールIDを指定する - ルールが削除される", () => {
+test("DesignSystemMapper.removeRule - ルールIDを指定する - ルールが削除される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -175,7 +175,7 @@ it("DesignSystemMapper.removeRule - ルールIDを指定する - ルールが削
   expect(remainingRules.find((r) => r.id === ruleId)).toBeUndefined();
 });
 
-it("DesignSystemMapper.matchElement - タグ名でマッチする要素を渡す - マッチするルールを返す", () => {
+test("DesignSystemMapper.matchElement - タグ名でマッチする要素を渡す - マッチするルールを返す", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -192,7 +192,7 @@ it("DesignSystemMapper.matchElement - タグ名でマッチする要素を渡す
   expect(matches[0].rule.name).toBe("H1 Heading Style");
 });
 
-it("DesignSystemMapper.matchElement - タグ名とクラス名でマッチする要素を渡す - マッチするルールを返す", () => {
+test("DesignSystemMapper.matchElement - タグ名とクラス名でマッチする要素を渡す - マッチするルールを返す", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -210,7 +210,7 @@ it("DesignSystemMapper.matchElement - タグ名とクラス名でマッチする
   expect(matches[0].rule.name).toBe("Primary Button");
 });
 
-it("DesignSystemMapper.matchElement - マッチするルールがない要素を渡す - 空配列を返す", () => {
+test("DesignSystemMapper.matchElement - マッチするルールがない要素を渡す - 空配列を返す", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -226,7 +226,7 @@ it("DesignSystemMapper.matchElement - マッチするルールがない要素を
   expect(matches).toHaveLength(0);
 });
 
-it("DesignSystemMapper.matchElement - 無効化されたルールが存在する - 無効化されたルールはスキップされる", () => {
+test("DesignSystemMapper.matchElement - 無効化されたルールが存在する - 無効化されたルールはスキップされる", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules: MappingRule[] = [
@@ -255,7 +255,7 @@ it("DesignSystemMapper.matchElement - 無効化されたルールが存在する
   expect(matches).toHaveLength(0);
 });
 
-it("DesignSystemMapper.matchElement - 複数のルールがマッチする要素を渡す - 優先度の高いルールが先に返される", () => {
+test("DesignSystemMapper.matchElement - 複数のルールがマッチする要素を渡す - 優先度の高いルールが先に返される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules: MappingRule[] = [
@@ -291,7 +291,7 @@ it("DesignSystemMapper.matchElement - 複数のルールがマッチする要素
   expect(matches[0].rule.name).toBe("High Priority");
 });
 
-it("DesignSystemMapper.matchElement - スタイル適用ルールにマッチする要素を渡す - マッチしたスタイルが解決される", () => {
+test("DesignSystemMapper.matchElement - スタイル適用ルールにマッチする要素を渡す - マッチしたスタイルが解決される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -308,7 +308,7 @@ it("DesignSystemMapper.matchElement - スタイル適用ルールにマッチす
   expect(matches[0].appliedStyle?.name).toBe("Typography/Heading/H1");
 });
 
-it("DesignSystemMapper.matchElement - コンポーネント適用ルールにマッチする要素を渡す - マッチしたコンポーネントが解決される", () => {
+test("DesignSystemMapper.matchElement - コンポーネント適用ルールにマッチする要素を渡す - マッチしたコンポーネントが解決される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -326,7 +326,7 @@ it("DesignSystemMapper.matchElement - コンポーネント適用ルールにマ
   expect(matches[0].appliedComponent?.name).toBe("Button/Primary");
 });
 
-it("DesignSystemMapper.mapHtml - 複数のHTML要素を渡す - 各要素のマッピング結果を返す", () => {
+test("DesignSystemMapper.mapHtml - 複数のHTML要素を渡す - 各要素のマッピング結果を返す", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -345,7 +345,7 @@ it("DesignSystemMapper.mapHtml - 複数のHTML要素を渡す - 各要素のマ�
   expect(result.unmatchedElements).toContain("/html/body/div");
 });
 
-it("DesignSystemMapper.mapHtml - 全てマッチする複数のHTML要素を渡す - 全要素のマッピング結果を返す", () => {
+test("DesignSystemMapper.mapHtml - 全てマッチする複数のHTML要素を渡す - 全要素のマッピング結果を返す", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules = createDefaultRules();
@@ -364,7 +364,7 @@ it("DesignSystemMapper.mapHtml - 全てマッチする複数のHTML要素を渡�
   expect(result.unmatchedElements).toHaveLength(0);
 });
 
-it("DesignSystemMapper.matchElement - 属性条件を持つルールと属性がマッチする要素を渡す - マッチするルールを返す", () => {
+test("DesignSystemMapper.matchElement - 属性条件を持つルールと属性がマッチする要素を渡す - マッチするルールを返す", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules: MappingRule[] = [
@@ -394,7 +394,7 @@ it("DesignSystemMapper.matchElement - 属性条件を持つルールと属性が
   expect(matches).toHaveLength(1);
 });
 
-it("DesignSystemMapper.matchElement - 属性条件を持つルールと属性が一致しない要素を渡す - マッチしない", () => {
+test("DesignSystemMapper.matchElement - 属性条件を持つルールと属性が一致しない要素を渡す - マッチしない", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const rules: MappingRule[] = [
@@ -424,7 +424,7 @@ it("DesignSystemMapper.matchElement - 属性条件を持つルールと属性が
   expect(matches).toHaveLength(0);
 });
 
-it("DesignSystemMapper.getDefaultRules - デフォルトルールを取得する - カスタムでないルールのリストを返す", () => {
+test("DesignSystemMapper.getDefaultRules - デフォルトルールを取得する - カスタムでないルールのリストを返す", () => {
   // Act
   const rules = DesignSystemMapper.getDefaultRules();
 

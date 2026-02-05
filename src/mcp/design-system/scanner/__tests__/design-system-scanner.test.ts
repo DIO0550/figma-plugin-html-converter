@@ -1,4 +1,4 @@
-import { it, expect, vi, beforeEach } from "vitest";
+import { test, expect, vi, beforeEach } from "vitest";
 import { DesignSystemScanner } from "../design-system-scanner";
 
 // Figma APIのモック型定義
@@ -70,7 +70,7 @@ beforeEach(() => {
   mockFigma.root.findAllWithCriteria.mockReturnValue([]);
 });
 
-it("DesignSystemScanner.scan - スタイルやコンポーネントが存在しない - 空のデザインシステムを返す", async () => {
+test("DesignSystemScanner.scan - スタイルやコンポーネントが存在しない - 空のデザインシステムを返す", async () => {
   // Arrange
   const scanner = DesignSystemScanner.create();
 
@@ -83,7 +83,7 @@ it("DesignSystemScanner.scan - スタイルやコンポーネントが存在し�
   expect(result.scannedAt).toBeInstanceOf(Date);
 });
 
-it("DesignSystemScanner.scan - ペイントスタイルが存在する - ペイントスタイルをスキャンする", async () => {
+test("DesignSystemScanner.scan - ペイントスタイルが存在する - ペイントスタイルをスキャンする", async () => {
   // Arrange
   const mockPaintStyles: MockPaintStyle[] = [
     {
@@ -112,7 +112,7 @@ it("DesignSystemScanner.scan - ペイントスタイルが存在する - ペイ�
   });
 });
 
-it("DesignSystemScanner.scan - テキストスタイルが存在する - テキストスタイルをスキャンする", async () => {
+test("DesignSystemScanner.scan - テキストスタイルが存在する - テキストスタイルをスキャンする", async () => {
   // Arrange
   const mockTextStyles: MockTextStyle[] = [
     {
@@ -143,7 +143,7 @@ it("DesignSystemScanner.scan - テキストスタイルが存在する - テキ�
   });
 });
 
-it("DesignSystemScanner.scan - エフェクトスタイルが存在する - エフェクトスタイルをスキャンする", async () => {
+test("DesignSystemScanner.scan - エフェクトスタイルが存在する - エフェクトスタイルをスキャンする", async () => {
   // Arrange
   const mockEffectStyles: MockEffectStyle[] = [
     {
@@ -179,7 +179,7 @@ it("DesignSystemScanner.scan - エフェクトスタイルが存在する - エ�
   });
 });
 
-it("DesignSystemScanner.scan - コンポーネントが存在する - コンポーネントをスキャンする", async () => {
+test("DesignSystemScanner.scan - コンポーネントが存在する - コンポーネントをスキャンする", async () => {
   // Arrange
   const mockComponents: MockComponent[] = [
     {
@@ -208,7 +208,7 @@ it("DesignSystemScanner.scan - コンポーネントが存在する - コンポ�
   expect(result.components[0].properties).toHaveLength(2);
 });
 
-it("DesignSystemScanner.scan - 複数のスタイルとコンポーネントが存在する - 全てをスキャンする", async () => {
+test("DesignSystemScanner.scan - 複数のスタイルとコンポーネントが存在する - 全てをスキャンする", async () => {
   // Arrange
   const mockPaintStyles: MockPaintStyle[] = [
     {
@@ -262,7 +262,7 @@ it("DesignSystemScanner.scan - 複数のスタイルとコンポーネントが�
   expect(result.components).toHaveLength(1);
 });
 
-it("DesignSystemScanner.scanStyles - スタイルが存在する - スタイルのみをスキャンする", async () => {
+test("DesignSystemScanner.scanStyles - スタイルが存在する - スタイルのみをスキャンする", async () => {
   // Arrange
   const mockPaintStyles: MockPaintStyle[] = [
     {
@@ -285,7 +285,7 @@ it("DesignSystemScanner.scanStyles - スタイルが存在する - スタイル�
   expect(styles[0].name).toBe("Color/Red");
 });
 
-it("DesignSystemScanner.scanComponents - コンポーネントが存在する - コンポーネントのみをスキャンする", async () => {
+test("DesignSystemScanner.scanComponents - コンポーネントが存在する - コンポーネントのみをスキャンする", async () => {
   // Arrange
   const mockComponents: MockComponent[] = [
     {
@@ -306,7 +306,7 @@ it("DesignSystemScanner.scanComponents - コンポーネントが存在する - 
   expect(components[0].name).toBe("Icon/Arrow");
 });
 
-it("DesignSystemScanner.findStyleByName - 対象のスタイルが存在する - スタイルを見つける", async () => {
+test("DesignSystemScanner.findStyleByName - 対象のスタイルが存在する - スタイルを見つける", async () => {
   // Arrange
   const mockPaintStyles: MockPaintStyle[] = [
     {
@@ -338,7 +338,7 @@ it("DesignSystemScanner.findStyleByName - 対象のスタイルが存在する -
   expect(style?.name).toBe("Primary/Blue");
 });
 
-it("DesignSystemScanner.findStyleByName - 対象のスタイルが存在しない - undefinedを返す", async () => {
+test("DesignSystemScanner.findStyleByName - 対象のスタイルが存在しない - undefinedを返す", async () => {
   // Arrange
   mockFigma.getLocalPaintStyles.mockReturnValue([]);
   const scanner = DesignSystemScanner.create();
@@ -351,7 +351,7 @@ it("DesignSystemScanner.findStyleByName - 対象のスタイルが存在しな�
   expect(style).toBeUndefined();
 });
 
-it("DesignSystemScanner.findComponentByName - 対象のコンポーネントが存在する - コンポーネントを見つける", async () => {
+test("DesignSystemScanner.findComponentByName - 対象のコンポーネントが存在する - コンポーネントを見つける", async () => {
   // Arrange
   const mockComponents: MockComponent[] = [
     {
@@ -373,7 +373,7 @@ it("DesignSystemScanner.findComponentByName - 対象のコンポーネントが�
   expect(component?.name).toBe("Button/Primary");
 });
 
-it("DesignSystemScanner.getStylesByType - 複数の種類のスタイルが存在する - 指定した種類のスタイルをフィルタする", async () => {
+test("DesignSystemScanner.getStylesByType - 複数の種類のスタイルが存在する - 指定した種類のスタイルをフィルタする", async () => {
   // Arrange
   const mockPaintStyles: MockPaintStyle[] = [
     {
@@ -414,7 +414,7 @@ it("DesignSystemScanner.getStylesByType - 複数の種類のスタイルが存�
   expect(textStyles[0].type).toBe("TEXT");
 });
 
-it("DesignSystemScanner.clearCache - キャッシュが存在する - キャッシュされたデザインシステムをクリアする", async () => {
+test("DesignSystemScanner.clearCache - キャッシュが存在する - キャッシュされたデザインシステムをクリアする", async () => {
   // Arrange
   const scanner = DesignSystemScanner.create();
   await scanner.scan();
@@ -427,7 +427,7 @@ it("DesignSystemScanner.clearCache - キャッシュが存在する - キャッ�
   expect(scanner.getCachedDesignSystem()).toBeNull();
 });
 
-it("DesignSystemScanner.clearCache - キャッシュをクリア後にfindStyleByNameを実行 - undefinedを返す", async () => {
+test("DesignSystemScanner.clearCache - キャッシュをクリア後にfindStyleByNameを実行 - undefinedを返す", async () => {
   // Arrange
   const mockPaintStyles: MockPaintStyle[] = [
     {

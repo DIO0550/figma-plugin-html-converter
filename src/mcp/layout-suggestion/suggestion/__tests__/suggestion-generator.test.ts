@@ -1,12 +1,12 @@
 /**
  * SuggestionGenerator のテスト
  */
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { SuggestionGenerator } from "../suggestion-generator";
 import type { LayoutProblem, SuggestionResult } from "../../types";
 import { createNodePath, createSuggestionId } from "../../types";
 
-it("SuggestionGenerator.generate - 問題がない - 空の提案リストを返す", () => {
+test("SuggestionGenerator.generate - 問題がない - 空の提案リストを返す", () => {
   const problems: LayoutProblem[] = [];
 
   const result = SuggestionGenerator.generate(problems);
@@ -16,7 +16,7 @@ it("SuggestionGenerator.generate - 問題がない - 空の提案リストを返
   expect(result.generatedAt).toBeInstanceOf(Date);
 });
 
-it("SuggestionGenerator.generate - missing-flex-container問題 - 提案を生成する", () => {
+test("SuggestionGenerator.generate - missing-flex-container問題 - 提案を生成する", () => {
   const problems: LayoutProblem[] = [
     {
       type: "missing-flex-container",
@@ -35,7 +35,7 @@ it("SuggestionGenerator.generate - missing-flex-container問題 - 提案を生�
   expect(result.suggestions[0].autoApplicable).toBe(true);
 });
 
-it("SuggestionGenerator.generate - missing-alignment問題 - 提案を生成する", () => {
+test("SuggestionGenerator.generate - missing-alignment問題 - 提案を生成する", () => {
   const problems: LayoutProblem[] = [
     {
       type: "missing-alignment",
@@ -52,7 +52,7 @@ it("SuggestionGenerator.generate - missing-alignment問題 - 提案を生成す�
   expect(result.suggestions[0].suggestion).toContain("justify-content");
 });
 
-it("SuggestionGenerator.generate - inconsistent-spacing問題 - 提案を生成する", () => {
+test("SuggestionGenerator.generate - inconsistent-spacing問題 - 提案を生成する", () => {
   const problems: LayoutProblem[] = [
     {
       type: "inconsistent-spacing",
@@ -69,7 +69,7 @@ it("SuggestionGenerator.generate - inconsistent-spacing問題 - 提案を生成�
   expect(result.suggestions[0].problem.type).toBe("inconsistent-spacing");
 });
 
-it("SuggestionGenerator.generate - suboptimal-direction問題 - 提案を生成する", () => {
+test("SuggestionGenerator.generate - suboptimal-direction問題 - 提案を生成する", () => {
   const problems: LayoutProblem[] = [
     {
       type: "suboptimal-direction",
@@ -87,7 +87,7 @@ it("SuggestionGenerator.generate - suboptimal-direction問題 - 提案を生成�
   expect(result.suggestions[0].suggestion).toContain("column");
 });
 
-it("SuggestionGenerator.generate - inefficient-nesting問題 - 提案を生成する", () => {
+test("SuggestionGenerator.generate - inefficient-nesting問題 - 提案を生成する", () => {
   const problems: LayoutProblem[] = [
     {
       type: "inefficient-nesting",
@@ -104,7 +104,7 @@ it("SuggestionGenerator.generate - inefficient-nesting問題 - 提案を生成�
   expect(result.suggestions[0].problem.type).toBe("inefficient-nesting");
 });
 
-it("SuggestionGenerator.generate - 複数の問題 - 複数の提案を生成する", () => {
+test("SuggestionGenerator.generate - 複数の問題 - 複数の提案を生成する", () => {
   const problems: LayoutProblem[] = [
     {
       type: "missing-flex-container",
@@ -125,7 +125,7 @@ it("SuggestionGenerator.generate - 複数の問題 - 複数の提案を生成す
   expect(result.suggestions.length).toBe(2);
 });
 
-it("SuggestionGenerator.generateForProblem - 個別の問題 - 提案を生成する", () => {
+test("SuggestionGenerator.generateForProblem - 個別の問題 - 提案を生成する", () => {
   const problem: LayoutProblem = {
     type: "missing-flex-container",
     severity: "medium",
@@ -141,7 +141,7 @@ it("SuggestionGenerator.generateForProblem - 個別の問題 - 提案を生成�
   expect(suggestion?.confidence).toBeGreaterThan(0);
 });
 
-it("SuggestionGenerator.filterByConfidence - 信頼度でフィルタリング - 信頼度以上の提案を返す", () => {
+test("SuggestionGenerator.filterByConfidence - 信頼度でフィルタリング - 信頼度以上の提案を返す", () => {
   const result: SuggestionResult = {
     suggestions: [
       {
@@ -179,7 +179,7 @@ it("SuggestionGenerator.filterByConfidence - 信頼度でフィルタリング -
   expect(filtered.suggestions[0].confidence).toBe(0.8);
 });
 
-it("SuggestionGenerator.sortBySeverity - 重大度でソート - 重大度順に提案を返す", () => {
+test("SuggestionGenerator.sortBySeverity - 重大度でソート - 重大度順に提案を返す", () => {
   const result: SuggestionResult = {
     suggestions: [
       {
@@ -230,7 +230,7 @@ it("SuggestionGenerator.sortBySeverity - 重大度でソート - 重大度順に
   expect(sorted.suggestions[2].problem.severity).toBe("low");
 });
 
-it("SuggestionGenerator.limitSuggestions - 制限数以下 - 指定数の提案を返す", () => {
+test("SuggestionGenerator.limitSuggestions - 制限数以下 - 指定数の提案を返す", () => {
   const result: SuggestionResult = {
     suggestions: [
       {
@@ -281,7 +281,7 @@ it("SuggestionGenerator.limitSuggestions - 制限数以下 - 指定数の提案�
   expect(limited.suggestions[1].suggestion).toBe("test 2");
 });
 
-it("SuggestionGenerator.limitSuggestions - limit > 提案数 - 全ての提案を返す", () => {
+test("SuggestionGenerator.limitSuggestions - limit > 提案数 - 全ての提案を返す", () => {
   const result: SuggestionResult = {
     suggestions: [
       {
@@ -306,7 +306,7 @@ it("SuggestionGenerator.limitSuggestions - limit > 提案数 - 全ての提案�
   expect(limited.suggestions.length).toBe(1);
 });
 
-it("SuggestionGenerator.limitSuggestions - limit=0 - 空の配列を返す", () => {
+test("SuggestionGenerator.limitSuggestions - limit=0 - 空の配列を返す", () => {
   const result: SuggestionResult = {
     suggestions: [
       {
@@ -374,7 +374,7 @@ const createTestResult = (): SuggestionResult => ({
   generatedAt: new Date(),
 });
 
-it("SuggestionGenerator.optimize - オプションなし - 元の結果を返す", () => {
+test("SuggestionGenerator.optimize - オプションなし - 元の結果を返す", () => {
   const result = createTestResult();
 
   const optimized = SuggestionGenerator.optimize(result);
@@ -382,7 +382,7 @@ it("SuggestionGenerator.optimize - オプションなし - 元の結果を返す
   expect(optimized.suggestions.length).toBe(3);
 });
 
-it("SuggestionGenerator.optimize - minConfidence指定 - 信頼度でフィルタリングする", () => {
+test("SuggestionGenerator.optimize - minConfidence指定 - 信頼度でフィルタリングする", () => {
   const result = createTestResult();
 
   const optimized = SuggestionGenerator.optimize(result, {
@@ -395,7 +395,7 @@ it("SuggestionGenerator.optimize - minConfidence指定 - 信頼度でフィル�
   );
 });
 
-it("SuggestionGenerator.optimize - sortBySeverity指定 - 重大度でソートする", () => {
+test("SuggestionGenerator.optimize - sortBySeverity指定 - 重大度でソートする", () => {
   const result = createTestResult();
 
   const optimized = SuggestionGenerator.optimize(result, {
@@ -407,7 +407,7 @@ it("SuggestionGenerator.optimize - sortBySeverity指定 - 重大度でソート�
   expect(optimized.suggestions[2].problem.severity).toBe("low");
 });
 
-it("SuggestionGenerator.optimize - maxSuggestions指定 - 提案数を制限する", () => {
+test("SuggestionGenerator.optimize - maxSuggestions指定 - 提案数を制限する", () => {
   const result = createTestResult();
 
   const optimized = SuggestionGenerator.optimize(result, {
@@ -417,7 +417,7 @@ it("SuggestionGenerator.optimize - maxSuggestions指定 - 提案数を制限す�
   expect(optimized.suggestions.length).toBe(2);
 });
 
-it("SuggestionGenerator.optimize - 複数オプション - フィルタリング・ソート・制限を適用する", () => {
+test("SuggestionGenerator.optimize - 複数オプション - フィルタリング・ソート・制限を適用する", () => {
       const result = createTestResult();
 
       const optimized = SuggestionGenerator.optimize(result, {

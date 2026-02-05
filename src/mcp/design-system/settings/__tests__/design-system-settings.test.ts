@@ -1,4 +1,4 @@
-import { it, expect, vi, beforeEach } from "vitest";
+import { test, expect, vi, beforeEach } from "vitest";
 import {
   DesignSystemSettingsManager,
   STORAGE_KEY,
@@ -33,7 +33,7 @@ beforeEach(() => {
   Object.keys(mockStorage).forEach((key) => delete mockStorage[key]);
 });
 
-it("DesignSystemSettingsManager.create - インスタンスを作成する - マネージャーインスタンスを返す", () => {
+test("DesignSystemSettingsManager.create - インスタンスを作成する - マネージャーインスタンスを返す", () => {
   // Act
   const manager = DesignSystemSettingsManager.create();
 
@@ -41,7 +41,7 @@ it("DesignSystemSettingsManager.create - インスタンスを作成する - マ
   expect(manager).toBeInstanceOf(DesignSystemSettingsManager);
 });
 
-it("DesignSystemSettingsManager.load - 保存された設定が存在する - 保存された設定を読み込む", async () => {
+test("DesignSystemSettingsManager.load - 保存された設定が存在する - 保存された設定を読み込む", async () => {
   // Arrange
   const savedSettings: DesignSystemSettings = {
     ...DEFAULT_DESIGN_SYSTEM_SETTINGS,
@@ -59,7 +59,7 @@ it("DesignSystemSettingsManager.load - 保存された設定が存在する - �
   expect(settings.autoApply).toBe(true);
 });
 
-it("DesignSystemSettingsManager.load - 保存された設定が存在しない - デフォルト設定を返す", async () => {
+test("DesignSystemSettingsManager.load - 保存された設定が存在しない - デフォルト設定を返す", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
 
@@ -70,7 +70,7 @@ it("DesignSystemSettingsManager.load - 保存された設定が存在しない -
   expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
 });
 
-it("DesignSystemSettingsManager.load - 保存されたデータが無効な型 - デフォルト設定を返す", async () => {
+test("DesignSystemSettingsManager.load - 保存されたデータが無効な型 - デフォルト設定を返す", async () => {
   // Arrange
   mockStorage[STORAGE_KEY] = "invalid string";
   const manager = DesignSystemSettingsManager.create();
@@ -82,7 +82,7 @@ it("DesignSystemSettingsManager.load - 保存されたデータが無効な型 -
   expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
 });
 
-it("DesignSystemSettingsManager.load - 保存されたデータに必須フィールドが欠けている - デフォルト設定を返す", async () => {
+test("DesignSystemSettingsManager.load - 保存されたデータに必須フィールドが欠けている - デフォルト設定を返す", async () => {
   // Arrange
   mockStorage[STORAGE_KEY] = { enabled: true };
   const manager = DesignSystemSettingsManager.create();
@@ -94,7 +94,7 @@ it("DesignSystemSettingsManager.load - 保存されたデータに必須フィ�
   expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
 });
 
-it("DesignSystemSettingsManager.load - ストレージがエラーをスローする - デフォルト設定を返す", async () => {
+test("DesignSystemSettingsManager.load - ストレージがエラーをスローする - デフォルト設定を返す", async () => {
   // Arrange
   mockFigma.clientStorage.getAsync.mockRejectedValueOnce(
     new Error("Storage error"),
@@ -108,7 +108,7 @@ it("DesignSystemSettingsManager.load - ストレージがエラーをスロー�
   expect(settings).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
 });
 
-it("DesignSystemSettingsManager.save - 新しい設定を保存する - ストレージに保存する", async () => {
+test("DesignSystemSettingsManager.save - 新しい設定を保存する - ストレージに保存する", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   const newSettings: DesignSystemSettings = {
@@ -127,7 +127,7 @@ it("DesignSystemSettingsManager.save - 新しい設定を保存する - スト�
   );
 });
 
-it("DesignSystemSettingsManager.save - 新しい設定を保存する - 現在の設定を更新する", async () => {
+test("DesignSystemSettingsManager.save - 新しい設定を保存する - 現在の設定を更新する", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   const newSettings: DesignSystemSettings = {
@@ -143,7 +143,7 @@ it("DesignSystemSettingsManager.save - 新しい設定を保存する - 現在�
   expect(current.autoApply).toBe(true);
 });
 
-it("DesignSystemSettingsManager.update - 設定を部分的に更新する - 指定したフィールドのみ更新する", async () => {
+test("DesignSystemSettingsManager.update - 設定を部分的に更新する - 指定したフィールドのみ更新する", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   await manager.load();
@@ -157,7 +157,7 @@ it("DesignSystemSettingsManager.update - 設定を部分的に更新する - 指
   expect(current.enabled).toBe(DEFAULT_DESIGN_SYSTEM_SETTINGS.enabled);
 });
 
-it("DesignSystemSettingsManager.reset - 設定をリセットする - デフォルト設定に戻す", async () => {
+test("DesignSystemSettingsManager.reset - 設定をリセットする - デフォルト設定に戻す", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   await manager.save({
@@ -175,7 +175,7 @@ it("DesignSystemSettingsManager.reset - 設定をリセットする - デフォ�
   expect(current).toEqual(DEFAULT_DESIGN_SYSTEM_SETTINGS);
 });
 
-it("DesignSystemSettingsManager.addCustomRule - カスタムルールを追加する - カスタムルールリストに追加される", async () => {
+test("DesignSystemSettingsManager.addCustomRule - カスタムルールを追加する - カスタムルールリストに追加される", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   await manager.load();
@@ -198,7 +198,7 @@ it("DesignSystemSettingsManager.addCustomRule - カスタムルールを追加�
   expect(current.customRules[0].name).toBe("Custom Rule");
 });
 
-it("DesignSystemSettingsManager.removeCustomRule - カスタムルールを削除する - カスタムルールリストから削除される", async () => {
+test("DesignSystemSettingsManager.removeCustomRule - カスタムルールを削除する - カスタムルールリストから削除される", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   const rule: MappingRule = {
@@ -223,7 +223,7 @@ it("DesignSystemSettingsManager.removeCustomRule - カスタムルールを削�
   expect(current.customRules).toHaveLength(0);
 });
 
-it("DesignSystemSettingsManager.updateCustomRule - カスタムルールを更新する - 指定したルールのフィールドが更新される", async () => {
+test("DesignSystemSettingsManager.updateCustomRule - カスタムルールを更新する - 指定したルールのフィールドが更新される", async () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   const rule: MappingRule = {
@@ -248,7 +248,7 @@ it("DesignSystemSettingsManager.updateCustomRule - カスタムルールを更�
   expect(current.customRules[0].priority).toBe(100);
 });
 
-it("DesignSystemSettingsManager.validate - 有効な設定 - バリデーション成功を返す", () => {
+test("DesignSystemSettingsManager.validate - 有効な設定 - バリデーション成功を返す", () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   const settings: DesignSystemSettings = {
@@ -267,7 +267,7 @@ it("DesignSystemSettingsManager.validate - 有効な設定 - バリデーショ�
   expect(result.errors).toHaveLength(0);
 });
 
-it("DesignSystemSettingsManager.validate - 無効なminConfidence値 - エラーを検出する", () => {
+test("DesignSystemSettingsManager.validate - 無効なminConfidence値 - エラーを検出する", () => {
   // Arrange
   const manager = DesignSystemSettingsManager.create();
   const settings: DesignSystemSettings = {

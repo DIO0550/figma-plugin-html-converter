@@ -1,7 +1,7 @@
 /**
  * ProblemDetector のテスト
  */
-import { it, expect, afterEach } from "vitest";
+import { test, expect, afterEach } from "vitest";
 import {
   ProblemDetector,
   configureDetectionThresholds,
@@ -16,7 +16,7 @@ afterEach(() => {
   resetDetectionThresholds();
 });
 
-it("ProblemDetector.detectMissingFlexContainer - 子要素が複数ありFlexコンテナでない - 問題を検出する", () => {
+test("ProblemDetector.detectMissingFlexContainer - 子要素が複数ありFlexコンテナでない - 問題を検出する", () => {
       const styles = Styles.from({ display: "block" });
       const path = createNodePath("root > div");
 
@@ -31,7 +31,7 @@ it("ProblemDetector.detectMissingFlexContainer - 子要素が複数ありFlexコ
   expect(problem?.severity).toBe("medium");
 });
 
-it("ProblemDetector.detectMissingFlexContainer - Flexコンテナの場合 - 問題を検出しない", () => {
+test("ProblemDetector.detectMissingFlexContainer - Flexコンテナの場合 - 問題を検出しない", () => {
       const styles = Styles.from({ display: "flex" });
       const path = createNodePath("root > div");
 
@@ -44,7 +44,7 @@ it("ProblemDetector.detectMissingFlexContainer - Flexコンテナの場合 - 問
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectMissingFlexContainer - 子要素が1つ以下 - 問題を検出しない", () => {
+test("ProblemDetector.detectMissingFlexContainer - 子要素が1つ以下 - 問題を検出しない", () => {
       const styles = Styles.from({ display: "block" });
       const path = createNodePath("root > div");
 
@@ -57,7 +57,7 @@ it("ProblemDetector.detectMissingFlexContainer - 子要素が1つ以下 - 問題
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectMissingAlignment - Flexコンテナで配置指定がない - 問題を検出する", () => {
+test("ProblemDetector.detectMissingAlignment - Flexコンテナで配置指定がない - 問題を検出する", () => {
       const styles = Styles.from({ display: "flex" });
       const path = createNodePath("root > div");
 
@@ -68,7 +68,7 @@ it("ProblemDetector.detectMissingAlignment - Flexコンテナで配置指定が�
   expect(problem?.severity).toBe("low");
 });
 
-it("ProblemDetector.detectMissingAlignment - justify-content指定あり - 問題を検出しない", () => {
+test("ProblemDetector.detectMissingAlignment - justify-content指定あり - 問題を検出しない", () => {
       const styles = Styles.from({
         display: "flex",
         "justify-content": "center",
@@ -80,7 +80,7 @@ it("ProblemDetector.detectMissingAlignment - justify-content指定あり - 問�
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectMissingAlignment - align-items指定あり - 問題を検出しない", () => {
+test("ProblemDetector.detectMissingAlignment - align-items指定あり - 問題を検出しない", () => {
       const styles = Styles.from({
         display: "flex",
         "align-items": "center",
@@ -92,7 +92,7 @@ it("ProblemDetector.detectMissingAlignment - align-items指定あり - 問題を
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectMissingAlignment - Flexコンテナでない - 問題を検出しない", () => {
+test("ProblemDetector.detectMissingAlignment - Flexコンテナでない - 問題を検出しない", () => {
       const styles = Styles.from({ display: "block" });
       const path = createNodePath("root > div");
 
@@ -101,7 +101,7 @@ it("ProblemDetector.detectMissingAlignment - Flexコンテナでない - 問題�
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectInconsistentSpacing - スペーシング値が一貫していない - 問題を検出する", () => {
+test("ProblemDetector.detectInconsistentSpacing - スペーシング値が一貫していない - 問題を検出する", () => {
       const styles = Styles.from({
         display: "flex",
         gap: "10px",
@@ -115,7 +115,7 @@ it("ProblemDetector.detectInconsistentSpacing - スペーシング値が一貫�
   expect(problem?.type).toBe("inconsistent-spacing");
 });
 
-it("ProblemDetector.detectInconsistentSpacing - スペーシング値が一貫している - 問題を検出しない", () => {
+test("ProblemDetector.detectInconsistentSpacing - スペーシング値が一貫している - 問題を検出しない", () => {
       const styles = Styles.from({
         display: "flex",
         gap: "10px",
@@ -128,7 +128,7 @@ it("ProblemDetector.detectInconsistentSpacing - スペーシング値が一貫�
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectInconsistentSpacing - gapとpaddingの一部が一致しても不一致な値がある - 問題を検出する", () => {
+test("ProblemDetector.detectInconsistentSpacing - gapとpaddingの一部が一致しても不一致な値がある - 問題を検出する", () => {
       // gap: 10px, padding: 10px 20px → paddingの一部がgapと一致するが、
       // 20pxはgap(10px)とも最初のpadding値(10px)とも異なる
       const styles = Styles.from({
@@ -143,7 +143,7 @@ it("ProblemDetector.detectInconsistentSpacing - gapとpaddingの一部が一致�
   expect(problem).not.toBeNull();
 });
 
-it("ProblemDetector.detectInconsistentSpacing - gapが0 - 問題を検出しない", () => {
+test("ProblemDetector.detectInconsistentSpacing - gapが0 - 問題を検出しない", () => {
       const styles = Styles.from({
         display: "flex",
         gap: "0px",
@@ -156,7 +156,7 @@ it("ProblemDetector.detectInconsistentSpacing - gapが0 - 問題を検出しな�
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectInconsistentSpacing - paddingがない - 問題を検出しない", () => {
+test("ProblemDetector.detectInconsistentSpacing - paddingがない - 問題を検出しない", () => {
       const styles = Styles.from({
         display: "flex",
         gap: "10px",
@@ -168,7 +168,7 @@ it("ProblemDetector.detectInconsistentSpacing - paddingがない - 問題を検�
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectInconsistentSpacing - 3種類以上の値がある - 問題を検出する", () => {
+test("ProblemDetector.detectInconsistentSpacing - 3種類以上の値がある - 問題を検出する", () => {
   const styles = Styles.from({
     display: "flex",
     gap: "10px",
@@ -182,7 +182,7 @@ it("ProblemDetector.detectInconsistentSpacing - 3種類以上の値がある - �
   expect(problem?.type).toBe("inconsistent-spacing");
 });
 
-it("ProblemDetector.detectSuboptimalDirection - 横並びで横幅が狭い - 問題を検出する", () => {
+test("ProblemDetector.detectSuboptimalDirection - 横並びで横幅が狭い - 問題を検出する", () => {
       const styles = Styles.from({
         display: "flex",
         "flex-direction": "row",
@@ -200,7 +200,7 @@ it("ProblemDetector.detectSuboptimalDirection - 横並びで横幅が狭い - �
   expect(problem?.type).toBe("suboptimal-direction");
 });
 
-it("ProblemDetector.detectSuboptimalDirection - 子要素が少ない - 問題を検出しない", () => {
+test("ProblemDetector.detectSuboptimalDirection - 子要素が少ない - 問題を検出しない", () => {
       const styles = Styles.from({
         display: "flex",
         "flex-direction": "row",
@@ -217,7 +217,7 @@ it("ProblemDetector.detectSuboptimalDirection - 子要素が少ない - 問題�
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectInefficientNesting - 深いネスト - 問題を検出する", () => {
+test("ProblemDetector.detectInefficientNesting - 深いネスト - 問題を検出する", () => {
       const path = createNodePath("root > div > div > div > div > div");
 
       const problem = ProblemDetector.detectInefficientNesting(path, 5);
@@ -227,7 +227,7 @@ it("ProblemDetector.detectInefficientNesting - 深いネスト - 問題を検出
   expect(problem?.severity).toBe("medium");
 });
 
-it("ProblemDetector.detectInefficientNesting - 浅いネスト - 問題を検出しない", () => {
+test("ProblemDetector.detectInefficientNesting - 浅いネスト - 問題を検出しない", () => {
       const path = createNodePath("root > div > div");
 
       const problem = ProblemDetector.detectInefficientNesting(path, 2);
@@ -235,7 +235,7 @@ it("ProblemDetector.detectInefficientNesting - 浅いネスト - 問題を検出
   expect(problem).toBeNull();
 });
 
-it("ProblemDetector.detectAll - 複数の問題 - 同時に検出する", () => {
+test("ProblemDetector.detectAll - 複数の問題 - 同時に検出する", () => {
       const styles = Styles.from({ display: "block" });
       const path = createNodePath("root > div > div > div > div > div");
 
@@ -244,7 +244,7 @@ it("ProblemDetector.detectAll - 複数の問題 - 同時に検出する", () => 
   expect(problems.length).toBeGreaterThan(0);
 });
 
-it("ProblemDetector.detectAll - 問題がない - 空の配列を返す", () => {
+test("ProblemDetector.detectAll - 問題がない - 空の配列を返す", () => {
       const styles = Styles.from({
         display: "flex",
         "justify-content": "center",
@@ -259,70 +259,70 @@ it("ProblemDetector.detectAll - 問題がない - 空の配列を返す", () => 
   expect(problems.length).toBe(0);
 });
 
-it("ProblemDetector.parseSpacingValue - px単位の値 - 正しくパースする", () => {
+test("ProblemDetector.parseSpacingValue - px単位の値 - 正しくパースする", () => {
   expect(ProblemDetector.parseSpacingValue("10px")).toBe(10);
 });
 
-it("ProblemDetector.parseSpacingValue - 小数点を含むpx値 - 正しくパースする", () => {
+test("ProblemDetector.parseSpacingValue - 小数点を含むpx値 - 正しくパースする", () => {
   expect(ProblemDetector.parseSpacingValue("10.5px")).toBe(10.5);
 });
 
-it("ProblemDetector.parseSpacingValue - 単位なしの数値 - パースする", () => {
+test("ProblemDetector.parseSpacingValue - 単位なしの数値 - パースする", () => {
   expect(ProblemDetector.parseSpacingValue("10")).toBe(10);
 });
 
-it("ProblemDetector.parseSpacingValue - 無効な値 - 0を返す", () => {
+test("ProblemDetector.parseSpacingValue - 無効な値 - 0を返す", () => {
   expect(ProblemDetector.parseSpacingValue("invalid")).toBe(0);
   expect(ProblemDetector.parseSpacingValue("10em")).toBe(0);
   expect(ProblemDetector.parseSpacingValue("10%")).toBe(0);
 });
 
-it("ProblemDetector.parseSpacingValue - undefined - 0を返す", () => {
+test("ProblemDetector.parseSpacingValue - undefined - 0を返す", () => {
   expect(ProblemDetector.parseSpacingValue(undefined)).toBe(0);
 });
 
-it("ProblemDetector.parseSpacingValue - 空文字列 - 0を返す", () => {
+test("ProblemDetector.parseSpacingValue - 空文字列 - 0を返す", () => {
   expect(ProblemDetector.parseSpacingValue("")).toBe(0);
 });
 
-it("ProblemDetector.parsePaddingValues - 1値の場合 - 全方向に同じ値を適用する", () => {
+test("ProblemDetector.parsePaddingValues - 1値の場合 - 全方向に同じ値を適用する", () => {
   const result = ProblemDetector.parsePaddingValues("10px");
   expect(result).toEqual([10, 10, 10, 10]);
 });
 
-it("ProblemDetector.parsePaddingValues - 2値の場合 - 上下と左右に値を適用する", () => {
+test("ProblemDetector.parsePaddingValues - 2値の場合 - 上下と左右に値を適用する", () => {
   const result = ProblemDetector.parsePaddingValues("10px 20px");
   expect(result).toEqual([10, 20, 10, 20]);
 });
 
-it("ProblemDetector.parsePaddingValues - 3値の場合 - 上、左右、下に値を適用する", () => {
+test("ProblemDetector.parsePaddingValues - 3値の場合 - 上、左右、下に値を適用する", () => {
   const result = ProblemDetector.parsePaddingValues("10px 20px 30px");
   expect(result).toEqual([10, 20, 30, 20]);
 });
 
-it("ProblemDetector.parsePaddingValues - 4値の場合 - 上右下左の順に値を適用する", () => {
+test("ProblemDetector.parsePaddingValues - 4値の場合 - 上右下左の順に値を適用する", () => {
   const result = ProblemDetector.parsePaddingValues("10px 20px 30px 40px");
   expect(result).toEqual([10, 20, 30, 40]);
 });
 
-it("ProblemDetector.parsePaddingValues - 空文字列 - 全方向0を返す", () => {
+test("ProblemDetector.parsePaddingValues - 空文字列 - 全方向0を返す", () => {
   const result = ProblemDetector.parsePaddingValues("");
   expect(result).toEqual([0, 0, 0, 0]);
 });
 
-it("ProblemDetector.parsePaddingValues - 単位なしの数値 - パースできる", () => {
+test("ProblemDetector.parsePaddingValues - 単位なしの数値 - パースできる", () => {
   const result = ProblemDetector.parsePaddingValues("10 20");
   expect(result).toEqual([10, 20, 10, 20]);
 });
 
-it("configureDetectionThresholds - 単一のプロパティ - 設定できる", () => {
+test("configureDetectionThresholds - 単一のプロパティ - 設定できる", () => {
   configureDetectionThresholds({ minChildrenForFlex: 5 });
 
   const thresholds = getDetectionThresholds();
   expect(thresholds.minChildrenForFlex).toBe(5);
 });
 
-it("configureDetectionThresholds - 複数のプロパティ - 同時に設定できる", () => {
+test("configureDetectionThresholds - 複数のプロパティ - 同時に設定できる", () => {
   configureDetectionThresholds({
     minChildrenForFlex: 3,
     narrowContainerWidth: 400,
@@ -333,7 +333,7 @@ it("configureDetectionThresholds - 複数のプロパティ - 同時に設定で
   expect(thresholds.narrowContainerWidth).toBe(400);
 });
 
-it("configureDetectionThresholds - すべてのプロパティ - 設定できる", () => {
+test("configureDetectionThresholds - すべてのプロパティ - 設定できる", () => {
   configureDetectionThresholds({
     minChildrenForFlex: 3,
     inefficientNestingDepth: 5,
@@ -348,7 +348,7 @@ it("configureDetectionThresholds - すべてのプロパティ - 設定できる
   expect(thresholds.narrowContainerWidth).toBe(400);
 });
 
-it("configureDetectionThresholds - 設定した閾値 - 実際の検出に影響する", () => {
+test("configureDetectionThresholds - 設定した閾値 - 実際の検出に影響する", () => {
   const styles = Styles.from({ display: "block" });
   const path = createNodePath("root > div");
 
@@ -376,7 +376,7 @@ it("configureDetectionThresholds - 設定した閾値 - 実際の検出に影響
   expect(problemWith3).not.toBeNull();
 });
 
-it("getDetectionThresholds - デフォルト - デフォルト値を取得できる", () => {
+test("getDetectionThresholds - デフォルト - デフォルト値を取得できる", () => {
   const thresholds = getDetectionThresholds();
 
   expect(thresholds.minChildrenForFlex).toBe(2);
@@ -385,7 +385,7 @@ it("getDetectionThresholds - デフォルト - デフォルト値を取得でき
   expect(thresholds.narrowContainerWidth).toBe(300);
 });
 
-it("getDetectionThresholds - 読み取り専用のコピー - 新しいオブジェクトを返す", () => {
+test("getDetectionThresholds - 読み取り専用のコピー - 新しいオブジェクトを返す", () => {
   const thresholds1 = getDetectionThresholds();
   const originalValue = thresholds1.minChildrenForFlex;
 
@@ -399,7 +399,7 @@ it("getDetectionThresholds - 読み取り専用のコピー - 新しいオブジ
   expect(thresholds1).toEqual(thresholds2);
 });
 
-it("resetDetectionThresholds - 変更した閾値 - デフォルト値にリセットできる", () => {
+test("resetDetectionThresholds - 変更した閾値 - デフォルト値にリセットできる", () => {
   configureDetectionThresholds({
     minChildrenForFlex: 10,
     inefficientNestingDepth: 20,
@@ -416,7 +416,7 @@ it("resetDetectionThresholds - 変更した閾値 - デフォルト値にリセ�
   expect(thresholds.narrowContainerWidth).toBe(300);
 });
 
-it("resetDetectionThresholds - リセット後 - 再度設定できる", () => {
+test("resetDetectionThresholds - リセット後 - 再度設定できる", () => {
   configureDetectionThresholds({ minChildrenForFlex: 5 });
   resetDetectionThresholds();
   configureDetectionThresholds({ minChildrenForFlex: 7 });

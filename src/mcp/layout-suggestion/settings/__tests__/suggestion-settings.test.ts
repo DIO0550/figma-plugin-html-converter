@@ -1,12 +1,12 @@
 /**
  * SuggestionSettings のテスト
  */
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { SuggestionSettingsManager } from "../suggestion-settings";
 import type { SuggestionSettings } from "../../types";
 import { DEFAULT_SUGGESTION_SETTINGS } from "../../types";
 
-it("SuggestionSettingsManager.getDefaults - デフォルト設定を取得 - デフォルト値を返す", () => {
+test("SuggestionSettingsManager.getDefaults - デフォルト設定を取得 - デフォルト値を返す", () => {
   const defaults = SuggestionSettingsManager.getDefaults();
 
   expect(defaults.enabled).toBe(true);
@@ -15,7 +15,7 @@ it("SuggestionSettingsManager.getDefaults - デフォルト設定を取得 - デ
   expect(defaults.maxSuggestions).toBe(5);
 });
 
-it("SuggestionSettingsManager.create - カスタム設定指定 - マージした設定を返す", () => {
+test("SuggestionSettingsManager.create - カスタム設定指定 - マージした設定を返す", () => {
   const settings = SuggestionSettingsManager.create({
     enabled: false,
     minConfidence: 0.8,
@@ -26,13 +26,13 @@ it("SuggestionSettingsManager.create - カスタム設定指定 - マージし�
   expect(settings.autoShow).toBe(DEFAULT_SUGGESTION_SETTINGS.autoShow);
 });
 
-it("SuggestionSettingsManager.create - 空のオブジェクト指定 - デフォルト設定を返す", () => {
+test("SuggestionSettingsManager.create - 空のオブジェクト指定 - デフォルト設定を返す", () => {
   const settings = SuggestionSettingsManager.create({});
 
   expect(settings).toEqual(DEFAULT_SUGGESTION_SETTINGS);
 });
 
-it("SuggestionSettingsManager.validate - 有効な設定 - trueを返す", () => {
+test("SuggestionSettingsManager.validate - 有効な設定 - trueを返す", () => {
   const settings: SuggestionSettings = {
     enabled: true,
     autoShow: true,
@@ -43,7 +43,7 @@ it("SuggestionSettingsManager.validate - 有効な設定 - trueを返す", () =>
   expect(SuggestionSettingsManager.validate(settings)).toBe(true);
 });
 
-it("SuggestionSettingsManager.validate - minConfidenceが範囲外 - falseを返す", () => {
+test("SuggestionSettingsManager.validate - minConfidenceが範囲外 - falseを返す", () => {
   const settings: SuggestionSettings = {
     enabled: true,
     autoShow: true,
@@ -54,7 +54,7 @@ it("SuggestionSettingsManager.validate - minConfidenceが範囲外 - falseを返
   expect(SuggestionSettingsManager.validate(settings)).toBe(false);
 });
 
-it("SuggestionSettingsManager.validate - minConfidenceが負 - falseを返す", () => {
+test("SuggestionSettingsManager.validate - minConfidenceが負 - falseを返す", () => {
   const settings: SuggestionSettings = {
     enabled: true,
     autoShow: true,
@@ -65,7 +65,7 @@ it("SuggestionSettingsManager.validate - minConfidenceが負 - falseを返す", 
   expect(SuggestionSettingsManager.validate(settings)).toBe(false);
 });
 
-it("SuggestionSettingsManager.validate - maxSuggestionsが0以下 - falseを返す", () => {
+test("SuggestionSettingsManager.validate - maxSuggestionsが0以下 - falseを返す", () => {
   const settings: SuggestionSettings = {
     enabled: true,
     autoShow: true,
@@ -76,7 +76,7 @@ it("SuggestionSettingsManager.validate - maxSuggestionsが0以下 - falseを返�
   expect(SuggestionSettingsManager.validate(settings)).toBe(false);
 });
 
-it("SuggestionSettingsManager.update - 部分的な更新 - 指定したプロパティのみ更新する", () => {
+test("SuggestionSettingsManager.update - 部分的な更新 - 指定したプロパティのみ更新する", () => {
   const original: SuggestionSettings = {
     enabled: true,
     autoShow: true,
@@ -94,7 +94,7 @@ it("SuggestionSettingsManager.update - 部分的な更新 - 指定したプロ�
   expect(updated.maxSuggestions).toBe(5);
 });
 
-it("SuggestionSettingsManager.setEnabled - enabled設定変更 - enabled値を更新する", () => {
+test("SuggestionSettingsManager.setEnabled - enabled設定変更 - enabled値を更新する", () => {
   const original = SuggestionSettingsManager.getDefaults();
 
   const disabled = SuggestionSettingsManager.setEnabled(original, false);
@@ -104,7 +104,7 @@ it("SuggestionSettingsManager.setEnabled - enabled設定変更 - enabled値を�
   expect(enabled.enabled).toBe(true);
 });
 
-it("SuggestionSettingsManager.setAutoShow - autoShow設定変更 - autoShow値を更新する", () => {
+test("SuggestionSettingsManager.setAutoShow - autoShow設定変更 - autoShow値を更新する", () => {
   const original = SuggestionSettingsManager.getDefaults();
 
   const updated = SuggestionSettingsManager.setAutoShow(original, false);
@@ -112,7 +112,7 @@ it("SuggestionSettingsManager.setAutoShow - autoShow設定変更 - autoShow値�
   expect(updated.autoShow).toBe(false);
 });
 
-it("SuggestionSettingsManager.setMinConfidence - minConfidence設定変更 - minConfidence値を更新する", () => {
+test("SuggestionSettingsManager.setMinConfidence - minConfidence設定変更 - minConfidence値を更新する", () => {
   const original = SuggestionSettingsManager.getDefaults();
 
   const updated = SuggestionSettingsManager.setMinConfidence(original, 0.8);
@@ -120,7 +120,7 @@ it("SuggestionSettingsManager.setMinConfidence - minConfidence設定変更 - min
   expect(updated.minConfidence).toBe(0.8);
 });
 
-it("SuggestionSettingsManager.setMinConfidence - 範囲外の値 - 0-1の範囲に制限する", () => {
+test("SuggestionSettingsManager.setMinConfidence - 範囲外の値 - 0-1の範囲に制限する", () => {
   const original = SuggestionSettingsManager.getDefaults();
 
   const tooHigh = SuggestionSettingsManager.setMinConfidence(original, 1.5);
@@ -130,7 +130,7 @@ it("SuggestionSettingsManager.setMinConfidence - 範囲外の値 - 0-1の範囲�
   expect(tooLow.minConfidence).toBe(0);
 });
 
-it("SuggestionSettingsManager.setMaxSuggestions - maxSuggestions設定変更 - maxSuggestions値を更新する", () => {
+test("SuggestionSettingsManager.setMaxSuggestions - maxSuggestions設定変更 - maxSuggestions値を更新する", () => {
   const original = SuggestionSettingsManager.getDefaults();
 
   const updated = SuggestionSettingsManager.setMaxSuggestions(original, 10);
@@ -138,7 +138,7 @@ it("SuggestionSettingsManager.setMaxSuggestions - maxSuggestions設定変更 - m
   expect(updated.maxSuggestions).toBe(10);
 });
 
-it("SuggestionSettingsManager.setMaxSuggestions - 1未満の値 - 1に制限する", () => {
+test("SuggestionSettingsManager.setMaxSuggestions - 1未満の値 - 1に制限する", () => {
   const original = SuggestionSettingsManager.getDefaults();
 
   const updated = SuggestionSettingsManager.setMaxSuggestions(original, 0);
@@ -146,7 +146,7 @@ it("SuggestionSettingsManager.setMaxSuggestions - 1未満の値 - 1に制限す�
   expect(updated.maxSuggestions).toBe(1);
 });
 
-it("SuggestionSettingsManager.shouldShowSuggestions - enabledとautoShowがtrue - trueを返す", () => {
+test("SuggestionSettingsManager.shouldShowSuggestions - enabledとautoShowがtrue - trueを返す", () => {
   const settings: SuggestionSettings = {
     enabled: true,
     autoShow: true,
@@ -159,7 +159,7 @@ it("SuggestionSettingsManager.shouldShowSuggestions - enabledとautoShowがtrue 
   );
 });
 
-it("SuggestionSettingsManager.shouldShowSuggestions - enabledがfalse - falseを返す", () => {
+test("SuggestionSettingsManager.shouldShowSuggestions - enabledがfalse - falseを返す", () => {
   const settings: SuggestionSettings = {
     enabled: false,
     autoShow: true,
@@ -172,7 +172,7 @@ it("SuggestionSettingsManager.shouldShowSuggestions - enabledがfalse - falseを
   );
 });
 
-it("SuggestionSettingsManager.shouldShowSuggestions - autoShowがfalse - falseを返す", () => {
+test("SuggestionSettingsManager.shouldShowSuggestions - autoShowがfalse - falseを返す", () => {
   const settings: SuggestionSettings = {
     enabled: true,
     autoShow: false,
@@ -185,7 +185,7 @@ it("SuggestionSettingsManager.shouldShowSuggestions - autoShowがfalse - false�
   );
 });
 
-it("SuggestionSettingsManager.toJSON/fromJSON - 有効な設定 - シリアライズと復元ができる", () => {
+test("SuggestionSettingsManager.toJSON/fromJSON - 有効な設定 - シリアライズと復元ができる", () => {
   const original: SuggestionSettings = {
     enabled: true,
     autoShow: false,
@@ -199,7 +199,7 @@ it("SuggestionSettingsManager.toJSON/fromJSON - 有効な設定 - シリアラ�
   expect(restored).toEqual(original);
 });
 
-it("SuggestionSettingsManager.fromJSON - 不正なJSON - デフォルト設定を返す", () => {
+test("SuggestionSettingsManager.fromJSON - 不正なJSON - デフォルト設定を返す", () => {
   const invalidJSON = "invalid json";
 
   const settings = SuggestionSettingsManager.fromJSON(invalidJSON);

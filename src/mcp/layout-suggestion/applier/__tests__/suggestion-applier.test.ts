@@ -1,13 +1,13 @@
 /**
  * SuggestionApplier のテスト
  */
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { SuggestionApplier } from "../suggestion-applier";
 import type { LayoutSuggestion } from "../../types";
 import { createNodePath, createSuggestionId } from "../../types";
 import { Styles } from "../../../../converter/models/styles";
 
-it("SuggestionApplier.canApply - 自動適用可能な提案 - trueを返す", () => {
+test("SuggestionApplier.canApply - 自動適用可能な提案 - trueを返す", () => {
       const suggestion: LayoutSuggestion = {
         id: createSuggestionId("test-1"),
         problem: {
@@ -25,7 +25,7 @@ it("SuggestionApplier.canApply - 自動適用可能な提案 - trueを返す", (
   expect(SuggestionApplier.canApply(suggestion)).toBe(true);
 });
 
-it("SuggestionApplier.canApply - 自動適用不可の提案 - falseを返す", () => {
+test("SuggestionApplier.canApply - 自動適用不可の提案 - falseを返す", () => {
       const suggestion: LayoutSuggestion = {
         id: createSuggestionId("test-2"),
         problem: {
@@ -42,7 +42,7 @@ it("SuggestionApplier.canApply - 自動適用不可の提案 - falseを返す", 
   expect(SuggestionApplier.canApply(suggestion)).toBe(false);
 });
 
-it("SuggestionApplier.canApply - improvedStylesがない提案 - falseを返す", () => {
+test("SuggestionApplier.canApply - improvedStylesがない提案 - falseを返す", () => {
       const suggestion: LayoutSuggestion = {
         id: createSuggestionId("test-3"),
         problem: {
@@ -60,7 +60,7 @@ it("SuggestionApplier.canApply - improvedStylesがない提案 - falseを返す"
   expect(SuggestionApplier.canApply(suggestion)).toBe(false);
 });
 
-it("SuggestionApplier.apply - 提案を適用 - 新しいスタイルを生成する", () => {
+test("SuggestionApplier.apply - 提案を適用 - 新しいスタイルを生成する", () => {
       const originalStyles = Styles.from({ color: "red" });
       const suggestion: LayoutSuggestion = {
         id: createSuggestionId("test-4"),
@@ -82,7 +82,7 @@ it("SuggestionApplier.apply - 提案を適用 - 新しいスタイルを生成�
   expect(result.appliedSuggestionId).toBe(suggestion.id);
 });
 
-it("SuggestionApplier.apply - 成功時 - appliedStylesを返す", () => {
+test("SuggestionApplier.apply - 成功時 - appliedStylesを返す", () => {
       const originalStyles = Styles.from({ color: "red" });
       const suggestion: LayoutSuggestion = {
         id: createSuggestionId("test-apply-styles"),
@@ -107,7 +107,7 @@ it("SuggestionApplier.apply - 成功時 - appliedStylesを返す", () => {
   expect(Styles.get(result.appliedStyles!, "gap")).toBe("8px");
 });
 
-it("SuggestionApplier.apply - 適用不可な提案 - エラーを返す", () => {
+test("SuggestionApplier.apply - 適用不可な提案 - エラーを返す", () => {
       const originalStyles = Styles.from({});
       const suggestion: LayoutSuggestion = {
         id: createSuggestionId("test-5"),
@@ -128,7 +128,7 @@ it("SuggestionApplier.apply - 適用不可な提案 - エラーを返す", () =>
   expect(result.errorMessage).toBeDefined();
 });
 
-it("SuggestionApplier.generateNewStyles - 新しいスタイル - 生成する", () => {
+test("SuggestionApplier.generateNewStyles - 新しいスタイル - 生成する", () => {
       const originalStyles = Styles.from({ color: "red", padding: "10px" });
       const improvedStyles = { display: "flex", gap: "8px" };
 
@@ -143,7 +143,7 @@ it("SuggestionApplier.generateNewStyles - 新しいスタイル - 生成する",
   expect(Styles.get(newStyles, "gap")).toBe("8px");
 });
 
-it("SuggestionApplier.generateNewStyles - 既存のスタイル - 上書きする", () => {
+test("SuggestionApplier.generateNewStyles - 既存のスタイル - 上書きする", () => {
       const originalStyles = Styles.from({ display: "block" });
       const improvedStyles = { display: "flex" };
 
@@ -155,7 +155,7 @@ it("SuggestionApplier.generateNewStyles - 既存のスタイル - 上書きす�
   expect(Styles.get(newStyles, "display")).toBe("flex");
 });
 
-it("SuggestionApplier.generateStyleString - スタイルオブジェクト - 文字列を生成する", () => {
+test("SuggestionApplier.generateStyleString - スタイルオブジェクト - 文字列を生成する", () => {
       const styles = Styles.from({
         display: "flex",
         "justify-content": "center",
@@ -167,7 +167,7 @@ it("SuggestionApplier.generateStyleString - スタイルオブジェクト - 文
   expect(styleString).toContain("justify-content: center");
 });
 
-it("SuggestionApplier.applyMultiple - 複数の提案 - 適用する", () => {
+test("SuggestionApplier.applyMultiple - 複数の提案 - 適用する", () => {
       const originalStyles = Styles.from({});
       const suggestions: LayoutSuggestion[] = [
         {
@@ -208,7 +208,7 @@ it("SuggestionApplier.applyMultiple - 複数の提案 - 適用する", () => {
   expect(results[1].success).toBe(true);
 });
 
-it("SuggestionApplier.filterApplicable - 適用可能な提案のみ - フィルタリングする", () => {
+test("SuggestionApplier.filterApplicable - 適用可能な提案のみ - フィルタリングする", () => {
       const suggestions: LayoutSuggestion[] = [
         {
           id: createSuggestionId("test-8"),
@@ -244,7 +244,7 @@ it("SuggestionApplier.filterApplicable - 適用可能な提案のみ - フィル
   expect(applicableSuggestions[0].autoApplicable).toBe(true);
 });
 
-it("SuggestionApplier.summarizeResults - 全て成功した場合 - サマリーを生成する", () => {
+test("SuggestionApplier.summarizeResults - 全て成功した場合 - サマリーを生成する", () => {
       const results = [
         { success: true, appliedSuggestionId: createSuggestionId("test-1") },
         { success: true, appliedSuggestionId: createSuggestionId("test-2") },
@@ -260,7 +260,7 @@ it("SuggestionApplier.summarizeResults - 全て成功した場合 - サマリー
   expect(summary.failedIds).toHaveLength(0);
 });
 
-it("SuggestionApplier.summarizeResults - 全て失敗した場合 - サマリーを生成する", () => {
+test("SuggestionApplier.summarizeResults - 全て失敗した場合 - サマリーを生成する", () => {
       const results = [
         {
           success: false,
@@ -283,7 +283,7 @@ it("SuggestionApplier.summarizeResults - 全て失敗した場合 - サマリー
   expect(summary.failedIds).toHaveLength(2);
 });
 
-it("SuggestionApplier.summarizeResults - 成功と失敗が混在した場合 - サマリーを生成する", () => {
+test("SuggestionApplier.summarizeResults - 成功と失敗が混在した場合 - サマリーを生成する", () => {
       const id1 = createSuggestionId("test-1");
       const id2 = createSuggestionId("test-2");
       const id3 = createSuggestionId("test-3");
@@ -303,7 +303,7 @@ it("SuggestionApplier.summarizeResults - 成功と失敗が混在した場合 - 
   expect(summary.failedIds).toEqual([id2]);
 });
 
-it("SuggestionApplier.summarizeResults - 空の結果リスト - サマリーを生成する", () => {
+test("SuggestionApplier.summarizeResults - 空の結果リスト - サマリーを生成する", () => {
       const results: ReturnType<typeof SuggestionApplier.apply>[] = [];
 
       const summary = SuggestionApplier.summarizeResults(results);
@@ -315,7 +315,7 @@ it("SuggestionApplier.summarizeResults - 空の結果リスト - サマリーを
   expect(summary.failedIds).toEqual([]);
 });
 
-it("SuggestionApplier.summarizeResults - 複数のID - 正しく分類する", () => {
+test("SuggestionApplier.summarizeResults - 複数のID - 正しく分類する", () => {
       const successId1 = createSuggestionId("success-1");
       const successId2 = createSuggestionId("success-2");
       const failedId1 = createSuggestionId("failed-1");

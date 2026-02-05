@@ -1,12 +1,12 @@
 /**
  * LayoutAnalyzer のテスト
  */
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { LayoutAnalyzer } from "../layout-analyzer";
 import type { LayoutAnalysisContext, LayoutAnalysisResult } from "../../types";
 import { createNodePath } from "../../types";
 
-it("LayoutAnalyzer.analyze - 空のHTML - 空の結果を返す", () => {
+test("LayoutAnalyzer.analyze - 空のHTML - 空の結果を返す", () => {
       const context: LayoutAnalysisContext = {
         html: "",
         nestingDepth: 0,
@@ -19,7 +19,7 @@ it("LayoutAnalyzer.analyze - 空のHTML - 空の結果を返す", () => {
   expect(result.analyzedAt).toBeInstanceOf(Date);
 });
 
-it("LayoutAnalyzer.analyze - 単純なdiv - 分析する", () => {
+test("LayoutAnalyzer.analyze - 単純なdiv - 分析する", () => {
       const context: LayoutAnalysisContext = {
         html: '<div style="display: flex;"><span>Hello</span></div>',
         nestingDepth: 0,
@@ -31,7 +31,7 @@ it("LayoutAnalyzer.analyze - 単純なdiv - 分析する", () => {
   expect(result.analyzedAt).toBeInstanceOf(Date);
 });
 
-it("LayoutAnalyzer.analyze - Flexコンテナがない場合 - 問題を検出する", () => {
+test("LayoutAnalyzer.analyze - Flexコンテナがない場合 - 問題を検出する", () => {
       const context: LayoutAnalysisContext = {
         html: "<div><span>Child 1</span><span>Child 2</span></div>",
         nestingDepth: 0,
@@ -45,7 +45,7 @@ it("LayoutAnalyzer.analyze - Flexコンテナがない場合 - 問題を検出�
   expect(missingFlexProblems.length).toBeGreaterThan(0);
 });
 
-it("LayoutAnalyzer.analyze - Flexコンテナがある場合 - missing-flex-container問題を検出しない", () => {
+test("LayoutAnalyzer.analyze - Flexコンテナがある場合 - missing-flex-container問題を検出しない", () => {
       const context: LayoutAnalysisContext = {
         html: '<div style="display: flex;"><span>Child 1</span><span>Child 2</span></div>',
         nestingDepth: 0,
@@ -59,7 +59,7 @@ it("LayoutAnalyzer.analyze - Flexコンテナがある場合 - missing-flex-cont
   expect(missingFlexProblems.length).toBe(0);
 });
 
-it("LayoutAnalyzer.analyze - 配置指定がない場合 - 問題を検出する", () => {
+test("LayoutAnalyzer.analyze - 配置指定がない場合 - 問題を検出する", () => {
       const context: LayoutAnalysisContext = {
         html: '<div style="display: flex;"><span>Child</span></div>',
         nestingDepth: 0,
@@ -73,7 +73,7 @@ it("LayoutAnalyzer.analyze - 配置指定がない場合 - 問題を検出する
   expect(alignmentProblems.length).toBeGreaterThan(0);
 });
 
-it("LayoutAnalyzer.analyze - 配置指定がある場合 - missing-alignment問題を検出しない", () => {
+test("LayoutAnalyzer.analyze - 配置指定がある場合 - missing-alignment問題を検出しない", () => {
       const context: LayoutAnalysisContext = {
         html: '<div style="display: flex; justify-content: center; align-items: center;"><span>Child</span></div>',
         nestingDepth: 0,
@@ -87,7 +87,7 @@ it("LayoutAnalyzer.analyze - 配置指定がある場合 - missing-alignment問�
   expect(alignmentProblems.length).toBe(0);
 });
 
-it("LayoutAnalyzer.analyzeNode - ノード単位 - 分析する", () => {
+test("LayoutAnalyzer.analyzeNode - ノード単位 - 分析する", () => {
       const html = '<div style="display: flex;"><span>Hello</span></div>';
 
       const problems = LayoutAnalyzer.analyzeNode(html, createNodePath("root"));
@@ -95,7 +95,7 @@ it("LayoutAnalyzer.analyzeNode - ノード単位 - 分析する", () => {
   expect(Array.isArray(problems)).toBe(true);
 });
 
-it("LayoutAnalyzer.getAnalysisSummary - 分析結果 - サマリーを取得する", () => {
+test("LayoutAnalyzer.getAnalysisSummary - 分析結果 - サマリーを取得する", () => {
       const result: LayoutAnalysisResult = {
         problems: [
           {
@@ -124,7 +124,7 @@ it("LayoutAnalyzer.getAnalysisSummary - 分析結果 - サマリーを取得す�
   expect(summary.problemsBySeverity["low"]).toBe(1);
 });
 
-it("LayoutAnalyzer.getAnalysisSummary - 問題がない場合 - サマリーを返す", () => {
+test("LayoutAnalyzer.getAnalysisSummary - 問題がない場合 - サマリーを返す", () => {
       const result: LayoutAnalysisResult = {
         problems: [],
         analyzedNodeCount: 1,
@@ -136,46 +136,46 @@ it("LayoutAnalyzer.getAnalysisSummary - 問題がない場合 - サマリーを�
   expect(summary.totalProblems).toBe(0);
 });
 
-it("LayoutAnalyzer.countDirectChildren - 通常の子要素 - カウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - 通常の子要素 - カウントする", () => {
   const content = "<span>text1</span><span>text2</span>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(2);
 });
 
-it("LayoutAnalyzer.countDirectChildren - 自己閉じタグ（明示的なスラッシュ） - カウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - 自己閉じタグ（明示的なスラッシュ） - カウントする", () => {
   const content = "<img /><br /><span>text</span>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(3);
 });
 
-it("LayoutAnalyzer.countDirectChildren - HTML5 void要素（スラッシュなし） - カウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - HTML5 void要素（スラッシュなし） - カウントする", () => {
   const content = "<img><br><span>text</span>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(3);
 });
 
-it("LayoutAnalyzer.countDirectChildren - ネストされた要素 - 直接の子要素のみカウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - ネストされた要素 - 直接の子要素のみカウントする", () => {
   const content = "<div><span>nested</span></div><span>direct child</span>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(2);
 });
 
-it("LayoutAnalyzer.countDirectChildren - 深くネストされた要素 - 正しくカウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - 深くネストされた要素 - 正しくカウントする", () => {
   const content = "<div><div><div>deeply nested</div></div></div>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(1);
 });
 
-it("LayoutAnalyzer.countDirectChildren - 同じタグ名が複数ネスト - 正しくカウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - 同じタグ名が複数ネスト - 正しくカウントする", () => {
   const content =
     "<div>outer<div>inner<div>deep</div></div></div><div>sibling</div>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(2);
 });
 
-it("LayoutAnalyzer.countDirectChildren - 空のコンテンツ - 0を返す", () => {
+test("LayoutAnalyzer.countDirectChildren - 空のコンテンツ - 0を返す", () => {
   expect(LayoutAnalyzer.countDirectChildren("")).toBe(0);
 });
 
-it("LayoutAnalyzer.countDirectChildren - テキストのみ - 0を返す", () => {
+test("LayoutAnalyzer.countDirectChildren - テキストのみ - 0を返す", () => {
   expect(LayoutAnalyzer.countDirectChildren("just text")).toBe(0);
 });
 
-it("LayoutAnalyzer.countDirectChildren - 自己閉じタグとネストされた要素の混在 - 正しくカウントする", () => {
+test("LayoutAnalyzer.countDirectChildren - 自己閉じタグとネストされた要素の混在 - 正しくカウントする", () => {
   const content =
     "<img /><div><span>text</span><br /></div><input /><span>direct</span>";
   expect(LayoutAnalyzer.countDirectChildren(content)).toBe(4);

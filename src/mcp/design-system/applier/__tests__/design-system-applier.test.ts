@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { DesignSystemApplier } from "../design-system-applier";
 import type {
   DesignSystem,
@@ -53,7 +53,7 @@ const createMockMatch = (designSystem: DesignSystem): MappingMatch => ({
   confidence: 0.8,
 });
 
-it("DesignSystemApplier.create - インスタンス作成 - Applierインスタンスが作成される", () => {
+test("DesignSystemApplier.create - インスタンス作成 - Applierインスタンスが作成される", () => {
   // Act
   const applier = DesignSystemApplier.create();
 
@@ -61,7 +61,7 @@ it("DesignSystemApplier.create - インスタンス作成 - Applierインスタ�
   expect(applier).toBeInstanceOf(DesignSystemApplier);
 });
 
-it("DesignSystemApplier.applyToFigmaNodeConfig - テキストスタイルのマッチ - FigmaNodeConfigにテキストスタイルが適用される", () => {
+test("DesignSystemApplier.applyToFigmaNodeConfig - テキストスタイルのマッチ - FigmaNodeConfigにテキストスタイルが適用される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const match = createMockMatch(designSystem);
@@ -78,7 +78,7 @@ it("DesignSystemApplier.applyToFigmaNodeConfig - テキストスタイルのマ�
   expect(config.fontWeight).toBe(700);
 });
 
-it("DesignSystemApplier.applyToFigmaNodeConfig - ペイントスタイルのマッチ - FigmaNodeConfigにペイントスタイルが適用される", () => {
+test("DesignSystemApplier.applyToFigmaNodeConfig - ペイントスタイルのマッチ - FigmaNodeConfigにペイントスタイルが適用される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const match: MappingMatch = {
@@ -106,7 +106,7 @@ it("DesignSystemApplier.applyToFigmaNodeConfig - ペイントスタイルのマ�
   expect(config.fills).toHaveLength(1);
 });
 
-it("DesignSystemApplier.applyToFigmaNodeConfig - スタイル未適用のマッチ - 元の設定をそのまま返す", () => {
+test("DesignSystemApplier.applyToFigmaNodeConfig - スタイル未適用のマッチ - 元の設定をそのまま返す", () => {
   // Arrange
   const match: MappingMatch = {
     rule: createMockRule(),
@@ -124,7 +124,7 @@ it("DesignSystemApplier.applyToFigmaNodeConfig - スタイル未適用のマッ�
   expect(config).toEqual(originalConfig);
 });
 
-it("DesignSystemApplier.applyMatches - 複数のマッチ - すべてのマッチが適用される", () => {
+test("DesignSystemApplier.applyMatches - 複数のマッチ - すべてのマッチが適用される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const matches: MappingMatch[] = [
@@ -147,7 +147,7 @@ it("DesignSystemApplier.applyMatches - 複数のマッチ - すべてのマッ�
   expect(result.skippedCount).toBe(0);
 });
 
-it("DesignSystemApplier.applyMatches - 低信頼度のマッチを含む - 低信頼度のマッチはスキップされる", () => {
+test("DesignSystemApplier.applyMatches - 低信頼度のマッチを含む - 低信頼度のマッチはスキップされる", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const matches: MappingMatch[] = [
@@ -166,7 +166,7 @@ it("DesignSystemApplier.applyMatches - 低信頼度のマッチを含む - 低�
   expect(result.skippedCount).toBe(1);
 });
 
-it("DesignSystemApplier.generateCssFromMatch - スタイル適用済みのマッチ - CSS文字列が生成される", () => {
+test("DesignSystemApplier.generateCssFromMatch - スタイル適用済みのマッチ - CSS文字列が生成される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const match = createMockMatch(designSystem);
@@ -180,7 +180,7 @@ it("DesignSystemApplier.generateCssFromMatch - スタイル適用済みのマッ
   expect(css).toContain("font-size");
 });
 
-it("DesignSystemApplier.generateCssFromMatch - スタイル未適用のマッチ - 空文字列が返される", () => {
+test("DesignSystemApplier.generateCssFromMatch - スタイル未適用のマッチ - 空文字列が返される", () => {
   // Arrange
   const match: MappingMatch = {
     rule: createMockRule(),
@@ -197,7 +197,7 @@ it("DesignSystemApplier.generateCssFromMatch - スタイル未適用のマッチ
   expect(css).toBe("");
 });
 
-it("DesignSystemApplier.previewApply - マッチのプレビュー - 適用結果のプレビューが生成される", () => {
+test("DesignSystemApplier.previewApply - マッチのプレビュー - 適用結果のプレビューが生成される", () => {
   // Arrange
   const designSystem = createMockDesignSystem();
   const match = createMockMatch(designSystem);

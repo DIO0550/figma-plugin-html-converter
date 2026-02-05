@@ -1,4 +1,4 @@
-import { it, expect, vi, beforeEach } from "vitest";
+import { test, expect, vi, beforeEach } from "vitest";
 import { MappingOptimizer } from "../mapping-optimizer";
 import type {
   DesignSystem,
@@ -57,7 +57,7 @@ beforeEach(() => {
   mockMcpClient.isConnected.mockReturnValue(true);
 });
 
-it("MappingOptimizer.create - インスタンス作成 - Optimizerインスタンスが作成される", () => {
+test("MappingOptimizer.create - インスタンス作成 - Optimizerインスタンスが作成される", () => {
   // Act
   const optimizer = MappingOptimizer.create();
 
@@ -65,7 +65,7 @@ it("MappingOptimizer.create - インスタンス作成 - Optimizerインスタ�
   expect(optimizer).toBeInstanceOf(MappingOptimizer);
 });
 
-it("MappingOptimizer.optimize - MCP接続時 - AI最適化が実行される", async () => {
+test("MappingOptimizer.optimize - MCP接続時 - AI最適化が実行される", async () => {
   // Arrange
   const mockResponse: AIOptimizationResponse = {
     recommendedMappings: [
@@ -94,7 +94,7 @@ it("MappingOptimizer.optimize - MCP接続時 - AI最適化が実行される", a
   expect(result.recommendedMappings[0].confidence).toBe(0.9);
 });
 
-it("MappingOptimizer.optimize - MCP未接続時 - フォールバック結果が返される", async () => {
+test("MappingOptimizer.optimize - MCP未接続時 - フォールバック結果が返される", async () => {
   // Arrange
   mockMcpClient.isConnected.mockReturnValue(false);
   const optimizer = MappingOptimizer.create();
@@ -111,7 +111,7 @@ it("MappingOptimizer.optimize - MCP未接続時 - フォールバック結果が
   expect(result.processingTimeMs).toBe(0);
 });
 
-it("MappingOptimizer.optimize - MCPリクエストエラー時 - フォールバック結果が返される", async () => {
+test("MappingOptimizer.optimize - MCPリクエストエラー時 - フォールバック結果が返される", async () => {
   // Arrange
   mockMcpClient.sendRequest.mockRejectedValue(
     new Error("Connection failed"),
@@ -130,7 +130,7 @@ it("MappingOptimizer.optimize - MCPリクエストエラー時 - フォールバ
   expect(result.recommendedMappings).toHaveLength(0);
 });
 
-it("MappingOptimizer.suggestRulesFromHtml - HTMLからのルール提案 - ルール候補が提案される", async () => {
+test("MappingOptimizer.suggestRulesFromHtml - HTMLからのルール提案 - ルール候補が提案される", async () => {
   // Arrange
   const mockResponse: AIOptimizationResponse = {
     recommendedMappings: [
@@ -158,7 +158,7 @@ it("MappingOptimizer.suggestRulesFromHtml - HTMLからのルール提案 - ル�
   expect(suggestions[0].recommendedStyleName).toBe("Card/Default");
 });
 
-it("MappingOptimizer.analyzeUnmatchedElements - マッチしない要素の分析 - 推奨マッピングが返される", async () => {
+test("MappingOptimizer.analyzeUnmatchedElements - マッチしない要素の分析 - 推奨マッピングが返される", async () => {
   // Arrange
   const mockResponse: AIOptimizationResponse = {
     recommendedMappings: [
@@ -186,7 +186,7 @@ it("MappingOptimizer.analyzeUnmatchedElements - マッチしない要素の分�
   expect(analysis.recommendedMappings.length).toBeGreaterThanOrEqual(1);
 });
 
-it("MappingOptimizer.validateMapping - マッピングの検証 - 検証結果が返される", async () => {
+test("MappingOptimizer.validateMapping - マッピングの検証 - 検証結果が返される", async () => {
   // Arrange
   mockMcpClient.sendRequest.mockResolvedValue({
     recommendedMappings: [],
@@ -206,7 +206,7 @@ it("MappingOptimizer.validateMapping - マッピングの検証 - 検証結果�
   expect(validation).toHaveProperty("confidence");
 });
 
-it("MappingOptimizer.validateMapping - スタイル存在時 - 高い信頼度が返される", async () => {
+test("MappingOptimizer.validateMapping - スタイル存在時 - 高い信頼度が返される", async () => {
   // Arrange
   const optimizer = MappingOptimizer.create();
 
@@ -222,7 +222,7 @@ it("MappingOptimizer.validateMapping - スタイル存在時 - 高い信頼度�
   expect(validation.confidence).toBeGreaterThan(0.5);
 });
 
-it("MappingOptimizer.validateMapping - スタイル非存在時 - 低い信頼度が返される", async () => {
+test("MappingOptimizer.validateMapping - スタイル非存在時 - 低い信頼度が返される", async () => {
   // Arrange
   const optimizer = MappingOptimizer.create();
 

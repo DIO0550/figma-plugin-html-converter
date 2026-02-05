@@ -1,7 +1,7 @@
 /**
  * AIAnalysis のテスト
  */
-import { it, expect, vi, beforeEach, afterEach } from "vitest";
+import { test, expect, vi, beforeEach, afterEach } from "vitest";
 import { AIAnalysis } from "../ai-analysis";
 import type {
   AIAnalysisRequest,
@@ -14,7 +14,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-it("AIAnalysis.createRequest - HTMLと問題 - AIリクエストを作成する", () => {
+test("AIAnalysis.createRequest - HTMLと問題 - AIリクエストを作成する", () => {
       const html = '<div style="display: block;"><span>Test</span></div>';
       const problems: LayoutProblem[] = [
         {
@@ -32,7 +32,7 @@ it("AIAnalysis.createRequest - HTMLと問題 - AIリクエストを作成する"
   expect(request.context).toBeUndefined();
 });
 
-it("AIAnalysis.createRequest - 追加コンテキスト指定 - リクエストを作成する", () => {
+test("AIAnalysis.createRequest - 追加コンテキスト指定 - リクエストを作成する", () => {
       const html = "<div></div>";
       const problems: LayoutProblem[] = [];
       const context = "モバイルファーストのデザイン";
@@ -42,7 +42,7 @@ it("AIAnalysis.createRequest - 追加コンテキスト指定 - リクエスト�
   expect(request.context).toBe(context);
 });
 
-it("AIAnalysis.parseResponse - AIレスポンス - パースする", () => {
+test("AIAnalysis.parseResponse - AIレスポンス - パースする", () => {
       const rawResponse = {
         suggestions: [
           {
@@ -64,13 +64,13 @@ it("AIAnalysis.parseResponse - AIレスポンス - パースする", () => {
   expect(response.processingTimeMs).toBe(150);
 });
 
-it("AIAnalysis.parseResponse - 不正なレスポンス - エラーをスローする", () => {
+test("AIAnalysis.parseResponse - 不正なレスポンス - エラーをスローする", () => {
       const invalidResponse = { invalid: "data" };
 
   expect(() => AIAnalysis.parseResponse(invalidResponse)).toThrow();
 });
 
-it("AIAnalysis.parseResponse - 空の提案リスト - 正常にパースする", () => {
+test("AIAnalysis.parseResponse - 空の提案リスト - 正常にパースする", () => {
       const response = {
         suggestions: [],
         processingTimeMs: 50,
@@ -81,7 +81,7 @@ it("AIAnalysis.parseResponse - 空の提案リスト - 正常にパースする"
   expect(parsed.suggestions).toEqual([]);
 });
 
-it("AIAnalysis.parseResponse - 0-1の範囲内のconfidence値 - 保持する", () => {
+test("AIAnalysis.parseResponse - 0-1の範囲内のconfidence値 - 保持する", () => {
         const response = {
           suggestions: [
             { problemIndex: 0, suggestion: "test", confidence: 0.5 },
@@ -98,7 +98,7 @@ it("AIAnalysis.parseResponse - 0-1の範囲内のconfidence値 - 保持する", 
   expect(parsed.suggestions[2].confidence).toBe(1);
 });
 
-it("AIAnalysis.parseResponse - 負のconfidence値 - デフォルト値(0.5)に置き換える", () => {
+test("AIAnalysis.parseResponse - 負のconfidence値 - デフォルト値(0.5)に置き換える", () => {
         const response = {
           suggestions: [
             { problemIndex: 0, suggestion: "test", confidence: -0.1 },
@@ -113,7 +113,7 @@ it("AIAnalysis.parseResponse - 負のconfidence値 - デフォルト値(0.5)に�
   expect(parsed.suggestions[1].confidence).toBe(0.5);
 });
 
-it("AIAnalysis.parseResponse - 1を超えるconfidence値 - デフォルト値(0.5)に置き換える", () => {
+test("AIAnalysis.parseResponse - 1を超えるconfidence値 - デフォルト値(0.5)に置き換える", () => {
         const response = {
           suggestions: [
             { problemIndex: 0, suggestion: "test", confidence: 1.1 },
@@ -128,7 +128,7 @@ it("AIAnalysis.parseResponse - 1を超えるconfidence値 - デフォルト値(0
   expect(parsed.suggestions[1].confidence).toBe(0.5);
 });
 
-it("AIAnalysis.parseResponse - NaNのconfidence値 - デフォルト値(0.5)に置き換える", () => {
+test("AIAnalysis.parseResponse - NaNのconfidence値 - デフォルト値(0.5)に置き換える", () => {
         const response = {
           suggestions: [
             { problemIndex: 0, suggestion: "test", confidence: NaN },
@@ -141,7 +141,7 @@ it("AIAnalysis.parseResponse - NaNのconfidence値 - デフォルト値(0.5)に�
   expect(parsed.suggestions[0].confidence).toBe(0.5);
 });
 
-it("AIAnalysis.parseResponse - confidence値が数値でない - デフォルト値(0.5)になる", () => {
+test("AIAnalysis.parseResponse - confidence値が数値でない - デフォルト値(0.5)になる", () => {
         const response = {
           suggestions: [
             { problemIndex: 0, suggestion: "test", confidence: "0.8" },
@@ -158,7 +158,7 @@ it("AIAnalysis.parseResponse - confidence値が数値でない - デフォルト
   expect(parsed.suggestions[2].confidence).toBe(0.5);
 });
 
-it("AIAnalysis.parseResponse - 正常なrecommendedStyles - 保持する", () => {
+test("AIAnalysis.parseResponse - 正常なrecommendedStyles - 保持する", () => {
         const response = {
           suggestions: [
             {
@@ -179,7 +179,7 @@ it("AIAnalysis.parseResponse - 正常なrecommendedStyles - 保持する", () =>
   });
 });
 
-it("AIAnalysis.parseResponse - undefinedのrecommendedStyles - undefinedのまま", () => {
+test("AIAnalysis.parseResponse - undefinedのrecommendedStyles - undefinedのまま", () => {
         const response = {
           suggestions: [
             { problemIndex: 0, suggestion: "test", confidence: 0.8 },
@@ -192,7 +192,7 @@ it("AIAnalysis.parseResponse - undefinedのrecommendedStyles - undefinedのま�
   expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
 });
 
-it("AIAnalysis.parseResponse - nullのrecommendedStyles - undefinedに変換する", () => {
+test("AIAnalysis.parseResponse - nullのrecommendedStyles - undefinedに変換する", () => {
         const response = {
           suggestions: [
             {
@@ -210,7 +210,7 @@ it("AIAnalysis.parseResponse - nullのrecommendedStyles - undefinedに変換す�
   expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
 });
 
-it("AIAnalysis.parseResponse - 配列のrecommendedStyles - undefinedに変換する", () => {
+test("AIAnalysis.parseResponse - 配列のrecommendedStyles - undefinedに変換する", () => {
         const response = {
           suggestions: [
             {
@@ -228,7 +228,7 @@ it("AIAnalysis.parseResponse - 配列のrecommendedStyles - undefinedに変換�
   expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
 });
 
-it("AIAnalysis.parseResponse - 非文字列の値を含むrecommendedStyles - 有効なプロパティのみ保持する", () => {
+test("AIAnalysis.parseResponse - 非文字列の値を含むrecommendedStyles - 有効なプロパティのみ保持する", () => {
         const response = {
           suggestions: [
             {
@@ -253,7 +253,7 @@ it("AIAnalysis.parseResponse - 非文字列の値を含むrecommendedStyles - �
   });
 });
 
-it("AIAnalysis.parseResponse - 空のオブジェクト - undefinedに変換する", () => {
+test("AIAnalysis.parseResponse - 空のオブジェクト - undefinedに変換する", () => {
         const response = {
           suggestions: [
             {
@@ -271,7 +271,7 @@ it("AIAnalysis.parseResponse - 空のオブジェクト - undefinedに変換す�
   expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
 });
 
-it("AIAnalysis.parseResponse - 全て無効な値のオブジェクト - undefinedに変換する", () => {
+test("AIAnalysis.parseResponse - 全て無効な値のオブジェクト - undefinedに変換する", () => {
         const response = {
           suggestions: [
             {
@@ -293,7 +293,7 @@ it("AIAnalysis.parseResponse - 全て無効な値のオブジェクト - undefin
   expect(parsed.suggestions[0].recommendedStyles).toBeUndefined();
 });
 
-it("AIAnalysis.mergeWithLocalSuggestions - AIの提案とローカル提案 - マージする", () => {
+test("AIAnalysis.mergeWithLocalSuggestions - AIの提案とローカル提案 - マージする", () => {
       const problems: LayoutProblem[] = [
         {
           type: "missing-flex-container",
@@ -321,7 +321,7 @@ it("AIAnalysis.mergeWithLocalSuggestions - AIの提案とローカル提案 - �
   expect(merged[0].confidence).toBe(0.95);
 });
 
-it("AIAnalysis.mergeWithLocalSuggestions - problemIndexが範囲外 - スキップする", () => {
+test("AIAnalysis.mergeWithLocalSuggestions - problemIndexが範囲外 - スキップする", () => {
       const problems: LayoutProblem[] = [
         {
           type: "missing-flex-container",
@@ -346,7 +346,7 @@ it("AIAnalysis.mergeWithLocalSuggestions - problemIndexが範囲外 - スキッ�
   expect(merged.length).toBe(0);
 });
 
-it("AIAnalysis.buildMCPRequestParams - AIリクエスト - MCP用のリクエストパラメータを構築する", () => {
+test("AIAnalysis.buildMCPRequestParams - AIリクエスト - MCP用のリクエストパラメータを構築する", () => {
       const request: AIAnalysisRequest = {
         html: "<div></div>",
         problems: [
@@ -377,24 +377,24 @@ afterEach(() => {
   process.env = originalEnv;
 });
 
-it("AIAnalysis.isEnabled - 環境変数が未設定 - falseを返す", () => {
+test("AIAnalysis.isEnabled - 環境変数が未設定 - falseを返す", () => {
   const isEnabled = AIAnalysis.isEnabled();
   expect(isEnabled).toBe(false);
 });
 
-it("AIAnalysis.isEnabled - ENABLE_AI_ANALYSIS=true - trueを返す", () => {
+test("AIAnalysis.isEnabled - ENABLE_AI_ANALYSIS=true - trueを返す", () => {
   process.env.ENABLE_AI_ANALYSIS = "true";
   const isEnabled = AIAnalysis.isEnabled();
   expect(isEnabled).toBe(true);
 });
 
-it("AIAnalysis.isEnabled - ENABLE_AI_ANALYSIS=false - falseを返す", () => {
+test("AIAnalysis.isEnabled - ENABLE_AI_ANALYSIS=false - falseを返す", () => {
   process.env.ENABLE_AI_ANALYSIS = "false";
   const isEnabled = AIAnalysis.isEnabled();
   expect(isEnabled).toBe(false);
 });
 
-it("AIAnalysis.isEnabled - ENABLE_AI_ANALYSISが他の値 - falseを返す", () => {
+test("AIAnalysis.isEnabled - ENABLE_AI_ANALYSISが他の値 - falseを返す", () => {
   process.env.ENABLE_AI_ANALYSIS = "1";
   expect(AIAnalysis.isEnabled()).toBe(false);
 
@@ -405,7 +405,7 @@ it("AIAnalysis.isEnabled - ENABLE_AI_ANALYSISが他の値 - falseを返す", () 
   expect(AIAnalysis.isEnabled()).toBe(false);
 });
 
-it("AIAnalysis.getDefaultFallback - フォールバックレスポンス - 取得する", () => {
+test("AIAnalysis.getDefaultFallback - フォールバックレスポンス - 取得する", () => {
   const fallback = AIAnalysis.getDefaultFallback();
 
   expect(fallback.suggestions).toEqual([]);

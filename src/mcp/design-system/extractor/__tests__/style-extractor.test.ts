@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { StyleExtractor } from "../style-extractor";
 import type {
   PaintStyleInfo,
@@ -55,7 +55,7 @@ const createMockEffectStyle = (
   ...overrides,
 });
 
-it("StyleExtractor.extractColorInfo - ソリッドカラーのペイントスタイル - カラー情報を抽出できる", () => {
+test("StyleExtractor.extractColorInfo - ソリッドカラーのペイントスタイル - カラー情報を抽出できる", () => {
   // Arrange
   const style = createMockPaintStyle({
     paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
@@ -74,7 +74,7 @@ it("StyleExtractor.extractColorInfo - ソリッドカラーのペイントスタ
   });
 });
 
-it("StyleExtractor.extractColorInfo - 透明度付きカラー - 透明度を含むカラー情報を抽出できる", () => {
+test("StyleExtractor.extractColorInfo - 透明度付きカラー - 透明度を含むカラー情報を抽出できる", () => {
   // Arrange
   const style = createMockPaintStyle({
     paints: [{ type: "SOLID", color: { r: 0, g: 0, b: 1 }, opacity: 0.5 }],
@@ -88,7 +88,7 @@ it("StyleExtractor.extractColorInfo - 透明度付きカラー - 透明度を含
   expect(colorInfo?.opacity).toBe(0.5);
 });
 
-it("StyleExtractor.extractColorInfo - グラデーションペイント - グラデーション情報を抽出できる", () => {
+test("StyleExtractor.extractColorInfo - グラデーションペイント - グラデーション情報を抽出できる", () => {
   // Arrange
   const style = createMockPaintStyle({
     paints: [
@@ -114,7 +114,7 @@ it("StyleExtractor.extractColorInfo - グラデーションペイント - グラ
   expect(colorInfo?.type).toBe("gradient");
 });
 
-it("StyleExtractor.extractColorInfo - 空のペイント配列 - nullを返す", () => {
+test("StyleExtractor.extractColorInfo - 空のペイント配列 - nullを返す", () => {
   // Arrange
   const style = createMockPaintStyle({ paints: [] });
   const extractor = StyleExtractor.create();
@@ -126,7 +126,7 @@ it("StyleExtractor.extractColorInfo - 空のペイント配列 - nullを返す",
   expect(colorInfo).toBeNull();
 });
 
-it("StyleExtractor.extractTypographyInfo - テキストスタイル - タイポグラフィ情報を抽出できる", () => {
+test("StyleExtractor.extractTypographyInfo - テキストスタイル - タイポグラフィ情報を抽出できる", () => {
   // Arrange
   const style = createMockTextStyle();
   const extractor = StyleExtractor.create();
@@ -145,7 +145,7 @@ it("StyleExtractor.extractTypographyInfo - テキストスタイル - タイポ�
   });
 });
 
-it("StyleExtractor.extractTypographyInfo - AUTO行高さ - normalとして出力する", () => {
+test("StyleExtractor.extractTypographyInfo - AUTO行高さ - normalとして出力する", () => {
   // Arrange
   const style = createMockTextStyle({ lineHeight: "AUTO" });
   const extractor = StyleExtractor.create();
@@ -157,7 +157,7 @@ it("StyleExtractor.extractTypographyInfo - AUTO行高さ - normalとして出力
   expect(typographyInfo.cssValue).toBe("700 32px/normal Inter");
 });
 
-it("StyleExtractor.extractEffectInfo - ドロップシャドウエフェクト - エフェクト情報を抽出できる", () => {
+test("StyleExtractor.extractEffectInfo - ドロップシャドウエフェクト - エフェクト情報を抽出できる", () => {
   // Arrange
   const style = createMockEffectStyle();
   const extractor = StyleExtractor.create();
@@ -175,7 +175,7 @@ it("StyleExtractor.extractEffectInfo - ドロップシャドウエフェクト -
   });
 });
 
-it("StyleExtractor.extractEffectInfo - 複数のエフェクト - すべてのエフェクト情報を抽出できる", () => {
+test("StyleExtractor.extractEffectInfo - 複数のエフェクト - すべてのエフェクト情報を抽出できる", () => {
   // Arrange
   const style = createMockEffectStyle({
     effects: [
@@ -208,7 +208,7 @@ it("StyleExtractor.extractEffectInfo - 複数のエフェクト - すべての�
   expect(effectInfo).toHaveLength(2);
 });
 
-it("StyleExtractor.extractEffectInfo - 非表示のエフェクト - 非表示エフェクトをスキップする", () => {
+test("StyleExtractor.extractEffectInfo - 非表示のエフェクト - 非表示エフェクトをスキップする", () => {
   // Arrange
   const style = createMockEffectStyle({
     effects: [
@@ -232,7 +232,7 @@ it("StyleExtractor.extractEffectInfo - 非表示のエフェクト - 非表示�
   expect(effectInfo).toHaveLength(0);
 });
 
-it("StyleExtractor.categorizeStyles - 複数タイプのスタイル - タイプ別に分類できる", () => {
+test("StyleExtractor.categorizeStyles - 複数タイプのスタイル - タイプ別に分類できる", () => {
   // Arrange
   const styles: DesignSystemStyle[] = [
     createMockPaintStyle({ name: "Colors/Primary" }),
@@ -255,7 +255,7 @@ it("StyleExtractor.categorizeStyles - 複数タイプのスタイル - タイプ
   expect(categorized.grid).toHaveLength(0);
 });
 
-it("StyleExtractor.findMatchingStyles - 名前パターンでの検索 - マッチするスタイルを見つけられる", () => {
+test("StyleExtractor.findMatchingStyles - 名前パターンでの検索 - マッチするスタイルを見つけられる", () => {
   // Arrange
   const styles: DesignSystemStyle[] = [
     createMockPaintStyle({ name: "Colors/Primary/Blue" }),
@@ -278,7 +278,7 @@ it("StyleExtractor.findMatchingStyles - 名前パターンでの検索 - マッ�
   expect(matches.every((s) => s.name.includes("Primary"))).toBe(true);
 });
 
-it("StyleExtractor.findMatchingStyles - 大文字小文字を区別しない検索 - 大文字小文字に関わらず検索できる", () => {
+test("StyleExtractor.findMatchingStyles - 大文字小文字を区別しない検索 - 大文字小文字に関わらず検索できる", () => {
   // Arrange
   const styles: DesignSystemStyle[] = [
     createMockPaintStyle({ name: "Colors/PRIMARY/Blue" }),
@@ -292,7 +292,7 @@ it("StyleExtractor.findMatchingStyles - 大文字小文字を区別しない検�
   expect(matches).toHaveLength(1);
 });
 
-it("StyleExtractor.toCssProperties - ペイントスタイル - CSSプロパティに変換できる", () => {
+test("StyleExtractor.toCssProperties - ペイントスタイル - CSSプロパティに変換できる", () => {
   // Arrange
   const style = createMockPaintStyle({
     paints: [{ type: "SOLID", color: { r: 1, g: 0, b: 0 }, opacity: 1 }],
@@ -307,7 +307,7 @@ it("StyleExtractor.toCssProperties - ペイントスタイル - CSSプロパテ�
   expect(cssProps["background-color"]).toBe("#ff0000");
 });
 
-it("StyleExtractor.toCssProperties - テキストスタイル - CSSプロパティに変換できる", () => {
+test("StyleExtractor.toCssProperties - テキストスタイル - CSSプロパティに変換できる", () => {
   // Arrange
   const style = createMockTextStyle();
   const extractor = StyleExtractor.create();
@@ -323,7 +323,7 @@ it("StyleExtractor.toCssProperties - テキストスタイル - CSSプロパテ�
   expect(cssProps["font-size"]).toBe("32px");
 });
 
-it("StyleExtractor.toCssProperties - エフェクトスタイル - CSSプロパティに変換できる", () => {
+test("StyleExtractor.toCssProperties - エフェクトスタイル - CSSプロパティに変換できる", () => {
   // Arrange
   const style = createMockEffectStyle();
   const extractor = StyleExtractor.create();

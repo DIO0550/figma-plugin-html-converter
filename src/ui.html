@@ -266,7 +266,6 @@
 
   <script>
     let optimizationMode = 'auto';
-    let currentProposals = [];
 
     document.getElementById('optimize-styles').addEventListener('change', function() {
       const modeArea = document.getElementById('mode-toggle-area');
@@ -331,7 +330,6 @@
     }
 
     function renderProposals(proposals) {
-      currentProposals = proposals;
       var list = document.getElementById('proposal-list');
       if (!list) return;
       list.innerHTML = '';

@@ -387,7 +387,7 @@
       el.textContent = '';
       el.appendChild(createSummaryStat('検出された問題:', summary.totalIssues));
       el.appendChild(createSummaryStat('適用済み:', summary.applied));
-      el.appendChild(createSummaryStat('削減率:', (comparison.reductionPercentage ?? summary.reductionPercentage) + '%'));
+      el.appendChild(createSummaryStat('削減率:', comparison.reductionPercentage + '%'));
     }
 
     function approveProposal(id) {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { it, expect, vi, beforeEach } from "vitest";
 import { DesignSystemScanner } from "../design-system-scanner";
 
 // Figma APIのモック型定義
@@ -60,409 +60,393 @@ const mockFigma = {
 // グローバルにfigmaをセット
 vi.stubGlobal("figma", mockFigma);
 
-describe("DesignSystemScanner", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // デフォルトで空配列を返す
-    mockFigma.getLocalPaintStyles.mockReturnValue([]);
-    mockFigma.getLocalTextStyles.mockReturnValue([]);
-    mockFigma.getLocalEffectStyles.mockReturnValue([]);
-    mockFigma.getLocalGridStyles.mockReturnValue([]);
-    mockFigma.root.findAllWithCriteria.mockReturnValue([]);
+beforeEach(() => {
+  vi.clearAllMocks();
+  // デフォルトで空配列を返す
+  mockFigma.getLocalPaintStyles.mockReturnValue([]);
+  mockFigma.getLocalTextStyles.mockReturnValue([]);
+  mockFigma.getLocalEffectStyles.mockReturnValue([]);
+  mockFigma.getLocalGridStyles.mockReturnValue([]);
+  mockFigma.root.findAllWithCriteria.mockReturnValue([]);
+});
+
+it("DesignSystemScanner.scan - スタイルやコンポーネントが存在しない - 空のデザインシステムを返す", async () => {
+  // Arrange
+  const scanner = DesignSystemScanner.create();
+
+  // Act
+  const result = await scanner.scan();
+
+  // Assert
+  expect(result.styles).toEqual([]);
+  expect(result.components).toEqual([]);
+  expect(result.scannedAt).toBeInstanceOf(Date);
+});
+
+it("DesignSystemScanner.scan - ペイントスタイルが存在する - ペイントスタイルをスキャンする", async () => {
+  // Arrange
+  const mockPaintStyles: MockPaintStyle[] = [
+    {
+      id: "S:paint1",
+      name: "Primary/Blue",
+      description: "Primary blue color",
+      key: "paint-key-1",
+      paints: [
+        { type: "SOLID", color: { r: 0, g: 0.4, b: 1 }, opacity: 1 },
+      ],
+      type: "PAINT",
+    },
+  ];
+  mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+  const scanner = DesignSystemScanner.create();
+
+  // Act
+  const result = await scanner.scan();
+
+  // Assert
+  expect(result.styles).toHaveLength(1);
+  expect(result.styles[0]).toMatchObject({
+    name: "Primary/Blue",
+    type: "PAINT",
+    description: "Primary blue color",
   });
+});
 
-  describe("scan", () => {
-    it("should return empty design system when no styles or components exist", async () => {
-      // Arrange
-      const scanner = DesignSystemScanner.create();
+it("DesignSystemScanner.scan - テキストスタイルが存在する - テキストスタイルをスキャンする", async () => {
+  // Arrange
+  const mockTextStyles: MockTextStyle[] = [
+    {
+      id: "S:text1",
+      name: "Heading/H1",
+      description: "Main heading",
+      key: "text-key-1",
+      fontName: { family: "Inter", style: "Bold" },
+      fontSize: 32,
+      lineHeight: { value: 40, unit: "PIXELS" },
+      letterSpacing: { value: 0, unit: "PIXELS" },
+      type: "TEXT",
+    },
+  ];
+  mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
+  const scanner = DesignSystemScanner.create();
 
-      // Act
-      const result = await scanner.scan();
+  // Act
+  const result = await scanner.scan();
 
-      // Assert
-      expect(result.styles).toEqual([]);
-      expect(result.components).toEqual([]);
-      expect(result.scannedAt).toBeInstanceOf(Date);
-    });
-
-    it("should scan paint styles", async () => {
-      // Arrange
-      const mockPaintStyles: MockPaintStyle[] = [
-        {
-          id: "S:paint1",
-          name: "Primary/Blue",
-          description: "Primary blue color",
-          key: "paint-key-1",
-          paints: [
-            { type: "SOLID", color: { r: 0, g: 0.4, b: 1 }, opacity: 1 },
-          ],
-          type: "PAINT",
-        },
-      ];
-      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-      const scanner = DesignSystemScanner.create();
-
-      // Act
-      const result = await scanner.scan();
-
-      // Assert
-      expect(result.styles).toHaveLength(1);
-      expect(result.styles[0]).toMatchObject({
-        name: "Primary/Blue",
-        type: "PAINT",
-        description: "Primary blue color",
-      });
-    });
-
-    it("should scan text styles", async () => {
-      // Arrange
-      const mockTextStyles: MockTextStyle[] = [
-        {
-          id: "S:text1",
-          name: "Heading/H1",
-          description: "Main heading",
-          key: "text-key-1",
-          fontName: { family: "Inter", style: "Bold" },
-          fontSize: 32,
-          lineHeight: { value: 40, unit: "PIXELS" },
-          letterSpacing: { value: 0, unit: "PIXELS" },
-          type: "TEXT",
-        },
-      ];
-      mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
-      const scanner = DesignSystemScanner.create();
-
-      // Act
-      const result = await scanner.scan();
-
-      // Assert
-      expect(result.styles).toHaveLength(1);
-      expect(result.styles[0]).toMatchObject({
-        name: "Heading/H1",
-        type: "TEXT",
-        fontFamily: "Inter",
-        fontSize: 32,
-      });
-    });
-
-    it("should scan effect styles", async () => {
-      // Arrange
-      const mockEffectStyles: MockEffectStyle[] = [
-        {
-          id: "S:effect1",
-          name: "Shadow/Medium",
-          description: "Medium shadow",
-          key: "effect-key-1",
-          effects: [
-            {
-              type: "DROP_SHADOW",
-              color: { r: 0, g: 0, b: 0, a: 0.25 },
-              offset: { x: 0, y: 4 },
-              radius: 8,
-              spread: 0,
-              visible: true,
-              blendMode: "NORMAL",
-            },
-          ],
-          type: "EFFECT",
-        },
-      ];
-      mockFigma.getLocalEffectStyles.mockReturnValue(mockEffectStyles);
-      const scanner = DesignSystemScanner.create();
-
-      // Act
-      const result = await scanner.scan();
-
-      // Assert
-      expect(result.styles).toHaveLength(1);
-      expect(result.styles[0]).toMatchObject({
-        name: "Shadow/Medium",
-        type: "EFFECT",
-      });
-    });
-
-    it("should scan components", async () => {
-      // Arrange
-      const mockComponents: MockComponent[] = [
-        {
-          id: "C:component1",
-          name: "Button/Primary",
-          description: "Primary button component",
-          key: "component-key-1",
-          componentPropertyDefinitions: {
-            label: { type: "TEXT", defaultValue: "Button" },
-            disabled: { type: "BOOLEAN", defaultValue: false },
-          },
-        },
-      ];
-      mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-      const scanner = DesignSystemScanner.create();
-
-      // Act
-      const result = await scanner.scan();
-
-      // Assert
-      expect(result.components).toHaveLength(1);
-      expect(result.components[0]).toMatchObject({
-        name: "Button/Primary",
-        description: "Primary button component",
-      });
-      expect(result.components[0].properties).toHaveLength(2);
-    });
-
-    it("should scan multiple styles and components", async () => {
-      // Arrange
-      const mockPaintStyles: MockPaintStyle[] = [
-        {
-          id: "S:paint1",
-          name: "Primary/Blue",
-          description: "",
-          key: "key1",
-          paints: [],
-          type: "PAINT",
-        },
-        {
-          id: "S:paint2",
-          name: "Secondary/Gray",
-          description: "",
-          key: "key2",
-          paints: [],
-          type: "PAINT",
-        },
-      ];
-      const mockTextStyles: MockTextStyle[] = [
-        {
-          id: "S:text1",
-          name: "Body/Regular",
-          description: "",
-          key: "key3",
-          fontName: { family: "Inter", style: "Regular" },
-          fontSize: 16,
-          lineHeight: { unit: "AUTO" },
-          letterSpacing: { value: 0, unit: "PIXELS" },
-          type: "TEXT",
-        },
-      ];
-      const mockComponents: MockComponent[] = [
-        {
-          id: "C:comp1",
-          name: "Card",
-          description: "",
-          key: "key4",
-        },
-      ];
-      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-      mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
-      mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-      const scanner = DesignSystemScanner.create();
-
-      // Act
-      const result = await scanner.scan();
-
-      // Assert
-      expect(result.styles).toHaveLength(3);
-      expect(result.components).toHaveLength(1);
-    });
+  // Assert
+  expect(result.styles).toHaveLength(1);
+  expect(result.styles[0]).toMatchObject({
+    name: "Heading/H1",
+    type: "TEXT",
+    fontFamily: "Inter",
+    fontSize: 32,
   });
+});
 
-  describe("scanStyles", () => {
-    it("should scan only styles", async () => {
-      // Arrange
-      const mockPaintStyles: MockPaintStyle[] = [
+it("DesignSystemScanner.scan - エフェクトスタイルが存在する - エフェクトスタイルをスキャンする", async () => {
+  // Arrange
+  const mockEffectStyles: MockEffectStyle[] = [
+    {
+      id: "S:effect1",
+      name: "Shadow/Medium",
+      description: "Medium shadow",
+      key: "effect-key-1",
+      effects: [
         {
-          id: "S:paint1",
-          name: "Color/Red",
-          description: "",
-          key: "key1",
-          paints: [],
-          type: "PAINT",
+          type: "DROP_SHADOW",
+          color: { r: 0, g: 0, b: 0, a: 0.25 },
+          offset: { x: 0, y: 4 },
+          radius: 8,
+          spread: 0,
+          visible: true,
+          blendMode: "NORMAL",
         },
-      ];
-      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-      const scanner = DesignSystemScanner.create();
+      ],
+      type: "EFFECT",
+    },
+  ];
+  mockFigma.getLocalEffectStyles.mockReturnValue(mockEffectStyles);
+  const scanner = DesignSystemScanner.create();
 
-      // Act
-      const styles = await scanner.scanStyles();
+  // Act
+  const result = await scanner.scan();
 
-      // Assert
-      expect(styles).toHaveLength(1);
-      expect(styles[0].name).toBe("Color/Red");
-    });
+  // Assert
+  expect(result.styles).toHaveLength(1);
+  expect(result.styles[0]).toMatchObject({
+    name: "Shadow/Medium",
+    type: "EFFECT",
   });
+});
 
-  describe("scanComponents", () => {
-    it("should scan only components", async () => {
-      // Arrange
-      const mockComponents: MockComponent[] = [
-        {
-          id: "C:comp1",
-          name: "Icon/Arrow",
-          description: "",
-          key: "key1",
-        },
-      ];
-      mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-      const scanner = DesignSystemScanner.create();
+it("DesignSystemScanner.scan - コンポーネントが存在する - コンポーネントをスキャンする", async () => {
+  // Arrange
+  const mockComponents: MockComponent[] = [
+    {
+      id: "C:component1",
+      name: "Button/Primary",
+      description: "Primary button component",
+      key: "component-key-1",
+      componentPropertyDefinitions: {
+        label: { type: "TEXT", defaultValue: "Button" },
+        disabled: { type: "BOOLEAN", defaultValue: false },
+      },
+    },
+  ];
+  mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
+  const scanner = DesignSystemScanner.create();
 
-      // Act
-      const components = await scanner.scanComponents();
+  // Act
+  const result = await scanner.scan();
 
-      // Assert
-      expect(components).toHaveLength(1);
-      expect(components[0].name).toBe("Icon/Arrow");
-    });
+  // Assert
+  expect(result.components).toHaveLength(1);
+  expect(result.components[0]).toMatchObject({
+    name: "Button/Primary",
+    description: "Primary button component",
   });
+  expect(result.components[0].properties).toHaveLength(2);
+});
 
-  describe("findStyleByName", () => {
-    it("should find style by name", async () => {
-      // Arrange
-      const mockPaintStyles: MockPaintStyle[] = [
-        {
-          id: "S:paint1",
-          name: "Primary/Blue",
-          description: "",
-          key: "key1",
-          paints: [],
-          type: "PAINT",
-        },
-        {
-          id: "S:paint2",
-          name: "Secondary/Gray",
-          description: "",
-          key: "key2",
-          paints: [],
-          type: "PAINT",
-        },
-      ];
-      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-      const scanner = DesignSystemScanner.create();
-      await scanner.scan();
+it("DesignSystemScanner.scan - 複数のスタイルとコンポーネントが存在する - 全てをスキャンする", async () => {
+  // Arrange
+  const mockPaintStyles: MockPaintStyle[] = [
+    {
+      id: "S:paint1",
+      name: "Primary/Blue",
+      description: "",
+      key: "key1",
+      paints: [],
+      type: "PAINT",
+    },
+    {
+      id: "S:paint2",
+      name: "Secondary/Gray",
+      description: "",
+      key: "key2",
+      paints: [],
+      type: "PAINT",
+    },
+  ];
+  const mockTextStyles: MockTextStyle[] = [
+    {
+      id: "S:text1",
+      name: "Body/Regular",
+      description: "",
+      key: "key3",
+      fontName: { family: "Inter", style: "Regular" },
+      fontSize: 16,
+      lineHeight: { unit: "AUTO" },
+      letterSpacing: { value: 0, unit: "PIXELS" },
+      type: "TEXT",
+    },
+  ];
+  const mockComponents: MockComponent[] = [
+    {
+      id: "C:comp1",
+      name: "Card",
+      description: "",
+      key: "key4",
+    },
+  ];
+  mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+  mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
+  mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
+  const scanner = DesignSystemScanner.create();
 
-      // Act
-      const style = scanner.findStyleByName("Primary/Blue");
+  // Act
+  const result = await scanner.scan();
 
-      // Assert
-      expect(style).toBeDefined();
-      expect(style?.name).toBe("Primary/Blue");
-    });
+  // Assert
+  expect(result.styles).toHaveLength(3);
+  expect(result.components).toHaveLength(1);
+});
 
-    it("should return undefined for non-existent name", async () => {
-      // Arrange
-      mockFigma.getLocalPaintStyles.mockReturnValue([]);
-      const scanner = DesignSystemScanner.create();
-      await scanner.scan();
+it("DesignSystemScanner.scanStyles - スタイルが存在する - スタイルのみをスキャンする", async () => {
+  // Arrange
+  const mockPaintStyles: MockPaintStyle[] = [
+    {
+      id: "S:paint1",
+      name: "Color/Red",
+      description: "",
+      key: "key1",
+      paints: [],
+      type: "PAINT",
+    },
+  ];
+  mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+  const scanner = DesignSystemScanner.create();
 
-      // Act
-      const style = scanner.findStyleByName("NonExistent");
+  // Act
+  const styles = await scanner.scanStyles();
 
-      // Assert
-      expect(style).toBeUndefined();
-    });
-  });
+  // Assert
+  expect(styles).toHaveLength(1);
+  expect(styles[0].name).toBe("Color/Red");
+});
 
-  describe("findComponentByName", () => {
-    it("should find component by name", async () => {
-      // Arrange
-      const mockComponents: MockComponent[] = [
-        {
-          id: "C:comp1",
-          name: "Button/Primary",
-          description: "",
-          key: "key1",
-        },
-      ];
-      mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
-      const scanner = DesignSystemScanner.create();
-      await scanner.scan();
+it("DesignSystemScanner.scanComponents - コンポーネントが存在する - コンポーネントのみをスキャンする", async () => {
+  // Arrange
+  const mockComponents: MockComponent[] = [
+    {
+      id: "C:comp1",
+      name: "Icon/Arrow",
+      description: "",
+      key: "key1",
+    },
+  ];
+  mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
+  const scanner = DesignSystemScanner.create();
 
-      // Act
-      const component = scanner.findComponentByName("Button/Primary");
+  // Act
+  const components = await scanner.scanComponents();
 
-      // Assert
-      expect(component).toBeDefined();
-      expect(component?.name).toBe("Button/Primary");
-    });
-  });
+  // Assert
+  expect(components).toHaveLength(1);
+  expect(components[0].name).toBe("Icon/Arrow");
+});
 
-  describe("getStylesByType", () => {
-    it("should filter styles by type", async () => {
-      // Arrange
-      const mockPaintStyles: MockPaintStyle[] = [
-        {
-          id: "S:paint1",
-          name: "Color/Blue",
-          description: "",
-          key: "key1",
-          paints: [],
-          type: "PAINT",
-        },
-      ];
-      const mockTextStyles: MockTextStyle[] = [
-        {
-          id: "S:text1",
-          name: "Heading/H1",
-          description: "",
-          key: "key2",
-          fontName: { family: "Inter", style: "Bold" },
-          fontSize: 32,
-          lineHeight: { unit: "AUTO" },
-          letterSpacing: { value: 0, unit: "PIXELS" },
-          type: "TEXT",
-        },
-      ];
-      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-      mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
-      const scanner = DesignSystemScanner.create();
-      await scanner.scan();
+it("DesignSystemScanner.findStyleByName - 対象のスタイルが存在する - スタイルを見つける", async () => {
+  // Arrange
+  const mockPaintStyles: MockPaintStyle[] = [
+    {
+      id: "S:paint1",
+      name: "Primary/Blue",
+      description: "",
+      key: "key1",
+      paints: [],
+      type: "PAINT",
+    },
+    {
+      id: "S:paint2",
+      name: "Secondary/Gray",
+      description: "",
+      key: "key2",
+      paints: [],
+      type: "PAINT",
+    },
+  ];
+  mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+  const scanner = DesignSystemScanner.create();
+  await scanner.scan();
 
-      // Act
-      const paintStyles = scanner.getStylesByType("PAINT");
-      const textStyles = scanner.getStylesByType("TEXT");
+  // Act
+  const style = scanner.findStyleByName("Primary/Blue");
 
-      // Assert
-      expect(paintStyles).toHaveLength(1);
-      expect(textStyles).toHaveLength(1);
-      expect(paintStyles[0].type).toBe("PAINT");
-      expect(textStyles[0].type).toBe("TEXT");
-    });
-  });
+  // Assert
+  expect(style).toBeDefined();
+  expect(style?.name).toBe("Primary/Blue");
+});
 
-  describe("clearCache", () => {
-    it("should clear cached design system", async () => {
-      // Arrange
-      const scanner = DesignSystemScanner.create();
-      await scanner.scan();
-      expect(scanner.getCachedDesignSystem()).not.toBeNull();
+it("DesignSystemScanner.findStyleByName - 対象のスタイルが存在しない - undefinedを返す", async () => {
+  // Arrange
+  mockFigma.getLocalPaintStyles.mockReturnValue([]);
+  const scanner = DesignSystemScanner.create();
+  await scanner.scan();
 
-      // Act
-      scanner.clearCache();
+  // Act
+  const style = scanner.findStyleByName("NonExistent");
 
-      // Assert
-      expect(scanner.getCachedDesignSystem()).toBeNull();
-    });
+  // Assert
+  expect(style).toBeUndefined();
+});
 
-    it("should return undefined for findStyleByName after cache clear", async () => {
-      // Arrange
-      const mockPaintStyles: MockPaintStyle[] = [
-        {
-          id: "S:paint1",
-          name: "Primary/Blue",
-          description: "",
-          key: "key1",
-          paints: [],
-          type: "PAINT",
-        },
-      ];
-      mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
-      const scanner = DesignSystemScanner.create();
-      await scanner.scan();
+it("DesignSystemScanner.findComponentByName - 対象のコンポーネントが存在する - コンポーネントを見つける", async () => {
+  // Arrange
+  const mockComponents: MockComponent[] = [
+    {
+      id: "C:comp1",
+      name: "Button/Primary",
+      description: "",
+      key: "key1",
+    },
+  ];
+  mockFigma.root.findAllWithCriteria.mockReturnValue(mockComponents);
+  const scanner = DesignSystemScanner.create();
+  await scanner.scan();
 
-      // Act
-      scanner.clearCache();
-      const style = scanner.findStyleByName("Primary/Blue");
+  // Act
+  const component = scanner.findComponentByName("Button/Primary");
 
-      // Assert
-      expect(style).toBeUndefined();
-    });
-  });
+  // Assert
+  expect(component).toBeDefined();
+  expect(component?.name).toBe("Button/Primary");
+});
+
+it("DesignSystemScanner.getStylesByType - 複数の種類のスタイルが存在する - 指定した種類のスタイルをフィルタする", async () => {
+  // Arrange
+  const mockPaintStyles: MockPaintStyle[] = [
+    {
+      id: "S:paint1",
+      name: "Color/Blue",
+      description: "",
+      key: "key1",
+      paints: [],
+      type: "PAINT",
+    },
+  ];
+  const mockTextStyles: MockTextStyle[] = [
+    {
+      id: "S:text1",
+      name: "Heading/H1",
+      description: "",
+      key: "key2",
+      fontName: { family: "Inter", style: "Bold" },
+      fontSize: 32,
+      lineHeight: { unit: "AUTO" },
+      letterSpacing: { value: 0, unit: "PIXELS" },
+      type: "TEXT",
+    },
+  ];
+  mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+  mockFigma.getLocalTextStyles.mockReturnValue(mockTextStyles);
+  const scanner = DesignSystemScanner.create();
+  await scanner.scan();
+
+  // Act
+  const paintStyles = scanner.getStylesByType("PAINT");
+  const textStyles = scanner.getStylesByType("TEXT");
+
+  // Assert
+  expect(paintStyles).toHaveLength(1);
+  expect(textStyles).toHaveLength(1);
+  expect(paintStyles[0].type).toBe("PAINT");
+  expect(textStyles[0].type).toBe("TEXT");
+});
+
+it("DesignSystemScanner.clearCache - キャッシュが存在する - キャッシュされたデザインシステムをクリアする", async () => {
+  // Arrange
+  const scanner = DesignSystemScanner.create();
+  await scanner.scan();
+  expect(scanner.getCachedDesignSystem()).not.toBeNull();
+
+  // Act
+  scanner.clearCache();
+
+  // Assert
+  expect(scanner.getCachedDesignSystem()).toBeNull();
+});
+
+it("DesignSystemScanner.clearCache - キャッシュをクリア後にfindStyleByNameを実行 - undefinedを返す", async () => {
+  // Arrange
+  const mockPaintStyles: MockPaintStyle[] = [
+    {
+      id: "S:paint1",
+      name: "Primary/Blue",
+      description: "",
+      key: "key1",
+      paints: [],
+      type: "PAINT",
+    },
+  ];
+  mockFigma.getLocalPaintStyles.mockReturnValue(mockPaintStyles);
+  const scanner = DesignSystemScanner.create();
+  await scanner.scan();
+
+  // Act
+  scanner.clearCache();
+  const style = scanner.findStyleByName("Primary/Blue");
+
+  // Assert
+  expect(style).toBeUndefined();
 });

@@ -335,6 +335,11 @@
       list.innerHTML = '';
 
       proposals.forEach(function(proposal) {
+        // proposal.idのバリデーション: 無効な値の場合はスキップ
+        if (!proposal || typeof proposal.id !== 'string' || proposal.id === '') {
+          return;
+        }
+
         var item = document.createElement('div');
         item.className = 'proposal-item';
         item.setAttribute('data-id', proposal.id);

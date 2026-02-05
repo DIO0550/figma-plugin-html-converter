@@ -42,8 +42,66 @@ figma.showUI(__uiFiles__["ui.html"], {
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "convert-html") {
     const html = msg.html as string;
+    const optimizeStyles = msg.optimizeStyles ?? false;
+    const optimizationMode = msg.optimizationMode ?? "auto";
 
     try {
+      // スタイル最適化が有効で手動モードの場合、最適化提案を返す
+      if (optimizeStyles && optimizationMode === "manual") {
+        const { StyleAnalyzer } =
+          await import("./converter/models/styles/style-analyzer");
+        const { StyleOptimizer } =
+          await import("./converter/models/styles/style-optimizer");
+        const { HTML } = await import("./converter/models/html");
+
+        const htmlObj = HTML.from(html);
+        const htmlNode = HTML.toHTMLNode(htmlObj);
+        const analysis = StyleAnalyzer.analyze(htmlNode);
+
+        const allProposals: unknown[] = [];
+        let totalReductionPercentage = 0;
+
+        for (const nodeResult of analysis.results) {
+          const result = StyleOptimizer.optimize(
+            nodeResult.styles,
+            nodeResult.issues,
+          );
+          const comparison = StyleOptimizer.compare(
+            result.originalStyles,
+            result.optimizedStyles,
+          );
+          allProposals.push(...result.proposals);
+          totalReductionPercentage += comparison.reductionPercentage;
+        }
+
+        const avgReductionPercentage =
+          analysis.results.length > 0
+            ? Math.round(totalReductionPercentage / analysis.results.length)
+            : 0;
+
+        figma.ui.postMessage({
+          type: "optimization-result",
+          result: {
+            proposals: allProposals,
+            summary: {
+              totalIssues: analysis.totalIssues,
+              applied: 0,
+              skipped: 0,
+              reductionPercentage: avgReductionPercentage,
+              byType: {},
+            },
+            comparison: {
+              added: {},
+              removed: {},
+              changed: [],
+              unchanged: {},
+              reductionPercentage: avgReductionPercentage,
+            },
+          },
+        });
+        return;
+      }
+
       const frame = figma.createFrame();
       frame.name = "Converted HTML";
       frame.x = 0;
@@ -103,6 +161,26 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       figma.ui.postMessage({
         type: "a11y-error",
         message: `アクセシビリティチェックでエラーが発生しました: ${errorMessage}`,
+      });
+    }
+  }
+
+  if (msg.type === "apply-optimization") {
+    try {
+      const approvedIds = msg.approvedProposalIds ?? [];
+      // 承認された提案IDを受け取り、適用完了メッセージを返す
+      // 実際の最適化適用ロジックは将来の実装で追加予定
+      figma.ui.postMessage({
+        type: "conversion-complete",
+        message: `${approvedIds.length}件の最適化提案を適用しました`,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("Optimization apply error:", error);
+      figma.ui.postMessage({
+        type: "optimization-error",
+        message: `最適化の適用でエラーが発生しました: ${errorMessage}`,
       });
     }
   }

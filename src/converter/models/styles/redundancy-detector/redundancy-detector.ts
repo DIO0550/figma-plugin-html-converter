@@ -31,7 +31,7 @@ export namespace RedundancyDetector {
    *
    * NOTE: Styles型はRecord<string, string>のため、Styles.parse()経由の入力では
    * 同一キーが後勝ちで上書きされ、完全一致の重複は存在しない（常に空配列を返す）。
-   * ショートハンド/ロングハンド間の意味的重複は detectShorthandLonghandConflictsFromStyles() で検出する。
+   * ショートハンド/ロングハンド間の意味的重複は detectShorthandLonghandConflictsFromStyles()で検出する。
    * 本メソッドはインターフェースの一貫性と将来のparse前文字列解析対応のために維持している。
    */
   export function detectDuplicates(_styles: Styles): RedundancyIssue[] {

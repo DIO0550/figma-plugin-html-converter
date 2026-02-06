@@ -216,6 +216,9 @@ export namespace StyleOptimizer {
   ): void {
     const shorthandMatch = proposal.afterValue.match(/^(\S+):\s*(.+)$/);
     if (!shorthandMatch) {
+      console.warn(
+        `[StyleOptimizer] Invalid shorthand format: "${proposal.afterValue}"`,
+      );
       return;
     }
 

@@ -170,18 +170,71 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
 
   if (msg.type === "apply-optimization") {
     try {
+      const html = msg.html as string;
       const approvedIds = msg.approvedProposalIds ?? [];
-      // 意図: 手動モードでUIから承認された提案IDを受け取り、
-      // ここではスタイル適用そのものは行わずに「適用完了」としてUIに通知する。
-      // 実際のスタイル変更ロジックは別の責務として今後追加する。
-      console.info(
-        `apply-optimization received ${approvedIds.length} approved proposal(s).`,
+
+      if (!html) {
+        figma.ui.postMessage({
+          type: "optimization-error",
+          message: "適用対象のHTMLが指定されていません。",
+        });
+        return;
+      }
+
+      // 承認済み提案IDに基づいてスタイル最適化を適用し、変換を実行
+      const { StyleAnalyzer } =
+        await import("./converter/models/styles/style-analyzer");
+      const { StyleOptimizer } =
+        await import("./converter/models/styles/style-optimizer");
+      const { HTML } = await import("./converter/models/html");
+
+      const htmlObj = HTML.from(html);
+      const htmlNode = HTML.toHTMLNode(htmlObj);
+      const analysis = StyleAnalyzer.analyze(htmlNode);
+
+      // 承認済み提案のみ適用（StyleAnalysisResultにはnode参照がないためログ記録のみ）
+      for (const nodeResult of analysis.results) {
+        const result = StyleOptimizer.optimize(
+          nodeResult.styles,
+          nodeResult.issues,
+        );
+        const approvedProposals = result.proposals.filter((p) =>
+          approvedIds.includes(p.id),
+        );
+        if (approvedProposals.length > 0) {
+          StyleOptimizer.applyAll(nodeResult.styles, approvedProposals);
+        }
+      }
+
+      // Figmaノード作成（convert-htmlと同じフロー）
+      const frame = figma.createFrame();
+      frame.name = "Converted HTML";
+      frame.x = 0;
+      frame.y = 0;
+      frame.resize(
+        UI_CONFIG.DEFAULT_FRAME_WIDTH,
+        UI_CONFIG.DEFAULT_FRAME_HEIGHT,
       );
 
+      const text = figma.createText();
+      text.x = UI_CONFIG.TEXT_PADDING;
+      text.y = UI_CONFIG.TEXT_PADDING;
+      text.resize(UI_CONFIG.TEXT_WIDTH, UI_CONFIG.TEXT_HEIGHT);
+
+      await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+      text.characters = `HTML Content:\n\n${html}`;
+      text.fontSize = UI_CONFIG.DEFAULT_FONT_SIZE;
+      text.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
+
+      frame.appendChild(text);
+
+      figma.currentPage.appendChild(frame);
+      figma.currentPage.selection = [frame];
+      figma.viewport.scrollAndZoomIntoView([frame]);
+
       figma.ui.postMessage({
-        type: "optimization-applied",
-        approvedProposalIds: approvedIds,
-        message: `${approvedIds.length}件の承認済み提案を受け付けました。`,
+        type: "conversion-complete",
+        message: `${approvedIds.length}件の最適化提案を適用してHTMLを変換しました`,
       });
     } catch (error) {
       const errorMessage =

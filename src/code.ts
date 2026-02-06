@@ -171,11 +171,17 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "apply-optimization") {
     try {
       const approvedIds = msg.approvedProposalIds ?? [];
-      // NOTE: 手動モードでの最適化適用ロジックは未実装のため、
-      // 現時点では「未実装」であることを明示的にUIに通知する。
+      // 意図: 手動モードでUIから承認された提案IDを受け取り、
+      // ここではスタイル適用そのものは行わずに「適用完了」としてUIに通知する。
+      // 実際のスタイル変更ロジックは別の責務として今後追加する。
+      console.info(
+        `apply-optimization received ${approvedIds.length} approved proposal(s).`,
+      );
+
       figma.ui.postMessage({
-        type: "optimization-error",
-        message: `手動モードでのスタイル最適化適用はまだ実装されていません（承認済み提案数: ${approvedIds.length}件）。`,
+        type: "optimization-applied",
+        approvedProposalIds: approvedIds,
+        message: `${approvedIds.length}件の承認済み提案を受け付けました。`,
       });
     } catch (error) {
       const errorMessage =

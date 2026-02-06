@@ -81,7 +81,7 @@ export namespace RedundancyDetector {
           type: "shorthand-opportunity",
           severity: "medium",
           property: rule.shorthand,
-          currentValue: longhandList,
+          currentLonghandProperties: rule.longhands,
           suggestedValue: `${rule.shorthand}: ${shorthandValue}`,
           description: `${longhandList} を "${rule.shorthand}: ${shorthandValue}" に統合できます`,
         });

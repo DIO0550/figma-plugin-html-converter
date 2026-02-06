@@ -5,11 +5,29 @@ export type RedundancyType =
 
 export type RedundancySeverity = "low" | "medium" | "high";
 
-export interface RedundancyIssue {
-  type: RedundancyType;
+interface BaseRedundancyIssue {
   severity: RedundancySeverity;
   property: string;
-  currentValue: string;
-  suggestedValue?: string;
   description: string;
+  suggestedValue?: string;
 }
+
+export interface DuplicatePropertyIssue extends BaseRedundancyIssue {
+  type: "duplicate-property";
+  currentValue: string;
+}
+
+export interface DefaultValueIssue extends BaseRedundancyIssue {
+  type: "default-value";
+  currentValue: string;
+}
+
+export interface ShorthandOpportunityIssue extends BaseRedundancyIssue {
+  type: "shorthand-opportunity";
+  currentLonghandProperties: readonly string[];
+}
+
+export type RedundancyIssue =
+  | DuplicatePropertyIssue
+  | DefaultValueIssue
+  | ShorthandOpportunityIssue;

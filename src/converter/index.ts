@@ -108,7 +108,7 @@ function optimizeNodeStylesRecursive(
         //   パイプライン内部での直接変更が最適
         // - mapHTMLNodeToFigma()呼び出し前にスタイルを差し替える必要がある
         if (mode === "auto") {
-          const optimizedStyleStr = stylesToString(result.optimizedStyles);
+          const optimizedStyleStr = Styles.toString(result.optimizedStyles);
           if (node.attributes) {
             node.attributes.style = optimizedStyleStr;
           }
@@ -122,13 +122,4 @@ function optimizeNodeStylesRecursive(
       optimizeNodeStylesRecursive(child, mode, results);
     }
   }
-}
-
-function stylesToString(styles: Styles): string {
-  const entries: string[] = [];
-  for (const [key, value] of Object.entries(styles)) {
-    if (key === "__brand") continue;
-    entries.push(`${key}: ${value}`);
-  }
-  return entries.join("; ");
 }

@@ -122,6 +122,7 @@ export const Styles = {
   // インラインスタイル文字列に変換
   toString(styles: Styles): string {
     return Object.entries(styles)
+      .filter(([prop]) => prop !== "__brand")
       .map(([prop, value]) => `${prop}: ${value}`)
       .join("; ");
   },

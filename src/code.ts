@@ -192,7 +192,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       const htmlNode = HTML.toHTMLNode(htmlObj);
       const analysis = StyleAnalyzer.analyze(htmlNode);
 
-      // 承認済み提案のみ適用（StyleAnalysisResultにはnode参照がないためログ記録のみ）
+      // 承認済み提案のみ適用
       for (const nodeResult of analysis.results) {
         const result = StyleOptimizer.optimize(
           nodeResult.styles,
@@ -202,7 +202,11 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           approvedIds.includes(p.id),
         );
         if (approvedProposals.length > 0) {
-          StyleOptimizer.applyAll(nodeResult.styles, approvedProposals);
+          const optimizedStyles = StyleOptimizer.applyAll(
+            nodeResult.styles,
+            approvedProposals,
+          );
+          nodeResult.styles = optimizedStyles;
         }
       }
 

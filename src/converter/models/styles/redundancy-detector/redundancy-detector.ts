@@ -27,15 +27,14 @@ export namespace RedundancyDetector {
   }
 
   /**
-   * 重複プロパティを検出
-   * Styles型はRecord<string, string>なのでパース済みの場合は重複がない。
-   * この検出は主にparse前の生文字列レベルで使用することを想定しているが、
-   * Styles型を入力とする場合は実質的にnoop。
-   * ただし将来の拡張性を考慮して残す。
+   * 完全一致の重複プロパティを検出
+   *
+   * NOTE: Styles型はRecord<string, string>のため、Styles.parse()経由の入力では
+   * 同一キーが後勝ちで上書きされ、完全一致の重複は存在しない（常に空配列を返す）。
+   * ショートハンド/ロングハンド間の意味的重複は detectShorthandLonghandConflictsFromStyles() で検出する。
+   * 本メソッドはインターフェースの一貫性と将来のparse前文字列解析対応のために維持している。
    */
   export function detectDuplicates(_styles: Styles): RedundancyIssue[] {
-    // Styles型はRecord<string, string>のため、同一キーは後勝ちで上書き済み
-    // 重複検出はparse前の文字列解析で行う必要がある
     return [];
   }
 

@@ -206,23 +206,46 @@ export namespace StyleOptimizer {
 
   /**
    * ショートハンド統合の共通処理: longhandを削除してshorthandを追加
+   *
+   * - proposal.afterValue は `"property: value"` 形式を想定
+   * - proposal.issue.currentValue はカンマ区切りの longhand プロパティ名列を想定
    */
   function applyShorthandMerge(
     record: Record<string, string>,
     proposal: OptimizationProposal,
   ): void {
     const shorthandMatch = proposal.afterValue.match(/^(\S+):\s*(.+)$/);
-    if (shorthandMatch) {
-      const [, shorthandProp, shorthandVal] = shorthandMatch;
-      const currentValueList = proposal.issue.currentValue
-        .split(",")
-        .map((s) => s.trim());
-      for (const longhand of currentValueList) {
-        delete record[longhand];
-      }
-      record[shorthandProp] = shorthandVal;
+    if (!shorthandMatch) {
+      return;
     }
+
+    const [, shorthandProp, shorthandVal] = shorthandMatch;
+    const rawCurrentValue = proposal.issue.currentValue;
+
+    if (!rawCurrentValue || typeof rawCurrentValue !== "string") {
+      return;
+    }
+
+    const currentValueList = rawCurrentValue
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    if (currentValueList.length === 0) {
+      return;
+    }
+
+    for (const longhand of currentValueList) {
+      delete record[longhand];
+    }
+    record[shorthandProp] = shorthandVal;
   }
+
+  const CONFIDENCE_LEVELS = {
+    DUPLICATE_PROPERTY: 1.0,
+    DEFAULT_VALUE: 0.9,
+    SHORTHAND_OPPORTUNITY: 0.8,
+  } as const;
 
   function determineAction(
     issue: RedundancyIssue,
@@ -240,11 +263,11 @@ export namespace StyleOptimizer {
   function calculateConfidence(issue: RedundancyIssue): number {
     switch (issue.type) {
       case "duplicate-property":
-        return 1.0;
+        return CONFIDENCE_LEVELS.DUPLICATE_PROPERTY;
       case "default-value":
-        return 0.9;
+        return CONFIDENCE_LEVELS.DEFAULT_VALUE;
       case "shorthand-opportunity":
-        return 0.8;
+        return CONFIDENCE_LEVELS.SHORTHAND_OPPORTUNITY;
     }
   }
 

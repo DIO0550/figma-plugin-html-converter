@@ -7,8 +7,8 @@ import type {
   OptimizationSummary,
 } from "./types";
 
-function generateId(): string {
-  return `proposal-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+function generateDeterministicId(issue: RedundancyIssue): string {
+  return `proposal-${issue.type}-${issue.property}`;
 }
 
 /**
@@ -54,12 +54,16 @@ export namespace StyleOptimizer {
     return issues.map((issue) => {
       const action = determineAction(issue);
       const afterValue = issue.suggestedValue ?? "";
+      const beforeValue =
+        issue.type === "shorthand-opportunity"
+          ? issue.currentLonghandProperties.join(", ")
+          : issue.currentValue;
 
       return {
-        id: generateId(),
+        id: generateDeterministicId(issue),
         issue,
         action,
-        beforeValue: issue.currentValue,
+        beforeValue,
         afterValue,
         confidence: calculateConfidence(issue),
         source: "local" as const,
@@ -208,7 +212,7 @@ export namespace StyleOptimizer {
    * ショートハンド統合の共通処理: longhandを削除してshorthandを追加
    *
    * - proposal.afterValue は `"property: value"` 形式を想定
-   * - proposal.issue.currentValue はカンマ区切りの longhand プロパティ名列を想定
+   * - proposal.issue は shorthand-opportunity の場合 currentLonghandProperties を持つ
    */
   function applyShorthandMerge(
     record: Record<string, string>,
@@ -223,22 +227,26 @@ export namespace StyleOptimizer {
     }
 
     const [, shorthandProp, shorthandVal] = shorthandMatch;
-    const rawCurrentValue = proposal.issue.currentValue;
+    const issue = proposal.issue;
 
-    if (!rawCurrentValue || typeof rawCurrentValue !== "string") {
+    let longhandList: readonly string[];
+    if (issue.type === "shorthand-opportunity") {
+      longhandList = issue.currentLonghandProperties;
+    } else {
+      // duplicate-property / default-value の場合はcurrentValueからフォールバック
+      const raw = issue.currentValue;
+      if (!raw || typeof raw !== "string") return;
+      longhandList = raw
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+    }
+
+    if (longhandList.length === 0) {
       return;
     }
 
-    const currentValueList = rawCurrentValue
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-
-    if (currentValueList.length === 0) {
-      return;
-    }
-
-    for (const longhand of currentValueList) {
+    for (const longhand of longhandList) {
       delete record[longhand];
     }
     record[shorthandProp] = shorthandVal;

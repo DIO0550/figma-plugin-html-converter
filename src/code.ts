@@ -236,7 +236,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       figma.viewport.scrollAndZoomIntoView([frame]);
 
       figma.ui.postMessage({
-        type: "conversion-complete",
+        type: "optimization-applied",
         message: `${approvedIds.length}件の最適化提案を適用してHTMLを変換しました`,
       });
     } catch (error) {

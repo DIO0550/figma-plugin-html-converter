@@ -13,6 +13,7 @@ import type {
   OptimizationMode,
   OptimizationProposal,
 } from "./converter/models/styles/style-optimizer/types";
+import type { HTMLNode } from "./converter/models/html-node/html-node";
 
 interface PluginMessage {
   type: string;
@@ -182,33 +183,31 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       }
 
       // 承認済み提案IDに基づいてスタイル最適化を適用し、変換を実行
-      const { StyleAnalyzer } =
-        await import("./converter/models/styles/style-analyzer");
       const { StyleOptimizer } =
         await import("./converter/models/styles/style-optimizer");
       const { HTML } = await import("./converter/models/html");
+      const { HTMLNode: HTMLNodeObj } =
+        await import("./converter/models/html-node/html-node");
+      const { Styles } = await import("./converter/models/styles");
+      const { RedundancyDetector } =
+        await import("./converter/models/styles/redundancy-detector");
 
       const htmlObj = HTML.from(html);
       const htmlNode = HTML.toHTMLNode(htmlObj);
-      const analysis = StyleAnalyzer.analyze(htmlNode);
 
-      // 承認済み提案のみ適用
-      for (const nodeResult of analysis.results) {
-        const result = StyleOptimizer.optimize(
-          nodeResult.styles,
-          nodeResult.issues,
-        );
-        const approvedProposals = result.proposals.filter((p) =>
-          approvedIds.includes(p.id),
-        );
-        if (approvedProposals.length > 0) {
-          const optimizedStyles = StyleOptimizer.applyAll(
-            nodeResult.styles,
-            approvedProposals,
-          );
-          nodeResult.styles = optimizedStyles;
-        }
-      }
+      // 承認済み提案のみ適用し、HTMLNodeのstyle属性を直接更新
+      // NOTE: 意図的なミューテーション
+      // - converter/index.tsのoptimizeNodeStylesRecursiveと同様に、
+      //   HTMLNodeツリーを直接走査してnode.attributes.styleを更新する
+      // - htmlNodeはこのハンドラ内で生成されたローカルな値であり、外部で再利用されない
+      applyApprovedOptimizations(
+        htmlNode,
+        approvedIds,
+        HTMLNodeObj,
+        Styles,
+        RedundancyDetector,
+        StyleOptimizer,
+      );
 
       // Figmaノード作成（convert-htmlと同じフロー）
       const frame = figma.createFrame();
@@ -255,3 +254,68 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
     figma.closePlugin();
   }
 };
+
+/**
+ * HTMLNodeツリーを再帰的に走査し、承認済み提案に基づいてスタイルを最適化して
+ * node.attributes.styleを直接更新する
+ *
+ * converter/index.tsのoptimizeNodeStylesRecursiveと同様のアプローチだが、
+ * 手動モード用に承認済み提案IDによるフィルタリングを行う
+ */
+function applyApprovedOptimizations(
+  node: HTMLNode,
+  approvedIds: string[],
+  HTMLNodeObj: typeof import("./converter/models/html-node/html-node").HTMLNode,
+  Styles: typeof import("./converter/models/styles").Styles,
+  RedundancyDetector: typeof import("./converter/models/styles/redundancy-detector").RedundancyDetector,
+  StyleOptimizer: typeof import("./converter/models/styles/style-optimizer").StyleOptimizer,
+): void {
+  if (!HTMLNodeObj.isElement(node)) return;
+
+  const tagName = node.tagName ?? "unknown";
+  const styleAttr = node.attributes?.style;
+
+  if (styleAttr) {
+    const styles = Styles.parse(styleAttr);
+
+    if (!Styles.isEmpty(styles)) {
+      const issues = RedundancyDetector.detect(styles, tagName);
+
+      if (issues.length > 0) {
+        const result = StyleOptimizer.optimize(styles, issues);
+        const approvedProposals = result.proposals.filter((p) =>
+          approvedIds.includes(p.id),
+        );
+
+        if (approvedProposals.length > 0) {
+          const optimizedStyles = StyleOptimizer.applyAll(
+            styles,
+            approvedProposals,
+          );
+
+          // 意図的なミューテーション: HTMLNodeのstyle属性を直接更新
+          const optimizedStyleStr = Object.entries(optimizedStyles)
+            .filter(([key]) => key !== "__brand")
+            .map(([k, v]) => `${k}: ${v}`)
+            .join("; ");
+          if (node.attributes) {
+            node.attributes.style = optimizedStyleStr;
+          }
+        }
+      }
+    }
+  }
+
+  if (node.children) {
+    for (const child of node.children) {
+      applyApprovedOptimizations(
+        child,
+        approvedIds,
+        HTMLNodeObj,
+        Styles,
+        RedundancyDetector,
+        StyleOptimizer,
+      );
+    }
+  }
+}

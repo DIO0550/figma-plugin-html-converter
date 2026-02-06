@@ -51,8 +51,15 @@ export namespace StyleOptimizationAI {
 
       const processingTimeMs = Date.now() - startTime;
 
+      const proposalsFromResponse =
+        response &&
+        typeof response === "object" &&
+        Array.isArray((response as { proposals?: unknown }).proposals)
+          ? (response as { proposals: AIStyleOptimizationProposal[] }).proposals
+          : [];
+
       return {
-        proposals: validateProposals(response.proposals ?? []),
+        proposals: validateProposals(proposalsFromResponse),
         processingTimeMs,
       };
     } catch (error) {
@@ -68,16 +75,19 @@ export namespace StyleOptimizationAI {
    * AI提案のバリデーション
    */
   function validateProposals(
-    proposals: AIStyleOptimizationProposal[],
+    proposals: unknown[],
   ): AIStyleOptimizationProposal[] {
     return proposals.filter(
-      (p) =>
-        typeof p.property === "string" &&
-        p.property.length > 0 &&
-        typeof p.suggestion === "string" &&
-        typeof p.confidence === "number" &&
-        p.confidence >= 0 &&
-        p.confidence <= 1,
+      (p): p is AIStyleOptimizationProposal =>
+        p !== null &&
+        typeof p === "object" &&
+        typeof (p as AIStyleOptimizationProposal).property === "string" &&
+        (p as AIStyleOptimizationProposal).property.length > 0 &&
+        typeof (p as AIStyleOptimizationProposal).suggestion === "string" &&
+        typeof (p as AIStyleOptimizationProposal).reason === "string" &&
+        typeof (p as AIStyleOptimizationProposal).confidence === "number" &&
+        (p as AIStyleOptimizationProposal).confidence >= 0 &&
+        (p as AIStyleOptimizationProposal).confidence <= 1,
     );
   }
 }

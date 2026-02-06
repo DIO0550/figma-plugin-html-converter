@@ -101,8 +101,12 @@ function optimizeNodeStylesRecursive(
         results.push(result);
 
         // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
-        // NOTE: 意図的なミューテーション - パイプライン内部でのみ使用されるため、
-        // toFigmaNode()変換前にStylesインスタンスを差し替える目的で直接変更する
+        // NOTE: 意図的なミューテーション
+        // - HTMLNodeツリーはconvertHTMLToFigmaWithOptimization内で生成されたローカルな値であり、
+        //   この関数外で再利用されることはない
+        // - 新しいHTMLNodeツリーをコピー生成するとメモリ・計算コストが増大するため、
+        //   パイプライン内部での直接変更が最適
+        // - mapHTMLNodeToFigma()呼び出し前にスタイルを差し替える必要がある
         if (mode === "auto") {
           const optimizedStyleStr = stylesToString(result.optimizedStyles);
           if (node.attributes) {

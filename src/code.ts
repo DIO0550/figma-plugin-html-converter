@@ -9,7 +9,10 @@ import type {
   A11yCheckerConfig,
 } from "./accessibility/types";
 
-import type { OptimizationMode } from "./converter/models/styles/style-optimizer/types";
+import type {
+  OptimizationMode,
+  OptimizationProposal,
+} from "./converter/models/styles/style-optimizer/types";
 
 interface PluginMessage {
   type: string;
@@ -58,7 +61,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         const htmlNode = HTML.toHTMLNode(htmlObj);
         const analysis = StyleAnalyzer.analyze(htmlNode);
 
-        const allProposals: unknown[] = [];
+        const allProposals: OptimizationProposal[] = [];
         let totalReductionPercentage = 0;
 
         for (const nodeResult of analysis.results) {
@@ -168,11 +171,11 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "apply-optimization") {
     try {
       const approvedIds = msg.approvedProposalIds ?? [];
-      // 承認された提案IDを受け取り、適用完了メッセージを返す
-      // 実際の最適化適用ロジックは将来の実装で追加予定
+      // NOTE: 手動モードでの最適化適用ロジックは未実装のため、
+      // 現時点では「未実装」であることを明示的にUIに通知する。
       figma.ui.postMessage({
-        type: "conversion-complete",
-        message: `${approvedIds.length}件の最適化提案を適用しました`,
+        type: "optimization-error",
+        message: `手動モードでのスタイル最適化適用はまだ実装されていません（承認済み提案数: ${approvedIds.length}件）。`,
       });
     } catch (error) {
       const errorMessage =

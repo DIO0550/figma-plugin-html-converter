@@ -338,7 +338,8 @@
 
       proposals.forEach(function(proposal) {
         // MCP等の外部ソースから不正なproposalが渡される可能性があるため
-        if (!proposal || typeof proposal.id !== 'string' || proposal.id === '') {
+        if (!proposal || typeof proposal.id !== 'string' || proposal.id === '' ||
+            !proposal.issue || typeof proposal.issue.description !== 'string') {
           return;
         }
 
@@ -430,7 +431,8 @@
       var approvedIds = [];
       var items = document.querySelectorAll('.proposal-item[data-approved="true"]');
       items.forEach(function(item) {
-        approvedIds.push(item.getAttribute('data-id'));
+        var id = item.getAttribute('data-id');
+        if (id) approvedIds.push(id);
       });
 
       if (approvedIds.length === 0) {
@@ -447,6 +449,7 @@
     }
 
     window.onmessage = function(event) {
+      if (!event.data || !event.data.pluginMessage) return;
       var msg = event.data.pluginMessage;
 
       if (msg.type === 'conversion-complete') {

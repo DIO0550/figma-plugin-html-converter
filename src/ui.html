@@ -268,10 +268,12 @@
     let optimizationMode = 'auto';
 
     document.getElementById('optimize-styles').addEventListener('change', function() {
-      const modeArea = document.getElementById('mode-toggle-area');
+      var modeArea = document.getElementById('mode-toggle-area');
+      if (!modeArea) return;
       modeArea.style.display = this.checked ? 'flex' : 'none';
       if (!this.checked) {
-        document.getElementById('optimization-results').style.display = 'none';
+        var resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'none';
       }
     });
 
@@ -332,10 +334,10 @@
     function renderProposals(proposals) {
       var list = document.getElementById('proposal-list');
       if (!list) return;
-      list.innerHTML = '';
+      var fragment = document.createDocumentFragment();
 
       proposals.forEach(function(proposal) {
-        // proposal.idのバリデーション: 無効な値の場合はスキップ
+        // MCP等の外部ソースから不正なproposalが渡される可能性があるため
         if (!proposal || typeof proposal.id !== 'string' || proposal.id === '') {
           return;
         }
@@ -369,8 +371,11 @@
           item.appendChild(actions);
         }
 
-        list.appendChild(item);
+        fragment.appendChild(item);
       });
+
+      list.innerHTML = '';
+      list.appendChild(fragment);
     }
 
     function createSummaryStat(label, value) {
@@ -417,7 +422,7 @@
       var item = findProposalItemById(id);
       if (item) {
         item.style.backgroundColor = '#f8d7da';
-        item.setAttribute('data-approved', 'false');
+        item.removeAttribute('data-approved');
       }
     }
 

@@ -265,6 +265,7 @@
   </div>
 
   <script>
+    var MESSAGE_DISPLAY_DURATION = 3000;
     let optimizationMode = 'auto';
 
     document.getElementById('optimize-styles').addEventListener('change', function() {
@@ -328,7 +329,7 @@
 
       setTimeout(function() {
         messageEl.style.display = 'none';
-      }, 3000);
+      }, MESSAGE_DISPLAY_DURATION);
     }
 
     function renderProposals(proposals) {
@@ -440,9 +441,13 @@
         return;
       }
 
+      var htmlInput = document.getElementById('html-input');
+      var html = htmlInput ? htmlInput.value.trim() : '';
+
       parent.postMessage({
         pluginMessage: {
           type: 'apply-optimization',
+          html: html,
           approvedProposalIds: approvedIds
         }
       }, '*');
@@ -465,6 +470,10 @@
         renderSummary(msg.result.summary, msg.result.comparison);
         var applyArea = document.getElementById('apply-approved-area');
         if (applyArea) applyArea.style.display = optimizationMode === 'manual' ? 'block' : 'none';
+      } else if (msg.type === 'optimization-applied') {
+        showMessage(msg.message, 'success');
+        var resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'none';
       } else if (msg.type === 'optimization-error') {
         showMessage(msg.message, 'error');
       }

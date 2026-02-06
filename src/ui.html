@@ -265,15 +265,15 @@
   </div>
 
   <script>
-    var MESSAGE_DISPLAY_DURATION = 3000;
+    const MESSAGE_DISPLAY_DURATION = 3000;
     let optimizationMode = 'auto';
 
     document.getElementById('optimize-styles').addEventListener('change', function() {
-      var modeArea = document.getElementById('mode-toggle-area');
+      const modeArea = document.getElementById('mode-toggle-area');
       if (!modeArea) return;
       modeArea.style.display = this.checked ? 'flex' : 'none';
       if (!this.checked) {
-        var resultsEl = document.getElementById('optimization-results');
+        const resultsEl = document.getElementById('optimization-results');
         if (resultsEl) resultsEl.style.display = 'none';
       }
     });
@@ -333,9 +333,9 @@
     }
 
     function renderProposals(proposals) {
-      var list = document.getElementById('proposal-list');
+      const list = document.getElementById('proposal-list');
       if (!list) return;
-      var fragment = document.createDocumentFragment();
+      const fragment = document.createDocumentFragment();
 
       proposals.forEach(function(proposal) {
         // MCP等の外部ソースから不正なproposalが渡される可能性があるため
@@ -344,26 +344,26 @@
           return;
         }
 
-        var item = document.createElement('div');
+        const item = document.createElement('div');
         item.className = 'proposal-item';
         item.setAttribute('data-id', proposal.id);
 
-        var info = document.createElement('div');
+        const info = document.createElement('div');
         info.className = 'info';
         info.textContent = proposal.issue.description;
 
         item.appendChild(info);
 
         if (optimizationMode === 'manual') {
-          var actions = document.createElement('div');
+          const actions = document.createElement('div');
           actions.className = 'actions';
 
-          var approveBtn = document.createElement('button');
+          const approveBtn = document.createElement('button');
           approveBtn.className = 'primary';
           approveBtn.textContent = '承認';
           approveBtn.onclick = function() { approveProposal(proposal.id); };
 
-          var rejectBtn = document.createElement('button');
+          const rejectBtn = document.createElement('button');
           rejectBtn.className = 'secondary';
           rejectBtn.textContent = '却下';
           rejectBtn.onclick = function() { rejectProposal(proposal.id); };
@@ -376,16 +376,16 @@
         fragment.appendChild(item);
       });
 
-      list.innerHTML = '';
+      while (list.firstChild) { list.removeChild(list.firstChild); }
       list.appendChild(fragment);
     }
 
     function createSummaryStat(label, value) {
-      var row = document.createElement('div');
+      const row = document.createElement('div');
       row.className = 'summary-stat';
-      var labelSpan = document.createElement('span');
+      const labelSpan = document.createElement('span');
       labelSpan.textContent = label;
-      var valueSpan = document.createElement('span');
+      const valueSpan = document.createElement('span');
       valueSpan.textContent = String(value);
       row.appendChild(labelSpan);
       row.appendChild(valueSpan);
@@ -393,7 +393,7 @@
     }
 
     function renderSummary(summary, comparison) {
-      var el = document.getElementById('optimization-summary');
+      const el = document.getElementById('optimization-summary');
       if (!el) return;
       el.style.display = 'block';
       el.textContent = '';
@@ -403,8 +403,8 @@
     }
 
     function findProposalItemById(id) {
-      var items = document.querySelectorAll('.proposal-item');
-      for (var i = 0; i < items.length; i++) {
+      const items = document.querySelectorAll('.proposal-item');
+      for (let i = 0; i < items.length; i++) {
         if (items[i].getAttribute('data-id') === id) {
           return items[i];
         }
@@ -413,7 +413,7 @@
     }
 
     function approveProposal(id) {
-      var item = findProposalItemById(id);
+      const item = findProposalItemById(id);
       if (item) {
         item.style.backgroundColor = '#d4edda';
         item.setAttribute('data-approved', 'true');
@@ -421,7 +421,7 @@
     }
 
     function rejectProposal(id) {
-      var item = findProposalItemById(id);
+      const item = findProposalItemById(id);
       if (item) {
         item.style.backgroundColor = '#f8d7da';
         item.removeAttribute('data-approved');
@@ -429,10 +429,10 @@
     }
 
     function applyApprovedProposals() {
-      var approvedIds = [];
-      var items = document.querySelectorAll('.proposal-item[data-approved="true"]');
+      const approvedIds = [];
+      const items = document.querySelectorAll('.proposal-item[data-approved="true"]');
       items.forEach(function(item) {
-        var id = item.getAttribute('data-id');
+        const id = item.getAttribute('data-id');
         if (id) approvedIds.push(id);
       });
 
@@ -441,8 +441,8 @@
         return;
       }
 
-      var htmlInput = document.getElementById('html-input');
-      var html = htmlInput ? htmlInput.value.trim() : '';
+      const htmlInput = document.getElementById('html-input');
+      const html = htmlInput ? htmlInput.value.trim() : '';
 
       parent.postMessage({
         pluginMessage: {
@@ -455,24 +455,24 @@
 
     window.onmessage = function(event) {
       if (!event.data || !event.data.pluginMessage) return;
-      var msg = event.data.pluginMessage;
+      const msg = event.data.pluginMessage;
 
       if (msg.type === 'conversion-complete') {
         showMessage(msg.message, 'success');
-        var htmlInputEl = document.getElementById('html-input');
+        const htmlInputEl = document.getElementById('html-input');
         if (htmlInputEl) htmlInputEl.value = '';
       } else if (msg.type === 'conversion-error') {
         showMessage(msg.message, 'error');
       } else if (msg.type === 'optimization-result') {
-        var resultsEl = document.getElementById('optimization-results');
+        const resultsEl = document.getElementById('optimization-results');
         if (resultsEl) resultsEl.style.display = 'block';
         renderProposals(msg.result.proposals);
         renderSummary(msg.result.summary, msg.result.comparison);
-        var applyArea = document.getElementById('apply-approved-area');
+        const applyArea = document.getElementById('apply-approved-area');
         if (applyArea) applyArea.style.display = optimizationMode === 'manual' ? 'block' : 'none';
       } else if (msg.type === 'optimization-applied') {
         showMessage(msg.message, 'success');
-        var resultsEl = document.getElementById('optimization-results');
+        const resultsEl = document.getElementById('optimization-results');
         if (resultsEl) resultsEl.style.display = 'none';
       } else if (msg.type === 'optimization-error') {
         showMessage(msg.message, 'error');

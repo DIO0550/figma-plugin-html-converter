@@ -108,6 +108,11 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
 
         const allProposals: OptimizationProposal[] = [];
         let totalReductionPercentage = 0;
+        const byType: Record<string, number> = {
+          "duplicate-property": 0,
+          "default-value": 0,
+          "shorthand-opportunity": 0,
+        };
 
         for (const nodeResult of analysis.results) {
           const result = StyleOptimizer.optimize(
@@ -121,6 +126,10 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           );
           allProposals.push(...result.proposals);
           totalReductionPercentage += comparison.reductionPercentage;
+
+          for (const issue of nodeResult.issues) {
+            byType[issue.type] = (byType[issue.type] || 0) + 1;
+          }
         }
 
         const avgReductionPercentage =
@@ -137,7 +146,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
               applied: 0,
               skipped: 0,
               reductionPercentage: avgReductionPercentage,
-              byType: {},
+              byType,
             },
             comparison: {
               added: {},

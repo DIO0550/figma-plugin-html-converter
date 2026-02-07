@@ -84,10 +84,18 @@ function optimizeNodeStylesRecursive(
   node: HTMLNode,
   mode: "auto" | "manual",
   results: OptimizationResult[],
+  parentPath: string[] = [],
+  siblingIndex?: number,
 ): void {
   if (!HTMLNode.isElement(node)) return;
 
   const tagName = node.tagName ?? "unknown";
+  // StyleAnalyzer.walkNodeと同じパス生成ロジック
+  const segment =
+    siblingIndex !== undefined ? `${tagName}[${siblingIndex}]` : tagName;
+  const currentPath = [...parentPath, segment];
+  const pathStr = currentPath.join(" > ");
+
   const styleAttr = node.attributes?.style;
 
   if (styleAttr) {
@@ -103,7 +111,7 @@ function optimizeNodeStylesRecursive(
           mode === "auto"
             ? issues.filter((i) => i.type !== "duplicate-property")
             : issues;
-        const result = StyleOptimizer.optimize(styles, safeIssues);
+        const result = StyleOptimizer.optimize(styles, safeIssues, pathStr);
         results.push(result);
 
         // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
@@ -124,8 +132,14 @@ function optimizeNodeStylesRecursive(
   }
 
   if (node.children) {
-    for (const child of node.children) {
-      optimizeNodeStylesRecursive(child, mode, results);
+    for (let i = 0; i < node.children.length; i++) {
+      optimizeNodeStylesRecursive(
+        node.children[i],
+        mode,
+        results,
+        currentPath,
+        i,
+      );
     }
   }
 }

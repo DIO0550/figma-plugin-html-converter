@@ -319,10 +319,18 @@ function applyApprovedOptimizations(
   Styles: typeof import("./converter/models/styles").Styles,
   RedundancyDetector: typeof import("./converter/models/styles/redundancy-detector").RedundancyDetector,
   StyleOptimizer: typeof import("./converter/models/styles/style-optimizer").StyleOptimizer,
+  parentPath: string[] = [],
+  siblingIndex?: number,
 ): void {
   if (!HTMLNodeObj.isElement(node)) return;
 
   const tagName = node.tagName ?? "unknown";
+  // StyleAnalyzer.walkNodeと同じパス生成ロジック
+  const segment =
+    siblingIndex !== undefined ? `${tagName}[${siblingIndex}]` : tagName;
+  const currentPath = [...parentPath, segment];
+  const pathStr = currentPath.join(" > ");
+
   const styleAttr = node.attributes?.style;
 
   if (styleAttr) {
@@ -332,7 +340,7 @@ function applyApprovedOptimizations(
       const issues = RedundancyDetector.detect(styles, tagName);
 
       if (issues.length > 0) {
-        const result = StyleOptimizer.optimize(styles, issues);
+        const result = StyleOptimizer.optimize(styles, issues, pathStr);
         const approvedProposals = result.proposals.filter((p) =>
           approvedIds.includes(p.id),
         );
@@ -354,14 +362,16 @@ function applyApprovedOptimizations(
   }
 
   if (node.children) {
-    for (const child of node.children) {
+    for (let i = 0; i < node.children.length; i++) {
       applyApprovedOptimizations(
-        child,
+        node.children[i],
         approvedIds,
         HTMLNodeObj,
         Styles,
         RedundancyDetector,
         StyleOptimizer,
+        currentPath,
+        i,
       );
     }
   }

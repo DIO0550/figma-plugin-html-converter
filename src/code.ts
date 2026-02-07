@@ -288,7 +288,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
 
       figma.ui.postMessage({
         type: "optimization-applied",
-        message: `${approvedIds.length}件の最適化提案を適用してHTMLを変換しました`,
+        message: "スタイル最適化を適用してHTMLを変換しました",
       });
     } catch (error) {
       const errorMessage =

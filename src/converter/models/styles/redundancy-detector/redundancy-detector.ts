@@ -21,7 +21,7 @@ export namespace RedundancyDetector {
     return [
       ...detectDuplicates(styles),
       ...detectDefaults(styles, tagName),
-      ...detectShorthandOpportunities(styles),
+      ...detectShorthandOpportunities(styles, tagName),
       ...detectShorthandLonghandConflictsFromStyles(styles),
     ];
   }
@@ -68,12 +68,18 @@ export namespace RedundancyDetector {
    */
   export function detectShorthandOpportunities(
     styles: Styles,
+    tagName?: string,
   ): RedundancyIssue[] {
     const issues: RedundancyIssue[] = [];
     const properties = toRecord(styles);
 
     for (const rule of SHORTHAND_RULES) {
       if (canMergeToShorthand(rule, properties)) {
+        const allLonghandsAreDefault = rule.longhands.every((longhand) =>
+          isDefaultValue(longhand, properties[longhand], tagName),
+        );
+        if (allLonghandsAreDefault) continue;
+
         const shorthandValue = buildShorthandValue(rule, properties);
         const longhandList = rule.longhands.join(", ");
 

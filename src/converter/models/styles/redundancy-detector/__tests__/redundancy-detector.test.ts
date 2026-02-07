@@ -19,6 +19,16 @@ describe("RedundancyDetector.detect", () => {
     expect(types).toContain("default-value");
     expect(types).toContain("shorthand-opportunity");
   });
+
+  test("全longhandがデフォルト値の場合、detectDefaultsのみ検出しショートハンド提案はしない", () => {
+    const styles = Styles.parse(
+      "margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0",
+    );
+    const issues = RedundancyDetector.detect(styles);
+    const types = issues.map((i) => i.type);
+    expect(types).toContain("default-value");
+    expect(types).not.toContain("shorthand-opportunity");
+  });
 });
 
 describe("RedundancyDetector.detectDuplicates", () => {
@@ -115,6 +125,50 @@ describe("RedundancyDetector.detectShorthandOpportunities", () => {
       "margin: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px",
     );
     const issues = RedundancyDetector.detectShorthandOpportunities(styles);
+    expect(issues).toHaveLength(0);
+  });
+
+  test("全longhandがデフォルト値の場合はショートハンド提案をスキップ", () => {
+    const styles = Styles.parse(
+      "margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0",
+    );
+    const issues = RedundancyDetector.detectShorthandOpportunities(styles);
+    expect(issues).toHaveLength(0);
+  });
+
+  test("全longhandがデフォルト値(0px)の場合もショートハンド提案をスキップ", () => {
+    const styles = Styles.parse(
+      "margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px",
+    );
+    const issues = RedundancyDetector.detectShorthandOpportunities(styles);
+    expect(issues).toHaveLength(0);
+  });
+
+  test("padding全longhandがデフォルト値の場合もスキップ", () => {
+    const styles = Styles.parse(
+      "padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0",
+    );
+    const issues = RedundancyDetector.detectShorthandOpportunities(styles);
+    expect(issues).toHaveLength(0);
+  });
+
+  test("一部のlonghandのみデフォルト値の場合は提案する", () => {
+    const styles = Styles.parse(
+      "margin-top: 10px; margin-right: 0; margin-bottom: 10px; margin-left: 0",
+    );
+    const issues = RedundancyDetector.detectShorthandOpportunities(styles);
+    expect(issues).toHaveLength(1);
+    expect(issues[0].suggestedValue).toBe("margin: 10px 0");
+  });
+
+  test("tagName付きでdetectShorthandOpportunitiesを呼び出し可能", () => {
+    const styles = Styles.parse(
+      "margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0",
+    );
+    const issues = RedundancyDetector.detectShorthandOpportunities(
+      styles,
+      "div",
+    );
     expect(issues).toHaveLength(0);
   });
 });

@@ -279,7 +279,7 @@ export namespace StyleOptimizer {
       case "duplicate-property":
         return "review";
       case "shorthand-opportunity":
-        return issue.suggestedValue ? "merge" : "remove";
+        return issue.suggestedValue ? "merge" : "review";
     }
   }
 

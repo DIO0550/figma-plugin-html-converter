@@ -89,7 +89,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         figma.ui.postMessage({
           type: "conversion-complete",
           message:
-            "スタイル最適化の解析を行い、HTMLをテキストとしてFigma上に配置しました",
+            "スタイル最適化を自動適用し、HTMLをFigma上に配置しました（結果の詳細は手動モードで確認できます）",
         });
         return;
       }

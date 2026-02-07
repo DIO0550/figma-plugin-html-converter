@@ -482,6 +482,9 @@
         showMessage(msg.message, 'success');
         const htmlInputEl = document.getElementById('html-input');
         if (htmlInputEl) htmlInputEl.value = '';
+        // 自動モード等で変換完了時は最適化結果パネルを非表示にする
+        const resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'none';
       } else if (msg.type === 'conversion-error') {
         showMessage(msg.message, 'error');
       } else if (msg.type === 'optimization-result') {

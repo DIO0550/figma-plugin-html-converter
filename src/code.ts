@@ -50,6 +50,22 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
     const optimizationMode = msg.optimizationMode ?? "auto";
 
     try {
+      // スタイル最適化が有効で自動モードの場合、最適化を適用して変換
+      if (optimizeStyles && optimizationMode === "auto") {
+        const { convertHTMLToFigmaWithOptimization } =
+          await import("./converter");
+        await convertHTMLToFigmaWithOptimization(html, {
+          optimizeStyles: true,
+          optimizationMode: "auto",
+        });
+
+        figma.ui.postMessage({
+          type: "conversion-complete",
+          message: "スタイル最適化を適用してHTMLをFigmaデザインに変換しました",
+        });
+        return;
+      }
+
       // スタイル最適化が有効で手動モードの場合、最適化提案を返す
       if (optimizeStyles && optimizationMode === "manual") {
         const { StyleAnalyzer } =

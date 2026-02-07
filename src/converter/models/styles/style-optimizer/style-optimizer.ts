@@ -81,7 +81,7 @@ export namespace StyleOptimizer {
 
   /**
    * ローカル提案とAI提案を統合
-   * 同一プロパティの場合はconfidenceが高い方を優先、同値ならローカル優先
+   * 同一IDの場合はconfidenceが高い方を優先、同値ならローカル優先
    */
   export function mergeProposals(
     local: OptimizationProposal[],
@@ -90,13 +90,13 @@ export namespace StyleOptimizer {
     const merged = new Map<string, OptimizationProposal>();
 
     for (const proposal of local) {
-      merged.set(proposal.issue.property, proposal);
+      merged.set(proposal.id, proposal);
     }
 
     for (const proposal of ai) {
-      const existing = merged.get(proposal.issue.property);
+      const existing = merged.get(proposal.id);
       if (!existing || proposal.confidence > existing.confidence) {
-        merged.set(proposal.issue.property, proposal);
+        merged.set(proposal.id, proposal);
       }
     }
 

@@ -81,10 +81,10 @@ describe("StyleOptimizer.generateProposals", () => {
 });
 
 describe("StyleOptimizer.mergeProposals", () => {
-  test("同一プロパティの場合はconfidenceが高い方を優先", () => {
+  test("同一IDの場合はconfidenceが高い方を優先", () => {
     const local: OptimizationProposal[] = [
       {
-        id: "l1",
+        id: "proposal-default-value-opacity",
         issue: {
           type: "default-value",
           severity: "low",
@@ -101,7 +101,7 @@ describe("StyleOptimizer.mergeProposals", () => {
     ];
     const ai: OptimizationProposal[] = [
       {
-        id: "a1",
+        id: "proposal-default-value-opacity",
         issue: {
           type: "default-value",
           severity: "low",
@@ -121,10 +121,10 @@ describe("StyleOptimizer.mergeProposals", () => {
     expect(merged[0].source).toBe("ai");
   });
 
-  test("同一confidence値の場合はローカル優先", () => {
+  test("同一IDで同一confidence値の場合はローカル優先", () => {
     const local: OptimizationProposal[] = [
       {
-        id: "l1",
+        id: "proposal-default-value-opacity",
         issue: {
           type: "default-value",
           severity: "low",
@@ -141,7 +141,7 @@ describe("StyleOptimizer.mergeProposals", () => {
     ];
     const ai: OptimizationProposal[] = [
       {
-        id: "a1",
+        id: "proposal-default-value-opacity",
         issue: {
           type: "default-value",
           severity: "low",
@@ -161,10 +161,10 @@ describe("StyleOptimizer.mergeProposals", () => {
     expect(merged[0].source).toBe("local");
   });
 
-  test("異なるプロパティの場合は両方を保持", () => {
+  test("異なるIDの場合は両方を保持", () => {
     const local: OptimizationProposal[] = [
       {
-        id: "l1",
+        id: "proposal-default-value-position",
         issue: {
           type: "default-value",
           severity: "low",
@@ -181,7 +181,7 @@ describe("StyleOptimizer.mergeProposals", () => {
     ];
     const ai: OptimizationProposal[] = [
       {
-        id: "a1",
+        id: "proposal-default-value-opacity",
         issue: {
           type: "default-value",
           severity: "low",
@@ -193,6 +193,45 @@ describe("StyleOptimizer.mergeProposals", () => {
         beforeValue: "1",
         afterValue: "",
         confidence: 0.8,
+        source: "ai",
+      },
+    ];
+    const merged = StyleOptimizer.mergeProposals(local, ai);
+    expect(merged).toHaveLength(2);
+  });
+
+  test("同一プロパティでも異なるtype/contextならIDが異なり両方保持", () => {
+    const local: OptimizationProposal[] = [
+      {
+        id: "proposal-duplicate-property-margin-top-div",
+        issue: {
+          type: "duplicate-property",
+          severity: "high",
+          property: "margin-top",
+          currentValue: "10px",
+          description: "",
+        },
+        action: "review",
+        beforeValue: "10px",
+        afterValue: "",
+        confidence: 0.5,
+        source: "local",
+      },
+    ];
+    const ai: OptimizationProposal[] = [
+      {
+        id: "proposal-default-value-margin-top-div",
+        issue: {
+          type: "default-value",
+          severity: "low",
+          property: "margin-top",
+          currentValue: "0px",
+          description: "",
+        },
+        action: "remove",
+        beforeValue: "0px",
+        afterValue: "",
+        confidence: 0.9,
         source: "ai",
       },
     ];

@@ -77,16 +77,20 @@ export namespace StyleAnalyzer {
 
   /**
    * HTMLNodeツリーを再帰的に走査
+   * 兄弟インデックスを含めたパスを生成し、同一構造の兄弟要素でも一意になるようにする
    */
   function walkNode(
     node: HTMLNode,
     parentPath: string[],
     results: StyleAnalysisResult[],
+    siblingIndex?: number,
   ): void {
     if (!HTMLNodeObj.isElement(node)) return;
 
     const tagName = node.tagName ?? "unknown";
-    const currentPath = [...parentPath, tagName];
+    const segment =
+      siblingIndex !== undefined ? `${tagName}[${siblingIndex}]` : tagName;
+    const currentPath = [...parentPath, segment];
     const pathStr = currentPath.join(" > ");
 
     const result = analyzeNode(node, pathStr);
@@ -95,8 +99,8 @@ export namespace StyleAnalyzer {
     }
 
     if (node.children) {
-      for (const child of node.children) {
-        walkNode(child, currentPath, results);
+      for (let i = 0; i < node.children.length; i++) {
+        walkNode(node.children[i], currentPath, results, i);
       }
     }
   }

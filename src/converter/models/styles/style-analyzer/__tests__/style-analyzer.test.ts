@@ -32,7 +32,7 @@ describe("StyleAnalyzer.analyze", () => {
     const result = StyleAnalyzer.analyze(parent);
     expect(result.results).toHaveLength(2);
     expect(result.results[0].path).toBe("div");
-    expect(result.results[1].path).toBe("div > span");
+    expect(result.results[1].path).toBe("div > span[0]");
   });
 
   test("totalIssuesは全要素の問題数の合計", () => {

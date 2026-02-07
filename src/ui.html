@@ -267,6 +267,7 @@
   <script>
     const MESSAGE_DISPLAY_DURATION = 3000;
     let optimizationMode = 'auto';
+    let lastProposals = null;
 
     document.getElementById('optimize-styles').addEventListener('change', function() {
       const modeArea = document.getElementById('mode-toggle-area');
@@ -287,6 +288,14 @@
       manualBtn.className = mode === 'manual' ? 'active' : '';
       autoBtn.setAttribute('aria-pressed', String(mode === 'auto'));
       manualBtn.setAttribute('aria-pressed', String(mode === 'manual'));
+
+      if (lastProposals) {
+        renderProposals(lastProposals);
+      }
+      var applyArea = document.getElementById('apply-approved-area');
+      if (applyArea) {
+        applyArea.style.display = mode === 'manual' ? 'block' : 'none';
+      }
     }
 
     function convertHTML() {
@@ -333,6 +342,7 @@
     }
 
     function renderProposals(proposals) {
+      lastProposals = proposals;
       const list = document.getElementById('proposal-list');
       if (!list) return;
       const fragment = document.createDocumentFragment();

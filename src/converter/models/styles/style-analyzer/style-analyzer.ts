@@ -88,10 +88,11 @@ export namespace StyleAnalyzer {
     if (!HTMLNodeObj.isElement(node)) return;
 
     const tagName = node.tagName ?? "unknown";
-    const segment =
-      siblingIndex !== undefined ? `${tagName}[${siblingIndex}]` : tagName;
-    const currentPath = [...parentPath, segment];
-    const pathStr = currentPath.join(" > ");
+    const { currentPath, pathStr } = HTMLNodeObj.buildElementPath(
+      tagName,
+      parentPath,
+      siblingIndex,
+    );
 
     const result = analyzeNode(node, pathStr);
     if (result) {

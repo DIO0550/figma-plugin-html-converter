@@ -93,11 +93,11 @@ function optimizeNodeStylesRecursive(
   if (!HTMLNode.isElement(node)) return;
 
   const tagName = node.tagName ?? "unknown";
-  // StyleAnalyzer.walkNodeと同じパス生成ロジック
-  const segment =
-    siblingIndex !== undefined ? `${tagName}[${siblingIndex}]` : tagName;
-  const currentPath = [...parentPath, segment];
-  const pathStr = currentPath.join(" > ");
+  const { currentPath, pathStr } = HTMLNode.buildElementPath(
+    tagName,
+    parentPath,
+    siblingIndex,
+  );
 
   const styleAttr = node.attributes?.style;
 

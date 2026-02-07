@@ -111,7 +111,7 @@ export namespace RedundancyDetector {
       severity: "high" as const,
       property: conflict.longhand,
       currentValue: conflict.longhandValue,
-      description: `"${conflict.longhand}" は "${conflict.shorthand}" と重複しています。ショートハンドが優先されるため不要です`,
+      description: `"${conflict.longhand}" は "${conflict.shorthand}" と混在しています。CSSでは宣言順により優先度が変わるため、元のスタイル定義を確認してどちらか一方に統一してください`,
     }));
   }
 

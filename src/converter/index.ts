@@ -97,7 +97,13 @@ function optimizeNodeStylesRecursive(
       const issues = RedundancyDetector.detect(styles, tagName);
 
       if (issues.length > 0) {
-        const result = StyleOptimizer.optimize(styles, issues);
+        // autoモードではshorthand/longhand混在の自動削除は危険なため除外
+        // （CSSの宣言順でlonghandがshorthandを上書きするケースがある）
+        const safeIssues =
+          mode === "auto"
+            ? issues.filter((i) => i.type !== "duplicate-property")
+            : issues;
+        const result = StyleOptimizer.optimize(styles, safeIssues);
         results.push(result);
 
         // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映

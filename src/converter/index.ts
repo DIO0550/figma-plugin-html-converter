@@ -6,7 +6,10 @@ import { Styles } from "./models/styles";
 import { mapHTMLNodeToFigma } from "./mapper";
 import { RedundancyDetector } from "./models/styles/redundancy-detector";
 import { StyleOptimizer } from "./models/styles/style-optimizer";
-import type { OptimizationResult } from "./models/styles/style-optimizer";
+import type {
+  OptimizationMode,
+  OptimizationResult,
+} from "./models/styles/style-optimizer";
 
 export interface ConversionResult {
   figmaNode: FigmaNodeConfig;
@@ -73,7 +76,7 @@ export async function convertHTMLToFigmaWithOptimization(
  */
 function optimizeNodeStyles(
   node: HTMLNode,
-  mode: "auto" | "manual",
+  mode: OptimizationMode,
 ): OptimizationResult[] {
   const results: OptimizationResult[] = [];
   optimizeNodeStylesRecursive(node, mode, results);
@@ -82,7 +85,7 @@ function optimizeNodeStyles(
 
 function optimizeNodeStylesRecursive(
   node: HTMLNode,
-  mode: "auto" | "manual",
+  mode: OptimizationMode,
   results: OptimizationResult[],
   parentPath: string[] = [],
   siblingIndex?: number,

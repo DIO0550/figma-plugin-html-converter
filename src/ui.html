@@ -347,6 +347,12 @@
     }
 
     function renderProposals(proposals) {
+      if (!Array.isArray(proposals)) {
+        const list = document.getElementById('proposal-list');
+        if (list) list.innerHTML = '';
+        showMessage('最適化提案データが不正です', true);
+        return;
+      }
       lastProposals = proposals;
       const list = document.getElementById('proposal-list');
       if (!list) return;

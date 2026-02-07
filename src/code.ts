@@ -360,8 +360,8 @@ function applyApprovedOptimizations(
       const issues = RedundancyDetector.detect(styles, tagName);
 
       if (issues.length > 0) {
-        const result = StyleOptimizer.optimize(styles, issues, pathStr);
-        const approvedProposals = result.proposals.filter((p) =>
+        const proposals = StyleOptimizer.generateProposals(issues, pathStr);
+        const approvedProposals = proposals.filter((p) =>
           approvedIds.has(p.id),
         );
 

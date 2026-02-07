@@ -247,9 +247,10 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       // - converter/index.tsのoptimizeNodeStylesRecursiveと同様に、
       //   HTMLNodeツリーを直接走査してnode.attributes.styleを更新する
       // - htmlNodeはこのハンドラ内で生成されたローカルな値であり、外部で再利用されない
+      const approvedIdSet = new Set(approvedIds);
       applyApprovedOptimizations(
         htmlNode,
-        approvedIds,
+        approvedIdSet,
         HTMLNodeObj,
         Styles,
         RedundancyDetector,
@@ -314,7 +315,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
  */
 function applyApprovedOptimizations(
   node: HTMLNode,
-  approvedIds: string[],
+  approvedIds: Set<string>,
   HTMLNodeObj: typeof import("./converter/models/html-node/html-node").HTMLNode,
   Styles: typeof import("./converter/models/styles").Styles,
   RedundancyDetector: typeof import("./converter/models/styles/redundancy-detector").RedundancyDetector,
@@ -342,7 +343,7 @@ function applyApprovedOptimizations(
       if (issues.length > 0) {
         const result = StyleOptimizer.optimize(styles, issues, pathStr);
         const approvedProposals = result.proposals.filter((p) =>
-          approvedIds.includes(p.id),
+          approvedIds.has(p.id),
         );
 
         if (approvedProposals.length > 0) {

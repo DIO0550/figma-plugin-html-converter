@@ -108,23 +108,45 @@ function optimizeNodeStylesRecursive(
       const issues = RedundancyDetector.detect(styles, tagName);
 
       if (issues.length > 0) {
-        // autoモードではshorthand/longhand混在の自動削除は危険なため除外
-        // （CSSの宣言順でlonghandがshorthandを上書きするケースがある）
-        const safeIssues =
-          mode === "auto"
-            ? issues.filter((i) => i.type !== "duplicate-property")
-            : issues;
-        const result = StyleOptimizer.optimize(styles, safeIssues, pathStr);
-        results.push(result);
+        if (mode === "manual") {
+          // manualモード: 提案生成のみ行い、実際の適用はしない
+          const proposals = StyleOptimizer.generateProposals(issues, pathStr);
+          results.push({
+            originalStyles: styles,
+            optimizedStyles: styles,
+            proposals,
+            appliedCount: 0,
+            skippedCount: proposals.length,
+            summary: {
+              totalIssues: issues.length,
+              applied: 0,
+              skipped: proposals.length,
+              reductionPercentage: 0,
+              byType: issues.reduce(
+                (acc, issue) => {
+                  acc[issue.type] = (acc[issue.type] || 0) + 1;
+                  return acc;
+                },
+                {} as Record<string, number>,
+              ) as OptimizationResult["summary"]["byType"],
+            },
+          });
+        } else {
+          // autoモード: shorthand/longhand混在の自動削除は危険なため除外
+          // （CSSの宣言順でlonghandがshorthandを上書きするケースがある）
+          const safeIssues = issues.filter(
+            (i) => i.type !== "duplicate-property",
+          );
+          const result = StyleOptimizer.optimize(styles, safeIssues, pathStr);
+          results.push(result);
 
-        // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
-        // NOTE: 意図的なミューテーション
-        // - HTMLNodeツリーはconvertHTMLToFigmaWithOptimization内で生成されたローカルな値であり、
-        //   この関数外で再利用されることはない
-        // - 新しいHTMLNodeツリーをコピー生成するとメモリ・計算コストが増大するため、
-        //   パイプライン内部での直接変更が最適
-        // - mapHTMLNodeToFigma()呼び出し前にスタイルを差し替える必要がある
-        if (mode === "auto") {
+          // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
+          // NOTE: 意図的なミューテーション
+          // - HTMLNodeツリーはconvertHTMLToFigmaWithOptimization内で生成されたローカルな値であり、
+          //   この関数外で再利用されることはない
+          // - 新しいHTMLNodeツリーをコピー生成するとメモリ・計算コストが増大するため、
+          //   パイプライン内部での直接変更が最適
+          // - mapHTMLNodeToFigma()呼び出し前にスタイルを差し替える必要がある
           const optimizedStyleStr = Styles.toString(result.optimizedStyles);
           if (node.attributes) {
             node.attributes.style = optimizedStyleStr;

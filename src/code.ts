@@ -227,6 +227,15 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         return;
       }
 
+      if (approvedIds.length === 0) {
+        figma.ui.postMessage({
+          type: "optimization-error",
+          message:
+            "適用対象の最適化提案が指定されていません。少なくとも1件の提案を選択してください。",
+        });
+        return;
+      }
+
       // 承認済み提案IDに基づいてスタイル最適化を適用し、変換を実行
       const { StyleOptimizer } =
         await import("./converter/models/styles/style-optimizer");

@@ -9,7 +9,7 @@ export type OptimizationMode = "auto" | "manual";
 export interface OptimizationProposal {
   id: string;
   issue: RedundancyIssue;
-  action: "remove" | "replace" | "merge";
+  action: "remove" | "replace" | "merge" | "review";
   beforeValue: string;
   afterValue: string;
   confidence: number;

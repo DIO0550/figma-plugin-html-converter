@@ -30,9 +30,10 @@ export namespace StyleOptimizer {
     context?: string,
   ): OptimizationResult {
     const proposals = generateProposals(issues, context);
-    const optimizedStyles = applyAll(styles, proposals);
-    const appliedCount = proposals.length;
-    const skippedCount = 0;
+    const applicableProposals = proposals.filter((p) => p.action !== "review");
+    const optimizedStyles = applyAll(styles, applicableProposals);
+    const appliedCount = applicableProposals.length;
+    const skippedCount = proposals.length - applicableProposals.length;
 
     return {
       originalStyles: styles,
@@ -135,6 +136,10 @@ export namespace StyleOptimizer {
         if (proposal.afterValue) {
           applyShorthandMerge(record, proposal);
         }
+        break;
+
+      case "review":
+        // reviewアクションは自動適用しない（提案のみ表示）
         break;
     }
 
@@ -260,19 +265,19 @@ export namespace StyleOptimizer {
   }
 
   const CONFIDENCE_LEVELS = {
-    DUPLICATE_PROPERTY: 1.0,
+    DUPLICATE_PROPERTY: 0.5,
     DEFAULT_VALUE: 0.9,
     SHORTHAND_OPPORTUNITY: 0.8,
   } as const;
 
   function determineAction(
     issue: RedundancyIssue,
-  ): "remove" | "replace" | "merge" {
+  ): "remove" | "replace" | "merge" | "review" {
     switch (issue.type) {
       case "default-value":
         return "remove";
       case "duplicate-property":
-        return "remove";
+        return "review";
       case "shorthand-opportunity":
         return issue.suggestedValue ? "merge" : "remove";
     }

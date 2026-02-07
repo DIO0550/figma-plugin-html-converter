@@ -22,7 +22,7 @@ describe("StyleOptimizer.generateProposals", () => {
     expect(proposals[0].confidence).toBe(0.9);
   });
 
-  test("duplicate-propertyの提案はremoveアクション", () => {
+  test("duplicate-propertyの提案はreviewアクション（自動適用対象外）", () => {
     const issues: RedundancyIssue[] = [
       {
         type: "duplicate-property",
@@ -33,8 +33,8 @@ describe("StyleOptimizer.generateProposals", () => {
       },
     ];
     const proposals = StyleOptimizer.generateProposals(issues);
-    expect(proposals[0].action).toBe("remove");
-    expect(proposals[0].confidence).toBe(1.0);
+    expect(proposals[0].action).toBe("review");
+    expect(proposals[0].confidence).toBe(0.5);
   });
 
   test("shorthand-opportunityの提案はmergeアクション", () => {

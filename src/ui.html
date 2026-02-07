@@ -268,6 +268,7 @@
     const MESSAGE_DISPLAY_DURATION = 3000;
     let optimizationMode = 'auto';
     let lastProposals = null;
+    let messageTimerId = null;
 
     document.getElementById('optimize-styles').addEventListener('change', function() {
       const modeArea = document.getElementById('mode-toggle-area');
@@ -336,8 +337,12 @@
       messageEl.className = 'message ' + type;
       messageEl.style.display = 'block';
 
-      setTimeout(function() {
+      if (messageTimerId !== null) {
+        clearTimeout(messageTimerId);
+      }
+      messageTimerId = setTimeout(function() {
         messageEl.style.display = 'none';
+        messageTimerId = null;
       }, MESSAGE_DISPLAY_DURATION);
     }
 

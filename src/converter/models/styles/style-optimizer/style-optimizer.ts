@@ -7,8 +7,12 @@ import type {
   OptimizationSummary,
 } from "./types";
 
-function generateDeterministicId(issue: RedundancyIssue): string {
-  return `proposal-${issue.type}-${issue.property}`;
+function generateDeterministicId(
+  issue: RedundancyIssue,
+  context?: string,
+): string {
+  const base = `proposal-${issue.type}-${issue.property}`;
+  return context ? `${base}-${context}` : base;
 }
 
 /**
@@ -23,8 +27,9 @@ export namespace StyleOptimizer {
   export function optimize(
     styles: Styles,
     issues: RedundancyIssue[],
+    context?: string,
   ): OptimizationResult {
-    const proposals = generateProposals(issues);
+    const proposals = generateProposals(issues, context);
     const optimizedStyles = applyAll(styles, proposals);
     const appliedCount = proposals.length;
     const skippedCount = 0;
@@ -50,6 +55,7 @@ export namespace StyleOptimizer {
    */
   export function generateProposals(
     issues: RedundancyIssue[],
+    context?: string,
   ): OptimizationProposal[] {
     return issues.map((issue) => {
       const action = determineAction(issue);
@@ -60,13 +66,14 @@ export namespace StyleOptimizer {
           : issue.currentValue;
 
       return {
-        id: generateDeterministicId(issue),
+        id: generateDeterministicId(issue, context),
         issue,
         action,
         beforeValue,
         afterValue,
         confidence: calculateConfidence(issue),
         source: "local" as const,
+        elementPath: context,
       };
     });
   }

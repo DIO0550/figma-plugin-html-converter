@@ -69,6 +69,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           const result = StyleOptimizer.optimize(
             nodeResult.styles,
             nodeResult.issues,
+            nodeResult.path,
           );
           const comparison = StyleOptimizer.compare(
             result.originalStyles,

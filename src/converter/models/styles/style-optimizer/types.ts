@@ -14,6 +14,8 @@ export interface OptimizationProposal {
   afterValue: string;
   confidence: number;
   source: "local" | "ai";
+  /** 提案が属する要素のパス（例: "div > p > span"） */
+  elementPath?: string;
 }
 
 export interface OptimizationResult {

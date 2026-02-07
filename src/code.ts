@@ -54,10 +54,37 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       if (optimizeStyles && optimizationMode === "auto") {
         const { convertHTMLToFigmaWithOptimization } =
           await import("./converter");
-        await convertHTMLToFigmaWithOptimization(html, {
+        const result = await convertHTMLToFigmaWithOptimization(html, {
           optimizeStyles: true,
           optimizationMode: "auto",
         });
+
+        const figmaNodeConfig = result.figmaNode;
+
+        const frame = figma.createFrame();
+        frame.name = figmaNodeConfig.name ?? "Converted HTML";
+        frame.x = 0;
+        frame.y = 0;
+        frame.resize(
+          figmaNodeConfig.width ?? UI_CONFIG.DEFAULT_FRAME_WIDTH,
+          figmaNodeConfig.height ?? UI_CONFIG.DEFAULT_FRAME_HEIGHT,
+        );
+
+        const text = figma.createText();
+        text.x = UI_CONFIG.TEXT_PADDING;
+        text.y = UI_CONFIG.TEXT_PADDING;
+        text.resize(UI_CONFIG.TEXT_WIDTH, UI_CONFIG.TEXT_HEIGHT);
+
+        await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+        text.characters = `HTML Content:\n\n${html}`;
+        text.fontSize = UI_CONFIG.DEFAULT_FONT_SIZE;
+        text.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
+
+        frame.appendChild(text);
+
+        figma.currentPage.appendChild(frame);
+        figma.currentPage.selection = [frame];
+        figma.viewport.scrollAndZoomIntoView([frame]);
 
         figma.ui.postMessage({
           type: "conversion-complete",

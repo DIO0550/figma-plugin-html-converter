@@ -209,7 +209,8 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       const { RedundancyDetector } =
         await import("./converter/models/styles/redundancy-detector");
       const { mapHTMLNodeToFigma } = await import("./converter/mapper");
-      const { ConversionOptions } = await import("./converter/types");
+      const { ConversionOptions } =
+        await import("./converter/models/conversion-options");
 
       const htmlObj = HTML.from(html);
       const htmlNode = HTML.toHTMLNode(htmlObj);

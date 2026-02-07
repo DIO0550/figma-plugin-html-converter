@@ -485,6 +485,10 @@
       } else if (msg.type === 'conversion-error') {
         showMessage(msg.message, 'error');
       } else if (msg.type === 'optimization-result') {
+        if (!msg.result || !Array.isArray(msg.result.proposals)) {
+          showMessage('最適化結果のデータ形式が不正です', 'error');
+          return;
+        }
         const resultsEl = document.getElementById('optimization-results');
         if (resultsEl) resultsEl.style.display = 'block';
         renderProposals(msg.result.proposals);

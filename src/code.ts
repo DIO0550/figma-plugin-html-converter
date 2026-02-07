@@ -208,6 +208,8 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       const { Styles } = await import("./converter/models/styles");
       const { RedundancyDetector } =
         await import("./converter/models/styles/redundancy-detector");
+      const { mapHTMLNodeToFigma } = await import("./converter/mapper");
+      const { ConversionOptions } = await import("./converter/types");
 
       const htmlObj = HTML.from(html);
       const htmlNode = HTML.toHTMLNode(htmlObj);
@@ -226,14 +228,17 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         StyleOptimizer,
       );
 
-      // Figmaノード作成（convert-htmlと同じフロー）
+      // 最適化適用後のHTMLNodeツリーをFigmaノードに変換
+      const normalizedOptions = ConversionOptions.from({});
+      const figmaNodeConfig = mapHTMLNodeToFigma(htmlNode, normalizedOptions);
+
       const frame = figma.createFrame();
-      frame.name = "Converted HTML";
+      frame.name = figmaNodeConfig.name ?? "Converted HTML";
       frame.x = 0;
       frame.y = 0;
       frame.resize(
-        UI_CONFIG.DEFAULT_FRAME_WIDTH,
-        UI_CONFIG.DEFAULT_FRAME_HEIGHT,
+        figmaNodeConfig.width ?? UI_CONFIG.DEFAULT_FRAME_WIDTH,
+        figmaNodeConfig.height ?? UI_CONFIG.DEFAULT_FRAME_HEIGHT,
       );
 
       const text = figma.createText();

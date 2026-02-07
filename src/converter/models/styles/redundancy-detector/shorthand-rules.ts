@@ -6,8 +6,6 @@
 export interface ShorthandRule {
   shorthand: string;
   longhands: readonly string[];
-  /** すべてのlonghandが揃っている場合のみ統合可能 */
-  requireAll: boolean;
 }
 
 /** ショートハンド統合ルール定義 */
@@ -15,7 +13,6 @@ export const SHORTHAND_RULES: readonly ShorthandRule[] = [
   {
     shorthand: "margin",
     longhands: ["margin-top", "margin-right", "margin-bottom", "margin-left"],
-    requireAll: true,
   },
   {
     shorthand: "padding",
@@ -25,12 +22,10 @@ export const SHORTHAND_RULES: readonly ShorthandRule[] = [
       "padding-bottom",
       "padding-left",
     ],
-    requireAll: true,
   },
   {
     shorthand: "border",
     longhands: ["border-width", "border-style", "border-color"],
-    requireAll: true,
   },
 ];
 

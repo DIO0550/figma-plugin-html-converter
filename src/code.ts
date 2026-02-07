@@ -294,10 +294,7 @@ function applyApprovedOptimizations(
           );
 
           // 意図的なミューテーション: HTMLNodeのstyle属性を直接更新
-          const optimizedStyleStr = Object.entries(optimizedStyles)
-            .filter(([key]) => key !== "__brand")
-            .map(([k, v]) => `${k}: ${v}`)
-            .join("; ");
+          const optimizedStyleStr = Styles.toString(optimizedStyles);
           if (node.attributes) {
             node.attributes.style = optimizedStyleStr;
           }

@@ -151,7 +151,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
             summary: {
               totalIssues: analysis.totalIssues,
               applied: 0,
-              skipped: 0,
+              skipped: allProposals.length,
               reductionPercentage: avgReductionPercentage,
               byType,
             },

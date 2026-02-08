@@ -45,7 +45,15 @@ figma.showUI(__uiFiles__["ui.html"], {
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "convert-html") {
-    const html = msg.html as string;
+    if (msg.html == null) {
+      figma.ui.postMessage({
+        type: "conversion-error",
+        message: "HTMLが指定されていません。",
+      });
+      return;
+    }
+
+    const html = msg.html;
     const optimizeStyles = msg.optimizeStyles ?? false;
     const optimizationMode = msg.optimizationMode ?? "auto";
 

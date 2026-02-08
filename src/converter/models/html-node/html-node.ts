@@ -201,4 +201,25 @@ export const HTMLNode = {
     // 新形式の構造に限定し、標準のextractTextに委譲
     return this.extractText(element as HTMLNode);
   },
+
+  /**
+   * HTMLNodeツリー走査用の要素パスを生成
+   * StyleAnalyzer / converter / code.ts の各再帰走査で共通利用
+   *
+   * @param tagName - 要素のタグ名
+   * @param parentPath - 親要素までのパスセグメント配列
+   * @param siblingIndex - 兄弟インデックス（省略時はインデックスなし）
+   * @returns { currentPath: セグメント配列, pathStr: パス文字列 }
+   */
+  buildElementPath(
+    tagName: string,
+    parentPath: string[],
+    siblingIndex?: number,
+  ): { currentPath: string[]; pathStr: string } {
+    const segment =
+      siblingIndex !== undefined ? `${tagName}[${siblingIndex}]` : tagName;
+    const currentPath = [...parentPath, segment];
+    const pathStr = currentPath.join(" > ");
+    return { currentPath, pathStr };
+  },
 };

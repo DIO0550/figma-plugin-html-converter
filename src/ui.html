@@ -110,6 +110,117 @@
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
+    .optimization-panel {
+      margin-top: 16px;
+      padding: 12px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+
+    .optimization-panel h3 {
+      font-size: 14px;
+      margin: 0 0 8px 0;
+      color: #495057;
+    }
+
+    .optimization-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .optimization-toggle input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .optimization-toggle label {
+      display: inline;
+      font-size: 14px;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .mode-toggle button {
+      padding: 4px 12px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+      background: white;
+      cursor: pointer;
+    }
+
+    .mode-toggle button.active {
+      background-color: #5551ff;
+      color: white;
+      border-color: #5551ff;
+    }
+
+    .optimization-results {
+      margin-top: 12px;
+      display: none;
+    }
+
+    .optimization-results h4 {
+      font-size: 14px;
+      margin: 0 0 8px 0;
+      color: #495057;
+    }
+
+    .proposal-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .proposal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      background: white;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      font-size: 14px;
+    }
+
+    .proposal-item .info {
+      flex: 1;
+    }
+
+    .proposal-item .actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .proposal-item .actions button {
+      padding: 2px 8px;
+      font-size: 11px;
+    }
+
+    .optimization-summary {
+      margin-top: 8px;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      font-size: 14px;
+      color: #495057;
+    }
+
+    .summary-stat {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -124,32 +235,93 @@
       ></textarea>
     </div>
     
+    <div class="optimization-panel">
+      <h3>スタイル最適化</h3>
+      <div class="optimization-toggle">
+        <input type="checkbox" id="optimize-styles" />
+        <label for="optimize-styles">冗長なスタイルを最適化</label>
+      </div>
+      <div id="mode-toggle-area" class="mode-toggle" style="display: none;">
+        <button id="mode-auto" class="active" aria-pressed="true" onclick="setOptimizationMode('auto')">自動</button>
+        <button id="mode-manual" aria-pressed="false" onclick="setOptimizationMode('manual')">手動</button>
+      </div>
+
+      <div id="optimization-results" class="optimization-results">
+        <h4>最適化提案</h4>
+        <div id="proposal-list" class="proposal-list"></div>
+        <div id="apply-approved-area" style="display: none; margin-top: 8px;">
+          <button class="primary" onclick="applyApprovedProposals()">承認済みの提案を適用</button>
+        </div>
+        <div id="optimization-summary" class="optimization-summary" style="display: none;"></div>
+      </div>
+    </div>
+
     <div class="button-group">
       <button class="secondary" onclick="cancel()">キャンセル</button>
       <button class="primary" onclick="convertHTML()">変換</button>
     </div>
-    
+
     <div id="message" class="message"></div>
   </div>
 
   <script>
+    const MESSAGE_DISPLAY_DURATION = 3000;
+    let optimizationMode = 'auto';
+    let lastProposals = null;
+    let messageTimerId = null;
+
+    document.getElementById('optimize-styles').addEventListener('change', function() {
+      const modeArea = document.getElementById('mode-toggle-area');
+      if (!modeArea) return;
+      modeArea.style.display = this.checked ? 'flex' : 'none';
+      if (!this.checked) {
+        const resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'none';
+      }
+    });
+
+    function setOptimizationMode(mode) {
+      optimizationMode = mode;
+      const autoBtn = document.getElementById('mode-auto');
+      const manualBtn = document.getElementById('mode-manual');
+      if (!autoBtn || !manualBtn) return;
+      autoBtn.className = mode === 'auto' ? 'active' : '';
+      manualBtn.className = mode === 'manual' ? 'active' : '';
+      autoBtn.setAttribute('aria-pressed', String(mode === 'auto'));
+      manualBtn.setAttribute('aria-pressed', String(mode === 'manual'));
+
+      if (lastProposals) {
+        renderProposals(lastProposals);
+      }
+      var applyArea = document.getElementById('apply-approved-area');
+      if (applyArea) {
+        applyArea.style.display = mode === 'manual' ? 'block' : 'none';
+      }
+    }
+
     function convertHTML() {
       const htmlInput = document.getElementById('html-input');
+      if (!htmlInput) return;
       const html = htmlInput.value.trim();
-      
+
       if (!html) {
         showMessage('HTMLコードを入力してください', 'error');
         return;
       }
-      
+
+      const optimizeStylesEl = document.getElementById('optimize-styles');
+      const optimizeStyles = optimizeStylesEl ? optimizeStylesEl.checked : false;
+
       parent.postMessage({
         pluginMessage: {
           type: 'convert-html',
-          html: html
+          html: html,
+          optimizeStyles: optimizeStyles,
+          optimizationMode: optimizationMode
         }
       }, '*');
     }
-    
+
     function cancel() {
       parent.postMessage({
         pluginMessage: {
@@ -157,25 +329,196 @@
         }
       }, '*');
     }
-    
+
     function showMessage(text, type) {
       const messageEl = document.getElementById('message');
+      if (!messageEl) return;
       messageEl.textContent = text;
-      messageEl.className = `message ${type}`;
+      messageEl.className = 'message ' + type;
       messageEl.style.display = 'block';
-      
-      setTimeout(() => {
+
+      if (messageTimerId !== null) {
+        clearTimeout(messageTimerId);
+      }
+      messageTimerId = setTimeout(function() {
         messageEl.style.display = 'none';
-      }, 3000);
+        messageTimerId = null;
+      }, MESSAGE_DISPLAY_DURATION);
     }
-    
-    window.onmessage = (event) => {
+
+    function renderProposals(proposals) {
+      if (!Array.isArray(proposals)) {
+        const list = document.getElementById('proposal-list');
+        if (list) list.innerHTML = '';
+        showMessage('最適化提案データが不正です', true);
+        return;
+      }
+      lastProposals = proposals;
+      const list = document.getElementById('proposal-list');
+      if (!list) return;
+      const fragment = document.createDocumentFragment();
+
+      proposals.forEach(function(proposal) {
+        // MCP等の外部ソースから不正なproposalが渡される可能性があるため
+        if (!proposal || typeof proposal.id !== 'string' || proposal.id === '' ||
+            !proposal.issue || typeof proposal.issue.description !== 'string') {
+          return;
+        }
+
+        const item = document.createElement('div');
+        item.className = 'proposal-item';
+        item.setAttribute('data-id', proposal.id);
+
+        const info = document.createElement('div');
+        info.className = 'info';
+        info.textContent = proposal.issue.description;
+
+        item.appendChild(info);
+
+        if (optimizationMode === 'manual') {
+          if (proposal.action === 'review') {
+            // action==='review' の提案は自動適用不可のため、要確認バッジを表示
+            const badge = document.createElement('span');
+            badge.style.cssText = 'font-size:11px;padding:2px 8px;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:4px;white-space:nowrap;';
+            badge.textContent = '要確認';
+            item.appendChild(badge);
+          } else {
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+
+            const approveBtn = document.createElement('button');
+            approveBtn.className = 'primary';
+            approveBtn.textContent = '承認';
+            approveBtn.onclick = function() { approveProposal(proposal.id); };
+
+            const rejectBtn = document.createElement('button');
+            rejectBtn.className = 'secondary';
+            rejectBtn.textContent = '却下';
+            rejectBtn.onclick = function() { rejectProposal(proposal.id); };
+
+            actions.appendChild(approveBtn);
+            actions.appendChild(rejectBtn);
+            item.appendChild(actions);
+          }
+        }
+
+        fragment.appendChild(item);
+      });
+
+      while (list.firstChild) { list.removeChild(list.firstChild); }
+      list.appendChild(fragment);
+    }
+
+    function createSummaryStat(label, value) {
+      const row = document.createElement('div');
+      row.className = 'summary-stat';
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = label;
+      const valueSpan = document.createElement('span');
+      valueSpan.textContent = String(value);
+      row.appendChild(labelSpan);
+      row.appendChild(valueSpan);
+      return row;
+    }
+
+    function renderSummary(summary, comparison) {
+      const el = document.getElementById('optimization-summary');
+      if (!el) return;
+      el.style.display = 'block';
+      el.textContent = '';
+      el.appendChild(createSummaryStat('検出された問題:', summary.totalIssues));
+      el.appendChild(createSummaryStat('適用済み:', summary.applied));
+      el.appendChild(createSummaryStat('削減率:', comparison.reductionPercentage + '%'));
+    }
+
+    function findProposalItemById(id) {
+      const items = document.querySelectorAll('.proposal-item');
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].getAttribute('data-id') === id) {
+          return items[i];
+        }
+      }
+      return null;
+    }
+
+    function approveProposal(id) {
+      const item = findProposalItemById(id);
+      if (item) {
+        item.style.backgroundColor = '#d4edda';
+        item.setAttribute('data-approved', 'true');
+      }
+    }
+
+    function rejectProposal(id) {
+      const item = findProposalItemById(id);
+      if (item) {
+        item.style.backgroundColor = '#f8d7da';
+        item.removeAttribute('data-approved');
+      }
+    }
+
+    function applyApprovedProposals() {
+      const approvedIds = [];
+      const items = document.querySelectorAll('.proposal-item[data-approved="true"]');
+      items.forEach(function(item) {
+        const id = item.getAttribute('data-id');
+        if (id) approvedIds.push(id);
+      });
+
+      if (approvedIds.length === 0) {
+        showMessage('承認された提案がありません', 'error');
+        return;
+      }
+
+      const htmlInput = document.getElementById('html-input');
+      const html = htmlInput ? htmlInput.value.trim() : '';
+
+      parent.postMessage({
+        pluginMessage: {
+          type: 'apply-optimization',
+          html: html,
+          approvedProposalIds: approvedIds
+        }
+      }, '*');
+    }
+
+    window.onmessage = function(event) {
+      if (!event.data || !event.data.pluginMessage) return;
       const msg = event.data.pluginMessage;
-      
+
       if (msg.type === 'conversion-complete') {
         showMessage(msg.message, 'success');
-        document.getElementById('html-input').value = '';
+        const htmlInputEl = document.getElementById('html-input');
+        if (htmlInputEl) htmlInputEl.value = '';
+        // 自動モード等で変換完了時は最適化結果パネルを非表示にする
+        const resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'none';
       } else if (msg.type === 'conversion-error') {
+        showMessage(msg.message, 'error');
+      } else if (msg.type === 'optimization-result') {
+        if (!msg.result || !Array.isArray(msg.result.proposals)) {
+          showMessage('最適化結果のデータ形式が不正です', 'error');
+          return;
+        }
+        if (!msg.result.summary || typeof msg.result.summary.totalIssues !== 'number' || typeof msg.result.summary.applied !== 'number') {
+          showMessage('最適化サマリーのデータ形式が不正です', 'error');
+          return;
+        }
+        if (!msg.result.comparison || typeof msg.result.comparison.reductionPercentage !== 'number') {
+          showMessage('最適化比較データの形式が不正です', 'error');
+          return;
+        }
+        const resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'block';
+        renderProposals(msg.result.proposals);
+        renderSummary(msg.result.summary, msg.result.comparison);
+        const applyArea = document.getElementById('apply-approved-area');
+        if (applyArea) applyArea.style.display = optimizationMode === 'manual' ? 'block' : 'none';
+      } else if (msg.type === 'optimization-applied') {
+        showMessage(msg.message, 'success');
+        const resultsEl = document.getElementById('optimization-results');
+        if (resultsEl) resultsEl.style.display = 'none';
+      } else if (msg.type === 'optimization-error') {
         showMessage(msg.message, 'error');
       }
     };

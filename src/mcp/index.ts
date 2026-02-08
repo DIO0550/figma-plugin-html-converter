@@ -83,3 +83,11 @@ export type { MCPClientState } from "./client";
 // フォールバック
 export { FallbackHandler } from "./fallback";
 export type { FallbackMode, FallbackHandlerState } from "./fallback";
+
+// スタイル最適化AI
+export { StyleOptimizationAI } from "./style-optimization";
+export type {
+  AIStyleOptimizationRequest,
+  AIStyleOptimizationResponse,
+  AIStyleOptimizationProposal,
+} from "./style-optimization";

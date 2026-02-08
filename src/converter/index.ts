@@ -100,8 +100,12 @@ function optimizeNodeStyles(
               acc[issue.type] = (acc[issue.type] || 0) + 1;
               return acc;
             },
-            {} as Record<string, number>,
-          ) as OptimizationResult["summary"]["byType"],
+            {
+              "duplicate-property": 0,
+              "default-value": 0,
+              "shorthand-opportunity": 0,
+            } as OptimizationResult["summary"]["byType"],
+          ),
         },
       });
     } else {

@@ -241,18 +241,12 @@ export namespace StyleOptimizer {
     const [, shorthandProp, shorthandVal] = shorthandMatch;
     const issue = proposal.issue;
 
-    let longhandList: readonly string[];
-    if (issue.type === "shorthand-opportunity") {
-      longhandList = issue.currentLonghandProperties;
-    } else {
-      // duplicate-property / default-value の場合はcurrentValueからフォールバック
-      const raw = issue.currentValue;
-      if (!raw || typeof raw !== "string") return;
-      longhandList = raw
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
+    if (issue.type !== "shorthand-opportunity") {
+      // shorthand-opportunity 以外では shorthand 統合を行わない
+      return;
     }
+
+    const longhandList = issue.currentLonghandProperties;
 
     if (longhandList.length === 0) {
       return;

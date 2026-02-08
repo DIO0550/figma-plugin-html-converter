@@ -500,6 +500,14 @@
           showMessage('最適化結果のデータ形式が不正です', 'error');
           return;
         }
+        if (!msg.result.summary || typeof msg.result.summary.totalIssues !== 'number' || typeof msg.result.summary.applied !== 'number') {
+          showMessage('最適化サマリーのデータ形式が不正です', 'error');
+          return;
+        }
+        if (!msg.result.comparison || typeof msg.result.comparison.reductionPercentage !== 'number') {
+          showMessage('最適化比較データの形式が不正です', 'error');
+          return;
+        }
         const resultsEl = document.getElementById('optimization-results');
         if (resultsEl) resultsEl.style.display = 'block';
         renderProposals(msg.result.proposals);

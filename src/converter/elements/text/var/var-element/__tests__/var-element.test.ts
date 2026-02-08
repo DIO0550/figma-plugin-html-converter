@@ -1,67 +1,61 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { VarElement } from "../var-element";
 
-describe("VarElement.isVarElement", () => {
-  test("var要素の場合trueを返す", () => {
-    const element = {
-      type: "element",
-      tagName: "var",
-      attributes: {},
-      children: [],
-    };
+test("VarElement.isVarElement - var要素の場合 - trueを返す", () => {
+  const element = {
+    type: "element",
+    tagName: "var",
+    attributes: {},
+    children: [],
+  };
 
-    expect(VarElement.isVarElement(element)).toBe(true);
-  });
-
-  test("異なるタグ名の場合falseを返す", () => {
-    const element = {
-      type: "element",
-      tagName: "span",
-      attributes: {},
-    };
-
-    expect(VarElement.isVarElement(element)).toBe(false);
-  });
-
-  test("nullの場合falseを返す", () => {
-    expect(VarElement.isVarElement(null)).toBe(false);
-  });
+  expect(VarElement.isVarElement(element)).toBe(true);
 });
 
-describe("VarElement.create", () => {
-  test("デフォルト値でvar要素を作成する", () => {
-    const element = VarElement.create();
+test("VarElement.isVarElement - 異なるタグ名の場合 - falseを返す", () => {
+  const element = {
+    type: "element",
+    tagName: "span",
+    attributes: {},
+  };
 
-    expect(element.type).toBe("element");
-    expect(element.tagName).toBe("var");
-    expect(element.attributes).toEqual({});
-    expect(element.children).toEqual([]);
-  });
-
-  test("属性付きでvar要素を作成する", () => {
-    const element = VarElement.create({
-      id: "variable-x",
-      class: "math-var",
-    });
-
-    expect(element.attributes?.id).toBe("variable-x");
-    expect(element.attributes?.class).toBe("math-var");
-  });
+  expect(VarElement.isVarElement(element)).toBe(false);
 });
 
-describe("VarElement accessors", () => {
-  test("getIdはid属性を取得する", () => {
-    const element = VarElement.create({ id: "variable-x" });
-    expect(VarElement.getId(element)).toBe("variable-x");
+test("VarElement.isVarElement - nullの場合 - falseを返す", () => {
+  expect(VarElement.isVarElement(null)).toBe(false);
+});
+
+test("VarElement.create - デフォルト値 - var要素を作成する", () => {
+  const element = VarElement.create();
+
+  expect(element.type).toBe("element");
+  expect(element.tagName).toBe("var");
+  expect(element.attributes).toEqual({});
+  expect(element.children).toEqual([]);
+});
+
+test("VarElement.create - 属性付き - var要素を作成する", () => {
+  const element = VarElement.create({
+    id: "variable-x",
+    class: "math-var",
   });
 
-  test("getClassはclass属性を取得する", () => {
-    const element = VarElement.create({ class: "math-var" });
-    expect(VarElement.getClass(element)).toBe("math-var");
-  });
+  expect(element.attributes?.id).toBe("variable-x");
+  expect(element.attributes?.class).toBe("math-var");
+});
 
-  test("getStyleはstyle属性を取得する", () => {
-    const element = VarElement.create({ style: "font-style: italic" });
-    expect(VarElement.getStyle(element)).toBe("font-style: italic");
-  });
+test("VarElement.getId - id属性がある場合 - id属性を取得する", () => {
+  const element = VarElement.create({ id: "variable-x" });
+  expect(VarElement.getId(element)).toBe("variable-x");
+});
+
+test("VarElement.getClass - class属性がある場合 - class属性を取得する", () => {
+  const element = VarElement.create({ class: "math-var" });
+  expect(VarElement.getClass(element)).toBe("math-var");
+});
+
+test("VarElement.getStyle - style属性がある場合 - style属性を取得する", () => {
+  const element = VarElement.create({ style: "font-style: italic" });
+  expect(VarElement.getStyle(element)).toBe("font-style: italic");
 });

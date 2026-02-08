@@ -5,6 +5,7 @@ import { HTMLNode } from "./models/html-node";
 import { Styles } from "./models/styles";
 import { mapHTMLNodeToFigma } from "./mapper";
 import { RedundancyDetector } from "./models/styles/redundancy-detector";
+import type { RedundancyIssue } from "./models/styles/redundancy-detector";
 import { StyleOptimizer } from "./models/styles/style-optimizer";
 import type {
   OptimizationMode,
@@ -79,14 +80,69 @@ function optimizeNodeStyles(
   mode: OptimizationMode,
 ): OptimizationResult[] {
   const results: OptimizationResult[] = [];
-  optimizeNodeStylesRecursive(node, mode, results);
+  traverseNodeStyles(node, ({ styles, issues, pathStr, node: currentNode }) => {
+    if (mode === "manual") {
+      // manualモード: 提案生成のみ行い、実際の適用はしない
+      const proposals = StyleOptimizer.generateProposals(issues, pathStr);
+      results.push({
+        originalStyles: styles,
+        optimizedStyles: styles,
+        proposals,
+        appliedCount: 0,
+        skippedCount: proposals.length,
+        summary: {
+          totalIssues: issues.length,
+          applied: 0,
+          skipped: proposals.length,
+          reductionPercentage: 0,
+          byType: issues.reduce(
+            (acc, issue) => {
+              acc[issue.type] = (acc[issue.type] || 0) + 1;
+              return acc;
+            },
+            {} as Record<string, number>,
+          ) as OptimizationResult["summary"]["byType"],
+        },
+      });
+    } else {
+      // autoモード: shorthand/longhand混在の自動削除は危険なため除外
+      // （CSSの宣言順でlonghandがshorthandを上書きするケースがある）
+      const safeIssues = issues.filter((i) => i.type !== "duplicate-property");
+      const result = StyleOptimizer.optimize(styles, safeIssues, pathStr);
+      results.push(result);
+
+      // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
+      // NOTE: 意図的なミューテーション（詳細はtraverseNodeStylesのJSDocを参照）
+      const optimizedStyleStr = Styles.toString(result.optimizedStyles);
+      if (currentNode.attributes) {
+        currentNode.attributes.style = optimizedStyleStr;
+      }
+    }
+  });
   return results;
 }
 
-function optimizeNodeStylesRecursive(
+/**
+ * HTMLNodeツリーを再帰的に走査し、スタイルを持つ各要素に対してコールバックを呼び出す共通関数
+ *
+ * 各要素について、スタイルのパース→冗長検出を行い、問題がある場合にコールバックを呼び出す。
+ * コールバック内でnode.attributes.styleを更新することで最適化を適用できる。
+ *
+ * NOTE: コールバック内でのHTMLNode.attributes.styleの直接更新は意図的なミューテーション
+ * - HTMLNodeツリーは呼び出し元で生成されたローカルな値であり、外部で再利用されない
+ * - 新しいHTMLNodeツリーをコピー生成するとメモリ・計算コストが増大するため、
+ *   パイプライン内部での直接変更が最適
+ */
+export interface NodeStyleContext {
+  node: HTMLNode;
+  styles: Styles;
+  issues: RedundancyIssue[];
+  pathStr: string;
+}
+
+export function traverseNodeStyles(
   node: HTMLNode,
-  mode: OptimizationMode,
-  results: OptimizationResult[],
+  callback: (context: NodeStyleContext) => void,
   parentPath: string[] = [],
   siblingIndex?: number,
 ): void {
@@ -108,63 +164,14 @@ function optimizeNodeStylesRecursive(
       const issues = RedundancyDetector.detect(styles, tagName);
 
       if (issues.length > 0) {
-        if (mode === "manual") {
-          // manualモード: 提案生成のみ行い、実際の適用はしない
-          const proposals = StyleOptimizer.generateProposals(issues, pathStr);
-          results.push({
-            originalStyles: styles,
-            optimizedStyles: styles,
-            proposals,
-            appliedCount: 0,
-            skippedCount: proposals.length,
-            summary: {
-              totalIssues: issues.length,
-              applied: 0,
-              skipped: proposals.length,
-              reductionPercentage: 0,
-              byType: issues.reduce(
-                (acc, issue) => {
-                  acc[issue.type] = (acc[issue.type] || 0) + 1;
-                  return acc;
-                },
-                {} as Record<string, number>,
-              ) as OptimizationResult["summary"]["byType"],
-            },
-          });
-        } else {
-          // autoモード: shorthand/longhand混在の自動削除は危険なため除外
-          // （CSSの宣言順でlonghandがshorthandを上書きするケースがある）
-          const safeIssues = issues.filter(
-            (i) => i.type !== "duplicate-property",
-          );
-          const result = StyleOptimizer.optimize(styles, safeIssues, pathStr);
-          results.push(result);
-
-          // autoモードの場合: 最適化済みスタイルをHTMLNodeに反映
-          // NOTE: 意図的なミューテーション
-          // - HTMLNodeツリーはconvertHTMLToFigmaWithOptimization内で生成されたローカルな値であり、
-          //   この関数外で再利用されることはない
-          // - 新しいHTMLNodeツリーをコピー生成するとメモリ・計算コストが増大するため、
-          //   パイプライン内部での直接変更が最適
-          // - mapHTMLNodeToFigma()呼び出し前にスタイルを差し替える必要がある
-          const optimizedStyleStr = Styles.toString(result.optimizedStyles);
-          if (node.attributes) {
-            node.attributes.style = optimizedStyleStr;
-          }
-        }
+        callback({ node, styles, issues, pathStr });
       }
     }
   }
 
   if (node.children) {
     for (let i = 0; i < node.children.length; i++) {
-      optimizeNodeStylesRecursive(
-        node.children[i],
-        mode,
-        results,
-        currentPath,
-        i,
-      );
+      traverseNodeStyles(node.children[i], callback, currentPath, i);
     }
   }
 }

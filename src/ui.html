@@ -376,22 +376,30 @@
         item.appendChild(info);
 
         if (optimizationMode === 'manual') {
-          const actions = document.createElement('div');
-          actions.className = 'actions';
+          if (proposal.action === 'review') {
+            // action==='review' の提案は自動適用不可のため、要確認バッジを表示
+            const badge = document.createElement('span');
+            badge.style.cssText = 'font-size:11px;padding:2px 8px;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:4px;white-space:nowrap;';
+            badge.textContent = '要確認';
+            item.appendChild(badge);
+          } else {
+            const actions = document.createElement('div');
+            actions.className = 'actions';
 
-          const approveBtn = document.createElement('button');
-          approveBtn.className = 'primary';
-          approveBtn.textContent = '承認';
-          approveBtn.onclick = function() { approveProposal(proposal.id); };
+            const approveBtn = document.createElement('button');
+            approveBtn.className = 'primary';
+            approveBtn.textContent = '承認';
+            approveBtn.onclick = function() { approveProposal(proposal.id); };
 
-          const rejectBtn = document.createElement('button');
-          rejectBtn.className = 'secondary';
-          rejectBtn.textContent = '却下';
-          rejectBtn.onclick = function() { rejectProposal(proposal.id); };
+            const rejectBtn = document.createElement('button');
+            rejectBtn.className = 'secondary';
+            rejectBtn.textContent = '却下';
+            rejectBtn.onclick = function() { rejectProposal(proposal.id); };
 
-          actions.appendChild(approveBtn);
-          actions.appendChild(rejectBtn);
-          item.appendChild(actions);
+            actions.appendChild(approveBtn);
+            actions.appendChild(rejectBtn);
+            item.appendChild(actions);
+          }
         }
 
         fragment.appendChild(item);

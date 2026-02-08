@@ -1,16 +1,15 @@
-import { test, expect, describe } from "vitest";
+import { test, expect } from "vitest";
 import { HTMLNode } from "../../../html-node";
 import { StyleAnalyzer } from "../style-analyzer";
 
-describe("StyleAnalyzer.analyze", () => {
-  test("スタイルのないツリーでは空の結果を返す", () => {
+test("StyleAnalyzer.analyze - スタイルなしツリー - 空結果を返す", () => {
     const node = HTMLNode.createElement("div");
     const result = StyleAnalyzer.analyze(node);
     expect(result.results).toHaveLength(0);
     expect(result.totalIssues).toBe(0);
-  });
+});
 
-  test("単一要素のスタイルを分析", () => {
+test("StyleAnalyzer.analyze - 単一要素 - 結果に1件含める", () => {
     const node = HTMLNode.createElement("div", {
       style: "position: static; color: red",
     });
@@ -18,9 +17,9 @@ describe("StyleAnalyzer.analyze", () => {
     expect(result.results).toHaveLength(1);
     expect(result.results[0].tagName).toBe("div");
     expect(result.results[0].issues.length).toBeGreaterThan(0);
-  });
+});
 
-  test("ネストされた要素を再帰的に分析", () => {
+test("StyleAnalyzer.analyze - ネスト要素 - パスを含める", () => {
     const parent = HTMLNode.createElement("div", {
       style: "opacity: 1",
     });
@@ -33,9 +32,9 @@ describe("StyleAnalyzer.analyze", () => {
     expect(result.results).toHaveLength(2);
     expect(result.results[0].path).toBe("div");
     expect(result.results[1].path).toBe("div > span[0]");
-  });
+});
 
-  test("totalIssuesは全要素の問題数の合計", () => {
+test("StyleAnalyzer.analyze - 複数要素 - totalIssuesが合計になる", () => {
     const parent = HTMLNode.createElement("div", {
       style: "position: static",
     });
@@ -50,9 +49,9 @@ describe("StyleAnalyzer.analyze", () => {
       0,
     );
     expect(result.totalIssues).toBe(totalFromResults);
-  });
+});
 
-  test("テキストノードはスキップされる", () => {
+test("StyleAnalyzer.analyze - テキストノード含む - resultsに含めない", () => {
     const parent = HTMLNode.createElement("div", {
       style: "color: red",
     });
@@ -63,17 +62,15 @@ describe("StyleAnalyzer.analyze", () => {
     // テキストノードはスタイルを持たないのでresultsは1（divのみ）
     // ただしdivのcolor: redはデフォルト値ではないので問題なし
     expect(result.results.length).toBeLessThanOrEqual(1);
-  });
+});
 
-  test("空のスタイル属性は無視される", () => {
+test("StyleAnalyzer.analyze - 空style属性 - 結果が空", () => {
     const node = HTMLNode.createElement("div", { style: "" });
     const result = StyleAnalyzer.analyze(node);
     expect(result.results).toHaveLength(0);
-  });
 });
 
-describe("StyleAnalyzer.analyzeNode", () => {
-  test("要素ノードのスタイルを分析", () => {
+test("StyleAnalyzer.analyzeNode - styleあり要素 - issuesを返す", () => {
     const node = HTMLNode.createElement("div", {
       style: "position: static",
     });
@@ -82,19 +79,19 @@ describe("StyleAnalyzer.analyzeNode", () => {
     expect(result!.tagName).toBe("div");
     expect(result!.issues).toHaveLength(1);
     expect(result!.issues[0].type).toBe("default-value");
-  });
+});
 
-  test("スタイルのない要素はnullを返す", () => {
+test("StyleAnalyzer.analyzeNode - styleなし要素 - nullを返す", () => {
     const node = HTMLNode.createElement("div");
     expect(StyleAnalyzer.analyzeNode(node)).toBeNull();
-  });
+});
 
-  test("テキストノードはnullを返す", () => {
+test("StyleAnalyzer.analyzeNode - テキストノード - nullを返す", () => {
     const node = HTMLNode.createText("Hello");
     expect(StyleAnalyzer.analyzeNode(node)).toBeNull();
-  });
+});
 
-  test("タグ名を考慮したデフォルト値検出", () => {
+test("StyleAnalyzer.analyzeNode - tagName別display - デフォルト値判定が変わる", () => {
     const divNode = HTMLNode.createElement("div", {
       style: "display: block",
     });
@@ -109,13 +106,12 @@ describe("StyleAnalyzer.analyzeNode", () => {
     expect(divResult!.issues.length).toBeGreaterThan(0);
     // spanのdisplay: blockはデフォルト値ではないので検出されない
     expect(spanResult!.issues).toHaveLength(0);
-  });
+});
 
-  test("カスタムパスを指定できる", () => {
+test("StyleAnalyzer.analyzeNode - カスタムパス指定 - pathに反映", () => {
     const node = HTMLNode.createElement("div", {
       style: "position: static",
     });
     const result = StyleAnalyzer.analyzeNode(node, "body > div");
     expect(result!.path).toBe("body > div");
-  });
 });

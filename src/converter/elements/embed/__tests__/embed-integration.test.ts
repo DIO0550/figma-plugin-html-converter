@@ -3,11 +3,12 @@
  * mapper.tsを通じた変換処理をテスト
  */
 
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { mapHTMLNodeToFigma } from "../../../mapper";
 
-describe("embed要素の統合テスト", () => {
-  test("基本的なembed要素を変換できる", () => {
+test(
+  "mapHTMLNodeToFigma - 基本的なembed要素 - embed名を含むFRAMEノードを返す",
+  () => {
     const htmlNode = {
       type: "element" as const,
       tagName: "embed",
@@ -22,9 +23,12 @@ describe("embed要素の統合テスト", () => {
 
     expect(figmaNode.type).toBe("FRAME");
     expect(figmaNode.name).toBe("embed: video/mp4");
-  });
+  },
+);
 
-  test("サイズ属性を持つembed要素を変換できる", () => {
+test(
+  "mapHTMLNodeToFigma - サイズ属性を持つembed要素 - サイズを反映する",
+  () => {
     const htmlNode = {
       type: "element" as const,
       tagName: "embed",
@@ -40,9 +44,12 @@ describe("embed要素の統合テスト", () => {
 
     expect(figmaNode.width).toBe(640);
     expect(figmaNode.height).toBe(360);
-  });
+  },
+);
 
-  test("デフォルトサイズを適用できる", () => {
+test(
+  "mapHTMLNodeToFigma - サイズ未指定のembed要素 - デフォルトサイズを適用する",
+  () => {
     const htmlNode = {
       type: "element" as const,
       tagName: "embed",
@@ -54,9 +61,12 @@ describe("embed要素の統合テスト", () => {
 
     expect(figmaNode.width).toBe(300);
     expect(figmaNode.height).toBe(150);
-  });
+  },
+);
 
-  test("プレースホルダーが子要素として含まれる", () => {
+test(
+  "mapHTMLNodeToFigma - srcありのembed要素 - プレースホルダーを含む",
+  () => {
     const htmlNode = {
       type: "element" as const,
       tagName: "embed",
@@ -71,9 +81,12 @@ describe("embed要素の統合テスト", () => {
     expect(figmaNode.children).toBeDefined();
     expect(Array.isArray(figmaNode.children)).toBe(true);
     expect(figmaNode.children?.length).toBeGreaterThan(0);
-  });
+  },
+);
 
-  test("PDFタイプのembed要素を変換できる", () => {
+test(
+  "mapHTMLNodeToFigma - PDFタイプのembed要素 - 名前とサイズを反映する",
+  () => {
     const htmlNode = {
       type: "element" as const,
       tagName: "embed",
@@ -91,9 +104,12 @@ describe("embed要素の統合テスト", () => {
     expect(figmaNode.name).toBe("embed: application/pdf");
     expect(figmaNode.width).toBe(800);
     expect(figmaNode.height).toBe(600);
-  });
+  },
+);
 
-  test("スタイル属性を持つembed要素を変換できる", () => {
+test(
+  "mapHTMLNodeToFigma - style属性を持つembed要素 - ボーダーと角丸を反映する",
+  () => {
     const htmlNode = {
       type: "element" as const,
       tagName: "embed",
@@ -109,5 +125,5 @@ describe("embed要素の統合テスト", () => {
     expect(figmaNode.strokes).toBeDefined();
     expect(figmaNode.strokeWeight).toBe(2);
     expect(figmaNode.cornerRadius).toBe(8);
-  });
-});
+  },
+);

@@ -1,4 +1,4 @@
-import { test, expect, describe } from "vitest";
+import { test, expect } from "vitest";
 import {
   SHORTHAND_RULES,
   canMergeToShorthand,
@@ -6,12 +6,11 @@ import {
   detectShorthandLonghandConflicts,
 } from "../shorthand-rules";
 
-describe("canMergeToShorthand", () => {
-  const marginRule = SHORTHAND_RULES.find((r) => r.shorthand === "margin")!;
-  const paddingRule = SHORTHAND_RULES.find((r) => r.shorthand === "padding")!;
-  const borderRule = SHORTHAND_RULES.find((r) => r.shorthand === "border")!;
+const marginRule = SHORTHAND_RULES.find((r) => r.shorthand === "margin")!;
+const paddingRule = SHORTHAND_RULES.find((r) => r.shorthand === "padding")!;
+const borderRule = SHORTHAND_RULES.find((r) => r.shorthand === "border")!;
 
-  test("全longhandが揃っている場合はtrue", () => {
+test("canMergeToShorthand - longhandが揃う - trueを返す", () => {
     const properties = {
       "margin-top": "10px",
       "margin-right": "10px",
@@ -19,17 +18,17 @@ describe("canMergeToShorthand", () => {
       "margin-left": "10px",
     };
     expect(canMergeToShorthand(marginRule, properties)).toBe(true);
-  });
+});
 
-  test("longhandが不足している場合はfalse", () => {
+test("canMergeToShorthand - longhand不足 - falseを返す", () => {
     const properties = {
       "margin-top": "10px",
       "margin-right": "10px",
     };
     expect(canMergeToShorthand(marginRule, properties)).toBe(false);
-  });
+});
 
-  test("shorthandが既に存在する場合はfalse", () => {
+test("canMergeToShorthand - shorthand既存 - falseを返す", () => {
     const properties = {
       margin: "10px",
       "margin-top": "10px",
@@ -38,9 +37,9 @@ describe("canMergeToShorthand", () => {
       "margin-left": "10px",
     };
     expect(canMergeToShorthand(marginRule, properties)).toBe(false);
-  });
+});
 
-  test("!important付きのlonghandがある場合はfalse", () => {
+test("canMergeToShorthand - longhandに!important - falseを返す", () => {
     const properties = {
       "margin-top": "10px !important",
       "margin-right": "10px",
@@ -48,9 +47,9 @@ describe("canMergeToShorthand", () => {
       "margin-left": "10px",
     };
     expect(canMergeToShorthand(marginRule, properties)).toBe(false);
-  });
+});
 
-  test("CSS変数を含むlonghandがある場合はfalse", () => {
+test("canMergeToShorthand - longhandにCSS変数 - falseを返す", () => {
     const properties = {
       "padding-top": "var(--space)",
       "padding-right": "10px",
@@ -58,9 +57,9 @@ describe("canMergeToShorthand", () => {
       "padding-left": "10px",
     };
     expect(canMergeToShorthand(paddingRule, properties)).toBe(false);
-  });
+});
 
-  test("border: 3プロパティ全てが揃った場合のみtrue", () => {
+test("canMergeToShorthand - borderプロパティ揃い - trueを返す", () => {
     expect(
       canMergeToShorthand(borderRule, {
         "border-width": "1px",
@@ -75,14 +74,9 @@ describe("canMergeToShorthand", () => {
         "border-style": "solid",
       }),
     ).toBe(false);
-  });
 });
 
-describe("buildShorthandValue", () => {
-  const marginRule = SHORTHAND_RULES.find((r) => r.shorthand === "margin")!;
-  const borderRule = SHORTHAND_RULES.find((r) => r.shorthand === "border")!;
-
-  test("全値同一の場合は単一値", () => {
+test("buildShorthandValue - 全値同一 - 単一値になる", () => {
     const properties = {
       "margin-top": "10px",
       "margin-right": "10px",
@@ -90,9 +84,9 @@ describe("buildShorthandValue", () => {
       "margin-left": "10px",
     };
     expect(buildShorthandValue(marginRule, properties)).toBe("10px");
-  });
+});
 
-  test("上下/左右同一の場合は2値", () => {
+test("buildShorthandValue - 上下左右同一 - 2値になる", () => {
     const properties = {
       "margin-top": "10px",
       "margin-right": "20px",
@@ -100,9 +94,9 @@ describe("buildShorthandValue", () => {
       "margin-left": "20px",
     };
     expect(buildShorthandValue(marginRule, properties)).toBe("10px 20px");
-  });
+});
 
-  test("左右同一の場合は3値", () => {
+test("buildShorthandValue - 左右同一 - 3値になる", () => {
     const properties = {
       "margin-top": "10px",
       "margin-right": "20px",
@@ -110,9 +104,9 @@ describe("buildShorthandValue", () => {
       "margin-left": "20px",
     };
     expect(buildShorthandValue(marginRule, properties)).toBe("10px 20px 30px");
-  });
+});
 
-  test("全値異なる場合は4値", () => {
+test("buildShorthandValue - 全値異なる - 4値になる", () => {
     const properties = {
       "margin-top": "10px",
       "margin-right": "20px",
@@ -122,9 +116,9 @@ describe("buildShorthandValue", () => {
     expect(buildShorthandValue(marginRule, properties)).toBe(
       "10px 20px 30px 40px",
     );
-  });
+});
 
-  test("0値は正規化される", () => {
+test("buildShorthandValue - 0px値 - 0に正規化", () => {
     const properties = {
       "margin-top": "0px",
       "margin-right": "0px",
@@ -132,20 +126,18 @@ describe("buildShorthandValue", () => {
       "margin-left": "0px",
     };
     expect(buildShorthandValue(marginRule, properties)).toBe("0");
-  });
+});
 
-  test("border: width style colorの順で結合", () => {
+test("buildShorthandValue - borderプロパティ - width style color順", () => {
     const properties = {
       "border-width": "1px",
       "border-style": "solid",
       "border-color": "red",
     };
     expect(buildShorthandValue(borderRule, properties)).toBe("1px solid red");
-  });
 });
 
-describe("detectShorthandLonghandConflicts", () => {
-  test("shorthandとlonghandの混在を検出", () => {
+test("detectShorthandLonghandConflicts - 混在あり - conflictsを返す", () => {
     const properties = {
       margin: "10px",
       "margin-top": "20px",
@@ -155,41 +147,41 @@ describe("detectShorthandLonghandConflicts", () => {
     expect(conflicts[0].shorthand).toBe("margin");
     expect(conflicts[0].longhand).toBe("margin-top");
     expect(conflicts[0].longhandValue).toBe("20px");
-  });
+});
 
-  test("混在がない場合は空配列", () => {
+test("detectShorthandLonghandConflicts - 混在なし - 空配列", () => {
     const properties = {
       "margin-top": "10px",
       "padding-top": "20px",
     };
     expect(detectShorthandLonghandConflicts(properties)).toHaveLength(0);
-  });
+});
 
-  test("!important付きshorthandは除外", () => {
+test("detectShorthandLonghandConflicts - shorthandに!important - 空配列", () => {
     const properties = {
       margin: "10px !important",
       "margin-top": "20px",
     };
     expect(detectShorthandLonghandConflicts(properties)).toHaveLength(0);
-  });
+});
 
-  test("!important付きlonghandは除外", () => {
+test("detectShorthandLonghandConflicts - longhandに!important - 空配列", () => {
     const properties = {
       margin: "10px",
       "margin-top": "20px !important",
     };
     expect(detectShorthandLonghandConflicts(properties)).toHaveLength(0);
-  });
+});
 
-  test("CSS変数含有は除外", () => {
+test("detectShorthandLonghandConflicts - CSS変数含有 - 空配列", () => {
     const properties = {
       margin: "var(--space)",
       "margin-top": "20px",
     };
     expect(detectShorthandLonghandConflicts(properties)).toHaveLength(0);
-  });
+});
 
-  test("複数の混在を検出", () => {
+test("detectShorthandLonghandConflicts - 複数混在 - 2件返す", () => {
     const properties = {
       margin: "10px",
       "margin-top": "20px",
@@ -197,5 +189,4 @@ describe("detectShorthandLonghandConflicts", () => {
     };
     const conflicts = detectShorthandLonghandConflicts(properties);
     expect(conflicts).toHaveLength(2);
-  });
 });

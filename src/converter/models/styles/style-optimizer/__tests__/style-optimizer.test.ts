@@ -1,11 +1,10 @@
-import { test, expect, describe } from "vitest";
+import { test, expect } from "vitest";
 import { Styles } from "../../styles";
 import { StyleOptimizer } from "../style-optimizer";
 import type { RedundancyIssue } from "../../redundancy-detector/types";
 import type { OptimizationProposal } from "../types";
 
-describe("StyleOptimizer.generateProposals", () => {
-  test("冗長性問題から提案を生成", () => {
+test("StyleOptimizer.generateProposals - default-value問題 - remove提案を生成", () => {
     const issues: RedundancyIssue[] = [
       {
         type: "default-value",
@@ -20,9 +19,9 @@ describe("StyleOptimizer.generateProposals", () => {
     expect(proposals[0].action).toBe("remove");
     expect(proposals[0].source).toBe("local");
     expect(proposals[0].confidence).toBe(0.9);
-  });
+});
 
-  test("duplicate-propertyの提案はreviewアクション（自動適用対象外）", () => {
+test("StyleOptimizer.generateProposals - duplicate-property問題 - reviewアクションになる", () => {
     const issues: RedundancyIssue[] = [
       {
         type: "duplicate-property",
@@ -35,9 +34,9 @@ describe("StyleOptimizer.generateProposals", () => {
     const proposals = StyleOptimizer.generateProposals(issues);
     expect(proposals[0].action).toBe("review");
     expect(proposals[0].confidence).toBe(0.5);
-  });
+});
 
-  test("shorthand-opportunityの提案はmergeアクション", () => {
+test("StyleOptimizer.generateProposals - shorthand-opportunity問題 - mergeアクションになる", () => {
     const issues: RedundancyIssue[] = [
       {
         type: "shorthand-opportunity",
@@ -56,9 +55,9 @@ describe("StyleOptimizer.generateProposals", () => {
     const proposals = StyleOptimizer.generateProposals(issues);
     expect(proposals[0].action).toBe("merge");
     expect(proposals[0].confidence).toBe(0.8);
-  });
+});
 
-  test("各提案にユニークなIDが付与される", () => {
+test("StyleOptimizer.generateProposals - 複数issue - ユニークなIDを付与", () => {
     const issues: RedundancyIssue[] = [
       {
         type: "default-value",
@@ -77,11 +76,9 @@ describe("StyleOptimizer.generateProposals", () => {
     ];
     const proposals = StyleOptimizer.generateProposals(issues);
     expect(proposals[0].id).not.toBe(proposals[1].id);
-  });
 });
 
-describe("StyleOptimizer.mergeProposals", () => {
-  test("同一IDの場合はconfidenceが高い方を優先", () => {
+test("StyleOptimizer.mergeProposals - 同一IDでconfidence差あり - 高い方を採用", () => {
     const local: OptimizationProposal[] = [
       {
         id: "proposal-default-value-opacity",
@@ -119,9 +116,9 @@ describe("StyleOptimizer.mergeProposals", () => {
     const merged = StyleOptimizer.mergeProposals(local, ai);
     expect(merged).toHaveLength(1);
     expect(merged[0].source).toBe("ai");
-  });
+});
 
-  test("同一IDで同一confidence値の場合はローカル優先", () => {
+test("StyleOptimizer.mergeProposals - 同一IDでconfidence同値 - localを優先", () => {
     const local: OptimizationProposal[] = [
       {
         id: "proposal-default-value-opacity",
@@ -159,9 +156,9 @@ describe("StyleOptimizer.mergeProposals", () => {
     const merged = StyleOptimizer.mergeProposals(local, ai);
     expect(merged).toHaveLength(1);
     expect(merged[0].source).toBe("local");
-  });
+});
 
-  test("異なるIDの場合は両方を保持", () => {
+test("StyleOptimizer.mergeProposals - 異なるID - 両方保持", () => {
     const local: OptimizationProposal[] = [
       {
         id: "proposal-default-value-position",
@@ -198,9 +195,9 @@ describe("StyleOptimizer.mergeProposals", () => {
     ];
     const merged = StyleOptimizer.mergeProposals(local, ai);
     expect(merged).toHaveLength(2);
-  });
+});
 
-  test("同一プロパティでも異なるtype/contextならIDが異なり両方保持", () => {
+test("StyleOptimizer.mergeProposals - 同一プロパティでtype違い - 両方保持", () => {
     const local: OptimizationProposal[] = [
       {
         id: "proposal-duplicate-property-margin-top-div",
@@ -237,11 +234,9 @@ describe("StyleOptimizer.mergeProposals", () => {
     ];
     const merged = StyleOptimizer.mergeProposals(local, ai);
     expect(merged).toHaveLength(2);
-  });
 });
 
-describe("StyleOptimizer.applyProposal", () => {
-  test("removeアクションでプロパティを削除", () => {
+test("StyleOptimizer.applyProposal - removeアクション - プロパティを削除", () => {
     const styles = Styles.parse("position: static; color: red");
     const proposal: OptimizationProposal = {
       id: "1",
@@ -261,9 +256,9 @@ describe("StyleOptimizer.applyProposal", () => {
     const result = StyleOptimizer.applyProposal(styles, proposal);
     expect(result["position"]).toBeUndefined();
     expect(result["color"]).toBe("red");
-  });
+});
 
-  test("mergeアクションでshorthand統合", () => {
+test("StyleOptimizer.applyProposal - mergeアクション - shorthandを統合", () => {
     const styles = Styles.parse(
       "margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px",
     );
@@ -292,11 +287,9 @@ describe("StyleOptimizer.applyProposal", () => {
     expect(result["margin"]).toBe("10px");
     expect(result["margin-top"]).toBeUndefined();
     expect(result["margin-right"]).toBeUndefined();
-  });
 });
 
-describe("StyleOptimizer.applyApproved", () => {
-  test("承認済みIDの提案のみ適用", () => {
+test("StyleOptimizer.applyApproved - 承認済みID指定 - 対象のみ適用", () => {
     const styles = Styles.parse("position: static; opacity: 1; color: red");
     const proposals: OptimizationProposal[] = [
       {
@@ -334,27 +327,25 @@ describe("StyleOptimizer.applyApproved", () => {
     expect(result["position"]).toBeUndefined();
     expect(result["opacity"]).toBe("1");
     expect(result["color"]).toBe("red");
-  });
 });
 
-describe("StyleOptimizer.compare", () => {
-  test("削除されたプロパティを検出", () => {
+test("StyleOptimizer.compare - 削除あり - removedに含める", () => {
     const before = Styles.parse("position: static; color: red");
     const after = Styles.parse("color: red");
     const comparison = StyleOptimizer.compare(before, after);
     expect(comparison.removed).toEqual({ position: "static" });
     expect(comparison.unchanged).toEqual({ color: "red" });
     expect(comparison.reductionPercentage).toBe(50);
-  });
+});
 
-  test("追加されたプロパティを検出", () => {
+test("StyleOptimizer.compare - 追加あり - addedに含める", () => {
     const before = Styles.parse("color: red");
     const after = Styles.parse("color: red; margin: 10px");
     const comparison = StyleOptimizer.compare(before, after);
     expect(comparison.added).toEqual({ margin: "10px" });
-  });
+});
 
-  test("変更されたプロパティを検出", () => {
+test("StyleOptimizer.compare - 変更あり - changedに含める", () => {
     const before = Styles.parse("color: red");
     const after = Styles.parse("color: blue");
     const comparison = StyleOptimizer.compare(before, after);
@@ -364,19 +355,17 @@ describe("StyleOptimizer.compare", () => {
       before: "red",
       after: "blue",
     });
-  });
+});
 
-  test("空スタイル同士の比較", () => {
+test("StyleOptimizer.compare - 空スタイル同士 - 変化なし", () => {
     const before = Styles.parse("");
     const after = Styles.parse("");
     const comparison = StyleOptimizer.compare(before, after);
     expect(comparison.reductionPercentage).toBe(0);
     expect(Object.keys(comparison.removed)).toHaveLength(0);
-  });
 });
 
-describe("StyleOptimizer.optimize", () => {
-  test("一連の最適化処理を実行", () => {
+test("StyleOptimizer.optimize - issuesあり - 最適化結果を返す", () => {
     const styles = Styles.parse("position: static; color: red; opacity: 1");
     const issues: RedundancyIssue[] = [
       {
@@ -401,13 +390,12 @@ describe("StyleOptimizer.optimize", () => {
     expect(result.optimizedStyles["color"]).toBe("red");
     expect(result.summary.totalIssues).toBe(2);
     expect(result.summary.byType["default-value"]).toBe(2);
-  });
+});
 
-  test("問題がない場合はスタイルがそのまま返る", () => {
+test("StyleOptimizer.optimize - issuesなし - 入力スタイルを保持", () => {
     const styles = Styles.parse("color: red");
     const result = StyleOptimizer.optimize(styles, []);
     expect(result.appliedCount).toBe(0);
     expect(result.optimizedStyles["color"]).toBe("red");
     expect(result.summary.reductionPercentage).toBe(0);
-  });
 });

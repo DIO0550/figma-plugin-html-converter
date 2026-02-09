@@ -1,17 +1,21 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 
-describe("HeaderElement.isHeaderElement", () => {
-  it("should return true for valid header element", () => {
+it(
+  "HeaderElement.isHeaderElement - 有効なheader要素 - trueを返す",
+  () => {
     const element = {
       type: "element",
       tagName: "header",
       attributes: {},
     };
     expect(HeaderElement.isHeaderElement(element)).toBe(true);
-  });
+  }
+);
 
-  it("should return true for header element with children", () => {
+it(
+  "HeaderElement.isHeaderElement - 子要素を持つheader要素 - trueを返す",
+  () => {
     const element = {
       type: "element",
       tagName: "header",
@@ -19,47 +23,59 @@ describe("HeaderElement.isHeaderElement", () => {
       children: [],
     };
     expect(HeaderElement.isHeaderElement(element)).toBe(true);
-  });
+  }
+);
 
-  it("should return false for non-object", () => {
+it(
+  "HeaderElement.isHeaderElement - 非オブジェクト入力 - falseを返す",
+  () => {
     expect(HeaderElement.isHeaderElement("header")).toBe(false);
     expect(HeaderElement.isHeaderElement(123)).toBe(false);
     expect(HeaderElement.isHeaderElement(true)).toBe(false);
     expect(HeaderElement.isHeaderElement(undefined)).toBe(false);
     expect(HeaderElement.isHeaderElement(null)).toBe(false);
-  });
+  }
+);
 
-  it("should return false for object with wrong type", () => {
-    const element = {
-      type: "text",
-      tagName: "header",
-      attributes: {},
-    };
-    expect(HeaderElement.isHeaderElement(element)).toBe(false);
-  });
+it("HeaderElement.isHeaderElement - typeがtext - falseを返す", () => {
+  const element = {
+    type: "text",
+    tagName: "header",
+    attributes: {},
+  };
+  expect(HeaderElement.isHeaderElement(element)).toBe(false);
+});
 
-  it("should return false for element with wrong tagName", () => {
+it(
+  "HeaderElement.isHeaderElement - tagNameがheader以外 - falseを返す",
+  () => {
     const element = {
       type: "element",
       tagName: "main",
       attributes: {},
     };
     expect(HeaderElement.isHeaderElement(element)).toBe(false);
-  });
+  }
+);
 
-  it("should return false for element missing type", () => {
+it(
+  "HeaderElement.isHeaderElement - typeプロパティなし - falseを返す",
+  () => {
     const element = {
       tagName: "header",
       attributes: {},
     };
     expect(HeaderElement.isHeaderElement(element)).toBe(false);
-  });
+  }
+);
 
-  it("should return false for element missing tagName", () => {
+it(
+  "HeaderElement.isHeaderElement - tagNameプロパティなし - falseを返す",
+  () => {
     const element = {
       type: "element",
       attributes: {},
     };
     expect(HeaderElement.isHeaderElement(element)).toBe(false);
-  });
-});
+  }
+);

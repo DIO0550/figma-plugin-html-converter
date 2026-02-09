@@ -1,8 +1,9 @@
-import { describe, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import type { NavAttributes } from "../nav-attributes";
 
-describe("NavAttributes", () => {
-  test("NavAttributesはGlobalAttributesを継承する", () => {
+test(
+  "NavAttributes.type - GlobalAttributes継承 - id/className/styleを保持する",
+  () => {
     const attributes: NavAttributes = {
       id: "main-nav",
       className: "navigation",
@@ -12,31 +13,37 @@ describe("NavAttributes", () => {
     expect(attributes.id).toBe("main-nav");
     expect(attributes.className).toBe("navigation");
     expect(attributes.style).toBe("display: flex;");
-  });
+  }
+);
 
-  test("NavAttributesはaria-label属性を含む", () => {
+test(
+  "NavAttributes.type - aria-label属性あり - aria-labelを保持する",
+  () => {
     const attributes: NavAttributes = {
       "aria-label": "メインナビゲーション",
     };
 
     expect(attributes["aria-label"]).toBe("メインナビゲーション");
-  });
+  }
+);
 
-  test("NavAttributesはrole属性を含む", () => {
-    const attributes: NavAttributes = {
-      role: "navigation",
-    };
+test("NavAttributes.type - role属性あり - roleを保持する", () => {
+  const attributes: NavAttributes = {
+    role: "navigation",
+  };
 
-    expect(attributes.role).toBe("navigation");
-  });
+  expect(attributes.role).toBe("navigation");
+});
 
-  test("NavAttributesは空のオブジェクトでも有効", () => {
-    const attributes: NavAttributes = {};
+test("NavAttributes.type - 空のオブジェクト - 空オブジェクトを許容する", () => {
+  const attributes: NavAttributes = {};
 
-    expect(attributes).toEqual({});
-  });
+  expect(attributes).toEqual({});
+});
 
-  test("NavAttributesは複数の属性を同時に設定できる", () => {
+test(
+  "NavAttributes.type - 複数属性あり - 各属性を保持する",
+  () => {
     const attributes: NavAttributes = {
       id: "sidebar-nav",
       className: "nav-list",
@@ -50,5 +57,5 @@ describe("NavAttributes", () => {
     expect(attributes["aria-label"]).toBe("サイドバーナビゲーション");
     expect(attributes.role).toBe("navigation");
     expect(attributes.style).toBe("width: 250px;");
-  });
-});
+  }
+);

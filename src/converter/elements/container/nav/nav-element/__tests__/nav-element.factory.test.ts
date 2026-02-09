@@ -1,82 +1,83 @@
-import { describe, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import { NavElement } from "../nav-element";
 import type { NavElement as INavElement } from "../nav-element";
 
-describe("NavElement.create", () => {
-  test("属性なしでnav要素を作成できる", () => {
-    const element = NavElement.create();
+test("NavElement.create - 属性なし - nav要素を作成する", () => {
+  const element = NavElement.create();
 
-    expect(element).toEqual({
-      type: "element",
-      tagName: "nav",
-      attributes: {},
-      children: [],
-    });
+  expect(element).toEqual({
+    type: "element",
+    tagName: "nav",
+    attributes: {},
+    children: [],
+  });
+});
+
+test("NavElement.create - 属性指定あり - nav要素を作成する", () => {
+  const element = NavElement.create({
+    id: "main-navigation",
+    className: "navbar",
   });
 
-  test("属性を指定してnav要素を作成できる", () => {
-    const element = NavElement.create({
+  expect(element).toEqual({
+    type: "element",
+    tagName: "nav",
+    attributes: {
       id: "main-navigation",
       className: "navbar",
-    });
+    },
+    children: [],
+  });
+});
 
-    expect(element).toEqual({
-      type: "element",
-      tagName: "nav",
-      attributes: {
-        id: "main-navigation",
-        className: "navbar",
-      },
-      children: [],
-    });
+test("NavElement.create - aria-label属性あり - nav要素を作成する", () => {
+  const element = NavElement.create({
+    "aria-label": "メインナビゲーション",
   });
 
-  test("aria-label属性を指定してnav要素を作成できる", () => {
-    const element = NavElement.create({
+  expect(element).toEqual({
+    type: "element",
+    tagName: "nav",
+    attributes: {
       "aria-label": "メインナビゲーション",
-    });
+    },
+    children: [],
+  });
+});
 
-    expect(element).toEqual({
-      type: "element",
-      tagName: "nav",
-      attributes: {
-        "aria-label": "メインナビゲーション",
-      },
-      children: [],
-    });
+test("NavElement.create - role属性あり - nav要素を作成する", () => {
+  const element = NavElement.create({
+    role: "navigation",
   });
 
-  test("role属性を指定してnav要素を作成できる", () => {
-    const element = NavElement.create({
+  expect(element).toEqual({
+    type: "element",
+    tagName: "nav",
+    attributes: {
       role: "navigation",
-    });
+    },
+    children: [],
+  });
+});
 
-    expect(element).toEqual({
-      type: "element",
-      tagName: "nav",
-      attributes: {
-        role: "navigation",
-      },
-      children: [],
-    });
+test("NavElement.create - style属性あり - nav要素を作成する", () => {
+  const element = NavElement.create({
+    style: "display: flex; justify-content: space-between;",
   });
 
-  test("スタイル属性を指定してnav要素を作成できる", () => {
-    const element = NavElement.create({
+  expect(element).toEqual({
+    type: "element",
+    tagName: "nav",
+    attributes: {
       style: "display: flex; justify-content: space-between;",
-    });
-
-    expect(element).toEqual({
-      type: "element",
-      tagName: "nav",
-      attributes: {
-        style: "display: flex; justify-content: space-between;",
-      },
-      children: [],
-    });
+    },
+    children: [],
   });
+});
 
-  test("複数の属性を指定してnav要素を作成できる", () => {
+test(
+  "NavElement.create - 複数属性指定あり - nav要素を作成する",
+  () => {
     const element = NavElement.create({
       id: "sidebar-nav",
       className: "nav-menu",
@@ -97,15 +98,15 @@ describe("NavElement.create", () => {
       },
       children: [],
     });
+  }
+);
+
+test("NavElement.create - 作成した要素 - NavElement型である", () => {
+  const element = NavElement.create({
+    className: "test-nav",
   });
 
-  test("作成された要素はNavElement型である", () => {
-    const element = NavElement.create({
-      className: "test-nav",
-    });
-
-    const isValidType: INavElement = element;
-    expect(isValidType).toBeDefined();
-    expect(NavElement.isNavElement(element)).toBe(true);
-  });
+  const isValidType: INavElement = element;
+  expect(isValidType).toBeDefined();
+  expect(NavElement.isNavElement(element)).toBe(true);
 });

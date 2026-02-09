@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 
-describe("HeaderElement.create", () => {
-  it("should create header element with default values", () => {
+it(
+  "HeaderElement.create - 属性なし - デフォルトのheader要素を作成する",
+  () => {
     const element = HeaderElement.create();
 
     expect(element).toEqual({
@@ -11,9 +12,12 @@ describe("HeaderElement.create", () => {
       attributes: {},
       children: [],
     });
-  });
+  }
+);
 
-  it("should create header element with attributes", () => {
+it(
+  "HeaderElement.create - 属性あり - 属性を設定したheader要素を作成する",
+  () => {
     const attributes = {
       id: "page-header",
       className: "header sticky-header",
@@ -27,31 +31,34 @@ describe("HeaderElement.create", () => {
       attributes,
       children: [],
     });
-  });
+  }
+);
 
-  it("should create header element with children", () => {
-    const children = [
-      {
-        type: "element" as const,
-        tagName: "nav",
-        attributes: {},
-      },
-      {
-        type: "text" as const,
-        content: "Header text",
-      },
-    ];
-    const element = HeaderElement.create({}, children);
-
-    expect(element).toEqual({
-      type: "element",
-      tagName: "header",
+it("HeaderElement.create - 子要素あり - childrenを設定する", () => {
+  const children = [
+    {
+      type: "element" as const,
+      tagName: "nav",
       attributes: {},
-      children,
-    });
-  });
+    },
+    {
+      type: "text" as const,
+      content: "Header text",
+    },
+  ];
+  const element = HeaderElement.create({}, children);
 
-  it("should create header element with both attributes and children", () => {
+  expect(element).toEqual({
+    type: "element",
+    tagName: "header",
+    attributes: {},
+    children,
+  });
+});
+
+it(
+  "HeaderElement.create - 属性と子要素あり - 両方を設定する",
+  () => {
     const attributes = {
       id: "main-header",
       className: "header",
@@ -71,19 +78,25 @@ describe("HeaderElement.create", () => {
       attributes,
       children,
     });
-  });
+  }
+);
 
-  it("should handle partial attributes", () => {
+it(
+  "HeaderElement.create - 部分的な属性 - 属性を保持する",
+  () => {
     const element = HeaderElement.create({ id: "header" });
 
     expect(element.attributes).toEqual({ id: "header" });
     expect(element.children).toEqual([]);
-  });
+  }
+);
 
-  it("should handle empty attributes as empty object", () => {
+it(
+  "HeaderElement.create - 空の属性 - 空オブジェクトを保持する",
+  () => {
     const element = HeaderElement.create({});
 
     expect(element.attributes).toEqual({});
     expect(element.children).toEqual([]);
-  });
-});
+  }
+);

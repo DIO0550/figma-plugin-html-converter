@@ -10,12 +10,13 @@ vi.mock("../../../../../mapper", () => ({
   },
 }));
 
+// NOTE: viモックのリセットを共通化するためdescribeを維持
 describe("MainElement.mapToFigma", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it("main要素でない場合nullを返すこと", () => {
+  it("MainElement.mapToFigma - main要素以外 - nullを返す", () => {
     expect(MainElement.mapToFigma(null)).toBeNull();
     expect(MainElement.mapToFigma(undefined)).toBeNull();
     expect(MainElement.mapToFigma("main")).toBeNull();
@@ -31,7 +32,7 @@ describe("MainElement.mapToFigma", () => {
     ).toBeNull();
   });
 
-  it("基本的なmain要素をFigmaノードに変換できること", () => {
+  it("MainElement.mapToFigma - 基本main要素 - Figmaノードを返す", () => {
     const element = MainElement.create();
     const result = MainElement.mapToFigma(element);
 
@@ -43,14 +44,14 @@ describe("MainElement.mapToFigma", () => {
     });
   });
 
-  it("子要素がない場合空配列を設定すること", () => {
+  it("MainElement.mapToFigma - 子要素なし - 空配列を設定する", () => {
     const element = MainElement.create();
     const result = MainElement.mapToFigma(element);
 
     expect(result?.children).toEqual([]);
   });
 
-  it("子要素を正しく処理すること", () => {
+  it("MainElement.mapToFigma - 子要素あり - 子要素をマッピングする", () => {
     const childFigmaNode1: FigmaNodeConfig = {
       type: "FRAME",
       name: "section",
@@ -79,7 +80,7 @@ describe("MainElement.mapToFigma", () => {
     expect(result?.children).toEqual([childFigmaNode1, childFigmaNode2]);
   });
 
-  it("nullを返す子要素をフィルタリングすること", () => {
+  it("MainElement.mapToFigma - null子要素あり - nullを除外する", () => {
     const childFigmaNode: FigmaNodeConfig = {
       type: "FRAME",
       name: "div",
@@ -103,7 +104,7 @@ describe("MainElement.mapToFigma", () => {
     expect(result?.children).toEqual([childFigmaNode, childFigmaNode]);
   });
 
-  it("属性とスタイルが正しく適用されること", () => {
+  it("MainElement.mapToFigma - 属性とスタイルあり - スタイルを反映する", () => {
     const element = MainElement.create({
       id: "main-content",
       className: "main container",
@@ -126,7 +127,7 @@ describe("MainElement.mapToFigma", () => {
     expect(result?.fills).toHaveLength(1);
   });
 
-  it("複雑な子要素構造を持つmain要素を正しく処理すること", () => {
+  it("MainElement.mapToFigma - 複雑な子要素構造 - 子要素をマッピングする", () => {
     const nestedChildFigmaNode: FigmaNodeConfig = {
       type: "FRAME",
       name: "article",
@@ -171,7 +172,7 @@ describe("MainElement.mapToFigma", () => {
     });
   });
 
-  it("子要素がundefinedの場合空配列を設定すること", () => {
+  it("MainElement.mapToFigma - childrenがundefined - 空配列を設定する", () => {
     const element = {
       type: "element" as const,
       tagName: "main" as const,

@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import { MainElement } from "../main-element";
 
-describe("MainElement.toFigmaNode", () => {
-  it("基本的なmain要素をFigmaノードに変換できること", () => {
+it(
+  "MainElement.toFigmaNode - 基本main要素 - デフォルトノードを生成する",
+  () => {
     const element = MainElement.create();
     const figmaNode = MainElement.toFigmaNode(element);
 
@@ -18,23 +19,29 @@ describe("MainElement.toFigmaNode", () => {
       paddingBottom: 0,
       itemSpacing: 0,
     });
-  });
+  }
+);
 
-  it("id属性を持つmain要素の名前が正しく生成されること", () => {
-    const element = MainElement.create({ id: "main-content" });
-    const figmaNode = MainElement.toFigmaNode(element);
+it("MainElement.toFigmaNode - id属性あり - nameにidを含める", () => {
+  const element = MainElement.create({ id: "main-content" });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-    expect(figmaNode.name).toBe("main#main-content");
-  });
+  expect(figmaNode.name).toBe("main#main-content");
+});
 
-  it("className属性を持つmain要素の名前が正しく生成されること", () => {
+it(
+  "MainElement.toFigmaNode - className属性あり - nameにclassNameを含める",
+  () => {
     const element = MainElement.create({ className: "main container" });
     const figmaNode = MainElement.toFigmaNode(element);
 
     expect(figmaNode.name).toBe("main.main.container");
-  });
+  }
+);
 
-  it("idとclassNameを両方持つmain要素の名前が正しく生成されること", () => {
+it(
+  "MainElement.toFigmaNode - idとclassName属性あり - nameに両方を含める",
+  () => {
     const element = MainElement.create({
       id: "content",
       className: "main-area responsive",
@@ -42,99 +49,102 @@ describe("MainElement.toFigmaNode", () => {
     const figmaNode = MainElement.toFigmaNode(element);
 
     expect(figmaNode.name).toBe("main#content.main-area.responsive");
+  }
+);
+
+it("MainElement.toFigmaNode - display:flex - レイアウトを反映する", () => {
+  const element = MainElement.create({
+    style:
+      "display: flex; flex-direction: row; justify-content: center; align-items: center;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("display:flexスタイルが適用されること", () => {
-    const element = MainElement.create({
-      style:
-        "display: flex; flex-direction: row; justify-content: center; align-items: center;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
+  expect(figmaNode.layoutMode).toBe("HORIZONTAL");
+  expect(figmaNode.primaryAxisAlignItems).toBe("CENTER");
+  expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
+});
 
-    expect(figmaNode.layoutMode).toBe("HORIZONTAL");
-    expect(figmaNode.primaryAxisAlignItems).toBe("CENTER");
-    expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
+it("MainElement.toFigmaNode - padding指定 - 全方向に反映する", () => {
+  const element = MainElement.create({
+    style: "padding: 20px;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("パディングスタイルが適用されること", () => {
-    const element = MainElement.create({
-      style: "padding: 20px;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
+  expect(figmaNode.paddingTop).toBe(20);
+  expect(figmaNode.paddingRight).toBe(20);
+  expect(figmaNode.paddingBottom).toBe(20);
+  expect(figmaNode.paddingLeft).toBe(20);
+});
 
-    expect(figmaNode.paddingTop).toBe(20);
-    expect(figmaNode.paddingRight).toBe(20);
-    expect(figmaNode.paddingBottom).toBe(20);
-    expect(figmaNode.paddingLeft).toBe(20);
+it("MainElement.toFigmaNode - 個別padding指定 - 各値を反映する", () => {
+  const element = MainElement.create({
+    style:
+      "padding-top: 10px; padding-right: 20px; padding-bottom: 30px; padding-left: 40px;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("個別のパディングスタイルが適用されること", () => {
-    const element = MainElement.create({
-      style:
-        "padding-top: 10px; padding-right: 20px; padding-bottom: 30px; padding-left: 40px;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
+  expect(figmaNode.paddingTop).toBe(10);
+  expect(figmaNode.paddingRight).toBe(20);
+  expect(figmaNode.paddingBottom).toBe(30);
+  expect(figmaNode.paddingLeft).toBe(40);
+});
 
-    expect(figmaNode.paddingTop).toBe(10);
-    expect(figmaNode.paddingRight).toBe(20);
-    expect(figmaNode.paddingBottom).toBe(30);
-    expect(figmaNode.paddingLeft).toBe(40);
+it("MainElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
+  const element = MainElement.create({
+    style: "display: flex; gap: 16px;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("gapスタイルが適用されること", () => {
-    const element = MainElement.create({
-      style: "display: flex; gap: 16px;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
+  expect(figmaNode.itemSpacing).toBe(16);
+});
 
-    expect(figmaNode.itemSpacing).toBe(16);
+it("MainElement.toFigmaNode - 背景色指定 - fillsを設定する", () => {
+  const element = MainElement.create({
+    style: "background-color: #f0f0f0;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("背景色が適用されること", () => {
-    const element = MainElement.create({
-      style: "background-color: #f0f0f0;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
-
-    expect(figmaNode.fills).toEqual([
-      {
-        type: "SOLID",
-        color: {
-          r: 0.9411764705882353,
-          g: 0.9411764705882353,
-          b: 0.9411764705882353,
-        },
-        opacity: 1,
+  expect(figmaNode.fills).toEqual([
+    {
+      type: "SOLID",
+      color: {
+        r: 0.9411764705882353,
+        g: 0.9411764705882353,
+        b: 0.9411764705882353,
       },
-    ]);
+      opacity: 1,
+    },
+  ]);
+});
+
+it("MainElement.toFigmaNode - width/height指定 - サイズを設定する", () => {
+  const element = MainElement.create({
+    style: "width: 1200px; height: 800px;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("サイズスタイルが適用されること", () => {
-    const element = MainElement.create({
-      style: "width: 1200px; height: 800px;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
+  expect(figmaNode.width).toBe(1200);
+  expect(figmaNode.layoutSizingHorizontal).toBe("FIXED");
+  expect(figmaNode.height).toBe(800);
+  expect(figmaNode.layoutSizingVertical).toBe("FIXED");
+});
 
-    expect(figmaNode.width).toBe(1200);
-    expect(figmaNode.layoutSizingHorizontal).toBe("FIXED");
-    expect(figmaNode.height).toBe(800);
-    expect(figmaNode.layoutSizingVertical).toBe("FIXED");
+it("MainElement.toFigmaNode - min/max指定 - 制約値を設定する", () => {
+  const element = MainElement.create({
+    style:
+      "min-width: 320px; max-width: 1920px; min-height: 480px; max-height: 1080px;",
   });
+  const figmaNode = MainElement.toFigmaNode(element);
 
-  it("最小・最大サイズスタイルが適用されること", () => {
-    const element = MainElement.create({
-      style:
-        "min-width: 320px; max-width: 1920px; min-height: 480px; max-height: 1080px;",
-    });
-    const figmaNode = MainElement.toFigmaNode(element);
+  expect((figmaNode as Record<string, unknown>).minWidth).toBe(320);
+  expect((figmaNode as Record<string, unknown>).maxWidth).toBe(1920);
+  expect((figmaNode as Record<string, unknown>).minHeight).toBe(480);
+  expect((figmaNode as Record<string, unknown>).maxHeight).toBe(1080);
+});
 
-    expect((figmaNode as Record<string, unknown>).minWidth).toBe(320);
-    expect((figmaNode as Record<string, unknown>).maxWidth).toBe(1920);
-    expect((figmaNode as Record<string, unknown>).minHeight).toBe(480);
-    expect((figmaNode as Record<string, unknown>).maxHeight).toBe(1080);
-  });
-
-  it("Flexbox justify-contentの全バリエーションが正しくマッピングされること", () => {
+it(
+  "MainElement.toFigmaNode - justify-content全バリエーション - primaryAxisAlignItemsを反映する",
+  () => {
     const justifyContentMap = {
       "flex-start": "MIN",
       "flex-end": "MAX",
@@ -151,9 +161,12 @@ describe("MainElement.toFigmaNode", () => {
       const figmaNode = MainElement.toFigmaNode(element);
       expect(figmaNode.primaryAxisAlignItems).toBe(figmaValue);
     });
-  });
+  }
+);
 
-  it("Flexbox align-itemsの全バリエーションが正しくマッピングされること", () => {
+it(
+  "MainElement.toFigmaNode - align-items全バリエーション - counterAxisAlignItemsを反映する",
+  () => {
     const alignItemsMap = {
       "flex-start": "MIN",
       "flex-end": "MAX",
@@ -169,9 +182,12 @@ describe("MainElement.toFigmaNode", () => {
       const figmaNode = MainElement.toFigmaNode(element);
       expect(figmaNode.counterAxisAlignItems).toBe(figmaValue);
     });
-  });
+  }
+);
 
-  it("複数のスタイルが同時に適用されること", () => {
+it(
+  "MainElement.toFigmaNode - 複数スタイル指定 - 主要スタイルを反映する",
+  () => {
     const element = MainElement.create({
       id: "main",
       className: "content-area",
@@ -201,5 +217,5 @@ describe("MainElement.toFigmaNode", () => {
       ],
     });
     expect((figmaNode as Record<string, unknown>).minHeight).toBe(600);
-  });
-});
+  }
+);

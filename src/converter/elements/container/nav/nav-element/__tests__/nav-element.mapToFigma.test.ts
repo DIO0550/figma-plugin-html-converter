@@ -1,8 +1,9 @@
-import { describe, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import { NavElement } from "../nav-element";
 
-describe("NavElement.mapToFigma", () => {
-  test("有効なnav要素をFigmaノード設定にマッピングする", () => {
+test(
+  "NavElement.mapToFigma - 有効なnav要素 - Figmaノード設定を返す",
+  () => {
     const node = {
       type: "element" as const,
       tagName: "nav",
@@ -21,9 +22,12 @@ describe("NavElement.mapToFigma", () => {
     expect(figmaNode!.layoutMode).toBe("VERTICAL");
     expect(figmaNode!.layoutSizingHorizontal).toBe("FILL");
     expect(figmaNode!.children).toEqual([]);
-  });
+  }
+);
 
-  test("スタイル付きnav要素をFigmaノード設定にマッピングする", () => {
+test(
+  "NavElement.mapToFigma - スタイル付きnav要素 - スタイルを反映する",
+  () => {
     const node = {
       type: "element" as const,
       tagName: "nav",
@@ -41,9 +45,12 @@ describe("NavElement.mapToFigma", () => {
     expect(figmaNode!.layoutMode).toBe("HORIZONTAL");
     expect(figmaNode!.itemSpacing).toBe(20);
     expect(figmaNode!.children).toEqual([]);
-  });
+  }
+);
 
-  test("aria属性付きnav要素をFigmaノード設定にマッピングする", () => {
+test(
+  "NavElement.mapToFigma - aria属性あり - 基本レイアウトを保持する",
+  () => {
     const node = {
       type: "element" as const,
       tagName: "nav",
@@ -62,56 +69,59 @@ describe("NavElement.mapToFigma", () => {
     expect(figmaNode!.layoutMode).toBe("VERTICAL");
     expect(figmaNode!.layoutSizingHorizontal).toBe("FILL");
     expect(figmaNode!.children).toEqual([]);
-  });
+  }
+);
 
-  test("nav要素でない場合nullを返す", () => {
-    const node = {
-      type: "element" as const,
-      tagName: "div",
-      attributes: {},
-      children: [],
-    };
+test("NavElement.mapToFigma - tagNameがnav以外 - nullを返す", () => {
+  const node = {
+    type: "element" as const,
+    tagName: "div",
+    attributes: {},
+    children: [],
+  };
 
-    const figmaNode = NavElement.mapToFigma(node);
+  const figmaNode = NavElement.mapToFigma(node);
 
-    expect(figmaNode).toBeNull();
-  });
+  expect(figmaNode).toBeNull();
+});
 
-  test("typeがelementでない場合nullを返す", () => {
-    const node = {
-      type: "text" as const,
-      tagName: "nav",
-      content: "text",
-    };
+test("NavElement.mapToFigma - typeがelement以外 - nullを返す", () => {
+  const node = {
+    type: "text" as const,
+    tagName: "nav",
+    content: "text",
+  };
 
-    const figmaNode = NavElement.mapToFigma(node);
+  const figmaNode = NavElement.mapToFigma(node);
 
-    expect(figmaNode).toBeNull();
-  });
+  expect(figmaNode).toBeNull();
+});
 
-  test("nullを渡した場合nullを返す", () => {
-    const figmaNode = NavElement.mapToFigma(null);
+test("NavElement.mapToFigma - null入力 - nullを返す", () => {
+  const figmaNode = NavElement.mapToFigma(null);
 
-    expect(figmaNode).toBeNull();
-  });
+  expect(figmaNode).toBeNull();
+});
 
-  test("undefinedを渡した場合nullを返す", () => {
-    const figmaNode = NavElement.mapToFigma(undefined);
+test("NavElement.mapToFigma - undefined入力 - nullを返す", () => {
+  const figmaNode = NavElement.mapToFigma(undefined);
 
-    expect(figmaNode).toBeNull();
-  });
+  expect(figmaNode).toBeNull();
+});
 
-  test("不正なオブジェクトを渡した場合nullを返す", () => {
-    const node = {
-      invalidProp: "invalid",
-    };
+test("NavElement.mapToFigma - 不正なオブジェクト入力 - nullを返す", () => {
+  const node = {
+    invalidProp: "invalid",
+  };
 
-    const figmaNode = NavElement.mapToFigma(node);
+  const figmaNode = NavElement.mapToFigma(node);
 
-    expect(figmaNode).toBeNull();
-  });
+  expect(figmaNode).toBeNull();
+});
 
-  test("複雑なスタイルを持つnav要素をマッピングする", () => {
+test(
+  "NavElement.mapToFigma - 複雑なスタイルあり - 名前とスタイルを反映する",
+  () => {
     const node = {
       type: "element" as const,
       tagName: "nav",
@@ -141,5 +151,5 @@ describe("NavElement.mapToFigma", () => {
     expect(figmaNode!.fills[0].color.g).toBeCloseTo(0.9607843137254902);
     expect(figmaNode!.fills[0].color.b).toBeCloseTo(0.9607843137254902);
     expect(figmaNode!.children).toEqual([]);
-  });
-});
+  }
+);

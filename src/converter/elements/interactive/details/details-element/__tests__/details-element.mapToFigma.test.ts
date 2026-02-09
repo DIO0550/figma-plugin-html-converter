@@ -1,80 +1,78 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { DetailsElement } from "../details-element";
 
-describe("DetailsElement.mapToFigma", () => {
-  test("DetailsElementを正しくマッピングする", () => {
-    const element = DetailsElement.create();
-    const node = DetailsElement.mapToFigma(element);
+test("DetailsElement.mapToFigma - DetailsElement - 正しくマッピングする", () => {
+  const element = DetailsElement.create();
+  const node = DetailsElement.mapToFigma(element);
 
-    expect(node).not.toBeNull();
-    expect(node?.type).toBe("FRAME");
-    expect(node?.name).toBe("details");
-  });
+  expect(node).not.toBeNull();
+  expect(node?.type).toBe("FRAME");
+  expect(node?.name).toBe("details");
+});
 
-  test("HTMLノード形式からマッピングできる", () => {
-    const htmlNode = {
-      type: "element",
-      tagName: "details",
-      attributes: { id: "test-details" },
-      children: [],
-    };
+test("DetailsElement.mapToFigma - HTMLノード形式 - マッピングできる", () => {
+  const htmlNode = {
+    type: "element",
+    tagName: "details",
+    attributes: { id: "test-details" },
+    children: [],
+  };
 
-    const node = DetailsElement.mapToFigma(htmlNode);
+  const node = DetailsElement.mapToFigma(htmlNode);
 
-    expect(node).not.toBeNull();
-    expect(node?.type).toBe("FRAME");
-    expect(node?.name).toBe("details#test-details");
-  });
+  expect(node).not.toBeNull();
+  expect(node?.type).toBe("FRAME");
+  expect(node?.name).toBe("details#test-details");
+});
 
-  test("open属性付きノードをマッピングできる", () => {
-    const htmlNode = {
-      type: "element",
-      tagName: "details",
-      attributes: { open: true },
-      children: [],
-    };
+test("DetailsElement.mapToFigma - open属性付きノード - opacity=1でマッピング", () => {
+  const htmlNode = {
+    type: "element",
+    tagName: "details",
+    attributes: { open: true },
+    children: [],
+  };
 
-    const node = DetailsElement.mapToFigma(htmlNode);
+  const node = DetailsElement.mapToFigma(htmlNode);
 
-    expect(node).not.toBeNull();
-    expect(node?.opacity).toBe(1);
-  });
+  expect(node).not.toBeNull();
+  expect(node?.opacity).toBe(1);
+});
 
-  test("異なるタグ名のノードはnullを返す", () => {
-    const divNode = {
-      type: "element",
-      tagName: "div",
-      attributes: {},
-      children: [],
-    };
+test("DetailsElement.mapToFigma - 異なるタグ名のノード - nullを返す", () => {
+  const divNode = {
+    type: "element",
+    tagName: "div",
+    attributes: {},
+    children: [],
+  };
 
-    const node = DetailsElement.mapToFigma(divNode);
+  const node = DetailsElement.mapToFigma(divNode);
 
-    expect(node).toBeNull();
-  });
+  expect(node).toBeNull();
+});
 
-  test("nullを渡すとnullを返す", () => {
-    const node = DetailsElement.mapToFigma(null);
+test("DetailsElement.mapToFigma - null - nullを返す", () => {
+  const node = DetailsElement.mapToFigma(null);
 
-    expect(node).toBeNull();
-  });
+  expect(node).toBeNull();
+});
 
-  test("undefinedを渡すとnullを返す", () => {
-    const node = DetailsElement.mapToFigma(undefined);
+test("DetailsElement.mapToFigma - undefined - nullを返す", () => {
+  const node = DetailsElement.mapToFigma(undefined);
 
-    expect(node).toBeNull();
-  });
+  expect(node).toBeNull();
+});
 
-  test("summaryタグはnullを返す", () => {
-    const summaryNode = {
-      type: "element",
-      tagName: "summary",
-      attributes: {},
-      children: [],
-    };
+test("DetailsElement.mapToFigma - summaryタグ - nullを返す", () => {
+  const summaryNode = {
+    type: "element",
+    tagName: "summary",
+    attributes: {},
+    children: [],
+  };
 
-    const node = DetailsElement.mapToFigma(summaryNode);
+  const node = DetailsElement.mapToFigma(summaryNode);
 
-    expect(node).toBeNull();
-  });
+  expect(node).toBeNull();
 });

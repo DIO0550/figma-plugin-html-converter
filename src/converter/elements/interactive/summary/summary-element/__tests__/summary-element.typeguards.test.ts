@@ -1,74 +1,72 @@
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 import { SummaryElement } from "../summary-element";
 
-describe("SummaryElement.isSummaryElement", () => {
-  test("SummaryElementオブジェクトを正しく判定する", () => {
-    const element = SummaryElement.create();
+test("SummaryElement.isSummaryElement - SummaryElementオブジェクト - trueを返す", () => {
+  const element = SummaryElement.create();
 
-    expect(SummaryElement.isSummaryElement(element)).toBe(true);
+  expect(SummaryElement.isSummaryElement(element)).toBe(true);
+});
+
+test("SummaryElement.isSummaryElement - 属性付きSummaryElement - trueを返す", () => {
+  const element = SummaryElement.create({
+    id: "test-summary",
+    class: "summary-class",
   });
 
-  test("属性付きSummaryElementオブジェクトを正しく判定する", () => {
-    const element = SummaryElement.create({
-      id: "test-summary",
-      class: "summary-class",
-    });
+  expect(SummaryElement.isSummaryElement(element)).toBe(true);
+});
 
-    expect(SummaryElement.isSummaryElement(element)).toBe(true);
-  });
+test("SummaryElement.isSummaryElement - null - falseを返す", () => {
+  expect(SummaryElement.isSummaryElement(null)).toBe(false);
+});
 
-  test("nullをfalseと判定する", () => {
-    expect(SummaryElement.isSummaryElement(null)).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - undefined - falseを返す", () => {
+  expect(SummaryElement.isSummaryElement(undefined)).toBe(false);
+});
 
-  test("undefinedをfalseと判定する", () => {
-    expect(SummaryElement.isSummaryElement(undefined)).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - 文字列 - falseを返す", () => {
+  expect(SummaryElement.isSummaryElement("summary")).toBe(false);
+});
 
-  test("文字列をfalseと判定する", () => {
-    expect(SummaryElement.isSummaryElement("summary")).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - 数値 - falseを返す", () => {
+  expect(SummaryElement.isSummaryElement(123)).toBe(false);
+});
 
-  test("数値をfalseと判定する", () => {
-    expect(SummaryElement.isSummaryElement(123)).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - 異なるtagNameの要素 - falseを返す", () => {
+  const divElement = {
+    type: "element",
+    tagName: "div",
+    attributes: {},
+    children: [],
+  };
 
-  test("異なるtagNameの要素をfalseと判定する", () => {
-    const divElement = {
-      type: "element",
-      tagName: "div",
-      attributes: {},
-      children: [],
-    };
+  expect(SummaryElement.isSummaryElement(divElement)).toBe(false);
+});
 
-    expect(SummaryElement.isSummaryElement(divElement)).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - 異なるtypeの要素 - falseを返す", () => {
+  const textNode = {
+    type: "text",
+    tagName: "summary",
+    attributes: {},
+  };
 
-  test("異なるtypeの要素をfalseと判定する", () => {
-    const textNode = {
-      type: "text",
-      tagName: "summary",
-      attributes: {},
-    };
+  expect(SummaryElement.isSummaryElement(textNode)).toBe(false);
+});
 
-    expect(SummaryElement.isSummaryElement(textNode)).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - typeプロパティがないオブジェクト - falseを返す", () => {
+  const invalidObject = {
+    tagName: "summary",
+    attributes: {},
+  };
 
-  test("typeプロパティがないオブジェクトをfalseと判定する", () => {
-    const invalidObject = {
-      tagName: "summary",
-      attributes: {},
-    };
+  expect(SummaryElement.isSummaryElement(invalidObject)).toBe(false);
+});
 
-    expect(SummaryElement.isSummaryElement(invalidObject)).toBe(false);
-  });
+test("SummaryElement.isSummaryElement - tagNameプロパティがないオブジェクト - falseを返す", () => {
+  const invalidObject = {
+    type: "element",
+    attributes: {},
+  };
 
-  test("tagNameプロパティがないオブジェクトをfalseと判定する", () => {
-    const invalidObject = {
-      type: "element",
-      attributes: {},
-    };
-
-    expect(SummaryElement.isSummaryElement(invalidObject)).toBe(false);
-  });
+  expect(SummaryElement.isSummaryElement(invalidObject)).toBe(false);
 });

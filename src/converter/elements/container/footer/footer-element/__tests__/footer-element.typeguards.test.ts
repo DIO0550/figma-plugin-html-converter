@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { FooterElement } from "../footer-element";
 
-describe("FooterElement.isFooterElement", () => {
-  it("正しいfooter要素を判定できること", () => {
+test(
+  "FooterElement.isFooterElement - 有効なfooter要素 - trueを返す",
+  () => {
     const element = {
       type: "element",
       tagName: "footer",
@@ -10,9 +11,12 @@ describe("FooterElement.isFooterElement", () => {
     };
 
     expect(FooterElement.isFooterElement(element)).toBe(true);
-  });
+  }
+);
 
-  it("属性と子要素を持つfooter要素を判定できること", () => {
+test(
+  "FooterElement.isFooterElement - 属性と子要素あり - trueを返す",
+  () => {
     const element = {
       type: "element",
       tagName: "footer",
@@ -28,9 +32,12 @@ describe("FooterElement.isFooterElement", () => {
     };
 
     expect(FooterElement.isFooterElement(element)).toBe(true);
-  });
+  }
+);
 
-  it("typeが異なる場合はfalseを返すこと", () => {
+test(
+  "FooterElement.isFooterElement - typeがelement以外 - falseを返す",
+  () => {
     const element = {
       type: "text",
       tagName: "footer",
@@ -38,9 +45,12 @@ describe("FooterElement.isFooterElement", () => {
     };
 
     expect(FooterElement.isFooterElement(element)).toBe(false);
-  });
+  }
+);
 
-  it("tagNameが異なる場合はfalseを返すこと", () => {
+test(
+  "FooterElement.isFooterElement - tagNameがfooter以外 - falseを返す",
+  () => {
     const element = {
       type: "element",
       tagName: "div",
@@ -48,25 +58,31 @@ describe("FooterElement.isFooterElement", () => {
     };
 
     expect(FooterElement.isFooterElement(element)).toBe(false);
-  });
+  }
+);
 
-  it("nullの場合はfalseを返すこと", () => {
-    expect(FooterElement.isFooterElement(null)).toBe(false);
-  });
+test("FooterElement.isFooterElement - null入力 - falseを返す", () => {
+  expect(FooterElement.isFooterElement(null)).toBe(false);
+});
 
-  it("undefinedの場合はfalseを返すこと", () => {
+test(
+  "FooterElement.isFooterElement - undefined入力 - falseを返す",
+  () => {
     expect(FooterElement.isFooterElement(undefined)).toBe(false);
-  });
+  }
+);
 
-  it("オブジェクトでない場合はfalseを返すこと", () => {
-    expect(FooterElement.isFooterElement("footer")).toBe(false);
-    expect(FooterElement.isFooterElement(123)).toBe(false);
-    expect(FooterElement.isFooterElement(true)).toBe(false);
-  });
+test("FooterElement.isFooterElement - 非オブジェクト入力 - falseを返す", () => {
+  expect(FooterElement.isFooterElement("footer")).toBe(false);
+  expect(FooterElement.isFooterElement(123)).toBe(false);
+  expect(FooterElement.isFooterElement(true)).toBe(false);
+});
 
-  it("必須プロパティが欠けている場合はfalseを返すこと", () => {
+test(
+  "FooterElement.isFooterElement - 必須プロパティ不足 - falseを返す",
+  () => {
     expect(FooterElement.isFooterElement({ type: "element" })).toBe(false);
     expect(FooterElement.isFooterElement({ tagName: "footer" })).toBe(false);
     expect(FooterElement.isFooterElement({})).toBe(false);
-  });
-});
+  }
+);

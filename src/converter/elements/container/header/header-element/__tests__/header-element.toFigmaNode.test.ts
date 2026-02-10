@@ -1,9 +1,10 @@
-import { describe, it, expect, test } from "vitest";
+import { test, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 import type { HeaderElement as HeaderElementType } from "../header-element";
 
-describe("HeaderElement.toFigmaNode", () => {
-  it("should create basic header Figma node", () => {
+test(
+  "HeaderElement.toFigmaNode - 基本header要素 - デフォルトノードを生成する",
+  () => {
     const element: HeaderElementType = {
       type: "element",
       tagName: "header",
@@ -26,7 +27,7 @@ describe("HeaderElement.toFigmaNode", () => {
     });
   });
 
-  it("should include id in name", () => {
+  test("HeaderElement.toFigmaNode - id属性あり - nameにidを含める", () => {
     const element: HeaderElementType = {
       type: "element",
       tagName: "header",
@@ -38,7 +39,9 @@ describe("HeaderElement.toFigmaNode", () => {
     expect(figmaNode.name).toBe("header#page-header");
   });
 
-  it("should include className in name", () => {
+  test(
+    "HeaderElement.toFigmaNode - className属性あり - nameにclassNameを含める",
+    () => {
     const element: HeaderElementType = {
       type: "element",
       tagName: "header",
@@ -50,7 +53,9 @@ describe("HeaderElement.toFigmaNode", () => {
     expect(figmaNode.name).toBe("header.site-header.sticky");
   });
 
-  it("should include both id and className in name", () => {
+  test(
+    "HeaderElement.toFigmaNode - idとclassName属性あり - nameに両方を含める",
+    () => {
     const element: HeaderElementType = {
       type: "element",
       tagName: "header",
@@ -65,8 +70,9 @@ describe("HeaderElement.toFigmaNode", () => {
     expect(figmaNode.name).toBe("header#main-header.header.primary");
   });
 
-  describe("Flexbox styles", () => {
-    it("should handle display: flex with row direction", () => {
+  test(
+    "HeaderElement.toFigmaNode - flex-direction: row - layoutModeをHORIZONTALにする",
+    () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -80,7 +86,9 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.layoutMode).toBe("HORIZONTAL");
     });
 
-    it("should handle display: flex with column direction", () => {
+    test(
+      "HeaderElement.toFigmaNode - flex-direction: column - layoutModeをVERTICALにする",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -94,7 +102,9 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.layoutMode).toBe("VERTICAL");
     });
 
-    it("should handle justify-content", () => {
+    test(
+      "HeaderElement.toFigmaNode - justify-content指定 - primaryAxisAlignItemsを設定する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -108,7 +118,9 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.primaryAxisAlignItems).toBe("SPACE_BETWEEN");
     });
 
-    it("should handle align-items", () => {
+    test(
+      "HeaderElement.toFigmaNode - align-items指定 - counterAxisAlignItemsを設定する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -121,10 +133,10 @@ describe("HeaderElement.toFigmaNode", () => {
 
       expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
     });
-  });
 
-  describe("Padding styles", () => {
-    it("should handle uniform padding", () => {
+  test(
+    "HeaderElement.toFigmaNode - padding指定 - 全方向に反映する",
+    () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -141,7 +153,9 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.paddingLeft).toBe(20);
     });
 
-    it("should handle individual padding values", () => {
+    test(
+      "HeaderElement.toFigmaNode - 個別padding指定 - 各値を反映する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -158,10 +172,8 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.paddingBottom).toBe(30);
       expect(figmaNode.paddingLeft).toBe(40);
     });
-  });
 
-  describe("Gap styles", () => {
-    it("should handle gap property", () => {
+  test("HeaderElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -174,10 +186,10 @@ describe("HeaderElement.toFigmaNode", () => {
 
       expect(figmaNode.itemSpacing).toBe(16);
     });
-  });
 
-  describe("Background color", () => {
-    it("should handle hex background color", () => {
+  test(
+    "HeaderElement.toFigmaNode - 背景色hex指定 - fillsを設定する",
+    () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -197,7 +209,9 @@ describe("HeaderElement.toFigmaNode", () => {
       ]);
     });
 
-    it("should handle short hex color", () => {
+    test(
+      "HeaderElement.toFigmaNode - 背景色short hex指定 - fillsを設定する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -217,7 +231,9 @@ describe("HeaderElement.toFigmaNode", () => {
       ]);
     });
 
-    it("should handle named colors", () => {
+    test(
+      "HeaderElement.toFigmaNode - 背景色名指定 - fillsを設定する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -236,10 +252,10 @@ describe("HeaderElement.toFigmaNode", () => {
         },
       ]);
     });
-  });
 
-  describe("Size styles", () => {
-    it("should handle width", () => {
+  test(
+    "HeaderElement.toFigmaNode - width指定 - widthとlayoutSizingHorizontalを設定する",
+    () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -254,7 +270,9 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.layoutSizingHorizontal).toBe("FIXED");
     });
 
-    it("should handle height", () => {
+    test(
+      "HeaderElement.toFigmaNode - height指定 - heightとlayoutSizingVerticalを設定する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -269,7 +287,9 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.layoutSizingVertical).toBe("FIXED");
     });
 
-    it("should handle min/max dimensions", () => {
+    test(
+      "HeaderElement.toFigmaNode - min/max指定 - 制約値を設定する",
+      () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -286,9 +306,10 @@ describe("HeaderElement.toFigmaNode", () => {
       expect(figmaNode.minHeight).toBe(60);
       expect(figmaNode.maxHeight).toBe(150);
     });
-  });
 
-  it("should handle complex combination of styles", () => {
+  test(
+    "HeaderElement.toFigmaNode - 複合スタイル指定 - 主要スタイルを反映する",
+    () => {
     const element: HeaderElementType = {
       type: "element",
       tagName: "header",
@@ -324,9 +345,10 @@ describe("HeaderElement.toFigmaNode", () => {
       ],
     });
   });
-});
 
-test("HeaderElement.toFigmaNode: height: autoの場合はlayoutSizingVerticalを設定しないこと", () => {
+test(
+  "HeaderElement.toFigmaNode - height:auto - layoutSizingVerticalを固定しない",
+  () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -339,9 +361,12 @@ test("HeaderElement.toFigmaNode: height: autoの場合はlayoutSizingVerticalを
 
   expect(figmaNode.height).toBeUndefined();
   expect(figmaNode.layoutSizingVertical).not.toBe("FIXED");
-});
+  }
+);
 
-test("HeaderElement.toFigmaNode: height: 50%の場合はlayoutSizingVerticalを設定しないこと", () => {
+test(
+  "HeaderElement.toFigmaNode - height:50% - layoutSizingVerticalを固定しない",
+  () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -354,9 +379,12 @@ test("HeaderElement.toFigmaNode: height: 50%の場合はlayoutSizingVerticalを�
 
   expect(figmaNode.height).toBeUndefined();
   expect(figmaNode.layoutSizingVertical).not.toBe("FIXED");
-});
+  }
+);
 
-test("HeaderElement.toFigmaNode: height: 1remの場合はlayoutSizingVerticalを設定しないこと", () => {
+test(
+  "HeaderElement.toFigmaNode - height:5rem - layoutSizingVerticalを固定しない",
+  () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -369,9 +397,12 @@ test("HeaderElement.toFigmaNode: height: 1remの場合はlayoutSizingVerticalを
 
   expect(figmaNode.height).toBeUndefined();
   expect(figmaNode.layoutSizingVertical).not.toBe("FIXED");
-});
+  }
+);
 
-test("HeaderElement.toFigmaNode: gap: 1remの場合はitemSpacingを設定しないこと", () => {
+test(
+  "HeaderElement.toFigmaNode - gap:1rem - itemSpacingを設定しない",
+  () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -383,9 +414,12 @@ test("HeaderElement.toFigmaNode: gap: 1remの場合はitemSpacingを設定しな
   const figmaNode = HeaderElement.toFigmaNode(element);
 
   expect(figmaNode.itemSpacing).toBe(0);
-});
+  }
+);
 
-test("HeaderElement.toFigmaNode: gap: 10%の場合はitemSpacingを設定しないこと", () => {
+test(
+  "HeaderElement.toFigmaNode - gap:10% - itemSpacingを設定しない",
+  () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -397,4 +431,5 @@ test("HeaderElement.toFigmaNode: gap: 10%の場合はitemSpacingを設定しな�
   const figmaNode = HeaderElement.toFigmaNode(element);
 
   expect(figmaNode.itemSpacing).toBe(0);
-});
+  }
+);

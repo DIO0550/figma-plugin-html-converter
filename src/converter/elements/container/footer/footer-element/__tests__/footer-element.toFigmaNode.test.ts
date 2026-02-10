@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { FooterElement } from "../footer-element";
 import type { FooterElement as FooterElementType } from "../footer-element";
 
-describe("FooterElement.toFigmaNode", () => {
-  it("基本的なfooter要素をFigmaノードに変換できること", () => {
+test(
+  "FooterElement.toFigmaNode - 基本footer要素 - Figmaノードを生成する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -16,21 +17,24 @@ describe("FooterElement.toFigmaNode", () => {
     expect(figmaNode.name).toBe("footer");
     expect(figmaNode.layoutMode).toBe("VERTICAL");
     expect(figmaNode.layoutSizingHorizontal).toBe("FILL");
-  });
+  }
+);
 
-  it("ID付きfooter要素の名前が正しく生成されること", () => {
-    const element: FooterElementType = {
-      type: "element",
-      tagName: "footer",
-      attributes: { id: "site-footer" },
-    };
+test("FooterElement.toFigmaNode - id属性あり - nameにidを含める", () => {
+  const element: FooterElementType = {
+    type: "element",
+    tagName: "footer",
+    attributes: { id: "site-footer" },
+  };
 
-    const figmaNode = FooterElement.toFigmaNode(element);
+  const figmaNode = FooterElement.toFigmaNode(element);
 
-    expect(figmaNode.name).toBe("footer#site-footer");
-  });
+  expect(figmaNode.name).toBe("footer#site-footer");
+});
 
-  it("クラス名付きfooter要素の名前が正しく生成されること", () => {
+test(
+  "FooterElement.toFigmaNode - className属性あり - nameにclassNameを含める",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -40,9 +44,12 @@ describe("FooterElement.toFigmaNode", () => {
     const figmaNode = FooterElement.toFigmaNode(element);
 
     expect(figmaNode.name).toBe("footer.footer.container.dark");
-  });
+  }
+);
 
-  it("IDとクラス名の両方がある場合の名前生成", () => {
+test(
+  "FooterElement.toFigmaNode - idとclassName属性あり - nameに両方を含める",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -52,9 +59,12 @@ describe("FooterElement.toFigmaNode", () => {
     const figmaNode = FooterElement.toFigmaNode(element);
 
     expect(figmaNode.name).toBe("footer#main-footer.site-footer.dark");
-  });
+  }
+);
 
-  it("display: flexのスタイルが適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - display:flex - レイアウトを反映する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -69,9 +79,12 @@ describe("FooterElement.toFigmaNode", () => {
     expect(figmaNode.layoutMode).toBe("HORIZONTAL");
     expect(figmaNode.primaryAxisAlignItems).toBe("SPACE_BETWEEN");
     expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
-  });
+  }
+);
 
-  it("flex-direction: columnが適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - flex-direction:column - layoutModeをVERTICALにする",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -83,9 +96,12 @@ describe("FooterElement.toFigmaNode", () => {
     const figmaNode = FooterElement.toFigmaNode(element);
 
     expect(figmaNode.layoutMode).toBe("VERTICAL");
-  });
+  }
+);
 
-  it("パディングが正しく適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - padding指定 - 全方向に反映する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -100,9 +116,12 @@ describe("FooterElement.toFigmaNode", () => {
     expect(figmaNode.paddingRight).toBe(20);
     expect(figmaNode.paddingBottom).toBe(20);
     expect(figmaNode.paddingLeft).toBe(20);
-  });
+  }
+);
 
-  it("個別のパディングが適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - 個別padding指定 - 各値を反映する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -117,23 +136,26 @@ describe("FooterElement.toFigmaNode", () => {
     expect(figmaNode.paddingRight).toBe(20);
     expect(figmaNode.paddingBottom).toBe(30);
     expect(figmaNode.paddingLeft).toBe(40);
-  });
+  }
+);
 
-  it("gapが正しく適用されること", () => {
-    const element: FooterElementType = {
-      type: "element",
-      tagName: "footer",
-      attributes: {
-        style: "display: flex; gap: 16px;",
-      },
-    };
+test("FooterElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
+  const element: FooterElementType = {
+    type: "element",
+    tagName: "footer",
+    attributes: {
+      style: "display: flex; gap: 16px;",
+    },
+  };
 
-    const figmaNode = FooterElement.toFigmaNode(element);
+  const figmaNode = FooterElement.toFigmaNode(element);
 
-    expect(figmaNode.itemSpacing).toBe(16);
-  });
+  expect(figmaNode.itemSpacing).toBe(16);
+});
 
-  it("背景色が正しく適用されること（HEX形式）", () => {
+test(
+  "FooterElement.toFigmaNode - 背景色hex指定 - fillsを設定する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -149,9 +171,12 @@ describe("FooterElement.toFigmaNode", () => {
       type: "SOLID",
       color: { r: 0.2, g: 0.2, b: 0.2 },
     });
-  });
+  }
+);
 
-  it("背景色が正しく適用されること（短縮HEX形式）", () => {
+test(
+  "FooterElement.toFigmaNode - 背景色short hex指定 - fillsを設定する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -167,9 +192,12 @@ describe("FooterElement.toFigmaNode", () => {
       type: "SOLID",
       color: { r: 1, g: 1, b: 1 },
     });
-  });
+  }
+);
 
-  it("幅と高さが正しく適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - width/height指定 - サイズを反映する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -182,9 +210,12 @@ describe("FooterElement.toFigmaNode", () => {
 
     expect(figmaNode.width).toBe(800);
     expect(figmaNode.height).toBe(100);
-  });
+  }
+);
 
-  it("最小・最大サイズが適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - min/max指定 - 制約値を設定する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -197,9 +228,12 @@ describe("FooterElement.toFigmaNode", () => {
     const figmaNode = FooterElement.toFigmaNode(element);
 
     expect(figmaNode).toBeDefined();
-  });
+  }
+);
 
-  it("複数のスタイルが組み合わさって適用されること", () => {
+test(
+  "FooterElement.toFigmaNode - 複数スタイル指定 - 主要スタイルを反映する",
+  () => {
     const element: FooterElementType = {
       type: "element",
       tagName: "footer",
@@ -230,5 +264,5 @@ describe("FooterElement.toFigmaNode", () => {
         b: 0.13333333333333333,
       },
     });
-  });
-});
+  }
+);

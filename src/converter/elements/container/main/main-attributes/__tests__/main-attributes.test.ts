@@ -1,8 +1,8 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import type { MainAttributes } from "../main-attributes";
 import type { GlobalAttributes } from "../../../../base/global-attributes";
 
-it(
+test(
   "MainAttributes.type - GlobalAttributes継承 - 型互換である",
   () => {
     const attributes: MainAttributes = {
@@ -16,7 +16,7 @@ it(
   }
 );
 
-it(
+test(
   "MainAttributes.type - main固有属性なし - 空オブジェクトを許容する",
   () => {
     const attributes: MainAttributes = {};
@@ -24,7 +24,7 @@ it(
   }
 );
 
-it("MainAttributes.type - グローバル属性あり - 属性を保持する", () => {
+test("MainAttributes.type - グローバル属性あり - 属性を保持する", () => {
   const attributes: MainAttributes = {
     id: "main",
     className: "content",
@@ -56,7 +56,7 @@ it("MainAttributes.type - グローバル属性あり - 属性を保持する", 
   expect(attributes.translate).toBe("yes");
 });
 
-it("MainAttributes.type - data属性あり - data属性を保持する", () => {
+test("MainAttributes.type - data属性あり - data属性を保持する", () => {
   const attributes: MainAttributes = {
     "data-page": "home",
     "data-section": "main",
@@ -66,7 +66,7 @@ it("MainAttributes.type - data属性あり - data属性を保持する", () => {
   expect(attributes["data-section"]).toBe("main");
 });
 
-it("MainAttributes.type - aria属性あり - aria属性を保持する", () => {
+test("MainAttributes.type - aria属性あり - aria属性を保持する", () => {
   const attributes: MainAttributes = {
     "aria-label": "メインコンテンツエリア",
     "aria-hidden": "false",

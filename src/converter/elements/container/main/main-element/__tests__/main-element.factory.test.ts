@@ -1,9 +1,9 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { MainElement } from "../main-element";
 import type { MainAttributes } from "../../main-attributes";
 import type { HTMLNode } from "../../../../../models/html-node";
 
-it(
+test(
   "MainElement.create - 属性なし - デフォルトのmain要素を作成する",
   () => {
     const element = MainElement.create();
@@ -17,7 +17,7 @@ it(
   }
 );
 
-it("MainElement.create - 属性あり - main要素を作成する", () => {
+test("MainElement.create - 属性あり - main要素を作成する", () => {
   const attributes: Partial<MainAttributes> = {
     id: "main-content",
     className: "main container",
@@ -34,7 +34,7 @@ it("MainElement.create - 属性あり - main要素を作成する", () => {
   });
 });
 
-it("MainElement.create - 子要素あり - childrenを設定する", () => {
+test("MainElement.create - 子要素あり - childrenを設定する", () => {
   const children: HTMLNode[] = [
     {
       type: "element",
@@ -60,7 +60,7 @@ it("MainElement.create - 子要素あり - childrenを設定する", () => {
   });
 });
 
-it(
+test(
   "MainElement.create - 属性と子要素あり - 両方を設定する",
   () => {
     const attributes: Partial<MainAttributes> = {
@@ -87,7 +87,7 @@ it(
   }
 );
 
-it("MainElement.create - グローバル属性あり - 属性を保持する", () => {
+test("MainElement.create - グローバル属性あり - 属性を保持する", () => {
   const attributes: Partial<MainAttributes> = {
     id: "main",
     className: "content",
@@ -108,7 +108,7 @@ it("MainElement.create - グローバル属性あり - 属性を保持する", (
   expect(element.attributes).toEqual(attributes);
 });
 
-it("MainElement.create - data属性あり - 属性を保持する", () => {
+test("MainElement.create - data属性あり - 属性を保持する", () => {
   const attributes: Partial<MainAttributes> = {
     "data-page": "home",
     "data-section": "main",
@@ -120,7 +120,7 @@ it("MainElement.create - data属性あり - 属性を保持する", () => {
   expect(element.attributes).toEqual(attributes);
 });
 
-it("MainElement.create - aria属性あり - 属性を保持する", () => {
+test("MainElement.create - aria属性あり - 属性を保持する", () => {
   const attributes: Partial<MainAttributes> = {
     "aria-label": "メインコンテンツ",
     "aria-labelledby": "main-heading",

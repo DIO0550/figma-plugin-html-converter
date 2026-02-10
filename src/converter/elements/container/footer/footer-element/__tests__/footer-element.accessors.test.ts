@@ -1,8 +1,8 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { FooterElement } from "../footer-element";
 import type { FooterElement as FooterElementType } from "../footer-element";
 
-it("FooterElement.getId - id属性あり - idを返す", () => {
+test("FooterElement.getId - id属性あり - idを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -12,7 +12,7 @@ it("FooterElement.getId - id属性あり - idを返す", () => {
   expect(FooterElement.getId(element)).toBe("site-footer");
 });
 
-it("FooterElement.getId - id属性なし - undefinedを返す", () => {
+test("FooterElement.getId - id属性なし - undefinedを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -22,7 +22,7 @@ it("FooterElement.getId - id属性なし - undefinedを返す", () => {
   expect(FooterElement.getId(element)).toBeUndefined();
 });
 
-it(
+test(
   "FooterElement.getClassName - className属性あり - classNameを返す",
   () => {
     const element: FooterElementType = {
@@ -35,7 +35,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.getClassName - className属性なし - undefinedを返す",
   () => {
     const element: FooterElementType = {
@@ -48,7 +48,7 @@ it(
   }
 );
 
-it("FooterElement.getStyle - style属性あり - styleを返す", () => {
+test("FooterElement.getStyle - style属性あり - styleを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -60,7 +60,7 @@ it("FooterElement.getStyle - style属性あり - styleを返す", () => {
   );
 });
 
-it("FooterElement.getStyle - style属性なし - undefinedを返す", () => {
+test("FooterElement.getStyle - style属性なし - undefinedを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -70,7 +70,7 @@ it("FooterElement.getStyle - style属性なし - undefinedを返す", () => {
   expect(FooterElement.getStyle(element)).toBeUndefined();
 });
 
-it("FooterElement.getAttribute - 属性あり - 値を返す", () => {
+test("FooterElement.getAttribute - 属性あり - 値を返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -90,7 +90,7 @@ it("FooterElement.getAttribute - 属性あり - 値を返す", () => {
   );
 });
 
-it("FooterElement.getAttribute - 属性なし - undefinedを返す", () => {
+test("FooterElement.getAttribute - 属性なし - undefinedを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -101,7 +101,7 @@ it("FooterElement.getAttribute - 属性なし - undefinedを返す", () => {
   expect(FooterElement.getAttribute(element, "style")).toBeUndefined();
 });
 
-it("FooterElement.getChildren - childrenあり - childrenを返す", () => {
+test("FooterElement.getChildren - childrenあり - childrenを返す", () => {
   const children = [
     { type: "text" as const, content: "Footer content" },
     {
@@ -121,7 +121,7 @@ it("FooterElement.getChildren - childrenあり - childrenを返す", () => {
   expect(FooterElement.getChildren(element)).toEqual(children);
 });
 
-it("FooterElement.getChildren - childrenなし - undefinedを返す", () => {
+test("FooterElement.getChildren - childrenなし - undefinedを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -131,7 +131,7 @@ it("FooterElement.getChildren - childrenなし - undefinedを返す", () => {
   expect(FooterElement.getChildren(element)).toBeUndefined();
 });
 
-it("FooterElement.getChildren - 空配列children - 空配列を返す", () => {
+test("FooterElement.getChildren - 空配列children - 空配列を返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -142,7 +142,7 @@ it("FooterElement.getChildren - 空配列children - 空配列を返す", () => {
   expect(FooterElement.getChildren(element)).toEqual([]);
 });
 
-it("FooterElement.hasAttribute - 属性あり - trueを返す", () => {
+test("FooterElement.hasAttribute - 属性あり - trueを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -158,7 +158,7 @@ it("FooterElement.hasAttribute - 属性あり - trueを返す", () => {
   expect(FooterElement.hasAttribute(element, "style")).toBe(true);
 });
 
-it("FooterElement.hasAttribute - 属性なし - falseを返す", () => {
+test("FooterElement.hasAttribute - 属性なし - falseを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -170,7 +170,7 @@ it("FooterElement.hasAttribute - 属性なし - falseを返す", () => {
   expect(FooterElement.hasAttribute(element, "data-test")).toBe(false);
 });
 
-it("FooterElement.hasAttribute - undefined値の属性 - trueを返す", () => {
+test("FooterElement.hasAttribute - undefined値の属性 - trueを返す", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",

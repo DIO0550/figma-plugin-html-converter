@@ -1,7 +1,7 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 
-it(
+test(
   "HeaderElement.isHeaderElement - 有効なheader要素 - trueを返す",
   () => {
     const element = {
@@ -13,7 +13,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.isHeaderElement - 子要素を持つheader要素 - trueを返す",
   () => {
     const element = {
@@ -26,7 +26,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.isHeaderElement - 非オブジェクト入力 - falseを返す",
   () => {
     expect(HeaderElement.isHeaderElement("header")).toBe(false);
@@ -37,7 +37,7 @@ it(
   }
 );
 
-it("HeaderElement.isHeaderElement - typeがtext - falseを返す", () => {
+test("HeaderElement.isHeaderElement - typeがtext - falseを返す", () => {
   const element = {
     type: "text",
     tagName: "header",
@@ -46,7 +46,7 @@ it("HeaderElement.isHeaderElement - typeがtext - falseを返す", () => {
   expect(HeaderElement.isHeaderElement(element)).toBe(false);
 });
 
-it(
+test(
   "HeaderElement.isHeaderElement - tagNameがheader以外 - falseを返す",
   () => {
     const element = {
@@ -58,7 +58,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.isHeaderElement - typeプロパティなし - falseを返す",
   () => {
     const element = {
@@ -69,7 +69,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.isHeaderElement - tagNameプロパティなし - falseを返す",
   () => {
     const element = {

@@ -1,9 +1,9 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { FooterElement } from "../footer-element";
 import type { FooterAttributes } from "../../footer-attributes";
 import type { HTMLNode } from "../../../../../models/html-node";
 
-it(
+test(
   "FooterElement.create - 属性なし - デフォルトのfooter要素を作成する",
   () => {
     const element = FooterElement.create();
@@ -17,7 +17,7 @@ it(
   }
 );
 
-it("FooterElement.create - 属性あり - footer要素を作成する", () => {
+test("FooterElement.create - 属性あり - footer要素を作成する", () => {
   const attributes: Partial<FooterAttributes> = {
     id: "page-footer",
     className: "footer container",
@@ -34,7 +34,7 @@ it("FooterElement.create - 属性あり - footer要素を作成する", () => {
   });
 });
 
-it("FooterElement.create - 子要素あり - childrenを設定する", () => {
+test("FooterElement.create - 子要素あり - childrenを設定する", () => {
   const children: HTMLNode[] = [
     {
       type: "element",
@@ -60,7 +60,7 @@ it("FooterElement.create - 子要素あり - childrenを設定する", () => {
   });
 });
 
-it(
+test(
   "FooterElement.create - 属性と子要素あり - 両方を設定する",
   () => {
     const attributes: Partial<FooterAttributes> = {
@@ -87,7 +87,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.create - グローバル属性あり - 属性を保持する",
   () => {
     const attributes: Partial<FooterAttributes> = {
@@ -111,7 +111,7 @@ it(
   }
 );
 
-it("FooterElement.create - data属性あり - 属性を保持する", () => {
+test("FooterElement.create - data属性あり - 属性を保持する", () => {
   const attributes: Partial<FooterAttributes> = {
     "data-section": "footer",
     "data-theme": "dark",
@@ -123,7 +123,7 @@ it("FooterElement.create - data属性あり - 属性を保持する", () => {
   expect(element.attributes).toEqual(attributes);
 });
 
-it("FooterElement.create - aria属性あり - 属性を保持する", () => {
+test("FooterElement.create - aria属性あり - 属性を保持する", () => {
   const attributes: Partial<FooterAttributes> = {
     "aria-label": "ページフッター",
     "aria-labelledby": "footer-heading",

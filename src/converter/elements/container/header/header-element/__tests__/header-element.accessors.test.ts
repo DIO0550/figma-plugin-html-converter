@@ -1,8 +1,8 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 import type { HeaderElement as HeaderElementType } from "../header-element";
 
-it("HeaderElement.getId - id属性あり - idを返す", () => {
+test("HeaderElement.getId - id属性あり - idを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -11,7 +11,7 @@ it("HeaderElement.getId - id属性あり - idを返す", () => {
   expect(HeaderElement.getId(element)).toBe("page-header");
 });
 
-it("HeaderElement.getId - id属性なし - undefinedを返す", () => {
+test("HeaderElement.getId - id属性なし - undefinedを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -20,7 +20,7 @@ it("HeaderElement.getId - id属性なし - undefinedを返す", () => {
   expect(HeaderElement.getId(element)).toBeUndefined();
 });
 
-it(
+test(
   "HeaderElement.getClassName - className属性あり - classNameを返す",
   () => {
     const element: HeaderElementType = {
@@ -32,7 +32,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.getClassName - className属性なし - undefinedを返す",
   () => {
     const element: HeaderElementType = {
@@ -44,7 +44,7 @@ it(
   }
 );
 
-it("HeaderElement.getStyle - style属性あり - styleを返す", () => {
+test("HeaderElement.getStyle - style属性あり - styleを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -55,7 +55,7 @@ it("HeaderElement.getStyle - style属性あり - styleを返す", () => {
   );
 });
 
-it("HeaderElement.getStyle - style属性なし - undefinedを返す", () => {
+test("HeaderElement.getStyle - style属性なし - undefinedを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -64,7 +64,7 @@ it("HeaderElement.getStyle - style属性なし - undefinedを返す", () => {
   expect(HeaderElement.getStyle(element)).toBeUndefined();
 });
 
-it("HeaderElement.getAttribute - 属性あり - 値を返す", () => {
+test("HeaderElement.getAttribute - 属性あり - 値を返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -79,7 +79,7 @@ it("HeaderElement.getAttribute - 属性あり - 値を返す", () => {
   expect(HeaderElement.getAttribute(element, "data-sticky")).toBe("true");
 });
 
-it("HeaderElement.getAttribute - 属性なし - undefinedを返す", () => {
+test("HeaderElement.getAttribute - 属性なし - undefinedを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -88,7 +88,7 @@ it("HeaderElement.getAttribute - 属性なし - undefinedを返す", () => {
   expect(HeaderElement.getAttribute(element, "id")).toBeUndefined();
 });
 
-it("HeaderElement.getChildren - childrenあり - childrenを返す", () => {
+test("HeaderElement.getChildren - childrenあり - childrenを返す", () => {
   const children = [
     {
       type: "element" as const,
@@ -105,7 +105,7 @@ it("HeaderElement.getChildren - childrenあり - childrenを返す", () => {
   expect(HeaderElement.getChildren(element)).toBe(children);
 });
 
-it("HeaderElement.getChildren - childrenなし - undefinedを返す", () => {
+test("HeaderElement.getChildren - childrenなし - undefinedを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -114,7 +114,7 @@ it("HeaderElement.getChildren - childrenなし - undefinedを返す", () => {
   expect(HeaderElement.getChildren(element)).toBeUndefined();
 });
 
-it("HeaderElement.getChildren - 空配列children - 空配列を返す", () => {
+test("HeaderElement.getChildren - 空配列children - 空配列を返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -124,7 +124,7 @@ it("HeaderElement.getChildren - 空配列children - 空配列を返す", () => {
   expect(HeaderElement.getChildren(element)).toEqual([]);
 });
 
-it("HeaderElement.hasAttribute - 属性あり - trueを返す", () => {
+test("HeaderElement.hasAttribute - 属性あり - trueを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -137,7 +137,7 @@ it("HeaderElement.hasAttribute - 属性あり - trueを返す", () => {
   expect(HeaderElement.hasAttribute(element, "className")).toBe(true);
 });
 
-it("HeaderElement.hasAttribute - 属性なし - falseを返す", () => {
+test("HeaderElement.hasAttribute - 属性なし - falseを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",
@@ -149,7 +149,7 @@ it("HeaderElement.hasAttribute - 属性なし - falseを返す", () => {
   expect(HeaderElement.hasAttribute(element, "style")).toBe(false);
 });
 
-it("HeaderElement.hasAttribute - 空のattributes - falseを返す", () => {
+test("HeaderElement.hasAttribute - 空のattributes - falseを返す", () => {
   const element: HeaderElementType = {
     type: "element",
     tagName: "header",

@@ -1,8 +1,8 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { FooterElement } from "../footer-element";
 import type { FooterElement as FooterElementType } from "../footer-element";
 
-it(
+test(
   "FooterElement.toFigmaNode - 基本footer要素 - Figmaノードを生成する",
   () => {
     const element: FooterElementType = {
@@ -20,7 +20,7 @@ it(
   }
 );
 
-it("FooterElement.toFigmaNode - id属性あり - nameにidを含める", () => {
+test("FooterElement.toFigmaNode - id属性あり - nameにidを含める", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -32,7 +32,7 @@ it("FooterElement.toFigmaNode - id属性あり - nameにidを含める", () => {
   expect(figmaNode.name).toBe("footer#site-footer");
 });
 
-it(
+test(
   "FooterElement.toFigmaNode - className属性あり - nameにclassNameを含める",
   () => {
     const element: FooterElementType = {
@@ -47,7 +47,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - idとclassName属性あり - nameに両方を含める",
   () => {
     const element: FooterElementType = {
@@ -62,7 +62,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - display:flex - レイアウトを反映する",
   () => {
     const element: FooterElementType = {
@@ -82,7 +82,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - flex-direction:column - layoutModeをVERTICALにする",
   () => {
     const element: FooterElementType = {
@@ -99,7 +99,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - padding指定 - 全方向に反映する",
   () => {
     const element: FooterElementType = {
@@ -119,7 +119,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - 個別padding指定 - 各値を反映する",
   () => {
     const element: FooterElementType = {
@@ -139,7 +139,7 @@ it(
   }
 );
 
-it("FooterElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
+test("FooterElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
   const element: FooterElementType = {
     type: "element",
     tagName: "footer",
@@ -153,7 +153,7 @@ it("FooterElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
   expect(figmaNode.itemSpacing).toBe(16);
 });
 
-it(
+test(
   "FooterElement.toFigmaNode - 背景色hex指定 - fillsを設定する",
   () => {
     const element: FooterElementType = {
@@ -174,7 +174,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - 背景色short hex指定 - fillsを設定する",
   () => {
     const element: FooterElementType = {
@@ -195,7 +195,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - width/height指定 - サイズを反映する",
   () => {
     const element: FooterElementType = {
@@ -213,7 +213,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - min/max指定 - 制約値を設定する",
   () => {
     const element: FooterElementType = {
@@ -231,7 +231,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.toFigmaNode - 複数スタイル指定 - 主要スタイルを反映する",
   () => {
     const element: FooterElementType = {

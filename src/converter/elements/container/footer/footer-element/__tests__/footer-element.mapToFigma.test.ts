@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { FooterElement } from "../footer-element";
 import { HTMLToFigmaMapper } from "../../../../../mapper";
 
@@ -14,7 +14,7 @@ describe("FooterElement.mapToFigma", () => {
     vi.clearAllMocks();
   });
 
-  it("FooterElement.mapToFigma - footer以外の要素 - nullを返す", () => {
+  test("FooterElement.mapToFigma - footer以外の要素 - nullを返す", () => {
     const node = {
       type: "element",
       tagName: "div",
@@ -26,7 +26,7 @@ describe("FooterElement.mapToFigma", () => {
     expect(result).toBeNull();
   });
 
-  it("FooterElement.mapToFigma - 子要素なし - Figmaノードを返す", () => {
+  test("FooterElement.mapToFigma - 子要素なし - Figmaノードを返す", () => {
     const node = {
       type: "element",
       tagName: "footer",
@@ -44,7 +44,7 @@ describe("FooterElement.mapToFigma", () => {
     });
   });
 
-  it("FooterElement.mapToFigma - 子要素あり - 子要素をマッピングする", () => {
+  test("FooterElement.mapToFigma - 子要素あり - 子要素をマッピングする", () => {
     const childNode1 = { type: "element", tagName: "p", attributes: {} };
     const childNode2 = { type: "element", tagName: "nav", attributes: {} };
     const mappedChild1 = { type: "TEXT", name: "p" };
@@ -76,7 +76,7 @@ describe("FooterElement.mapToFigma", () => {
     });
   });
 
-  it("FooterElement.mapToFigma - null子要素あり - nullを除外する", () => {
+  test("FooterElement.mapToFigma - null子要素あり - nullを除外する", () => {
     const childNode1 = { type: "element", tagName: "p", attributes: {} };
     const childNode2 = { type: "comment", content: "comment" };
     const childNode3 = { type: "element", tagName: "div", attributes: {} };
@@ -101,7 +101,7 @@ describe("FooterElement.mapToFigma", () => {
     expect(result?.children).toEqual([mappedChild1, mappedChild3]);
   });
 
-  it("FooterElement.mapToFigma - スタイル属性あり - スタイルを反映する", () => {
+  test("FooterElement.mapToFigma - スタイル属性あり - スタイルを反映する", () => {
     const node = {
       type: "element",
       tagName: "footer",
@@ -138,7 +138,7 @@ describe("FooterElement.mapToFigma", () => {
     });
   });
 
-  it("FooterElement.mapToFigma - 空配列children - 空配列を設定する", () => {
+  test("FooterElement.mapToFigma - 空配列children - 空配列を設定する", () => {
     const node = {
       type: "element",
       tagName: "footer",
@@ -152,7 +152,7 @@ describe("FooterElement.mapToFigma", () => {
     expect(result?.children).toEqual([]);
   });
 
-  it("FooterElement.mapToFigma - childrenがundefined - 空配列を設定する", () => {
+  test("FooterElement.mapToFigma - childrenがundefined - 空配列を設定する", () => {
     const node = {
       type: "element",
       tagName: "footer",

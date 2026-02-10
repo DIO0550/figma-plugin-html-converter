@@ -1,20 +1,20 @@
-import { it, expectTypeOf } from "vitest";
+import { test, expectTypeOf } from "vitest";
 import type { FooterAttributes } from "../footer-attributes";
 import type { GlobalAttributes } from "../../../../base/global-attributes";
 
-it(
+test(
   "FooterAttributes.type - GlobalAttributes継承 - 型互換である",
   () => {
     expectTypeOf<FooterAttributes>().toEqualTypeOf<GlobalAttributes>();
   }
 );
 
-it("FooterAttributes.type - id属性あり - idの型を持つ", () => {
+test("FooterAttributes.type - id属性あり - idの型を持つ", () => {
   const attrs: FooterAttributes = { id: "footer" };
   expectTypeOf(attrs.id).toEqualTypeOf<string | undefined>();
 });
 
-it(
+test(
   "FooterAttributes.type - className属性あり - classNameの型を持つ",
   () => {
     const attrs: FooterAttributes = { className: "footer" };
@@ -22,12 +22,12 @@ it(
   }
 );
 
-it("FooterAttributes.type - style属性あり - styleの型を持つ", () => {
+test("FooterAttributes.type - style属性あり - styleの型を持つ", () => {
   const attrs: FooterAttributes = { style: "padding: 10px;" };
   expectTypeOf(attrs.style).toEqualTypeOf<string | undefined>();
 });
 
-it("FooterAttributes.type - data属性あり - data属性の型を持つ", () => {
+test("FooterAttributes.type - data属性あり - data属性の型を持つ", () => {
   const attrs: FooterAttributes = {
     "data-test": "value",
     "data-id": "123",
@@ -35,7 +35,7 @@ it("FooterAttributes.type - data属性あり - data属性の型を持つ", () =>
   expectTypeOf(attrs["data-test"]).toEqualTypeOf<string | undefined>();
 });
 
-it("FooterAttributes.type - aria属性あり - aria属性の型を持つ", () => {
+test("FooterAttributes.type - aria属性あり - aria属性の型を持つ", () => {
   const attrs: FooterAttributes = {
     "aria-label": "フッター",
     "aria-labelledby": "footer-heading",

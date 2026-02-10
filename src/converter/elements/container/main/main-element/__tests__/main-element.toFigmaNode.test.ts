@@ -1,7 +1,7 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { MainElement } from "../main-element";
 
-it(
+test(
   "MainElement.toFigmaNode - 基本main要素 - デフォルトノードを生成する",
   () => {
     const element = MainElement.create();
@@ -22,14 +22,14 @@ it(
   }
 );
 
-it("MainElement.toFigmaNode - id属性あり - nameにidを含める", () => {
+test("MainElement.toFigmaNode - id属性あり - nameにidを含める", () => {
   const element = MainElement.create({ id: "main-content" });
   const figmaNode = MainElement.toFigmaNode(element);
 
   expect(figmaNode.name).toBe("main#main-content");
 });
 
-it(
+test(
   "MainElement.toFigmaNode - className属性あり - nameにclassNameを含める",
   () => {
     const element = MainElement.create({ className: "main container" });
@@ -39,7 +39,7 @@ it(
   }
 );
 
-it(
+test(
   "MainElement.toFigmaNode - idとclassName属性あり - nameに両方を含める",
   () => {
     const element = MainElement.create({
@@ -52,7 +52,7 @@ it(
   }
 );
 
-it("MainElement.toFigmaNode - display:flex - レイアウトを反映する", () => {
+test("MainElement.toFigmaNode - display:flex - レイアウトを反映する", () => {
   const element = MainElement.create({
     style:
       "display: flex; flex-direction: row; justify-content: center; align-items: center;",
@@ -64,7 +64,7 @@ it("MainElement.toFigmaNode - display:flex - レイアウトを反映する", ()
   expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
 });
 
-it("MainElement.toFigmaNode - padding指定 - 全方向に反映する", () => {
+test("MainElement.toFigmaNode - padding指定 - 全方向に反映する", () => {
   const element = MainElement.create({
     style: "padding: 20px;",
   });
@@ -76,7 +76,7 @@ it("MainElement.toFigmaNode - padding指定 - 全方向に反映する", () => {
   expect(figmaNode.paddingLeft).toBe(20);
 });
 
-it("MainElement.toFigmaNode - 個別padding指定 - 各値を反映する", () => {
+test("MainElement.toFigmaNode - 個別padding指定 - 各値を反映する", () => {
   const element = MainElement.create({
     style:
       "padding-top: 10px; padding-right: 20px; padding-bottom: 30px; padding-left: 40px;",
@@ -89,7 +89,7 @@ it("MainElement.toFigmaNode - 個別padding指定 - 各値を反映する", () =
   expect(figmaNode.paddingLeft).toBe(40);
 });
 
-it("MainElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
+test("MainElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
   const element = MainElement.create({
     style: "display: flex; gap: 16px;",
   });
@@ -98,7 +98,7 @@ it("MainElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
   expect(figmaNode.itemSpacing).toBe(16);
 });
 
-it("MainElement.toFigmaNode - 背景色指定 - fillsを設定する", () => {
+test("MainElement.toFigmaNode - 背景色指定 - fillsを設定する", () => {
   const element = MainElement.create({
     style: "background-color: #f0f0f0;",
   });
@@ -117,7 +117,7 @@ it("MainElement.toFigmaNode - 背景色指定 - fillsを設定する", () => {
   ]);
 });
 
-it("MainElement.toFigmaNode - width/height指定 - サイズを設定する", () => {
+test("MainElement.toFigmaNode - width/height指定 - サイズを設定する", () => {
   const element = MainElement.create({
     style: "width: 1200px; height: 800px;",
   });
@@ -129,7 +129,7 @@ it("MainElement.toFigmaNode - width/height指定 - サイズを設定する", ()
   expect(figmaNode.layoutSizingVertical).toBe("FIXED");
 });
 
-it("MainElement.toFigmaNode - min/max指定 - 制約値を設定する", () => {
+test("MainElement.toFigmaNode - min/max指定 - 制約値を設定する", () => {
   const element = MainElement.create({
     style:
       "min-width: 320px; max-width: 1920px; min-height: 480px; max-height: 1080px;",
@@ -142,7 +142,7 @@ it("MainElement.toFigmaNode - min/max指定 - 制約値を設定する", () => {
   expect((figmaNode as Record<string, unknown>).maxHeight).toBe(1080);
 });
 
-it(
+test(
   "MainElement.toFigmaNode - justify-content全バリエーション - primaryAxisAlignItemsを反映する",
   () => {
     const justifyContentMap = {
@@ -164,7 +164,7 @@ it(
   }
 );
 
-it(
+test(
   "MainElement.toFigmaNode - align-items全バリエーション - counterAxisAlignItemsを反映する",
   () => {
     const alignItemsMap = {
@@ -185,7 +185,7 @@ it(
   }
 );
 
-it(
+test(
   "MainElement.toFigmaNode - 複数スタイル指定 - 主要スタイルを反映する",
   () => {
     const element = MainElement.create({

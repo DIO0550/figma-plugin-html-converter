@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { HeaderElement } from "../header-element";
 import { HTMLToFigmaMapper } from "../../../../../mapper";
 
@@ -14,7 +14,7 @@ describe("HeaderElement.mapToFigma", () => {
     vi.clearAllMocks();
   });
 
-  it("HeaderElement.mapToFigma - header以外の要素 - nullを返す", () => {
+  test("HeaderElement.mapToFigma - header以外の要素 - nullを返す", () => {
     const notHeader = {
       type: "element",
       tagName: "div",
@@ -26,7 +26,7 @@ describe("HeaderElement.mapToFigma", () => {
     expect(result).toBeNull();
   });
 
-  it("HeaderElement.mapToFigma - 基本header要素 - Figmaノードを返す", () => {
+  test("HeaderElement.mapToFigma - 基本header要素 - Figmaノードを返す", () => {
     const element = {
       type: "element",
       tagName: "header",
@@ -43,7 +43,7 @@ describe("HeaderElement.mapToFigma", () => {
     });
   });
 
-  it("HeaderElement.mapToFigma - 子要素あり - 子要素をマッピングする", () => {
+  test("HeaderElement.mapToFigma - 子要素あり - 子要素をマッピングする", () => {
     const childFigmaNode1 = { type: "FRAME", name: "nav" };
     const childFigmaNode2 = { type: "TEXT", name: "text" };
 
@@ -88,7 +88,7 @@ describe("HeaderElement.mapToFigma", () => {
     });
   });
 
-  it("HeaderElement.mapToFigma - null子要素あり - nullを除外する", () => {
+  test("HeaderElement.mapToFigma - null子要素あり - nullを除外する", () => {
     vi.mocked(HTMLToFigmaMapper.mapNode)
       .mockReturnValueOnce({ type: "FRAME", name: "nav" })
       .mockReturnValueOnce(null)
@@ -114,7 +114,7 @@ describe("HeaderElement.mapToFigma", () => {
     ]);
   });
 
-  it("HeaderElement.mapToFigma - 子要素なし - 空配列を設定する", () => {
+  test("HeaderElement.mapToFigma - 子要素なし - 空配列を設定する", () => {
     const element = {
       type: "element",
       tagName: "header",
@@ -126,7 +126,7 @@ describe("HeaderElement.mapToFigma", () => {
     expect(result?.children).toEqual([]);
   });
 
-  it("HeaderElement.mapToFigma - スタイル属性あり - スタイルを反映する", () => {
+  test("HeaderElement.mapToFigma - スタイル属性あり - スタイルを反映する", () => {
     const element = {
       type: "element",
       tagName: "header",
@@ -160,7 +160,7 @@ describe("HeaderElement.mapToFigma", () => {
     });
   });
 
-  it("HeaderElement.mapToFigma - 不正な入力 - nullを返す", () => {
+  test("HeaderElement.mapToFigma - 不正な入力 - nullを返す", () => {
     expect(HeaderElement.mapToFigma(null)).toBeNull();
     expect(HeaderElement.mapToFigma(undefined)).toBeNull();
     expect(HeaderElement.mapToFigma("not an object")).toBeNull();

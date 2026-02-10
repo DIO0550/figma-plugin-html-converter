@@ -1,19 +1,19 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { MainElement } from "../main-element";
 import type { MainElement as MainElementType } from "../main-element";
 import type { HTMLNode } from "../../../../../models/html-node";
 
-it("MainElement.getId - id属性あり - idを返す", () => {
+test("MainElement.getId - id属性あり - idを返す", () => {
   const element = MainElement.create({ id: "main-content" });
   expect(MainElement.getId(element)).toBe("main-content");
 });
 
-it("MainElement.getId - id属性なし - undefinedを返す", () => {
+test("MainElement.getId - id属性なし - undefinedを返す", () => {
   const element = MainElement.create();
   expect(MainElement.getId(element)).toBeUndefined();
 });
 
-it(
+test(
   "MainElement.getClassName - className属性あり - classNameを返す",
   () => {
     const element = MainElement.create({ className: "main container" });
@@ -21,7 +21,7 @@ it(
   }
 );
 
-it(
+test(
   "MainElement.getClassName - className属性なし - undefinedを返す",
   () => {
     const element = MainElement.create();
@@ -29,17 +29,17 @@ it(
   }
 );
 
-it("MainElement.getStyle - style属性あり - styleを返す", () => {
+test("MainElement.getStyle - style属性あり - styleを返す", () => {
   const element = MainElement.create({ style: "padding: 20px;" });
   expect(MainElement.getStyle(element)).toBe("padding: 20px;");
 });
 
-it("MainElement.getStyle - style属性なし - undefinedを返す", () => {
+test("MainElement.getStyle - style属性なし - undefinedを返す", () => {
   const element = MainElement.create();
   expect(MainElement.getStyle(element)).toBeUndefined();
 });
 
-it("MainElement.getAttribute - 属性あり - 値を返す", () => {
+test("MainElement.getAttribute - 属性あり - 値を返す", () => {
   const element = MainElement.create({
     id: "main",
     className: "content",
@@ -55,14 +55,14 @@ it("MainElement.getAttribute - 属性あり - 値を返す", () => {
   expect(MainElement.getAttribute(element, "aria-label")).toBe("メインコンテンツ");
 });
 
-it("MainElement.getAttribute - 属性なし - undefinedを返す", () => {
+test("MainElement.getAttribute - 属性なし - undefinedを返す", () => {
   const element = MainElement.create({ id: "main" });
   expect(MainElement.getAttribute(element, "className")).toBeUndefined();
   expect(MainElement.getAttribute(element, "style")).toBeUndefined();
   expect(MainElement.getAttribute(element, "data-test")).toBeUndefined();
 });
 
-it("MainElement.getChildren - childrenあり - childrenを返す", () => {
+test("MainElement.getChildren - childrenあり - childrenを返す", () => {
   const children: HTMLNode[] = [
     { type: "text", content: "テキスト" },
     {
@@ -76,12 +76,12 @@ it("MainElement.getChildren - childrenあり - childrenを返す", () => {
   expect(MainElement.getChildren(element)).toEqual(children);
 });
 
-it("MainElement.getChildren - childrenなし - 空配列を返す", () => {
+test("MainElement.getChildren - childrenなし - 空配列を返す", () => {
   const element = MainElement.create();
   expect(MainElement.getChildren(element)).toEqual([]);
 });
 
-it("MainElement.getChildren - childrenがundefined - undefinedを返す", () => {
+test("MainElement.getChildren - childrenがundefined - undefinedを返す", () => {
   const element: MainElementType = {
     type: "element",
     tagName: "main",
@@ -91,7 +91,7 @@ it("MainElement.getChildren - childrenがundefined - undefinedを返す", () => 
   expect(MainElement.getChildren(element)).toBeUndefined();
 });
 
-it("MainElement.hasAttribute - 属性あり - trueを返す", () => {
+test("MainElement.hasAttribute - 属性あり - trueを返す", () => {
   const element = MainElement.create({
     id: "main",
     className: "content",
@@ -105,7 +105,7 @@ it("MainElement.hasAttribute - 属性あり - trueを返す", () => {
   expect(MainElement.hasAttribute(element, "data-page")).toBe(true);
 });
 
-it("MainElement.hasAttribute - 属性なし - falseを返す", () => {
+test("MainElement.hasAttribute - 属性なし - falseを返す", () => {
   const element = MainElement.create({ id: "main" });
 
   expect(MainElement.hasAttribute(element, "className")).toBe(false);
@@ -114,7 +114,7 @@ it("MainElement.hasAttribute - 属性なし - falseを返す", () => {
   expect(MainElement.hasAttribute(element, "data-test")).toBe(false);
 });
 
-it("MainElement.hasAttribute - undefined値の属性 - trueを返す", () => {
+test("MainElement.hasAttribute - undefined値の属性 - trueを返す", () => {
   const element = MainElement.create({
     id: undefined as unknown as string,
   });

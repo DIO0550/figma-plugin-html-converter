@@ -1,14 +1,14 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import type { HeaderAttributes } from "../header-attributes";
 
-it("HeaderAttributes.type - id属性あり - idを保持する", () => {
+test("HeaderAttributes.type - id属性あり - idを保持する", () => {
   const attributes: HeaderAttributes = {
     id: "page-header",
   };
   expect(attributes.id).toBe("page-header");
 });
 
-it(
+test(
   "HeaderAttributes.type - className属性あり - classNameを保持する",
   () => {
     const attributes: HeaderAttributes = {
@@ -18,14 +18,14 @@ it(
   }
 );
 
-it("HeaderAttributes.type - style属性あり - styleを保持する", () => {
+test("HeaderAttributes.type - style属性あり - styleを保持する", () => {
   const attributes: HeaderAttributes = {
     style: "background-color: #333; padding: 20px;",
   };
   expect(attributes.style).toBe("background-color: #333; padding: 20px;");
 });
 
-it("HeaderAttributes.type - data属性あり - data属性を保持する", () => {
+test("HeaderAttributes.type - data属性あり - data属性を保持する", () => {
   const attributes: HeaderAttributes = {
     "data-testid": "header",
     "data-theme": "dark",
@@ -34,7 +34,7 @@ it("HeaderAttributes.type - data属性あり - data属性を保持する", () =>
   expect(attributes["data-theme"]).toBe("dark");
 });
 
-it("HeaderAttributes.type - aria属性あり - aria属性を保持する", () => {
+test("HeaderAttributes.type - aria属性あり - aria属性を保持する", () => {
   const attributes: HeaderAttributes = {
     "aria-label": "Site header",
     "aria-expanded": "false",
@@ -43,7 +43,7 @@ it("HeaderAttributes.type - aria属性あり - aria属性を保持する", () =>
   expect(attributes["aria-expanded"]).toBe("false");
 });
 
-it("HeaderAttributes.type - 複数属性あり - 各属性を保持する", () => {
+test("HeaderAttributes.type - 複数属性あり - 各属性を保持する", () => {
   const attributes: HeaderAttributes = {
     id: "header",
     className: "site-header sticky-header",
@@ -58,7 +58,7 @@ it("HeaderAttributes.type - 複数属性あり - 各属性を保持する", () =
   expect(attributes["aria-label"]).toBe("Main navigation");
 });
 
-it("HeaderAttributes.type - 空のオブジェクト - 空オブジェクトを許容する", () => {
+test("HeaderAttributes.type - 空のオブジェクト - 空オブジェクトを許容する", () => {
   const attributes: HeaderAttributes = {};
   expect(Object.keys(attributes)).toHaveLength(0);
 });

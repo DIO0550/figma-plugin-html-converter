@@ -1,7 +1,7 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 
-it(
+test(
   "HeaderElement.create - 属性なし - デフォルトのheader要素を作成する",
   () => {
     const element = HeaderElement.create();
@@ -15,7 +15,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.create - 属性あり - 属性を設定したheader要素を作成する",
   () => {
     const attributes = {
@@ -34,7 +34,7 @@ it(
   }
 );
 
-it("HeaderElement.create - 子要素あり - childrenを設定する", () => {
+test("HeaderElement.create - 子要素あり - childrenを設定する", () => {
   const children = [
     {
       type: "element" as const,
@@ -56,7 +56,7 @@ it("HeaderElement.create - 子要素あり - childrenを設定する", () => {
   });
 });
 
-it(
+test(
   "HeaderElement.create - 属性と子要素あり - 両方を設定する",
   () => {
     const attributes = {
@@ -81,7 +81,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.create - 部分的な属性 - 属性を保持する",
   () => {
     const element = HeaderElement.create({ id: "header" });
@@ -91,7 +91,7 @@ it(
   }
 );
 
-it(
+test(
   "HeaderElement.create - 空の属性 - 空オブジェクトを保持する",
   () => {
     const element = HeaderElement.create({});

@@ -1,8 +1,8 @@
-import { it, expect, test } from "vitest";
+import { test, expect } from "vitest";
 import { HeaderElement } from "../header-element";
 import type { HeaderElement as HeaderElementType } from "../header-element";
 
-it(
+test(
   "HeaderElement.toFigmaNode - 基本header要素 - デフォルトノードを生成する",
   () => {
     const element: HeaderElementType = {
@@ -27,7 +27,7 @@ it(
     });
   });
 
-  it("HeaderElement.toFigmaNode - id属性あり - nameにidを含める", () => {
+  test("HeaderElement.toFigmaNode - id属性あり - nameにidを含める", () => {
     const element: HeaderElementType = {
       type: "element",
       tagName: "header",
@@ -39,7 +39,7 @@ it(
     expect(figmaNode.name).toBe("header#page-header");
   });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - className属性あり - nameにclassNameを含める",
     () => {
     const element: HeaderElementType = {
@@ -53,7 +53,7 @@ it(
     expect(figmaNode.name).toBe("header.site-header.sticky");
   });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - idとclassName属性あり - nameに両方を含める",
     () => {
     const element: HeaderElementType = {
@@ -70,7 +70,7 @@ it(
     expect(figmaNode.name).toBe("header#main-header.header.primary");
   });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - flex-direction: row - layoutModeをHORIZONTALにする",
     () => {
       const element: HeaderElementType = {
@@ -86,7 +86,7 @@ it(
       expect(figmaNode.layoutMode).toBe("HORIZONTAL");
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - flex-direction: column - layoutModeをVERTICALにする",
       () => {
       const element: HeaderElementType = {
@@ -102,7 +102,7 @@ it(
       expect(figmaNode.layoutMode).toBe("VERTICAL");
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - justify-content指定 - primaryAxisAlignItemsを設定する",
       () => {
       const element: HeaderElementType = {
@@ -118,7 +118,7 @@ it(
       expect(figmaNode.primaryAxisAlignItems).toBe("SPACE_BETWEEN");
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - align-items指定 - counterAxisAlignItemsを設定する",
       () => {
       const element: HeaderElementType = {
@@ -134,7 +134,7 @@ it(
       expect(figmaNode.counterAxisAlignItems).toBe("CENTER");
     });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - padding指定 - 全方向に反映する",
     () => {
       const element: HeaderElementType = {
@@ -153,7 +153,7 @@ it(
       expect(figmaNode.paddingLeft).toBe(20);
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - 個別padding指定 - 各値を反映する",
       () => {
       const element: HeaderElementType = {
@@ -173,7 +173,7 @@ it(
       expect(figmaNode.paddingLeft).toBe(40);
     });
 
-  it("HeaderElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
+  test("HeaderElement.toFigmaNode - gap指定 - itemSpacingを設定する", () => {
       const element: HeaderElementType = {
         type: "element",
         tagName: "header",
@@ -187,7 +187,7 @@ it(
       expect(figmaNode.itemSpacing).toBe(16);
     });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - 背景色hex指定 - fillsを設定する",
     () => {
       const element: HeaderElementType = {
@@ -209,7 +209,7 @@ it(
       ]);
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - 背景色short hex指定 - fillsを設定する",
       () => {
       const element: HeaderElementType = {
@@ -231,7 +231,7 @@ it(
       ]);
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - 背景色名指定 - fillsを設定する",
       () => {
       const element: HeaderElementType = {
@@ -253,7 +253,7 @@ it(
       ]);
     });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - width指定 - widthとlayoutSizingHorizontalを設定する",
     () => {
       const element: HeaderElementType = {
@@ -270,7 +270,7 @@ it(
       expect(figmaNode.layoutSizingHorizontal).toBe("FIXED");
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - height指定 - heightとlayoutSizingVerticalを設定する",
       () => {
       const element: HeaderElementType = {
@@ -287,7 +287,7 @@ it(
       expect(figmaNode.layoutSizingVertical).toBe("FIXED");
     });
 
-    it(
+    test(
       "HeaderElement.toFigmaNode - min/max指定 - 制約値を設定する",
       () => {
       const element: HeaderElementType = {
@@ -307,7 +307,7 @@ it(
       expect(figmaNode.maxHeight).toBe(150);
     });
 
-  it(
+  test(
     "HeaderElement.toFigmaNode - 複合スタイル指定 - 主要スタイルを反映する",
     () => {
     const element: HeaderElementType = {

@@ -1,7 +1,7 @@
-import { it, expect } from "vitest";
+import { test, expect } from "vitest";
 import { FooterElement } from "../footer-element";
 
-it(
+test(
   "FooterElement.isFooterElement - 有効なfooter要素 - trueを返す",
   () => {
     const element = {
@@ -14,7 +14,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.isFooterElement - 属性と子要素あり - trueを返す",
   () => {
     const element = {
@@ -35,7 +35,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.isFooterElement - typeがelement以外 - falseを返す",
   () => {
     const element = {
@@ -48,7 +48,7 @@ it(
   }
 );
 
-it(
+test(
   "FooterElement.isFooterElement - tagNameがfooter以外 - falseを返す",
   () => {
     const element = {
@@ -61,24 +61,24 @@ it(
   }
 );
 
-it("FooterElement.isFooterElement - null入力 - falseを返す", () => {
+test("FooterElement.isFooterElement - null入力 - falseを返す", () => {
   expect(FooterElement.isFooterElement(null)).toBe(false);
 });
 
-it(
+test(
   "FooterElement.isFooterElement - undefined入力 - falseを返す",
   () => {
     expect(FooterElement.isFooterElement(undefined)).toBe(false);
   }
 );
 
-it("FooterElement.isFooterElement - 非オブジェクト入力 - falseを返す", () => {
+test("FooterElement.isFooterElement - 非オブジェクト入力 - falseを返す", () => {
   expect(FooterElement.isFooterElement("footer")).toBe(false);
   expect(FooterElement.isFooterElement(123)).toBe(false);
   expect(FooterElement.isFooterElement(true)).toBe(false);
 });
 
-it(
+test(
   "FooterElement.isFooterElement - 必須プロパティ不足 - falseを返す",
   () => {
     expect(FooterElement.isFooterElement({ type: "element" })).toBe(false);

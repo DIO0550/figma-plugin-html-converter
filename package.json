@@ -14,7 +14,7 @@
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "mcp:build": "vite build --config vite.mcp.config.ts",
-    "mcp:dev": "pnpm run mcp:build && node dist-mcp/index.js"
+    "mcp:start": "pnpm run mcp:build && node dist-mcp/index.js"
   },
   "keywords": [
     "figma",

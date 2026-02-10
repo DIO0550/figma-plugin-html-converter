@@ -1,5 +1,8 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import { builtinModules } from "module";
+
+const nodeBuiltins = builtinModules.flatMap((mod) => [mod, `node:${mod}`]);
 
 export default defineConfig({
   build: {
@@ -14,28 +17,7 @@ export default defineConfig({
     sourcemap: false,
     emptyOutDir: true,
     rollupOptions: {
-      external: [
-        "@modelcontextprotocol/sdk",
-        "@modelcontextprotocol/sdk/server/stdio.js",
-        "@modelcontextprotocol/sdk/server/streamableHttp.js",
-        "zod",
-        "node:fs",
-        "node:path",
-        "node:url",
-        "node:http",
-        "node:https",
-        "node:stream",
-        "node:buffer",
-        "node:util",
-        "node:events",
-        "node:crypto",
-        "node:net",
-        "node:tls",
-        "node:os",
-        "node:child_process",
-        "node:worker_threads",
-        "node:async_hooks",
-      ],
+      external: [/^@modelcontextprotocol\/sdk(\/.*)?$/, "zod", ...nodeBuiltins],
       output: {
         format: "es",
       },

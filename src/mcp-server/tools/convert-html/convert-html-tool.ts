@@ -13,7 +13,7 @@ export async function handleConvertHtml(args: {
       content: [
         {
           type: "text",
-          text: "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
+          text: `入力HTMLのサイズが上限（${MAX_HTML_SIZE.toLocaleString()}文字（UTF-16 code unit））を超えています`,
         },
       ],
       isError: true,

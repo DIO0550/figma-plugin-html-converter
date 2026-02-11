@@ -4,8 +4,8 @@ import { handleConvertHtml } from "./tools/convert-html/convert-html-tool";
 
 const SERVER_INFO = {
   name: "html-to-figma",
-  version: "1.0.0",
-} as const;
+  version: process.env.npm_package_version ?? "0.0.0",
+};
 
 export function createServer(): McpServer {
   const server = new McpServer(SERVER_INFO);

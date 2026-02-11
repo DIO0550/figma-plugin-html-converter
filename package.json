@@ -12,7 +12,9 @@
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "mcp:build": "vite build --config vite.mcp.config.ts",
+    "mcp:start": "pnpm run mcp:build && node dist-mcp/index.js"
   },
   "keywords": [
     "figma",
@@ -41,5 +43,9 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "zod": "^4.3.6"
   }
 }

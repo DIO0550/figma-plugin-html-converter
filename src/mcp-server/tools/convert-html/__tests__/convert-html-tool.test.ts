@@ -81,7 +81,7 @@ describe("handleConvertHtml", () => {
 
     expect(result.isError).toBe(true);
     expect((result.content[0] as { type: "text"; text: string }).text).toBe(
-      "入力HTMLのサイズが上限（1MB）を超えています",
+      "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
     );
     expect(mockConvertHTMLToFigma).not.toHaveBeenCalled();
   });
@@ -163,7 +163,7 @@ describe("handleConvertHtml", () => {
 
       expect(result.isError).toBe(true);
       expect((result.content[0] as { type: "text"; text: string }).text).toBe(
-        "入力HTMLのサイズが上限（1MB）を超えています",
+        "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
       );
     });
   });

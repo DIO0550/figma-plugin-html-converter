@@ -78,7 +78,9 @@ describe("MCPサーバー統合テスト", () => {
 
     expect(result.isError).toBe(true);
     const content = result.content as Array<{ type: string; text: string }>;
-    expect(content[0].text).toBe("入力HTMLのサイズが上限（1MB）を超えています");
+    expect(content[0].text).toBe(
+      "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
+    );
   });
 
   it("未知キー（トップレベル）の拒否", async () => {

@@ -11,7 +11,10 @@ export async function handleConvertHtml(args: {
   if (args.html.length > MAX_HTML_SIZE) {
     return {
       content: [
-        { type: "text", text: "入力HTMLのサイズが上限（1MB）を超えています" },
+        {
+          type: "text",
+          text: "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
+        },
       ],
       isError: true,
     };

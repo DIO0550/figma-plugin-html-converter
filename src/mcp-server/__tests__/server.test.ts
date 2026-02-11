@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer } from "../server";
+import { MAX_HTML_SIZE } from "../tools/convert-html/convert-html-tool";
 
 describe("MCPサーバー統合テスト", () => {
   let client: Client;
@@ -69,7 +70,7 @@ describe("MCPサーバー統合テスト", () => {
   });
 
   it("サイズ超過HTMLのE2E: エラー応答", async () => {
-    const largeHtml = "a".repeat(1_048_577);
+    const largeHtml = "a".repeat(MAX_HTML_SIZE + 1);
 
     const result = await client.callTool({
       name: "convert_html",

@@ -5,7 +5,7 @@ import { createServer } from "../server";
 import { MAX_HTML_SIZE } from "../tools/convert-html/convert-html-tool";
 
 let client: Client;
-let cleanup: () => Promise<void>;
+let cleanup: () => Promise<void> = async () => {};
 
 beforeAll(async () => {
   const server = createServer();

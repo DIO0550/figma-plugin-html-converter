@@ -1,10 +1,14 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
 import { builtinModules } from "module";
+import pkg from "./package.json" with { type: "json" };
 
 const nodeBuiltins = builtinModules.flatMap((mod) => [mod, `node:${mod}`]);
 
 export default defineConfig({
+  define: {
+    __MCP_SERVER_VERSION__: JSON.stringify(pkg.version),
+  },
   build: {
     lib: {
       entry: resolve(__dirname, "src/mcp-server/index.ts"),

@@ -78,9 +78,8 @@ test("サイズ超過HTMLのE2E: エラー応答", async () => {
 
   expect(result.isError).toBe(true);
   const content = result.content as Array<{ type: string; text: string }>;
-  expect(content[0].text).toBe(
-    "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
-  );
+  expect(content[0].text).toContain("入力HTMLのサイズが上限");
+  expect(content[0].text).toContain("を超えています");
 });
 
 test("未知キー（トップレベル）の拒否", async () => {

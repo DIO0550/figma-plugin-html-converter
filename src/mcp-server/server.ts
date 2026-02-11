@@ -2,8 +2,13 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { handleConvertHtml } from "./tools/convert-html/convert-html-tool";
 
+const SERVER_INFO = {
+  name: "html-to-figma",
+  version: "1.0.0",
+} as const;
+
 export function createServer(): McpServer {
-  const server = new McpServer({ name: "html-to-figma", version: "1.0.0" });
+  const server = new McpServer(SERVER_INFO);
 
   server.registerTool(
     "convert_html",

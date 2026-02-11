@@ -18,10 +18,7 @@ export async function handleConvertHtml(args: {
   }
 
   try {
-    const result = await convertHTMLToFigma(args.html, {
-      containerWidth: args.options?.containerWidth,
-      containerHeight: args.options?.containerHeight,
-    });
+    const result = await convertHTMLToFigma(args.html, args.options ?? {});
 
     return {
       content: [{ type: "text", text: JSON.stringify(result) }],

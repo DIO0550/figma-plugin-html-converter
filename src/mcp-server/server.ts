@@ -20,13 +20,11 @@ export function createServer(): McpServer {
           .strictObject({
             containerWidth: z
               .number()
-              .int()
               .positive()
               .optional()
               .describe("コンテナの幅（px）。デフォルト: 800"),
             containerHeight: z
               .number()
-              .int()
               .positive()
               .optional()
               .describe("コンテナの高さ（px）。デフォルト: 600"),

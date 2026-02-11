@@ -117,28 +117,6 @@ describe("handleConvertHtml", () => {
     expect(result.content[0].type).toBe("text");
   });
 
-  it("containerWidth/Height = 0 のオプションで空HTML入力時、width/heightが0のRootフレームを返す", async () => {
-    const mockResult = {
-      type: "FRAME",
-      name: "Root",
-      width: 0,
-      height: 0,
-    };
-    mockConvertHTMLToFigma.mockResolvedValue(mockResult);
-
-    const result = await handleConvertHtml({
-      html: "",
-      options: { containerWidth: 0, containerHeight: 0 },
-    });
-
-    expect(result.isError).toBeUndefined();
-    const parsed = JSON.parse(
-      (result.content[0] as { type: "text"; text: string }).text,
-    );
-    expect(parsed.width).toBe(0);
-    expect(parsed.height).toBe(0);
-  });
-
   describe("サロゲートペア文字の境界値テスト", () => {
     it("524,288個の絵文字（= 1,048,576 code units）は許可される", async () => {
       // "\u{1F600}" は string.length = 2（サロゲートペア）

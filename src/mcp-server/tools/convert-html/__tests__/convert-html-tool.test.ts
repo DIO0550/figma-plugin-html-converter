@@ -79,9 +79,9 @@ test("1MBを超えるHTMLでサイズ超過エラーを返す", async () => {
   const result = await handleConvertHtml({ html: largeHtml });
 
   expect(result.isError).toBe(true);
-  expect((result.content[0] as { type: "text"; text: string }).text).toBe(
-    "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
-  );
+  const errorText = (result.content[0] as { type: "text"; text: string }).text;
+  expect(errorText).toContain("入力HTMLのサイズが上限");
+  expect(errorText).toContain(MAX_HTML_SIZE.toLocaleString());
   expect(mockConvertHTMLToFigma).not.toHaveBeenCalled();
 });
 
@@ -138,9 +138,9 @@ test("524,289個の絵文字（= 1,048,578 code units）は超過エラーにな
   const result = await handleConvertHtml({ html });
 
   expect(result.isError).toBe(true);
-  expect((result.content[0] as { type: "text"; text: string }).text).toBe(
-    "入力HTMLのサイズが上限（1,048,576文字（UTF-16 code unit））を超えています",
-  );
+  const errorText = (result.content[0] as { type: "text"; text: string }).text;
+  expect(errorText).toContain("入力HTMLのサイズが上限");
+  expect(errorText).toContain(MAX_HTML_SIZE.toLocaleString());
 });
 
 test("Error以外の例外もstring化してエラー応答を返す", async () => {

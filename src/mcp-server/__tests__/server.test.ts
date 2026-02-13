@@ -102,3 +102,56 @@ test("未知キー（options内）の拒否", async () => {
 
   expect(result.isError).toBe(true);
 });
+
+test("containerWidth/containerHeight が有効値の場合に E2E が成功する", async () => {
+  const result = await client.callTool({
+    name: "convert_html",
+    arguments: {
+      html: "<div>container size</div>",
+      options: {
+        containerWidth: 800,
+        containerHeight: 600,
+      },
+    },
+  });
+
+  expect(result.isError).toBeFalsy();
+  const content = result.content as Array<{ type: string; text: string }>;
+  expect(content).toHaveLength(1);
+  const parsed = JSON.parse(content[0].text);
+  expect(parsed.type).toBe("FRAME");
+});
+
+test("containerWidth に 0 以下を指定した場合に Zod バリデーションエラーが返る", async () => {
+  const result = await client.callTool({
+    name: "convert_html",
+    arguments: {
+      html: "<div>invalid width</div>",
+      options: {
+        containerWidth: 0,
+      },
+    },
+  });
+
+  expect(result.isError).toBe(true);
+  const content = result.content as Array<{ type: string; text: string }>;
+  expect(content[0].type).toBe("text");
+  expect(content[0].text).not.toHaveLength(0);
+});
+
+test("containerHeight に 0 以下を指定した場合に Zod バリデーションエラーが返る", async () => {
+  const result = await client.callTool({
+    name: "convert_html",
+    arguments: {
+      html: "<div>invalid height</div>",
+      options: {
+        containerHeight: -100,
+      },
+    },
+  });
+
+  expect(result.isError).toBe(true);
+  const content = result.content as Array<{ type: string; text: string }>;
+  expect(content[0].type).toBe("text");
+  expect(content[0].text).not.toHaveLength(0);
+});

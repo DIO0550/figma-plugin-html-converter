@@ -1,8 +1,11 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import { readFileSync } from "fs";
 import { builtinModules } from "module";
-import pkg from "./package.json" with { type: "json" };
 
+const pkg = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8"),
+);
 const nodeBuiltins = builtinModules.flatMap((mod) => [mod, `node:${mod}`]);
 
 export default defineConfig({

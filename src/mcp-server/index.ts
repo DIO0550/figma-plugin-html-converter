@@ -1,2 +1,3 @@
 // MCPサーバー エントリポイント
-// 後続Issueで実装予定
+// CLI実装は後続Issueで追加予定
+export { createServer } from "./server";

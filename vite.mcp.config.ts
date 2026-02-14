@@ -1,10 +1,17 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import { readFileSync } from "fs";
 import { builtinModules } from "module";
 
+const pkg = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf-8"),
+);
 const nodeBuiltins = builtinModules.flatMap((mod) => [mod, `node:${mod}`]);
 
 export default defineConfig({
+  define: {
+    __MCP_SERVER_VERSION__: JSON.stringify(pkg.version),
+  },
   build: {
     lib: {
       entry: resolve(__dirname, "src/mcp-server/index.ts"),

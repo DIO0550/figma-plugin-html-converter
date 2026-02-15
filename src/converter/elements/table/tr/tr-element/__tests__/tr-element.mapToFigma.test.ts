@@ -1,130 +1,128 @@
-import { test, expect, describe } from "vitest";
+import { test, expect } from "vitest";
 import { TrElement } from "../tr-element";
 
-describe("TrElement.mapToFigma()", () => {
-  test("正常なTrElementオブジェクトをマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "tr",
-      attributes: {},
-      children: [],
-    };
+test("TrElement.mapToFigma - 正常なtr要素ノード - tr名の設定を返す", () => {
+  const node = {
+    type: "element",
+    tagName: "tr",
+    attributes: {},
+    children: [],
+  };
 
-    const config = TrElement.mapToFigma(node);
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.name).toBe("tr");
-  });
+  expect(config).not.toBeNull();
+  expect(config?.name).toBe("tr");
+});
 
-  test("属性を持つTrElementをマッピングする", () => {
-    const node = {
-      type: "element",
-      tagName: "tr",
-      attributes: {
-        width: "100%",
-        height: "50px",
-        className: "table-row",
-      },
-      children: [],
-    };
+test("TrElement.mapToFigma - 属性付きtr要素ノード - tr名の設定を返す", () => {
+  const node = {
+    type: "element",
+    tagName: "tr",
+    attributes: {
+      width: "100%",
+      height: "50px",
+      className: "table-row",
+    },
+    children: [],
+  };
 
-    const config = TrElement.mapToFigma(node);
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.name).toBe("tr");
-  });
+  expect(config).not.toBeNull();
+  expect(config?.name).toBe("tr");
+});
 
-  test("TrElement.create()で作成した要素をマッピングする", () => {
-    const node = TrElement.create({ width: "100%" });
-    const config = TrElement.mapToFigma(node);
+test("TrElement.mapToFigma - TrElement.create生成要素 - tr名の設定を返す", () => {
+  const node = TrElement.create({ width: "100%" });
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).not.toBeNull();
-    expect(config?.name).toBe("tr");
-  });
+  expect(config).not.toBeNull();
+  expect(config?.name).toBe("tr");
+});
 
-  test("nullをnullとして返す", () => {
-    const config = TrElement.mapToFigma(null);
+test("TrElement.mapToFigma - null入力 - nullを返す", () => {
+  const config = TrElement.mapToFigma(null);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("undefinedをnullとして返す", () => {
-    const config = TrElement.mapToFigma(undefined);
+test("TrElement.mapToFigma - undefined入力 - nullを返す", () => {
+  const config = TrElement.mapToFigma(undefined);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("文字列をnullとして返す", () => {
-    const config = TrElement.mapToFigma("tr");
+test("TrElement.mapToFigma - 文字列入力 - nullを返す", () => {
+  const config = TrElement.mapToFigma("tr");
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("数値をnullとして返す", () => {
-    const config = TrElement.mapToFigma(123);
+test("TrElement.mapToFigma - 数値入力 - nullを返す", () => {
+  const config = TrElement.mapToFigma(123);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("配列をnullとして返す", () => {
-    const config = TrElement.mapToFigma([]);
+test("TrElement.mapToFigma - 配列入力 - nullを返す", () => {
+  const config = TrElement.mapToFigma([]);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("type属性がないオブジェクトをnullとして返す", () => {
-    const node = {
-      tagName: "tr",
-      attributes: {},
-      children: [],
-    };
+test("TrElement.mapToFigma - type属性なしオブジェクト - nullを返す", () => {
+  const node = {
+    tagName: "tr",
+    attributes: {},
+    children: [],
+  };
 
-    const config = TrElement.mapToFigma(node);
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("tagName属性がないオブジェクトをnullとして返す", () => {
-    const node = {
-      type: "element",
-      attributes: {},
-      children: [],
-    };
+test("TrElement.mapToFigma - tagName属性なしオブジェクト - nullを返す", () => {
+  const node = {
+    type: "element",
+    attributes: {},
+    children: [],
+  };
 
-    const config = TrElement.mapToFigma(node);
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("typeがelementでないオブジェクトをnullとして返す", () => {
-    const node = {
-      type: "text",
-      tagName: "tr",
-      attributes: {},
-      children: [],
-    };
+test("TrElement.mapToFigma - typeがelement以外 - nullを返す", () => {
+  const node = {
+    type: "text",
+    tagName: "tr",
+    attributes: {},
+    children: [],
+  };
 
-    const config = TrElement.mapToFigma(node);
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("tagNameがtrでないオブジェクトをnullとして返す", () => {
-    const node = {
-      type: "element",
-      tagName: "td",
-      attributes: {},
-      children: [],
-    };
+test("TrElement.mapToFigma - tagNameがtr以外 - nullを返す", () => {
+  const node = {
+    type: "element",
+    tagName: "td",
+    attributes: {},
+    children: [],
+  };
 
-    const config = TrElement.mapToFigma(node);
+  const config = TrElement.mapToFigma(node);
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
+});
 
-  test("空のオブジェクトをnullとして返す", () => {
-    const config = TrElement.mapToFigma({});
+test("TrElement.mapToFigma - 空オブジェクト入力 - nullを返す", () => {
+  const config = TrElement.mapToFigma({});
 
-    expect(config).toBeNull();
-  });
+  expect(config).toBeNull();
 });

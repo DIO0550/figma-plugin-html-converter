@@ -6,6 +6,24 @@ export interface CliOptions {
 
 export const DEFAULT_PORT = 3000;
 
+/**
+ * CLI引数配列を解析して、サーバー起動に必要なオプションを構築します。
+ *
+ * 純粋関数であり、副作用はありません（グローバル状態やI/Oには一切影響しません）。
+ *
+ * @param argv `process.argv.slice(2)` などから渡されるCLI引数配列。
+ *             例: `["--transport=http", "--port", "3000"]`
+ * @returns 解析済みのオプションオブジェクト。
+ *          - `transport`: 通信方式（"stdio" または "http"）
+ *          - `port`: HTTPモード時に使用するポート番号（1〜65535、デフォルトは {@link DEFAULT_PORT}）
+ *          - `warnings`: 利用条件に応じた警告メッセージの配列
+ *
+ * @throws Error 以下の場合にエラーをスローします。
+ *         - `"--"` で始まらない不明な引数が含まれている場合
+ *         - `--transport` または `--port` に値が指定されていない場合
+ *         - `--transport` に "stdio" / "http" 以外の値が指定された場合
+ *         - `--port` に10進整数以外、または 1〜65535 の範囲外の値が指定された場合
+ */
 export function parseArgs(argv: string[]): CliOptions {
   let transport: "stdio" | "http" = "stdio";
   let port: number = DEFAULT_PORT;

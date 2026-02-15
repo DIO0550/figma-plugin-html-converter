@@ -14,6 +14,14 @@ function listenAsync(app: Express, port: number): Promise<void> {
   });
 }
 
+/**
+ * stdioトランスポートでMCPサーバーを起動します。
+ *
+ * stdin/stdoutを使用してJSON-RPC通信を行います。
+ * 起動ログはstderrに出力されます（stdoutはプロトコル通信に使用）。
+ *
+ * @throws サーバー接続に失敗した場合
+ */
 export async function startStdio(): Promise<void> {
   const server = createServer();
   const transport = new StdioServerTransport();
@@ -21,6 +29,15 @@ export async function startStdio(): Promise<void> {
   console.error("MCPサーバーを起動しました（トランスポート: stdio）");
 }
 
+/**
+ * Streamable HTTPトランスポートでMCPサーバーを起動します。
+ *
+ * `POST /mcp` エンドポイントでリクエストを受け付け、
+ * リクエストごとにサーバーインスタンスを作成・クリーンアップします（ステートレスモード）。
+ *
+ * @param port 待ち受けポート番号（1〜65535）
+ * @throws ポートが使用中（EADDRINUSE）などで起動に失敗した場合
+ */
 export async function startHttp(port: number): Promise<void> {
   const app = createMcpExpressApp();
   app.post("/mcp", async (req, res) => {

@@ -145,6 +145,28 @@ describe("startHttp", () => {
     errorSpy.mockRestore();
   });
 
+  test("/mcp ハンドラのcloseコールバックでtransport/serverがクリーンアップされる", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await startHttp(3000);
+
+    const mockReq = { body: {} };
+    const mockRes = { on: vi.fn() };
+    await mockPostHandler!(mockReq, mockRes);
+
+    expect(mockRes.on).toHaveBeenCalledWith("close", expect.any(Function));
+
+    const closeCallback = mockRes.on.mock.calls.find(
+      (call: unknown[]) => call[0] === "close",
+    )![1] as () => void;
+    closeCallback();
+
+    expect(mockTransportClose).toHaveBeenCalled();
+    expect(mockClose).toHaveBeenCalled();
+
+    errorSpy.mockRestore();
+  });
+
   test("起動失敗（EADDRINUSE）時にエラーがスローされる", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 

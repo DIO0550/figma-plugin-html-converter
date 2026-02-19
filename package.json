@@ -14,7 +14,8 @@
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "mcp:build": "vite build --config vite.mcp.config.ts",
-    "mcp:start": "pnpm run mcp:build && node dist-mcp/index.js"
+    "mcp:start": "pnpm run mcp:build && node dist-mcp/index.js",
+    "mcp:dev:http": "pnpm run mcp:build && node dist-mcp/index.js --transport http"
   },
   "keywords": [
     "figma",
@@ -28,6 +29,7 @@
     "@eslint/js": "^9.33.0",
     "@figma/plugin-typings": "^1.90.0",
     "@mizchi/lsmcp": "^0.9.4",
+    "@types/express": "^5.0.6",
     "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "8.39.1",
     "@typescript-eslint/parser": "8.39.1",

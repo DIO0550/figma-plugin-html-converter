@@ -179,6 +179,7 @@ test("connect/closeライフサイクルが正常に動作する", async () => {
   await server.connect(serverTransport);
   await lifecycleClient.connect(clientTransport);
 
+  // クライアント→サーバーの順で終了（通信終了の自然な流れ）
   await lifecycleClient.close();
   await server.close();
 

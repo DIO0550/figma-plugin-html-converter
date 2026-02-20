@@ -153,3 +153,19 @@ test("Error以外の例外もstring化してエラー応答を返す", async () 
     "変換エラー: 文字列エラー",
   );
 });
+
+test("負値オプションがconverterにそのまま転送される", async () => {
+  const mockResult = { type: "FRAME", name: "div", width: 800, height: 600 };
+  mockConvertHTMLToFigma.mockResolvedValue(mockResult);
+
+  const result = await handleConvertHtml({
+    html: "<div>test</div>",
+    options: { containerWidth: -500, containerHeight: -400 },
+  });
+
+  expect(mockConvertHTMLToFigma).toHaveBeenCalledWith("<div>test</div>", {
+    containerWidth: -500,
+    containerHeight: -400,
+  });
+  expect(result.isError).toBeUndefined();
+});

@@ -156,7 +156,7 @@ test("containerHeight に 0 以下を指定した場合に Zod バリデーシ�
   expect(content[0].text).not.toHaveLength(0);
 });
 
-test("存在しないツール名でisError応答が返る", async () => {
+test("存在しないツール名(nonexistent_tool)でcallToolを呼び出すとisError応答が返る", async () => {
   const result = await client.callTool({
     name: "nonexistent_tool",
     arguments: {},

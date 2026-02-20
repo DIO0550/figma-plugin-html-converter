@@ -154,7 +154,7 @@ test("Error以外の例外もstring化してエラー応答を返す", async () 
   );
 });
 
-test("負値オプションがconverterにそのまま転送される", async () => {
+test("負値オプションがhandleConvertHtmlで変更されずにconvertHTMLToFigmaに渡される", async () => {
   const mockResult = { type: "FRAME", name: "div", width: 800, height: 600 };
   mockConvertHTMLToFigma.mockResolvedValue(mockResult);
 

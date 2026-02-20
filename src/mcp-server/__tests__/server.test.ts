@@ -155,3 +155,43 @@ test("containerHeight に 0 以下を指定した場合に Zod バリデーシ�
   expect(content[0].type).toBe("text");
   expect(content[0].text).not.toHaveLength(0);
 });
+
+test("存在しないツール名でisError応答が返る", async () => {
+  const result = await client.callTool({
+    name: "nonexistent_tool",
+    arguments: {},
+  });
+
+  expect(result.isError).toBe(true);
+  const content = result.content as Array<{ type: string; text: string }>;
+  expect(content[0].text).toContain("nonexistent_tool");
+});
+
+test("connect/closeライフサイクルが正常に動作する", async () => {
+  const server = createServer();
+  const lifecycleClient = new Client({
+    name: "lifecycle-client",
+    version: "1.0.0",
+  });
+  const [clientTransport, serverTransport] =
+    InMemoryTransport.createLinkedPair();
+
+  await server.connect(serverTransport);
+  await lifecycleClient.connect(clientTransport);
+
+  await lifecycleClient.close();
+  await server.close();
+
+  await expect(lifecycleClient.listTools()).rejects.toThrow();
+});
+
+test("不正な引数型でisError応答が返る", async () => {
+  const result = await client.callTool({
+    name: "convert_html",
+    arguments: { html: 123 },
+  });
+
+  expect(result.isError).toBe(true);
+  const content = result.content as Array<{ type: string; text: string }>;
+  expect(content[0].text).not.toHaveLength(0);
+});

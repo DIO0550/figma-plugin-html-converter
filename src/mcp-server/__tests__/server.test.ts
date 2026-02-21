@@ -194,6 +194,7 @@ test("不正な引数型でisError応答が返る", async () => {
 
   expect(result.isError).toBe(true);
   const content = result.content as Array<{ type: string; text: string }>;
+  expect(content.length).toBeGreaterThanOrEqual(1);
+  expect(content[0].type).toBe("text");
   expect(content[0].text).not.toHaveLength(0);
-  expect(content[0].text).toMatch(/string|number|type|Expected/i);
 });

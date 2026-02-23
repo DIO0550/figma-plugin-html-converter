@@ -45,12 +45,34 @@ export async function startHttp(port: number): Promise<void> {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
     });
-    await server.connect(transport);
-    await transport.handleRequest(req, res, req.body);
-    res.on("close", () => {
-      transport.close();
-      server.close();
-    });
+
+    let cleaned = false;
+    const cleanup = async () => {
+      if (cleaned) return;
+      cleaned = true;
+      const results = await Promise.allSettled([
+        transport.close(),
+        server.close(),
+      ]);
+      for (const result of results) {
+        if (result.status === "rejected") {
+          console.error("MCPクリーンアップエラー:", result.reason);
+        }
+      }
+    };
+
+    res.on("close", () => void cleanup());
+
+    try {
+      await server.connect(transport);
+      await transport.handleRequest(req, res, req.body);
+    } catch (err) {
+      console.error(
+        `MCPリクエスト処理エラー: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      await cleanup();
+      throw err;
+    }
   });
   await listenAsync(app, port);
   console.error(

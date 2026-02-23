@@ -67,9 +67,11 @@ export async function startHttp(port: number): Promise<void> {
       await server.connect(transport);
       await transport.handleRequest(req, res, req.body);
     } catch (err) {
-      console.error(
-        `MCPリクエスト処理エラー: ${err instanceof Error ? err.message : String(err)}`,
-      );
+      if (err instanceof Error) {
+        console.error("MCPリクエスト処理エラー:", err.message, err);
+      } else {
+        console.error("MCPリクエスト処理エラー:", err);
+      }
       await cleanup();
       throw err;
     }

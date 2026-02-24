@@ -20,12 +20,70 @@ function listenAsync(app: Express, port: number): Promise<void> {
  * stdin/stdoutを使用してJSON-RPC通信を行います。
  * 起動ログはstderrに出力されます（stdoutはプロトコル通信に使用）。
  *
+ * SIGINT/SIGTERMを受信するとtransport.close()とserver.close()を
+ * awaitしてからプロセスを終了します。2回目のシグナルでは
+ * close()がハングしている可能性があるため即座にexit(1)します。
+ *
  * @throws サーバー接続に失敗した場合
  */
 export async function startStdio(): Promise<void> {
   const server = createServer();
   const transport = new StdioServerTransport();
-  await server.connect(transport);
+
+  let cleanupPromise: Promise<void> | null = null;
+  const cleanup = (): Promise<void> => {
+    if (cleanupPromise) return cleanupPromise;
+    cleanupPromise = (async () => {
+      const results = await Promise.allSettled([
+        transport.close(),
+        server.close(),
+      ]);
+      for (const result of results) {
+        if (result.status === "rejected") {
+          console.error("MCPクリーンアップエラー (stdio):", result.reason);
+        }
+      }
+    })();
+    return cleanupPromise;
+  };
+
+  const removeSignalHandlers = () => {
+    process.removeListener("SIGINT", onSigint);
+    process.removeListener("SIGTERM", onSigterm);
+  };
+
+  const onSignal = (signal: string) => {
+    if (cleanupPromise) {
+      console.error(`シグナル ${signal} を再受信しました。強制終了します。`);
+      process.exit(1);
+      return;
+    }
+    console.error(
+      `シグナル ${signal} を受信しました。クリーンアップを実行します...`,
+    );
+    cleanup().finally(() => {
+      removeSignalHandlers();
+      process.exit(0);
+    });
+  };
+
+  const onSigint = () => onSignal("SIGINT");
+  const onSigterm = () => onSignal("SIGTERM");
+
+  process.on("SIGINT", onSigint);
+  process.on("SIGTERM", onSigterm);
+
+  try {
+    await server.connect(transport);
+  } catch (err) {
+    if (cleanupPromise) {
+      await cleanupPromise;
+      return;
+    }
+    removeSignalHandlers();
+    throw err;
+  }
+
   console.error("MCPサーバーを起動しました（トランスポート: stdio）");
 }
 

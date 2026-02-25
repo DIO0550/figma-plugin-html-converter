@@ -567,6 +567,10 @@ test("startStdio: 2回目のシグナルでprocess.exit(1)による強制終了"
   // クリーンアップ解放
   resolveClose();
 
+  await vi.waitFor(() => {
+    expect(exitSpy).toHaveBeenCalledWith(0);
+  });
+
   exitSpy.mockRestore();
   errorSpy.mockRestore();
 });

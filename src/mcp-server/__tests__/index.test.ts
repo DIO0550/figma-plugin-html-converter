@@ -442,6 +442,10 @@ test("startStdio: SIGTERMでtransport.closeとserver.closeが呼ばれること"
     expect(mockClose).toHaveBeenCalledOnce();
   });
 
+  await vi.waitFor(() => {
+    expect(exitSpy).toHaveBeenCalledWith(0);
+  });
+
   exitSpy.mockRestore();
   errorSpy.mockRestore();
 });

@@ -500,6 +500,10 @@ test("startStdio: 複数シグナルでもcloseは各1回のみ", async () => {
   expect(mockStdioTransportClose).toHaveBeenCalledTimes(1);
   expect(mockClose).toHaveBeenCalledTimes(1);
 
+  await vi.waitFor(() => {
+    expect(exitSpy).toHaveBeenCalledWith(0);
+  });
+
   exitSpy.mockRestore();
   errorSpy.mockRestore();
 });

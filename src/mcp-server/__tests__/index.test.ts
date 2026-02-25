@@ -470,6 +470,10 @@ test("startStdio: cleanup内のclose()が失敗した時にエラーログが出
     );
   });
 
+  await vi.waitFor(() => {
+    expect(exitSpy).toHaveBeenCalledWith(0);
+  });
+
   exitSpy.mockRestore();
   errorSpy.mockRestore();
 });

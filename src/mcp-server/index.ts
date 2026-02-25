@@ -80,6 +80,7 @@ export async function startStdio(): Promise<void> {
       await cleanupPromise;
       return;
     }
+    await cleanup();
     removeSignalHandlers();
     throw err;
   }

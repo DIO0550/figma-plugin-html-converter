@@ -608,3 +608,21 @@ test("startStdio: シグナルハンドラがconnect前に登録されること"
   exitSpy.mockRestore();
   errorSpy.mockRestore();
 });
+
+test("startStdio: connectがrejectした時にcleanupが呼ばれ例外が伝播する", async () => {
+  const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  const exitSpy = vi
+    .spyOn(process, "exit")
+    .mockImplementation(() => undefined as never);
+
+  const connectError = new Error("connect failed");
+  mockConnect.mockRejectedValueOnce(connectError);
+
+  await expect(startStdio()).rejects.toBe(connectError);
+
+  expect(mockStdioTransportClose).toHaveBeenCalledOnce();
+  expect(mockClose).toHaveBeenCalledOnce();
+
+  exitSpy.mockRestore();
+  errorSpy.mockRestore();
+});

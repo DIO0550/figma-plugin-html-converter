@@ -60,11 +60,17 @@ export async function convertHTMLToFigmaWithOptimization(
   // HTMLNodeをFigmaNodeConfigに変換
   const figmaNode = mapHTMLNodeToFigma(htmlNode, normalizedOptions);
 
-  // コンテナサイズが指定されている場合は適用
-  if (normalizedOptions.containerWidth && !figmaNode.width) {
+  // コンテナサイズが指定されている場合は適用 (0も有効な値として扱う: === undefined で未設定判定)
+  if (
+    normalizedOptions.containerWidth !== undefined &&
+    figmaNode.width === undefined
+  ) {
     figmaNode.width = normalizedOptions.containerWidth;
   }
-  if (normalizedOptions.containerHeight && !figmaNode.height) {
+  if (
+    normalizedOptions.containerHeight !== undefined &&
+    figmaNode.height === undefined
+  ) {
     figmaNode.height = normalizedOptions.containerHeight;
   }
 

@@ -92,14 +92,14 @@ export const ConversionOptions = {
     const defaults = ConversionOptions.getDefault();
     const merged = ConversionOptions.merge(defaults, options);
 
-    // 負の値を正の値に正規化
-    if (merged.containerWidth && merged.containerWidth < 0) {
+    // 負の値を正の値に正規化 (0も有効な値として扱う: !== undefined で存在判定)
+    if (merged.containerWidth !== undefined && merged.containerWidth < 0) {
       merged.containerWidth = Math.abs(merged.containerWidth);
     }
-    if (merged.containerHeight && merged.containerHeight < 0) {
+    if (merged.containerHeight !== undefined && merged.containerHeight < 0) {
       merged.containerHeight = Math.abs(merged.containerHeight);
     }
-    if (merged.spacing && merged.spacing < 0) {
+    if (merged.spacing !== undefined && merged.spacing < 0) {
       merged.spacing = Math.abs(merged.spacing);
     }
 

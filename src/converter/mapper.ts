@@ -203,7 +203,7 @@ export function mapHTMLNodeToFigma(
     if (isListElement) {
       FigmaNode.setAutoLayout(nodeConfig, {
         mode: tagName === "li" ? "HORIZONTAL" : "VERTICAL",
-        spacing: normalizedOptions.spacing || LAYOUT_CONFIG.DEFAULT_SPACING,
+        spacing: normalizedOptions.spacing ?? LAYOUT_CONFIG.DEFAULT_SPACING,
       });
     }
   }
@@ -247,12 +247,13 @@ export function mapHTMLNodeToFigma(
           nodeConfig.paddingLeft = paddingLeft;
 
         const padding = Styles.getPadding(styles);
+        // 0も有効な値として扱う: === undefined で未設定判定
         if (
-          padding &&
-          !nodeConfig.paddingTop &&
-          !nodeConfig.paddingBottom &&
-          !nodeConfig.paddingLeft &&
-          !nodeConfig.paddingRight
+          padding !== null &&
+          nodeConfig.paddingTop === undefined &&
+          nodeConfig.paddingBottom === undefined &&
+          nodeConfig.paddingLeft === undefined &&
+          nodeConfig.paddingRight === undefined
         ) {
           nodeConfig.paddingTop = padding.top;
           nodeConfig.paddingBottom = padding.bottom;
@@ -373,9 +374,13 @@ export function mapHTMLNodeToFigma(
       if (maxHeight !== null) nodeConfig.maxHeight = maxHeight;
 
       const aspectRatio = Styles.getAspectRatio(styles);
-      if (aspectRatio !== null) {
+      if (
+        aspectRatio !== null &&
+        Number.isFinite(aspectRatio) &&
+        aspectRatio > 0
+      ) {
         nodeConfig.aspectRatio = aspectRatio;
-        if (nodeConfig.width && !nodeConfig.height) {
+        if (nodeConfig.width !== undefined && nodeConfig.height === undefined) {
           nodeConfig.height = nodeConfig.width / aspectRatio;
         }
       }
@@ -464,11 +469,12 @@ export function mapHTMLNodeToFigma(
           }
         }
 
+        // 0も有効な値として扱う: === undefined で未設定判定
         if (
-          !nodeConfig.width &&
-          !nodeConfig.height &&
-          !nodeConfig.layoutSizingHorizontal &&
-          !nodeConfig.layoutSizingVertical
+          nodeConfig.width === undefined &&
+          nodeConfig.height === undefined &&
+          nodeConfig.layoutSizingHorizontal === undefined &&
+          nodeConfig.layoutSizingVertical === undefined
         ) {
           if (tagName === "body" || tagName === "html") {
             if (ConversionOptions.hasContainerSize(normalizedOptions)) {

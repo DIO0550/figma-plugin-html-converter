@@ -374,15 +374,13 @@ export function mapHTMLNodeToFigma(
       if (maxHeight !== null) nodeConfig.maxHeight = maxHeight;
 
       const aspectRatio = Styles.getAspectRatio(styles);
-      if (aspectRatio !== null) {
+      if (
+        aspectRatio !== null &&
+        Number.isFinite(aspectRatio) &&
+        aspectRatio > 0
+      ) {
         nodeConfig.aspectRatio = aspectRatio;
-        // 0も有効な値として扱う + 不正値ガード: 0, NaN, Infinity
-        if (
-          nodeConfig.width !== undefined &&
-          nodeConfig.height === undefined &&
-          Number.isFinite(aspectRatio) &&
-          aspectRatio > 0
-        ) {
+        if (nodeConfig.width !== undefined && nodeConfig.height === undefined) {
           nodeConfig.height = nodeConfig.width / aspectRatio;
         }
       }

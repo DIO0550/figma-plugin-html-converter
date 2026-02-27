@@ -92,7 +92,7 @@ export const ConversionOptions = {
     const defaults = ConversionOptions.getDefault();
     const merged = ConversionOptions.merge(defaults, options);
 
-    // 負の値を正の値に正規化 (0も有効な値として扱う: !== undefined で存在判定)
+    // 負の値を正の値に正規化 (0はfalsyなので存在判定を !== undefined に統一)
     if (merged.containerWidth !== undefined && merged.containerWidth < 0) {
       merged.containerWidth = Math.abs(merged.containerWidth);
     }

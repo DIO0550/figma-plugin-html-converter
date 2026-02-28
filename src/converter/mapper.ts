@@ -300,11 +300,6 @@ function applyPositioning(nodeConfig: FigmaNodeConfig, styles: Styles): void {
       };
     }
 
-    if (position === "relative") {
-      if (typeof left === "number") nodeConfig.x = left;
-      if (typeof top === "number") nodeConfig.y = top;
-    }
-
     const zIndex = Styles.getZIndex(styles);
     if (zIndex !== null) {
       nodeConfig.zIndex = zIndex;

@@ -1,8 +1,12 @@
-import { describe, test, expect, vi } from "vitest";
+import { afterEach, describe, test, expect, vi } from "vitest";
 import { mapHTMLNodeToFigma } from "./mapper";
 import { HTMLNode } from "./models/html-node";
 import { HTML } from "./models/html";
 import { Styles } from "./models/styles";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 /**
  * HTMLNodeを作成するヘルパー関数
@@ -424,7 +428,6 @@ describe("appendChildren 統合テスト", () => {
 
 describe("nullフォールバック回帰テスト", () => {
   afterEach(() => {
-    vi.restoreAllMocks();
     vi.resetModules();
   });
 
@@ -522,8 +525,6 @@ describe("Styles.parse パース回数テスト", () => {
       (call) => call[0] === "width: 100px",
     );
     expect(divParseCalls).toHaveLength(1);
-
-    parseSpy.mockRestore();
   });
 });
 

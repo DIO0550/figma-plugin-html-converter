@@ -47,23 +47,15 @@ const LAYOUT_CONFIG = {
   HALF_PERCENTAGE: 50,
 } as const;
 
-export function mapHTMLNodeToFigma(
+type ResolveResult =
+  | { earlyReturn: true; nodeConfig: FigmaNodeConfig }
+  | { earlyReturn: false; nodeConfig: FigmaNodeConfig };
+
+function resolveByTag(
   htmlNode: HTMLNode,
-  options: ConversionOptions = {},
-): FigmaNodeConfig {
-  const normalizedOptions = ConversionOptions.from(options);
-  if (HTMLNode.isText(htmlNode)) {
-    const textNode = FigmaNode.createText(htmlNode.textContent || "Text");
-    textNode.name = "Text";
-    return textNode;
-  }
-
-  if (HTMLNode.isComment(htmlNode)) {
-    return FigmaNode.createFrame("Comment");
-  }
-
-  const tagName = htmlNode.tagName || "unknown";
-
+  tagName: string,
+  normalizedOptions: ConversionOptions,
+): ResolveResult {
   const isTextElement = [
     "p",
     "h1",
@@ -82,21 +74,19 @@ export function mapHTMLNodeToFigma(
   ].includes(tagName);
   const isListElement = ["ul", "ol", "li"].includes(tagName);
 
-  let nodeConfig: FigmaNodeConfig;
-
-  // p要素の処理を追加
+  // p要素の処理
   if (tagName === "p") {
     const pConfig = mapPToFigma(htmlNode);
     if (pConfig) {
-      return pConfig;
+      return { earlyReturn: true, nodeConfig: pConfig };
     }
   }
 
-  // a要素の処理を追加
+  // a要素の処理
   if (tagName === "a") {
     const aConfig = AConverter.mapToFigma(htmlNode);
     if (aConfig) {
-      return aConfig;
+      return { earlyReturn: true, nodeConfig: aConfig };
     }
   }
 
@@ -104,21 +94,21 @@ export function mapHTMLNodeToFigma(
   if (tagName === "summary") {
     const summaryConfig = SummaryElement.mapToFigma(htmlNode);
     if (summaryConfig) {
-      return summaryConfig;
+      return { earlyReturn: true, nodeConfig: summaryConfig };
     }
   }
 
   if (tagName === "details") {
     const detailsConfig = DetailsElement.mapToFigma(htmlNode);
     if (detailsConfig) {
-      return detailsConfig;
+      return { earlyReturn: true, nodeConfig: detailsConfig };
     }
   }
 
   if (tagName === "dialog") {
     const dialogConfig = DialogElement.mapToFigma(htmlNode);
     if (dialogConfig) {
-      return dialogConfig;
+      return { earlyReturn: true, nodeConfig: dialogConfig };
     }
   }
 
@@ -126,14 +116,14 @@ export function mapHTMLNodeToFigma(
   if (tagName === "progress") {
     const progressConfig = mapProgressToFigma(htmlNode);
     if (progressConfig) {
-      return progressConfig;
+      return { earlyReturn: true, nodeConfig: progressConfig };
     }
   }
 
   if (tagName === "meter") {
     const meterConfig = mapMeterToFigma(htmlNode);
     if (meterConfig) {
-      return meterConfig;
+      return { earlyReturn: true, nodeConfig: meterConfig };
     }
   }
 
@@ -142,9 +132,11 @@ export function mapHTMLNodeToFigma(
   if (inlineSemanticConverter) {
     const config = inlineSemanticConverter.mapToFigma(htmlNode);
     if (config) {
-      return config;
+      return { earlyReturn: true, nodeConfig: config };
     }
   }
+
+  let nodeConfig: FigmaNodeConfig;
 
   if (ImgElement.isImgElement(htmlNode)) {
     const imageConfig = ImgElement.mapToFigma(htmlNode);
@@ -208,286 +200,329 @@ export function mapHTMLNodeToFigma(
     }
   }
 
+  return { earlyReturn: false, nodeConfig };
+}
+
+function applyAutoLayout(nodeConfig: FigmaNodeConfig, styles: Styles): void {
+  const autoLayout = AutoLayoutProperties.fromStyles(styles);
+  if (autoLayout && FigmaNode.isFrame(nodeConfig)) {
+    nodeConfig.layoutMode = autoLayout.layoutMode;
+    nodeConfig.primaryAxisAlignItems = autoLayout.primaryAxisAlignItems;
+    nodeConfig.counterAxisAlignItems = autoLayout.counterAxisAlignItems;
+    nodeConfig.paddingLeft = autoLayout.paddingLeft;
+    nodeConfig.paddingRight = autoLayout.paddingRight;
+    nodeConfig.paddingTop = autoLayout.paddingTop;
+    nodeConfig.paddingBottom = autoLayout.paddingBottom;
+    nodeConfig.itemSpacing = autoLayout.itemSpacing;
+
+    const flexWrap = Styles.getFlexWrap(styles);
+    if (flexWrap === "wrap" || flexWrap === "wrap-reverse") {
+      nodeConfig.layoutWrap = "WRAP";
+    }
+  }
+}
+
+function applyPadding(nodeConfig: FigmaNodeConfig, styles: Styles): void {
+  if (!nodeConfig.layoutMode || nodeConfig.layoutMode === "NONE") {
+    const paddingTop = Styles.getPaddingTop(styles);
+    const paddingRight = Styles.getPaddingRight(styles);
+    const paddingBottom = Styles.getPaddingBottom(styles);
+    const paddingLeft = Styles.getPaddingLeft(styles);
+
+    if (typeof paddingTop === "number") nodeConfig.paddingTop = paddingTop;
+    if (typeof paddingRight === "number")
+      nodeConfig.paddingRight = paddingRight;
+    if (typeof paddingBottom === "number")
+      nodeConfig.paddingBottom = paddingBottom;
+    if (typeof paddingLeft === "number") nodeConfig.paddingLeft = paddingLeft;
+
+    const padding = Styles.getPadding(styles);
+    // 0も有効な値として扱う: === undefined で未設定判定
+    if (
+      padding !== null &&
+      nodeConfig.paddingTop === undefined &&
+      nodeConfig.paddingBottom === undefined &&
+      nodeConfig.paddingLeft === undefined &&
+      nodeConfig.paddingRight === undefined
+    ) {
+      nodeConfig.paddingTop = padding.top;
+      nodeConfig.paddingBottom = padding.bottom;
+      nodeConfig.paddingLeft = padding.left;
+      nodeConfig.paddingRight = padding.right;
+    }
+  }
+}
+
+function applyPositioning(nodeConfig: FigmaNodeConfig, styles: Styles): void {
+  const position = Styles.getPosition(styles);
+  if (position && position !== "static") {
+    const top = Styles.getTop(styles);
+    const right = Styles.getRight(styles);
+    const bottom = Styles.getBottom(styles);
+    const left = Styles.getLeft(styles);
+
+    if (typeof left === "number") {
+      nodeConfig.x = left;
+    }
+    if (typeof top === "number") {
+      nodeConfig.y = top;
+    }
+
+    if (position === "absolute" || position === "fixed") {
+      let horizontalConstraint: "MIN" | "MAX" | "STRETCH" = "MIN";
+      let verticalConstraint: "MIN" | "MAX" | "STRETCH" = "MIN";
+
+      if (typeof right === "number") {
+        if (typeof left === "number") {
+          horizontalConstraint = "STRETCH";
+        } else {
+          horizontalConstraint = "MAX";
+        }
+      }
+
+      if (typeof bottom === "number") {
+        if (typeof top === "number") {
+          verticalConstraint = "STRETCH";
+        } else {
+          verticalConstraint = "MAX";
+        }
+      }
+
+      if (position === "fixed") {
+        if (left === 0 && right === 0) {
+          horizontalConstraint = "STRETCH";
+        }
+      }
+
+      nodeConfig.constraints = {
+        horizontal: horizontalConstraint,
+        vertical: verticalConstraint,
+      };
+    }
+
+    if (position === "relative") {
+      if (typeof left === "number") nodeConfig.x = left;
+      if (typeof top === "number") nodeConfig.y = top;
+    }
+
+    const zIndex = Styles.getZIndex(styles);
+    if (zIndex !== null) {
+      nodeConfig.zIndex = zIndex;
+    }
+  }
+}
+
+function applySizing(nodeConfig: FigmaNodeConfig, styles: Styles): void {
+  const margin = Styles.getMargin(styles);
+  if (margin) {
+    // TODO: marginを親要素のAuto Layoutとして処理する実装を追加
+    (nodeConfig as unknown as { margin: typeof margin }).margin = margin;
+  }
+
+  const width = Styles.getWidth(styles);
+  if (typeof width === "number") {
+    nodeConfig.width = width;
+  } else if (width && typeof width === "object" && width.unit === "%") {
+    if (width.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
+      nodeConfig.layoutSizingHorizontal = "FILL";
+    } else if (width.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
+      nodeConfig.layoutSizingHorizontal = "FILL";
+    } else {
+      nodeConfig.layoutSizingHorizontal = "FIXED";
+      nodeConfig.width =
+        LAYOUT_CONFIG.DEFAULT_CONTAINER_WIDTH *
+        (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
+    }
+  }
+
+  const height = Styles.getHeight(styles);
+  if (typeof height === "number") {
+    nodeConfig.height = height;
+  } else if (height && typeof height === "object" && height.unit === "%") {
+    if (height.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
+      nodeConfig.layoutSizingVertical = "FILL";
+    } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
+      nodeConfig.height =
+        LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT *
+        (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);
+    } else {
+      nodeConfig.layoutSizingVertical = "FIXED";
+      nodeConfig.height =
+        LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT *
+        (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
+    }
+  } else if (height === null && styles.height === "auto") {
+    nodeConfig.layoutSizingVertical = "HUG";
+  }
+
+  const minWidth = Styles.getMinWidth(styles);
+  if (minWidth !== null) nodeConfig.minWidth = minWidth;
+
+  const maxWidth = Styles.getMaxWidth(styles);
+  if (maxWidth !== null) nodeConfig.maxWidth = maxWidth;
+
+  const minHeight = Styles.getMinHeight(styles);
+  if (minHeight !== null) nodeConfig.minHeight = minHeight;
+
+  const maxHeight = Styles.getMaxHeight(styles);
+  if (maxHeight !== null) nodeConfig.maxHeight = maxHeight;
+
+  const aspectRatio = Styles.getAspectRatio(styles);
+  if (aspectRatio !== null && Number.isFinite(aspectRatio) && aspectRatio > 0) {
+    nodeConfig.aspectRatio = aspectRatio;
+    if (nodeConfig.width !== undefined && nodeConfig.height === undefined) {
+      nodeConfig.height = nodeConfig.width / aspectRatio;
+    }
+  }
+
+  const flexGrow = Styles.getFlexGrow(styles);
+  if (flexGrow !== null) {
+    nodeConfig.layoutGrow = flexGrow;
+    if (flexGrow > 0) {
+      nodeConfig.layoutSizingHorizontal = "FILL";
+    }
+  }
+
+  const flexShrink = Styles.getFlexShrink(styles);
+  if (flexShrink === 0) {
+    nodeConfig.layoutGrow = 0;
+  }
+
+  if (
+    minWidth !== null ||
+    maxWidth !== null ||
+    minHeight !== null ||
+    maxHeight !== null
+  ) {
+    if (!nodeConfig.constraints) {
+      nodeConfig.constraints = {
+        horizontal: minWidth !== null || maxWidth !== null ? "SCALE" : "MIN",
+        vertical: minHeight !== null || maxHeight !== null ? "MIN" : "MIN",
+      };
+    }
+  }
+}
+
+function applyVisualStyles(nodeConfig: FigmaNodeConfig, styles: Styles): void {
+  const bgColor = Styles.getBackgroundColor(styles);
+  if (bgColor) {
+    FigmaNode.setFills(nodeConfig, [Paint.solid(bgColor)]);
+  }
+
+  const border = Styles.getBorder(styles);
+  if (border) {
+    FigmaNode.setStrokes(nodeConfig, [Paint.solid(border.color)], border.width);
+  }
+
+  const borderRadius = Styles.getBorderRadius(styles);
+  if (typeof borderRadius === "number") {
+    FigmaNode.setCornerRadius(nodeConfig, borderRadius);
+  }
+}
+
+function appendChildren(
+  nodeConfig: FigmaNodeConfig,
+  htmlNode: HTMLNode,
+  tagName: string,
+  normalizedOptions: ConversionOptions,
+  styles: Styles | null,
+): void {
+  if (!htmlNode.children || htmlNode.children.length === 0) return;
+
+  const children: FigmaNodeConfig[] = [];
+
+  for (const child of htmlNode.children) {
+    const childNode = mapHTMLNodeToFigma(child, normalizedOptions);
+
+    if (childNode.name !== "Comment") {
+      children.push(childNode);
+    }
+  }
+
+  if (children.length === 0) return;
+
+  if (FigmaNode.isFrame(nodeConfig)) {
+    // TODO: Figma APIでの子要素配置実装を追加
+    (nodeConfig as unknown as { children: typeof children }).children =
+      children;
+
+    const display = styles ? Styles.get(styles, "display") : null;
+    if (display === "block" || display === "inline-block") {
+      if (
+        nodeConfig.layoutMode === "VERTICAL" &&
+        !styles?.display?.includes("flex")
+      ) {
+        delete nodeConfig.layoutMode;
+        delete nodeConfig.primaryAxisAlignItems;
+        delete nodeConfig.counterAxisAlignItems;
+        delete nodeConfig.itemSpacing;
+      }
+    }
+
+    // 0も有効な値として扱う: === undefined で未設定判定
+    if (
+      nodeConfig.width === undefined &&
+      nodeConfig.height === undefined &&
+      nodeConfig.layoutSizingHorizontal === undefined &&
+      nodeConfig.layoutSizingVertical === undefined
+    ) {
+      if (tagName === "body" || tagName === "html") {
+        if (ConversionOptions.hasContainerSize(normalizedOptions)) {
+          nodeConfig.width = normalizedOptions.containerWidth;
+          nodeConfig.height = normalizedOptions.containerHeight;
+        }
+      } else if (tagName === "div" && !nodeConfig.layoutMode) {
+        delete nodeConfig.layoutMode;
+      }
+    }
+  }
+}
+
+export function mapHTMLNodeToFigma(
+  htmlNode: HTMLNode,
+  options: ConversionOptions = {},
+): FigmaNodeConfig {
+  const normalizedOptions = ConversionOptions.from(options);
+
+  // テキスト・コメントの早期リターン
+  if (HTMLNode.isText(htmlNode)) {
+    const textNode = FigmaNode.createText(htmlNode.textContent || "Text");
+    textNode.name = "Text";
+    return textNode;
+  }
+
+  if (HTMLNode.isComment(htmlNode)) {
+    return FigmaNode.createFrame("Comment");
+  }
+
+  const tagName = htmlNode.tagName || "unknown";
+
+  // Phase 1: タグによるノード解決
+  const resolved = resolveByTag(htmlNode, tagName, normalizedOptions);
+  if (resolved.earlyReturn) return resolved.nodeConfig;
+  const nodeConfig = resolved.nodeConfig;
+
+  // スタイルのパースは1回のみ
+  let styles: Styles | null = null;
   if (htmlNode.attributes?.style) {
     const attributes = Attributes.from(htmlNode.attributes);
     const styleStr = Attributes.getStyle(attributes);
-
     if (styleStr) {
-      const styles = Styles.parse(styleStr);
-
-      const autoLayout = AutoLayoutProperties.fromStyles(styles);
-      if (autoLayout && FigmaNode.isFrame(nodeConfig)) {
-        nodeConfig.layoutMode = autoLayout.layoutMode;
-        nodeConfig.primaryAxisAlignItems = autoLayout.primaryAxisAlignItems;
-        nodeConfig.counterAxisAlignItems = autoLayout.counterAxisAlignItems;
-        nodeConfig.paddingLeft = autoLayout.paddingLeft;
-        nodeConfig.paddingRight = autoLayout.paddingRight;
-        nodeConfig.paddingTop = autoLayout.paddingTop;
-        nodeConfig.paddingBottom = autoLayout.paddingBottom;
-        nodeConfig.itemSpacing = autoLayout.itemSpacing;
-
-        const flexWrap = Styles.getFlexWrap(styles);
-        if (flexWrap === "wrap" || flexWrap === "wrap-reverse") {
-          nodeConfig.layoutWrap = "WRAP";
-        }
-      }
-
-      if (!nodeConfig.layoutMode || nodeConfig.layoutMode === "NONE") {
-        const paddingTop = Styles.getPaddingTop(styles);
-        const paddingRight = Styles.getPaddingRight(styles);
-        const paddingBottom = Styles.getPaddingBottom(styles);
-        const paddingLeft = Styles.getPaddingLeft(styles);
-
-        if (typeof paddingTop === "number") nodeConfig.paddingTop = paddingTop;
-        if (typeof paddingRight === "number")
-          nodeConfig.paddingRight = paddingRight;
-        if (typeof paddingBottom === "number")
-          nodeConfig.paddingBottom = paddingBottom;
-        if (typeof paddingLeft === "number")
-          nodeConfig.paddingLeft = paddingLeft;
-
-        const padding = Styles.getPadding(styles);
-        // 0も有効な値として扱う: === undefined で未設定判定
-        if (
-          padding !== null &&
-          nodeConfig.paddingTop === undefined &&
-          nodeConfig.paddingBottom === undefined &&
-          nodeConfig.paddingLeft === undefined &&
-          nodeConfig.paddingRight === undefined
-        ) {
-          nodeConfig.paddingTop = padding.top;
-          nodeConfig.paddingBottom = padding.bottom;
-          nodeConfig.paddingLeft = padding.left;
-          nodeConfig.paddingRight = padding.right;
-        }
-      }
-
-      const position = Styles.getPosition(styles);
-      if (position && position !== "static") {
-        const top = Styles.getTop(styles);
-        const right = Styles.getRight(styles);
-        const bottom = Styles.getBottom(styles);
-        const left = Styles.getLeft(styles);
-
-        if (typeof left === "number") {
-          nodeConfig.x = left;
-        }
-        if (typeof top === "number") {
-          nodeConfig.y = top;
-        }
-
-        if (position === "absolute" || position === "fixed") {
-          let horizontalConstraint: "MIN" | "MAX" | "STRETCH" = "MIN";
-          let verticalConstraint: "MIN" | "MAX" | "STRETCH" = "MIN";
-
-          if (typeof right === "number") {
-            if (typeof left === "number") {
-              horizontalConstraint = "STRETCH";
-            } else {
-              horizontalConstraint = "MAX";
-            }
-          }
-
-          if (typeof bottom === "number") {
-            if (typeof top === "number") {
-              verticalConstraint = "STRETCH";
-            } else {
-              verticalConstraint = "MAX";
-            }
-          }
-
-          if (position === "fixed") {
-            if (left === 0 && right === 0) {
-              horizontalConstraint = "STRETCH";
-            }
-          }
-
-          nodeConfig.constraints = {
-            horizontal: horizontalConstraint,
-            vertical: verticalConstraint,
-          };
-        }
-
-        if (position === "relative") {
-          if (typeof left === "number") nodeConfig.x = left;
-          if (typeof top === "number") nodeConfig.y = top;
-        }
-
-        const zIndex = Styles.getZIndex(styles);
-        if (zIndex !== null) {
-          nodeConfig.zIndex = zIndex;
-        }
-      }
-
-      const margin = Styles.getMargin(styles);
-      if (margin) {
-        // TODO: marginを親要素のAuto Layoutとして処理する実装を追加
-        (nodeConfig as unknown as { margin: typeof margin }).margin = margin;
-      }
-
-      const width = Styles.getWidth(styles);
-      if (typeof width === "number") {
-        nodeConfig.width = width;
-      } else if (width && typeof width === "object" && width.unit === "%") {
-        if (width.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
-          nodeConfig.layoutSizingHorizontal = "FILL";
-        } else if (width.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
-          nodeConfig.layoutSizingHorizontal = "FILL";
-        } else {
-          nodeConfig.layoutSizingHorizontal = "FIXED";
-          nodeConfig.width =
-            LAYOUT_CONFIG.DEFAULT_CONTAINER_WIDTH *
-            (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
-        }
-      }
-
-      const height = Styles.getHeight(styles);
-      if (typeof height === "number") {
-        nodeConfig.height = height;
-      } else if (height && typeof height === "object" && height.unit === "%") {
-        if (height.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
-          nodeConfig.layoutSizingVertical = "FILL";
-        } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
-          nodeConfig.height =
-            LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT *
-            (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);
-        } else {
-          nodeConfig.layoutSizingVertical = "FIXED";
-          nodeConfig.height =
-            LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT *
-            (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
-        }
-      } else if (height === null && styles.height === "auto") {
-        nodeConfig.layoutSizingVertical = "HUG";
-      }
-
-      const minWidth = Styles.getMinWidth(styles);
-      if (minWidth !== null) nodeConfig.minWidth = minWidth;
-
-      const maxWidth = Styles.getMaxWidth(styles);
-      if (maxWidth !== null) nodeConfig.maxWidth = maxWidth;
-
-      const minHeight = Styles.getMinHeight(styles);
-      if (minHeight !== null) nodeConfig.minHeight = minHeight;
-
-      const maxHeight = Styles.getMaxHeight(styles);
-      if (maxHeight !== null) nodeConfig.maxHeight = maxHeight;
-
-      const aspectRatio = Styles.getAspectRatio(styles);
-      if (
-        aspectRatio !== null &&
-        Number.isFinite(aspectRatio) &&
-        aspectRatio > 0
-      ) {
-        nodeConfig.aspectRatio = aspectRatio;
-        if (nodeConfig.width !== undefined && nodeConfig.height === undefined) {
-          nodeConfig.height = nodeConfig.width / aspectRatio;
-        }
-      }
-
-      const flexGrow = Styles.getFlexGrow(styles);
-      if (flexGrow !== null) {
-        nodeConfig.layoutGrow = flexGrow;
-        if (flexGrow > 0) {
-          nodeConfig.layoutSizingHorizontal = "FILL";
-        }
-      }
-
-      const flexShrink = Styles.getFlexShrink(styles);
-      if (flexShrink === 0) {
-        nodeConfig.layoutGrow = 0;
-      }
-
-      if (
-        minWidth !== null ||
-        maxWidth !== null ||
-        minHeight !== null ||
-        maxHeight !== null
-      ) {
-        if (!nodeConfig.constraints) {
-          nodeConfig.constraints = {
-            horizontal:
-              minWidth !== null || maxWidth !== null ? "SCALE" : "MIN",
-            vertical: minHeight !== null || maxHeight !== null ? "MIN" : "MIN",
-          };
-        }
-      }
-
-      const bgColor = Styles.getBackgroundColor(styles);
-      if (bgColor) {
-        FigmaNode.setFills(nodeConfig, [Paint.solid(bgColor)]);
-      }
-
-      const border = Styles.getBorder(styles);
-      if (border) {
-        FigmaNode.setStrokes(
-          nodeConfig,
-          [Paint.solid(border.color)],
-          border.width,
-        );
-      }
-
-      const borderRadius = Styles.getBorderRadius(styles);
-      if (typeof borderRadius === "number") {
-        FigmaNode.setCornerRadius(nodeConfig, borderRadius);
-      }
+      styles = Styles.parse(styleStr);
     }
   }
 
-  if (htmlNode.children && htmlNode.children.length > 0) {
-    const children: FigmaNodeConfig[] = [];
-
-    for (const child of htmlNode.children) {
-      const childNode = mapHTMLNodeToFigma(child, normalizedOptions);
-
-      if (childNode.name !== "Comment") {
-        children.push(childNode);
-      }
-    }
-
-    if (children.length > 0) {
-      if (FigmaNode.isFrame(nodeConfig)) {
-        // TODO: Figma APIでの子要素配置実装を追加
-        (nodeConfig as unknown as { children: typeof children }).children =
-          children;
-
-        const displayStyle = htmlNode.attributes?.style
-          ? Styles.parse(htmlNode.attributes.style)
-          : null;
-        const display = displayStyle
-          ? Styles.get(displayStyle, "display")
-          : null;
-        if (display === "block" || display === "inline-block") {
-          if (
-            nodeConfig.layoutMode === "VERTICAL" &&
-            !displayStyle?.display?.includes("flex")
-          ) {
-            delete nodeConfig.layoutMode;
-            delete nodeConfig.primaryAxisAlignItems;
-            delete nodeConfig.counterAxisAlignItems;
-            delete nodeConfig.itemSpacing;
-          }
-        }
-
-        // 0も有効な値として扱う: === undefined で未設定判定
-        if (
-          nodeConfig.width === undefined &&
-          nodeConfig.height === undefined &&
-          nodeConfig.layoutSizingHorizontal === undefined &&
-          nodeConfig.layoutSizingVertical === undefined
-        ) {
-          if (tagName === "body" || tagName === "html") {
-            if (ConversionOptions.hasContainerSize(normalizedOptions)) {
-              nodeConfig.width = normalizedOptions.containerWidth;
-              nodeConfig.height = normalizedOptions.containerHeight;
-            }
-          } else if (tagName === "div" && !nodeConfig.layoutMode) {
-            delete nodeConfig.layoutMode;
-          }
-        }
-      }
-    }
+  // Phase 2: スタイル適用
+  if (styles) {
+    applyAutoLayout(nodeConfig, styles);
+    applyPadding(nodeConfig, styles);
+    applyPositioning(nodeConfig, styles);
+    applySizing(nodeConfig, styles);
+    applyVisualStyles(nodeConfig, styles);
   }
+
+  // Phase 3: 子要素処理（stylesはdisplay補正に必要なため渡す）
+  appendChildren(nodeConfig, htmlNode, tagName, normalizedOptions, styles);
 
   return nodeConfig;
 }

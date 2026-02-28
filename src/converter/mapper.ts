@@ -397,7 +397,7 @@ function applySizing(nodeConfig: FigmaNodeConfig, styles: Styles): void {
     if (!nodeConfig.constraints) {
       nodeConfig.constraints = {
         horizontal: minWidth !== null || maxWidth !== null ? "SCALE" : "MIN",
-        vertical: minHeight !== null || maxHeight !== null ? "MIN" : "MIN",
+        vertical: "MIN",
       };
     }
   }

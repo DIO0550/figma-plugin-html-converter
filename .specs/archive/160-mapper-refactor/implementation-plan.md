@@ -208,7 +208,7 @@ mapHTMLNodeToFigma の公開APIを通じた統合・回帰テスト。resolve/st
 - **applySizing 統合テスト**: width/height px/%, min/max, aspectRatio, flex
 - **applyVisualStyles 統合テスト**: backgroundColor, border, borderRadius
 - **appendChildren 統合テスト**: 子要素再帰、display補正、コメントノード除外、子要素なし要素での無処理
-- **nullフォールバック回帰テスト**: `vi.mock`（hoisted）で以下のimportパスごとにモック。テスト間の汚染を防ぐため `vi.resetModules()` + `vi.doMock()/vi.unmock()` を使用する：
+- **nullフォールバック回帰テスト**: `vi.mock`（hoisted）で以下のimportパスごとにモック。テスト間の汚染を防ぐため `vi.resetModules()` + `vi.doMock()/vi.doUnmock()` を使用する：
   - `./elements/text/p` → `mapToFigma` を `null` 返却
   - `./elements/text/a` → `AConverter.mapToFigma` を `null` 返却
   - `./elements/interactive` → `SummaryElement/DetailsElement/DialogElement.mapToFigma` を `null` 返却

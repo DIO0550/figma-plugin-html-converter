@@ -93,7 +93,7 @@ HTMLNode + ConversionOptions
 | ファイル | タグ | 概要 |
 |---------|------|------|
 | `src/converter/mapper.ts` | `[MODIFY]` | フェーズ関数への分割リファクタリング |
-| `src/converter/mapper-phases.test.ts` | `[NEW]` | フェーズ動作の統合・回帰テスト |
+| `src/converter/mapper-phases-*.test.ts` | `[NEW]` | フェーズ動作の統合・回帰テスト（resolve/styles/fallback/children の4ファイルに分割） |
 
 ## 変更内容
 

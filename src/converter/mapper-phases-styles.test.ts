@@ -69,11 +69,17 @@ test("applyPadding - padding ショートハンド", () => {
 
 test("applyPadding - flex要素ではapplyPaddingが適用されない（autoLayoutのpaddingが優先）", () => {
   const node = createHTMLNode(
-    '<div style="display: flex; padding-top: 10px">test</div>',
+    '<div style="display: flex; padding: 20px 10px 30px 5px">test</div>',
   );
   const result = mapHTMLNodeToFigma(node);
 
+  // flex要素ではautoLayoutのpaddingが設定される
   expect(result.layoutMode).toBeDefined();
+  // autoLayout由来のpaddingが設定されている（applyPaddingではなくapplyAutoLayout経由）
+  expect(result.paddingTop).toBe(20);
+  expect(result.paddingRight).toBe(10);
+  expect(result.paddingBottom).toBe(30);
+  expect(result.paddingLeft).toBe(5);
 });
 
 // --- applyPositioning 統合テスト ---

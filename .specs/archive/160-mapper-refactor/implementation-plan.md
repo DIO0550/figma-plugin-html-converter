@@ -211,9 +211,7 @@ mapHTMLNodeToFigma の公開APIを通じた統合・回帰テスト。resolve/st
 - **nullフォールバック回帰テスト**: `vi.mock`（hoisted）で以下のimportパスごとにモック。テスト間の汚染を防ぐため `vi.resetModules()` + `vi.doMock()/vi.doUnmock()` を使用する：
   - `./elements/text/p` → `mapToFigma` を `null` 返却
   - `./elements/text/a` → `AConverter.mapToFigma` を `null` 返却
-  - `./elements/interactive` → `SummaryElement/DetailsElement/DialogElement.mapToFigma` を `null` 返却
   - `./elements/form/progress` → `mapToFigma` を `null` 返却
-  - `./elements/form/meter` → `mapToFigma` を `null` 返却
   - `./elements/text/time` → `TimeConverter.mapToFigma` を `null` 返却（inlineSemantic代表）
   - 各ケースでフォールバック（通常フレーム生成）が動作することを検証
 - **Styles.parseパース回数テスト**: style属性あり + children ありのケースで `vi.spyOn(Styles, 'parse')` を使い、呼び出し回数が1回であることを検証

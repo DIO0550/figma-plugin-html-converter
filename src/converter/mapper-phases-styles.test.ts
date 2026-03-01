@@ -1,7 +1,7 @@
 import { afterEach, test, expect, vi } from "vitest";
 import { mapHTMLNodeToFigma } from "./mapper";
 import { HTML } from "./models/html";
-import { HTMLNode } from "./models/html-node";
+import type { HTMLNode } from "./models/html-node";
 import { Styles } from "./models/styles";
 
 afterEach(() => {

@@ -11,6 +11,10 @@ afterEach(() => {
 describe("nullフォールバック回帰テスト", () => {
   afterEach(() => {
     vi.resetModules();
+    vi.doUnmock("./elements/text/p");
+    vi.doUnmock("./elements/text/a");
+    vi.doUnmock("./elements/form/progress");
+    vi.doUnmock("./elements/text/time");
   });
 
   test("p要素 - pコンバーターがnull返却時にテキストノードにフォールバック", async () => {

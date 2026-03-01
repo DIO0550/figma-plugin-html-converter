@@ -196,9 +196,9 @@ export function mapHTMLNodeToFigma(
 }
 ```
 
-### `src/converter/mapper-phases.test.ts` [NEW]
+### `src/converter/mapper-phases-*.test.ts` [NEW]
 
-mapHTMLNodeToFigma の公開APIを通じた統合・回帰テスト。各フェーズの動作を検証：
+mapHTMLNodeToFigma の公開APIを通じた統合・回帰テスト。resolve/styles/fallback/children の4ファイルに分割し、各フェーズの動作を検証：
 
 - **入口（text/comment）回帰テスト**: テキストノード → TEXT返却、コメントノード → "Comment"フレーム返却
 - **resolveByTag 統合テスト**: 各タグ種別（div/img/video/audio/iframe/text/list等）での初期ノード生成

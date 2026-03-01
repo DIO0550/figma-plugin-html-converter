@@ -252,7 +252,7 @@ mapHTMLNodeToFigma の公開APIを通じた統合・回帰テスト。resolve/st
    - `src/converter/elements/embed/__tests__/embed-integration.test.ts`（mapHTMLNodeToFigma直接呼び出し）
    - `src/converter/elements/object/__tests__/object-integration.test.ts`（mapHTMLNodeToFigma直接呼び出し）
    ※ container要素テスト（article/aside/footer/header/main）はmapperをモックしているため回帰検証には含めない
-4. **新規テスト**: `pnpm run test src/converter/mapper-phases.test.ts` が全パス
+4. **新規テスト**: `pnpm run test 'src/converter/mapper-phases-*.test.ts'` が全パス
 5. **全体テスト**: `pnpm test` が全パス
 6. **型チェック**: `pnpm run type-check` がエラーなし
 7. **ビルド**: `pnpm run build` が成功

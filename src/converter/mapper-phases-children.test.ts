@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 import { mapHTMLNodeToFigma } from "./mapper";
-import { HTMLNode } from "./models/html-node";
+import type { HTMLNode } from "./models/html-node";
 import { HTML } from "./models/html";
 
 function createHTMLNode(html: string): HTMLNode {

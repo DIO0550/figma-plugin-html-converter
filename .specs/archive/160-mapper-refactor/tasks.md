@@ -56,7 +56,7 @@
 ## Verification
 
 ### 新規テスト作成
-- [x] mapper-phases.test.ts 作成
+- [x] mapper-phases-*.test.ts 作成
   - [x] 入口（text/comment）回帰テスト
   - [x] resolveByTag 統合テスト（各タグ種別）
   - [x] applyAutoLayout 統合テスト

@@ -311,7 +311,7 @@ function applySizing(nodeConfig: FigmaNodeConfig, styles: Styles): void {
   const margin = Styles.getMargin(styles);
   if (margin) {
     // TODO: marginを親要素のAuto Layoutとして処理する実装を追加
-    (nodeConfig as unknown as { margin: typeof margin }).margin = margin;
+    nodeConfig.margin = margin;
   }
 
   const width = Styles.getWidth(styles);

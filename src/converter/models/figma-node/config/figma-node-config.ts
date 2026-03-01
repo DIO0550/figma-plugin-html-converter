@@ -44,6 +44,8 @@ export interface FigmaNodeConfig {
   minHeight?: number;
   maxHeight?: number;
   aspectRatio?: number;
+  // マージン（親要素のAuto Layout処理用）
+  margin?: { top: number; right: number; bottom: number; left: number };
   // テキストプロパティ
   fontSize?: number;
   characters?: string;

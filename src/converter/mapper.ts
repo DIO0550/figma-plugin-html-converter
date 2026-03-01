@@ -465,8 +465,6 @@ function appendChildren(
           nodeConfig.width = normalizedOptions.containerWidth;
           nodeConfig.height = normalizedOptions.containerHeight;
         }
-      } else if (tagName === "div" && !nodeConfig.layoutMode) {
-        delete nodeConfig.layoutMode;
       }
     }
   }

@@ -438,8 +438,7 @@ function appendChildren(
 
   if (FigmaNode.isFrame(nodeConfig)) {
     // TODO: Figma APIでの子要素配置実装を追加
-    (nodeConfig as unknown as { children: typeof children }).children =
-      children;
+    nodeConfig.children = children;
 
     const display = styles ? Styles.get(styles, "display") : null;
     if (display === "block" || display === "inline-block") {

@@ -73,7 +73,7 @@
 - [x] `pnpm run test src/converter/__tests__/style-optimization-integration.test.ts` 全パス
 - [x] `pnpm run test src/converter/elements/embed/__tests__/embed-integration.test.ts` 全パス
 - [x] `pnpm run test src/converter/elements/object/__tests__/object-integration.test.ts` 全パス
-- [x] `pnpm run test src/converter/mapper-phases.test.ts` 全パス
+- [x] `pnpm run test src/converter/mapper-phases-*.test.ts` 全パス
 - [x] `pnpm test` 全パス
 - [x] `pnpm run type-check` エラーなし
 - [x] `pnpm run build` 成功

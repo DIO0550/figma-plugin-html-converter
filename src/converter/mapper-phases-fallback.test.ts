@@ -1,5 +1,5 @@
 import { afterEach, describe, test, expect, vi } from "vitest";
-import { HTMLNode } from "./models/html-node";
+import type { HTMLNode } from "./models/html-node";
 
 afterEach(() => {
   vi.restoreAllMocks();

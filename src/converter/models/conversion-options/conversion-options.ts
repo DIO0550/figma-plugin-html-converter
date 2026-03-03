@@ -29,12 +29,15 @@ export const ConversionOptions = {
     };
   },
 
-  // オプションをマージ
+  // オプションをマージ（明示的undefinedはデフォルト値を保持するためフィルタリング）
   merge(
     base: ConversionOptions,
     override: Partial<ConversionOptions>,
   ): ConversionOptions {
-    return { ...base, ...override };
+    const filtered = Object.fromEntries(
+      Object.entries(override).filter(([, v]) => v !== undefined),
+    );
+    return { ...base, ...filtered };
   },
 
   // 複数のオプションをマージ

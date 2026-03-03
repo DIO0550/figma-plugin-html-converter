@@ -309,6 +309,12 @@ function applySizing(
   styles: Styles,
   normalizedOptions: ConversionOptions,
 ): void {
+  const defaults = ConversionOptions.getDefault();
+  const containerWidth =
+    normalizedOptions.containerWidth ?? defaults.containerWidth!;
+  const containerHeight =
+    normalizedOptions.containerHeight ?? defaults.containerHeight!;
+
   const margin = Styles.getMargin(styles);
   if (margin) {
     // TODO: marginを親要素のAuto Layoutとして処理する実装を追加
@@ -326,8 +332,7 @@ function applySizing(
     } else {
       nodeConfig.layoutSizingHorizontal = "FIXED";
       nodeConfig.width =
-        normalizedOptions.containerWidth! *
-        (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
+        containerWidth * (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
     }
   }
 
@@ -339,13 +344,12 @@ function applySizing(
       nodeConfig.layoutSizingVertical = "FILL";
     } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
       nodeConfig.height =
-        normalizedOptions.containerHeight! *
+        containerHeight *
         (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);
     } else {
       nodeConfig.layoutSizingVertical = "FIXED";
       nodeConfig.height =
-        normalizedOptions.containerHeight! *
-        (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
+        containerHeight * (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
     }
   } else if (height === null && styles.height === "auto") {
     nodeConfig.layoutSizingVertical = "HUG";

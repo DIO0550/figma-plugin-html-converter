@@ -121,8 +121,10 @@ export const ConversionOptions = {
     containerHeight: number;
   } {
     return (
-      options.containerWidth !== undefined &&
-      options.containerHeight !== undefined
+      typeof options.containerWidth === "number" &&
+      Number.isFinite(options.containerWidth) &&
+      typeof options.containerHeight === "number" &&
+      Number.isFinite(options.containerHeight)
     );
   },
 

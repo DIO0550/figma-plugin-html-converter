@@ -24,3 +24,17 @@ test("hasContainerSizeが正しく動作する", () => {
   expect(ConversionOptions.hasContainerSize(withSize)).toBe(true);
   expect(ConversionOptions.hasContainerSize(withoutSize)).toBe(false);
 });
+
+test("hasContainerSizeがNaNやInfinityでfalseを返す", () => {
+  const withNaN: ConversionOptions = {
+    containerWidth: NaN,
+    containerHeight: 600,
+  };
+  const withInfinity: ConversionOptions = {
+    containerWidth: 800,
+    containerHeight: Infinity,
+  };
+
+  expect(ConversionOptions.hasContainerSize(withNaN)).toBe(false);
+  expect(ConversionOptions.hasContainerSize(withInfinity)).toBe(false);
+});

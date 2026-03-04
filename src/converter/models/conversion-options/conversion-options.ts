@@ -36,7 +36,7 @@ export const ConversionOptions = {
   ): ConversionOptions {
     const filtered = Object.fromEntries(
       Object.entries(override).filter(([, v]) => v !== undefined),
-    );
+    ) as Partial<ConversionOptions>;
     return { ...base, ...filtered };
   },
 

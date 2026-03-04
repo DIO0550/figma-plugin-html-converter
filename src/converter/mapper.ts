@@ -309,11 +309,12 @@ function applySizing(
   styles: Styles,
   normalizedOptions: ConversionOptions,
 ): void {
-  const defaults = ConversionOptions.getDefault();
-  const containerWidth =
-    normalizedOptions.containerWidth ?? defaults.containerWidth!;
-  const containerHeight =
-    normalizedOptions.containerHeight ?? defaults.containerHeight!;
+  if (!ConversionOptions.hasContainerSize(normalizedOptions)) {
+    // コンテナサイズが取得できない場合は、パーセンテージに依存するレイアウト調整は行わない
+    return;
+  }
+
+  const { containerWidth, containerHeight } = normalizedOptions;
 
   const margin = Styles.getMargin(styles);
   if (margin) {

@@ -29,13 +29,13 @@ export const ConversionOptions = {
     };
   },
 
-  // オプションをマージ（明示的undefinedはデフォルト値を保持するためフィルタリング）
+  // オプションをマージ（null/undefinedはデフォルト値を保持するためフィルタリング）
   merge(
     base: ConversionOptions,
     override: Partial<ConversionOptions>,
   ): ConversionOptions {
     const filtered = Object.fromEntries(
-      Object.entries(override).filter(([, v]) => v !== undefined),
+      Object.entries(override).filter(([, v]) => v != null),
     ) as Partial<ConversionOptions>;
     return { ...base, ...filtered };
   },

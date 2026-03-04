@@ -123,8 +123,10 @@ export const ConversionOptions = {
     return (
       typeof options.containerWidth === "number" &&
       Number.isFinite(options.containerWidth) &&
+      options.containerWidth > 0 &&
       typeof options.containerHeight === "number" &&
-      Number.isFinite(options.containerHeight)
+      Number.isFinite(options.containerHeight) &&
+      options.containerHeight > 0
     );
   },
 

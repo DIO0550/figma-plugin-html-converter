@@ -25,6 +25,31 @@ test("spacing: 0 は正規化で変更されない（0は有効な値）", () =>
   expect(normalized.spacing).toBe(0);
 });
 
+test("NaN/Infinityの値がデフォルト値に差し戻される", () => {
+  const options = {
+    containerWidth: NaN,
+    containerHeight: Infinity,
+    spacing: NaN,
+  };
+
+  const normalized = ConversionOptions.normalize(options);
+  const defaults = ConversionOptions.getDefault();
+
+  expect(normalized.containerWidth).toBe(defaults.containerWidth);
+  expect(normalized.containerHeight).toBe(defaults.containerHeight);
+  expect(normalized.spacing).toBe(defaults.spacing);
+});
+
+test("-Infinityの値がデフォルト値に差し戻される", () => {
+  const options = {
+    spacing: -Infinity,
+  };
+
+  const normalized = ConversionOptions.normalize(options);
+
+  expect(normalized.spacing).toBe(ConversionOptions.getDefault().spacing);
+});
+
 test("未定義の値にデフォルト値が設定される", () => {
   const options = {
     containerWidth: 1000,

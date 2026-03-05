@@ -50,16 +50,26 @@ export const ConversionOptions = {
 
   // オプションの検証
   validate(options: ConversionOptions): boolean {
-    // コンテナサイズの検証
-    if (options.containerWidth !== undefined && options.containerWidth <= 0) {
+    // コンテナサイズの検証（NaN/Infinityも無効）
+    if (
+      options.containerWidth !== undefined &&
+      (!Number.isFinite(options.containerWidth) || options.containerWidth <= 0)
+    ) {
       return false;
     }
-    if (options.containerHeight !== undefined && options.containerHeight <= 0) {
+    if (
+      options.containerHeight !== undefined &&
+      (!Number.isFinite(options.containerHeight) ||
+        options.containerHeight <= 0)
+    ) {
       return false;
     }
 
-    // spacingの検証
-    if (options.spacing !== undefined && options.spacing < 0) {
+    // spacingの検証（NaN/Infinityも無効）
+    if (
+      options.spacing !== undefined &&
+      (!Number.isFinite(options.spacing) || options.spacing < 0)
+    ) {
       return false;
     }
 

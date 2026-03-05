@@ -41,3 +41,31 @@ test("ゼロのcontainerWidthがfalseを返す", () => {
   };
   expect(ConversionOptions.validate(options)).toBe(false);
 });
+
+test("NaNのcontainerWidthがfalseを返す", () => {
+  const options: ConversionOptions = {
+    containerWidth: NaN,
+  };
+  expect(ConversionOptions.validate(options)).toBe(false);
+});
+
+test("InfinityのcontainerHeightがfalseを返す", () => {
+  const options: ConversionOptions = {
+    containerHeight: Infinity,
+  };
+  expect(ConversionOptions.validate(options)).toBe(false);
+});
+
+test("NaNのspacingがfalseを返す", () => {
+  const options: ConversionOptions = {
+    spacing: NaN,
+  };
+  expect(ConversionOptions.validate(options)).toBe(false);
+});
+
+test("Infinityのspacingがfalseを返す", () => {
+  const options: ConversionOptions = {
+    spacing: Infinity,
+  };
+  expect(ConversionOptions.validate(options)).toBe(false);
+});

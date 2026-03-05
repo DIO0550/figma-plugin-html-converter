@@ -166,6 +166,38 @@ test("applySizing - width: 100% → FILL", () => {
   expect(result.layoutSizingHorizontal).toBe("FILL");
 });
 
+test("applySizing - width: 75% → デフォルトcontainerWidth(800)で計算", () => {
+  const node = createHTMLNode('<div style="width: 75%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(800 * (75 / 100));
+});
+
+test("applySizing - width: 75% + カスタムcontainerWidth(1200) → 900", () => {
+  const node = createHTMLNode('<div style="width: 75%">test</div>');
+  const result = mapHTMLNodeToFigma(node, { containerWidth: 1200 });
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(1200 * (75 / 100));
+});
+
+test("applySizing - height: 30% → デフォルトcontainerHeight(600)で計算", () => {
+  const node = createHTMLNode('<div style="height: 30%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingVertical).toBe("FIXED");
+  expect(result.height).toBe(600 * (30 / 100));
+});
+
+test("applySizing - height: 30% + カスタムcontainerHeight(1000) → 300", () => {
+  const node = createHTMLNode('<div style="height: 30%">test</div>');
+  const result = mapHTMLNodeToFigma(node, { containerHeight: 1000 });
+
+  expect(result.layoutSizingVertical).toBe("FIXED");
+  expect(result.height).toBe(1000 * (30 / 100));
+});
+
 test("applySizing - height: auto → HUG", () => {
   const node = createHTMLNode('<div style="height: auto">test</div>');
   const result = mapHTMLNodeToFigma(node);

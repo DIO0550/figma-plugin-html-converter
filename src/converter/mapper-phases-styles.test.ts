@@ -3,6 +3,9 @@ import { mapHTMLNodeToFigma } from "./mapper";
 import { HTML } from "./models/html";
 import type { HTMLNode } from "./models/html-node";
 import { Styles } from "./models/styles";
+import { ConversionOptions } from "./models/conversion-options";
+
+const defaults = ConversionOptions.getDefault();
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -166,12 +169,12 @@ test("applySizing - width: 100% → FILL", () => {
   expect(result.layoutSizingHorizontal).toBe("FILL");
 });
 
-test("applySizing - width: 75% → デフォルトcontainerWidth(800)で計算", () => {
+test("applySizing - width: 75% → デフォルトcontainerWidthで計算", () => {
   const node = createHTMLNode('<div style="width: 75%">test</div>');
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.layoutSizingHorizontal).toBe("FIXED");
-  expect(result.width).toBe(800 * (75 / 100));
+  expect(result.width).toBe(defaults.containerWidth! * (75 / 100));
 });
 
 test("applySizing - width: 75% + カスタムcontainerWidth(1200) → 900", () => {
@@ -182,12 +185,12 @@ test("applySizing - width: 75% + カスタムcontainerWidth(1200) → 900", () =
   expect(result.width).toBe(1200 * (75 / 100));
 });
 
-test("applySizing - height: 30% → デフォルトcontainerHeight(600)で計算", () => {
+test("applySizing - height: 30% → デフォルトcontainerHeightで計算", () => {
   const node = createHTMLNode('<div style="height: 30%">test</div>');
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.layoutSizingVertical).toBe("FIXED");
-  expect(result.height).toBe(600 * (30 / 100));
+  expect(result.height).toBe(defaults.containerHeight! * (30 / 100));
 });
 
 test("applySizing - height: 30% + カスタムcontainerHeight(1000) → 300", () => {

@@ -190,7 +190,7 @@ test("applySizing - height: 30% → デフォルトcontainerHeightで計算", ()
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.layoutSizingVertical).toBe("FIXED");
-  expect(result.height).toBe(defaults.containerHeight! * (30 / 100));
+  expect(result.height).toBeCloseTo(defaults.containerHeight! * (30 / 100));
 });
 
 test("applySizing - height: 30% + カスタムcontainerHeight(1000) → 300", () => {

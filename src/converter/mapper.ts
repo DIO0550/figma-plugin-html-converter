@@ -344,6 +344,7 @@ function applySizing(
     if (height.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
       nodeConfig.layoutSizingVertical = "FILL";
     } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
+      nodeConfig.layoutSizingVertical = "FIXED";
       nodeConfig.height =
         containerHeight *
         (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);

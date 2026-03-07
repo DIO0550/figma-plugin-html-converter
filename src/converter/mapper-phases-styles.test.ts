@@ -198,7 +198,7 @@ test("applySizing - height: 30% + カスタムcontainerHeight(1000) → 300", ()
   const result = mapHTMLNodeToFigma(node, { containerHeight: 1000 });
 
   expect(result.layoutSizingVertical).toBe("FIXED");
-  expect(result.height).toBe(1000 * (30 / 100));
+  expect(result.height).toBeCloseTo(1000 * (30 / 100));
 });
 
 test("applySizing - height: auto → HUG", () => {

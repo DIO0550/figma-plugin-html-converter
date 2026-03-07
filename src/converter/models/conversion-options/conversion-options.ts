@@ -105,7 +105,8 @@ export const ConversionOptions = {
     const defaults = ConversionOptions.getDefault();
     const merged = ConversionOptions.merge(defaults, options);
 
-    // 不正値（NaN/Infinity/0以下）をデフォルトに差し戻し
+    // containerWidth/containerHeight: 0以下・NaN・Infinityはデフォルト値に差し戻す
+    // （%サイズ計算の除数として使われるため、0以下は無意味。validate/hasContainerSizeと整合）
     if (
       merged.containerWidth !== undefined &&
       (!Number.isFinite(merged.containerWidth) || merged.containerWidth <= 0)
@@ -118,6 +119,7 @@ export const ConversionOptions = {
     ) {
       merged.containerHeight = defaults.containerHeight;
     }
+    // spacing: 0は有効値（間隔なし）、負値は絶対値に正規化、NaN/Infinityはデフォルトに差し戻し
     if (merged.spacing !== undefined && !Number.isFinite(merged.spacing)) {
       merged.spacing = defaults.spacing;
     } else if (merged.spacing !== undefined && merged.spacing < 0) {

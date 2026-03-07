@@ -1,18 +1,40 @@
 import { test, expect } from "vitest";
 import { ConversionOptions } from "../conversion-options";
 
-test("負の値を正の値に正規化する", () => {
+test("負のcontainerWidth/containerHeightはデフォルト値に差し戻される", () => {
   const options = {
     containerWidth: -800,
     containerHeight: -600,
+  };
+
+  const normalized = ConversionOptions.normalize(options);
+  const defaults = ConversionOptions.getDefault();
+
+  expect(normalized.containerWidth).toBe(defaults.containerWidth);
+  expect(normalized.containerHeight).toBe(defaults.containerHeight);
+});
+
+test("負のspacingは正の値に正規化する", () => {
+  const options = {
     spacing: -8,
   };
 
   const normalized = ConversionOptions.normalize(options);
 
-  expect(normalized.containerWidth).toBe(800);
-  expect(normalized.containerHeight).toBe(600);
   expect(normalized.spacing).toBe(8);
+});
+
+test("containerWidth/containerHeight: 0 はデフォルト値に差し戻される", () => {
+  const options = {
+    containerWidth: 0,
+    containerHeight: 0,
+  };
+
+  const normalized = ConversionOptions.normalize(options);
+  const defaults = ConversionOptions.getDefault();
+
+  expect(normalized.containerWidth).toBe(defaults.containerWidth);
+  expect(normalized.containerHeight).toBe(defaults.containerHeight);
 });
 
 test("spacing: 0 は正規化で変更されない（0は有効な値）", () => {

@@ -105,28 +105,18 @@ export const ConversionOptions = {
     const defaults = ConversionOptions.getDefault();
     const merged = ConversionOptions.merge(defaults, options);
 
-    // 不正値（NaN/Infinity）をデフォルトに差し戻し、負の値を正の値に正規化
+    // 不正値（NaN/Infinity/0以下）をデフォルトに差し戻し
     if (
       merged.containerWidth !== undefined &&
-      !Number.isFinite(merged.containerWidth)
+      (!Number.isFinite(merged.containerWidth) || merged.containerWidth <= 0)
     ) {
       merged.containerWidth = defaults.containerWidth;
-    } else if (
-      merged.containerWidth !== undefined &&
-      merged.containerWidth < 0
-    ) {
-      merged.containerWidth = Math.abs(merged.containerWidth);
     }
     if (
       merged.containerHeight !== undefined &&
-      !Number.isFinite(merged.containerHeight)
+      (!Number.isFinite(merged.containerHeight) || merged.containerHeight <= 0)
     ) {
       merged.containerHeight = defaults.containerHeight;
-    } else if (
-      merged.containerHeight !== undefined &&
-      merged.containerHeight < 0
-    ) {
-      merged.containerHeight = Math.abs(merged.containerHeight);
     }
     if (merged.spacing !== undefined && !Number.isFinite(merged.spacing)) {
       merged.spacing = defaults.spacing;

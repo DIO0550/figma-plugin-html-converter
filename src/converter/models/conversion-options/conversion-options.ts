@@ -100,7 +100,15 @@ export const ConversionOptions = {
     return true;
   },
 
-  // オプションの正規化
+  /**
+   * オプションを正規化し、不正値をデフォルト値または安全な値に補正する。
+   *
+   * 正規化ルール:
+   * - containerWidth/containerHeight: 0以下・NaN・Infinityはデフォルト値に差し戻す
+   *   （%サイズ計算の除数として使われるため、正の有限値のみ有効）
+   * - spacing: NaN・Infinityはデフォルト値に差し戻し、負値は絶対値に正規化（0は有効値）
+   * - 未指定のプロパティにはデフォルト値が設定される
+   */
   normalize(options: Partial<ConversionOptions>): ConversionOptions {
     const defaults = ConversionOptions.getDefault();
     const merged = ConversionOptions.merge(defaults, options);

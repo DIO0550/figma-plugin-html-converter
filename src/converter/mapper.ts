@@ -41,7 +41,6 @@ const inlineSemanticConverters = {
 // レイアウト関連の定数（計算用）
 const LAYOUT_CONFIG = {
   FULL_PERCENTAGE: 100,
-  HALF_PERCENTAGE: 50,
 } as const;
 
 type ResolveResult =
@@ -328,8 +327,6 @@ function applySizing(
   } else if (width && typeof width === "object" && width.unit === "%") {
     if (width.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
       nodeConfig.layoutSizingHorizontal = "FILL";
-    } else if (width.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
-      nodeConfig.layoutSizingHorizontal = "FILL";
     } else {
       nodeConfig.layoutSizingHorizontal = "FIXED";
       nodeConfig.width =
@@ -343,11 +340,6 @@ function applySizing(
   } else if (height && typeof height === "object" && height.unit === "%") {
     if (height.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
       nodeConfig.layoutSizingVertical = "FILL";
-    } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
-      nodeConfig.layoutSizingVertical = "FIXED";
-      nodeConfig.height =
-        containerHeight *
-        (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);
     } else {
       nodeConfig.layoutSizingVertical = "FIXED";
       nodeConfig.height =

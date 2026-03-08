@@ -353,6 +353,85 @@ test("applySizing - position: absolute + min-width → applyPositioning の cons
   expect(result.constraints?.horizontal).toBe("STRETCH");
 });
 
+// --- applySizing - % 対照テスト ---
+
+test("applySizing - width: 100% → FILL", () => {
+  const node = createHTMLNode('<div style="width: 100%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FILL");
+});
+
+test("applySizing - width: 50% → FIXED + ピクセル換算", () => {
+  const node = createHTMLNode('<div style="width: 50%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(defaults.containerWidth * (50 / 100));
+});
+
+test("applySizing - width: 25% → FIXED + ピクセル換算", () => {
+  const node = createHTMLNode('<div style="width: 25%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(defaults.containerWidth * (25 / 100));
+});
+
+test("applySizing - height: 100% → FILL", () => {
+  const node = createHTMLNode('<div style="height: 100%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingVertical).toBe("FILL");
+});
+
+test("applySizing - height: 50% → FIXED + ピクセル換算", () => {
+  const node = createHTMLNode('<div style="height: 50%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingVertical).toBe("FIXED");
+  expect(result.height).toBe(defaults.containerHeight * (50 / 100));
+});
+
+test("applySizing - height: 25% → FIXED + ピクセル換算", () => {
+  const node = createHTMLNode('<div style="height: 25%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingVertical).toBe("FIXED");
+  expect(result.height).toBe(defaults.containerHeight * (25 / 100));
+});
+
+// --- applySizing - 境界値テスト ---
+
+test("applySizing - width: 0% → FIXED + 0px", () => {
+  const node = createHTMLNode('<div style="width: 0%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(0);
+});
+
+test("applySizing - width: 33.33% → FIXED + 小数ピクセル換算", () => {
+  const node = createHTMLNode('<div style="width: 33.33%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBeCloseTo(defaults.containerWidth * (33.33 / 100));
+});
+
+// --- applySizing - 回帰テスト（flex-grow との併用） ---
+
+test("applySizing - width: 50% + flex-grow: 1 → FILL上書き、width計算値は残る", () => {
+  const node = createHTMLNode(
+    '<div style="width: 50%; flex-grow: 1">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutGrow).toBe(1);
+  expect(result.layoutSizingHorizontal).toBe("FILL");
+  expect(result.width).toBe(defaults.containerWidth * (50 / 100));
+});
+
 // --- applyVisualStyles 統合テスト ---
 
 test("applyVisualStyles - background-color 設定 → fills", () => {

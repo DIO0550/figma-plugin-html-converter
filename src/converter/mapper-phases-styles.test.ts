@@ -155,6 +155,64 @@ test("applyPositioning - z-index は position 未指定時に適用されない"
   expect(result.zIndex).toBeUndefined();
 });
 
+// --- applyPositioning - vertical constraints テスト ---
+
+test("applyPositioning - absolute + top のみ → vertical: MIN", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; top: 10px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applyPositioning - absolute + bottom のみ → vertical: MAX", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; bottom: 20px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("MAX");
+});
+
+test("applyPositioning - absolute + top + bottom → vertical: STRETCH", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; top: 0px; bottom: 0px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("STRETCH");
+});
+
+test("applyPositioning - absolute + left のみ → vertical: MIN（デフォルト）", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; left: 10px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applyPositioning - fixed + top + bottom → vertical: STRETCH", () => {
+  const node = createHTMLNode(
+    '<div style="position: fixed; top: 0px; bottom: 0px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("STRETCH");
+});
+
+// --- applyPositioning - horizontal デフォルト テスト ---
+
+test("applyPositioning - absolute + left のみ → horizontal: MIN", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; left: 10px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+});
+
 // --- applySizing 統合テスト ---
 
 test("applySizing - width/height px 設定", () => {
@@ -246,6 +304,53 @@ test("applySizing - flex-shrink: 0 → layoutGrow: 0", () => {
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.layoutGrow).toBe(0);
+});
+
+// --- applySizing - constraints テスト ---
+
+test("applySizing - min-width のみ → constraints horizontal: SCALE, vertical: MIN", () => {
+  const node = createHTMLNode('<div style="min-width: 100px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applySizing - max-width のみ → constraints horizontal: SCALE", () => {
+  const node = createHTMLNode('<div style="max-width: 500px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+});
+
+test("applySizing - min-height のみ → constraints horizontal: MIN, vertical: MIN", () => {
+  const node = createHTMLNode('<div style="min-height: 50px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applySizing - min-width + min-height → constraints horizontal: SCALE, vertical: MIN", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; min-height: 50px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+// --- applySizing - constraints 優先度テスト ---
+
+test("applySizing - position: absolute + min-width → applyPositioning の constraints が優先", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; left: 0px; right: 0px; min-width: 100px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  // applyPositioning で設定された STRETCH が優先される（applySizing で上書きされない）
+  expect(result.constraints?.horizontal).toBe("STRETCH");
 });
 
 // --- applyVisualStyles 統合テスト ---

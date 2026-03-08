@@ -29,12 +29,15 @@ export const ConversionOptions = {
     };
   },
 
-  // オプションをマージ
+  // オプションをマージ（null/undefinedはデフォルト値を保持するためフィルタリング）
   merge(
     base: ConversionOptions,
     override: Partial<ConversionOptions>,
   ): ConversionOptions {
-    return { ...base, ...override };
+    const filtered = Object.fromEntries(
+      Object.entries(override).filter(([, v]) => v != null),
+    ) as Partial<ConversionOptions>;
+    return { ...base, ...filtered };
   },
 
   // 複数のオプションをマージ
@@ -47,16 +50,26 @@ export const ConversionOptions = {
 
   // オプションの検証
   validate(options: ConversionOptions): boolean {
-    // コンテナサイズの検証
-    if (options.containerWidth !== undefined && options.containerWidth <= 0) {
+    // コンテナサイズの検証（NaN/Infinityも無効）
+    if (
+      options.containerWidth !== undefined &&
+      (!Number.isFinite(options.containerWidth) || options.containerWidth <= 0)
+    ) {
       return false;
     }
-    if (options.containerHeight !== undefined && options.containerHeight <= 0) {
+    if (
+      options.containerHeight !== undefined &&
+      (!Number.isFinite(options.containerHeight) ||
+        options.containerHeight <= 0)
+    ) {
       return false;
     }
 
-    // spacingの検証
-    if (options.spacing !== undefined && options.spacing < 0) {
+    // spacingの検証（NaN/Infinityも無効）
+    if (
+      options.spacing !== undefined &&
+      (!Number.isFinite(options.spacing) || options.spacing < 0)
+    ) {
       return false;
     }
 
@@ -87,19 +100,37 @@ export const ConversionOptions = {
     return true;
   },
 
-  // オプションの正規化
+  /**
+   * オプションを正規化し、不正値をデフォルト値または安全な値に補正する。
+   *
+   * 正規化ルール:
+   * - containerWidth/containerHeight: 0以下・NaN・Infinityはデフォルト値に差し戻す
+   *   （%サイズ計算の除数として使われるため、正の有限値のみ有効）
+   * - spacing: NaN・Infinityはデフォルト値に差し戻し、負値は絶対値に正規化（0は有効値）
+   * - 未指定のプロパティにはデフォルト値が設定される
+   */
   normalize(options: Partial<ConversionOptions>): ConversionOptions {
     const defaults = ConversionOptions.getDefault();
     const merged = ConversionOptions.merge(defaults, options);
 
-    // 負の値を正の値に正規化 (0はfalsyなので存在判定を !== undefined に統一)
-    if (merged.containerWidth !== undefined && merged.containerWidth < 0) {
-      merged.containerWidth = Math.abs(merged.containerWidth);
+    // containerWidth/containerHeight: 0以下・NaN・Infinityはデフォルト値に差し戻す
+    // （%サイズ計算の除数として使われるため、0以下は無意味。validate/hasContainerSizeと整合）
+    if (
+      merged.containerWidth !== undefined &&
+      (!Number.isFinite(merged.containerWidth) || merged.containerWidth <= 0)
+    ) {
+      merged.containerWidth = defaults.containerWidth;
     }
-    if (merged.containerHeight !== undefined && merged.containerHeight < 0) {
-      merged.containerHeight = Math.abs(merged.containerHeight);
+    if (
+      merged.containerHeight !== undefined &&
+      (!Number.isFinite(merged.containerHeight) || merged.containerHeight <= 0)
+    ) {
+      merged.containerHeight = defaults.containerHeight;
     }
-    if (merged.spacing !== undefined && merged.spacing < 0) {
+    // spacing: 0は有効値（間隔なし）、負値は絶対値に正規化、NaN/Infinityはデフォルトに差し戻し
+    if (merged.spacing !== undefined && !Number.isFinite(merged.spacing)) {
+      merged.spacing = defaults.spacing;
+    } else if (merged.spacing !== undefined && merged.spacing < 0) {
       merged.spacing = Math.abs(merged.spacing);
     }
 
@@ -118,8 +149,12 @@ export const ConversionOptions = {
     containerHeight: number;
   } {
     return (
-      options.containerWidth !== undefined &&
-      options.containerHeight !== undefined
+      typeof options.containerWidth === "number" &&
+      Number.isFinite(options.containerWidth) &&
+      options.containerWidth > 0 &&
+      typeof options.containerHeight === "number" &&
+      Number.isFinite(options.containerHeight) &&
+      options.containerHeight > 0
     );
   },
 

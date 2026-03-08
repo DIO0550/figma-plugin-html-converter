@@ -3,6 +3,14 @@ import { mapHTMLNodeToFigma } from "./mapper";
 import { HTML } from "./models/html";
 import type { HTMLNode } from "./models/html-node";
 import { Styles } from "./models/styles";
+import { ConversionOptions } from "./models/conversion-options";
+
+const defaults = ConversionOptions.getDefault();
+
+// 型ガードでcontainerWidth/containerHeightがnumberであることを保証（non-null assertion不要にする）
+if (!ConversionOptions.hasContainerSize(defaults)) {
+  throw new Error("getDefault() must return valid container size");
+}
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -164,6 +172,38 @@ test("applySizing - width: 100% → FILL", () => {
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.layoutSizingHorizontal).toBe("FILL");
+});
+
+test("applySizing - width: 75% → デフォルトcontainerWidthで計算", () => {
+  const node = createHTMLNode('<div style="width: 75%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(defaults.containerWidth * (75 / 100));
+});
+
+test("applySizing - width: 75% + カスタムcontainerWidth(1200) → 900", () => {
+  const node = createHTMLNode('<div style="width: 75%">test</div>');
+  const result = mapHTMLNodeToFigma(node, { containerWidth: 1200 });
+
+  expect(result.layoutSizingHorizontal).toBe("FIXED");
+  expect(result.width).toBe(1200 * (75 / 100));
+});
+
+test("applySizing - height: 30% → デフォルトcontainerHeightで計算", () => {
+  const node = createHTMLNode('<div style="height: 30%">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.layoutSizingVertical).toBe("FIXED");
+  expect(result.height).toBeCloseTo(defaults.containerHeight * (30 / 100));
+});
+
+test("applySizing - height: 30% + カスタムcontainerHeight(1000) → 300", () => {
+  const node = createHTMLNode('<div style="height: 30%">test</div>');
+  const result = mapHTMLNodeToFigma(node, { containerHeight: 1000 });
+
+  expect(result.layoutSizingVertical).toBe("FIXED");
+  expect(result.height).toBeCloseTo(1000 * (30 / 100));
 });
 
 test("applySizing - height: auto → HUG", () => {

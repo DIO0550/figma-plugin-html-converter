@@ -38,11 +38,8 @@ const inlineSemanticConverters = {
   var: VarConverter,
 } as const;
 
-// レイアウト関連の定数
+// レイアウト関連の定数（計算用）
 const LAYOUT_CONFIG = {
-  DEFAULT_SPACING: 8,
-  DEFAULT_CONTAINER_WIDTH: 800,
-  DEFAULT_CONTAINER_HEIGHT: 600,
   FULL_PERCENTAGE: 100,
   HALF_PERCENTAGE: 50,
 } as const;
@@ -195,7 +192,7 @@ function resolveByTag(
     if (isListElement) {
       FigmaNode.setAutoLayout(nodeConfig, {
         mode: tagName === "li" ? "HORIZONTAL" : "VERTICAL",
-        spacing: normalizedOptions.spacing ?? LAYOUT_CONFIG.DEFAULT_SPACING,
+        spacing: normalizedOptions.spacing,
       });
     }
   }
@@ -307,7 +304,18 @@ function applyPositioning(nodeConfig: FigmaNodeConfig, styles: Styles): void {
   }
 }
 
-function applySizing(nodeConfig: FigmaNodeConfig, styles: Styles): void {
+function applySizing(
+  nodeConfig: FigmaNodeConfig,
+  styles: Styles,
+  normalizedOptions: ConversionOptions,
+): void {
+  if (!ConversionOptions.hasContainerSize(normalizedOptions)) {
+    // コンテナサイズが取得できない場合は、パーセンテージに依存するレイアウト調整は行わない
+    return;
+  }
+
+  const { containerWidth, containerHeight } = normalizedOptions;
+
   const margin = Styles.getMargin(styles);
   if (margin) {
     // TODO: marginを親要素のAuto Layoutとして処理する実装を追加
@@ -325,8 +333,7 @@ function applySizing(nodeConfig: FigmaNodeConfig, styles: Styles): void {
     } else {
       nodeConfig.layoutSizingHorizontal = "FIXED";
       nodeConfig.width =
-        LAYOUT_CONFIG.DEFAULT_CONTAINER_WIDTH *
-        (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
+        containerWidth * (width.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
     }
   }
 
@@ -337,14 +344,14 @@ function applySizing(nodeConfig: FigmaNodeConfig, styles: Styles): void {
     if (height.value === LAYOUT_CONFIG.FULL_PERCENTAGE) {
       nodeConfig.layoutSizingVertical = "FILL";
     } else if (height.value === LAYOUT_CONFIG.HALF_PERCENTAGE) {
+      nodeConfig.layoutSizingVertical = "FIXED";
       nodeConfig.height =
-        LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT *
+        containerHeight *
         (LAYOUT_CONFIG.HALF_PERCENTAGE / LAYOUT_CONFIG.FULL_PERCENTAGE);
     } else {
       nodeConfig.layoutSizingVertical = "FIXED";
       nodeConfig.height =
-        LAYOUT_CONFIG.DEFAULT_CONTAINER_HEIGHT *
-        (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
+        containerHeight * (height.value / LAYOUT_CONFIG.FULL_PERCENTAGE);
     }
   } else if (height === null && styles.height === "auto") {
     nodeConfig.layoutSizingVertical = "HUG";
@@ -509,7 +516,7 @@ export function mapHTMLNodeToFigma(
     applyAutoLayout(nodeConfig, styles);
     applyPadding(nodeConfig, styles);
     applyPositioning(nodeConfig, styles);
-    applySizing(nodeConfig, styles);
+    applySizing(nodeConfig, styles, normalizedOptions);
     applyVisualStyles(nodeConfig, styles);
   }
 

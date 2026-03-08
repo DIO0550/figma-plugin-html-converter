@@ -2,6 +2,7 @@ import { test, expect } from "vitest";
 import { ConversionOptions } from "../conversion-options";
 
 test("部分的なオプションから完全なオプションを作成する", () => {
+  const defaults = ConversionOptions.getDefault();
   const partial = {
     containerWidth: 1200,
   };
@@ -9,9 +10,9 @@ test("部分的なオプションから完全なオプションを作成する",
   const options = ConversionOptions.from(partial);
 
   expect(options.containerWidth).toBe(1200);
-  expect(options.containerHeight).toBe(600);
-  expect(options.spacing).toBe(8);
-  expect(options.colorMode).toBe("rgb");
+  expect(options.containerHeight).toBe(defaults.containerHeight);
+  expect(options.spacing).toBe(defaults.spacing);
+  expect(options.colorMode).toBe(defaults.colorMode);
 });
 
 test("空のオブジェクトからデフォルトオプションを作成する", () => {

@@ -218,16 +218,16 @@ test("不正な引数型でisError応答が返る", async () => {
 
 describe("ヘルパー関数", () => {
   test("getToolTextContent: 正常なツール結果からtextを返す", () => {
-    const result = {
-      content: [{ type: "text", text: "hello" }],
-    } as ToolResultContent;
+    const result: ToolResultContent = {
+      content: [{ type: "text" as const, text: "hello" }],
+    };
     expect(getToolTextContent(result)).toBe("hello");
   });
 
   test("parseToolJson: 正常なツール結果からパース済みオブジェクトを返す", () => {
-    const result = {
-      content: [{ type: "text", text: '{"key":"value"}' }],
-    } as ToolResultContent;
+    const result: ToolResultContent = {
+      content: [{ type: "text" as const, text: '{"key":"value"}' }],
+    };
     const parsed = parseToolJson<{ key: string }>(result);
     expect(parsed.key).toBe("value");
   });

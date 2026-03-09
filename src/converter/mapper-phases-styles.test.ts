@@ -316,29 +316,30 @@ test("applySizing - min-width のみ → constraints horizontal: SCALE, vertical
   expect(result.constraints?.vertical).toBe("MIN");
 });
 
-test("applySizing - max-width のみ → constraints horizontal: SCALE", () => {
+test("applySizing - max-width のみ → constraints horizontal: SCALE, vertical: MIN", () => {
   const node = createHTMLNode('<div style="max-width: 500px">test</div>');
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("MIN");
 });
 
-test("applySizing - min-height のみ → constraints horizontal: MIN, vertical: MIN", () => {
+test("applySizing - min-height のみ → constraints horizontal: MIN, vertical: SCALE", () => {
   const node = createHTMLNode('<div style="min-height: 50px">test</div>');
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.constraints?.horizontal).toBe("MIN");
-  expect(result.constraints?.vertical).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("SCALE");
 });
 
-test("applySizing - min-width + min-height → constraints horizontal: SCALE, vertical: MIN", () => {
+test("applySizing - min-width + min-height → constraints horizontal: SCALE, vertical: SCALE", () => {
   const node = createHTMLNode(
     '<div style="min-width: 100px; min-height: 50px">test</div>',
   );
   const result = mapHTMLNodeToFigma(node);
 
   expect(result.constraints?.horizontal).toBe("SCALE");
-  expect(result.constraints?.vertical).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("SCALE");
 });
 
 // --- applySizing - constraints 優先度テスト ---
@@ -349,8 +350,9 @@ test("applySizing - position: absolute + min-width → applyPositioning の cons
   );
   const result = mapHTMLNodeToFigma(node);
 
-  // applyPositioning で設定された STRETCH が優先される（applySizing で上書きされない）
+  // applyPositioning で設定された constraints が優先される（applySizing で上書きされない）
   expect(result.constraints?.horizontal).toBe("STRETCH");
+  expect(result.constraints?.vertical).toBe("MIN");
 });
 
 // --- applySizing - % 対照テスト ---
@@ -503,3 +505,189 @@ test("Styles.parse - style属性あり + childrenありのケースでStyles.par
   );
   expect(divParseCalls).toHaveLength(1);
 });
+
+// --- applySizing - constraints マトリクステスト ---
+
+test("applySizing - min/max 未設定 → constraints undefined", () => {
+  const node = createHTMLNode('<div style="width: 200px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints).toBeUndefined();
+});
+
+test("applySizing - min-width + max-width → constraints horizontal: SCALE, vertical: MIN", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; max-width: 500px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applySizing - max-height のみ → constraints horizontal: MIN, vertical: SCALE", () => {
+  const node = createHTMLNode('<div style="max-height: 300px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - min-height + max-height → constraints horizontal: MIN, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="min-height: 50px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - max-width + min-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="max-width: 500px; min-height: 50px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - min-width + max-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - max-width + max-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="max-width: 500px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - 4つ全て設定 → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; max-width: 500px; min-height: 50px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - min-width + max-width + min-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; max-width: 500px; min-height: 50px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - min-width + max-width + max-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; max-width: 500px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - min-width + min-height + max-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="min-width: 100px; min-height: 50px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - max-width + min-height + max-height → constraints horizontal: SCALE, vertical: SCALE", () => {
+  const node = createHTMLNode(
+    '<div style="max-width: 500px; min-height: 50px; max-height: 300px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("SCALE");
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+// --- applySizing - constraints 優先度・交差ケーステスト ---
+
+test("applySizing - position: absolute + top/bottom + min-height → positioning の STRETCH が優先", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; top: 0px; bottom: 0px; min-height: 50px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("STRETCH");
+});
+
+test("applySizing - position: absolute + left + min-height → positioning 全体優先（交差ケース）", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; left: 0px; min-height: 50px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applySizing - position: absolute + top + max-width → positioning 全体優先（交差ケース）", () => {
+  const node = createHTMLNode(
+    '<div style="position: absolute; top: 0px; max-width: 200px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("MIN");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+test("applySizing - position: fixed + left/right + min-height → positioning 全体優先", () => {
+  const node = createHTMLNode(
+    '<div style="position: fixed; left: 0px; right: 0px; min-height: 100px">test</div>',
+  );
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.horizontal).toBe("STRETCH");
+  expect(result.constraints?.vertical).toBe("MIN");
+});
+
+// --- applySizing - constraints 境界値テスト ---
+
+test("applySizing - min-height: 0px → constraints vertical: SCALE", () => {
+  const node = createHTMLNode('<div style="min-height: 0px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - max-height: 0px → constraints vertical: SCALE", () => {
+  const node = createHTMLNode('<div style="max-height: 0px">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+test("applySizing - min-height: 0（単位なし）→ constraints vertical: SCALE", () => {
+  const node = createHTMLNode('<div style="min-height: 0">test</div>');
+  const result = mapHTMLNodeToFigma(node);
+
+  expect(result.constraints?.vertical).toBe("SCALE");
+});
+
+// NOTE: 早期 return テスト（R1-R4）は ConversionOptions.from() が不正値（0, NaN, Infinity）を
+// デフォルト値に正規化するため、mapHTMLNodeToFigma の公開 API 経由では到達不可能。
+// ConversionOptions.normalize のテストで網羅済みのため、ここでは省略。

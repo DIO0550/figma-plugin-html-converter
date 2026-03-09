@@ -134,6 +134,7 @@ test("containerWidth/containerHeight が有効値の場合に E2E が成功す�
   });
 
   expect(result.isError).toBeFalsy();
+  expect(result.content).toHaveLength(1);
 
   const parsed = parseToolJson<{ type: string }>(result);
   expect(parsed.type).toBe("FRAME");

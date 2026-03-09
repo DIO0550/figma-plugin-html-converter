@@ -67,6 +67,7 @@ test("convert_htmlツール呼び出しE2E: HTML入力→JSON出力", async () =
   });
 
   expect(result.isError).toBeFalsy();
+  expect(result.content).toHaveLength(1);
 
   const parsed = parseToolJson<{ type: string }>(result);
   expect(parsed.type).toBe("FRAME");

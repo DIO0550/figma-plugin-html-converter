@@ -5,8 +5,9 @@ import { createServer } from "../server";
 import { MAX_HTML_SIZE } from "../tools/convert-html/convert-html-tool";
 
 type CallToolResult = Awaited<ReturnType<Client["callTool"]>>;
+type ToolResultContent = Pick<CallToolResult, "content">;
 
-function getToolTextContent(result: CallToolResult): string {
+function getToolTextContent(result: ToolResultContent): string {
   const { content } = result;
 
   expect(Array.isArray(content)).toBe(true);
@@ -21,7 +22,9 @@ function getToolTextContent(result: CallToolResult): string {
   return contents[0].text as string;
 }
 
-function parseToolJson<T = Record<string, unknown>>(result: CallToolResult): T {
+function parseToolJson<T = Record<string, unknown>>(
+  result: ToolResultContent,
+): T {
   const text = getToolTextContent(result);
   return JSON.parse(text) as T;
 }
@@ -217,14 +220,14 @@ describe("ヘルパー関数", () => {
   test("getToolTextContent: 正常なツール結果からtextを返す", () => {
     const result = {
       content: [{ type: "text", text: "hello" }],
-    } as CallToolResult;
+    } as ToolResultContent;
     expect(getToolTextContent(result)).toBe("hello");
   });
 
   test("parseToolJson: 正常なツール結果からパース済みオブジェクトを返す", () => {
     const result = {
       content: [{ type: "text", text: '{"key":"value"}' }],
-    } as CallToolResult;
+    } as ToolResultContent;
     const parsed = parseToolJson<{ key: string }>(result);
     expect(parsed.key).toBe("value");
   });
@@ -232,14 +235,14 @@ describe("ヘルパー関数", () => {
   test("getToolTextContent: contentが空配列の場合に検証失敗する", () => {
     const result = {
       content: [],
-    } as CallToolResult;
+    } as ToolResultContent;
     expect(() => getToolTextContent(result)).toThrow();
   });
 
   test("getToolTextContent: type !== 'text' の場合に検証失敗する", () => {
     const result = {
       content: [{ type: "image", data: "abc", mimeType: "image/png" }],
-    } as CallToolResult;
+    } as ToolResultContent;
     expect(() => getToolTextContent(result)).toThrow();
   });
 });

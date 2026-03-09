@@ -7,10 +7,18 @@ import { MAX_HTML_SIZE } from "../tools/convert-html/convert-html-tool";
 type CallToolResult = Awaited<ReturnType<Client["callTool"]>>;
 
 function getToolTextContent(result: CallToolResult): string {
-  const content = result.content as Array<{ type: string; text: string }>;
-  expect(content.length).toBeGreaterThanOrEqual(1);
-  expect(content[0].type).toBe("text");
-  return content[0].text;
+  const { content } = result;
+
+  expect(Array.isArray(content)).toBe(true);
+
+  const contents = content as Array<{ type: unknown; text: unknown }>;
+
+  expect(contents.length).toBeGreaterThanOrEqual(1);
+  expect(contents[0]).toBeDefined();
+  expect(contents[0].type).toBe("text");
+  expect(typeof contents[0].text).toBe("string");
+
+  return contents[0].text as string;
 }
 
 function parseToolJson<T = Record<string, unknown>>(result: CallToolResult): T {

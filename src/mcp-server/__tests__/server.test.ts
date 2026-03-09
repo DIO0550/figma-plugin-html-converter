@@ -236,13 +236,15 @@ describe("ヘルパー関数", () => {
     const result = {
       content: [],
     } as ToolResultContent;
-    expect(() => getToolTextContent(result)).toThrow();
+    expect(() => getToolTextContent(result)).toThrowError(
+      /to be greater than or equal to/,
+    );
   });
 
   test("getToolTextContent: type !== 'text' の場合に検証失敗する", () => {
     const result = {
       content: [{ type: "image", data: "abc", mimeType: "image/png" }],
     } as ToolResultContent;
-    expect(() => getToolTextContent(result)).toThrow();
+    expect(() => getToolTextContent(result)).toThrowError(/expected.*to be/);
   });
 });

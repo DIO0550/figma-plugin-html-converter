@@ -391,7 +391,7 @@ function applySizing(
     if (!nodeConfig.constraints) {
       nodeConfig.constraints = {
         horizontal: minWidth !== null || maxWidth !== null ? "SCALE" : "MIN",
-        vertical: "MIN",
+        vertical: minHeight !== null || maxHeight !== null ? "SCALE" : "MIN",
       };
     }
   }
